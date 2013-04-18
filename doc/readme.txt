@@ -22,4 +22,4 @@ will be weaved into
 * 
 * public static readonly PropertyData FirstNameProperty = RegisterProperty("FirstName", typeof(string));
 
-For more information about Catel.Fody, visit http://catelfody.codeplex.com
+For more information about Catel.Fody, visit https://github.com/Catel/Catel.Fody

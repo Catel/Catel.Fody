@@ -8,9 +8,7 @@ Catel.Fody history
 
 For more information about issues or new feature requests, please visit:
 
-http://catelfody.codeplex.com
-
-Documentation can be found at: http://catel.catenalogic.com
+https://github.com/Catel/Catel.Fody
 
 **********************************************************
 
