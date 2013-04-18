@@ -1,0 +1,8 @@
+Catel.Fody requirements
+=======================
+
+To build this, you will need the following stuff installed:
+
+* NuGet (see http://www.nuget.org)
+* Fody (visual studio extension, see http://visualstudiogallery.msdn.microsoft.com/074a2a26-d034-46f1-8fe1-0da97265eb7a)
+* Costura (visual studio extension, see http://visualstudiogallery.msdn.microsoft.com/70c0e54d-07de-4ff3-a62f-aac9c31e8c39)

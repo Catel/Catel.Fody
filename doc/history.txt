@@ -1,0 +1,26 @@
+Catel.Fody history
+==================
+
+(+) Added
+(*) Changed
+(-) Removed
+(x) Error / bug (fix)
+
+For more information about issues or new feature requests, please visit:
+
+http://catelfody.codeplex.com
+
+Documentation can be found at: http://catel.catenalogic.com
+
+**********************************************************
+
+===========
+Version 1.0
+===========
+
+Release date:
+=============
+2012/xx/xx
+
+Added/fixed:
+============
