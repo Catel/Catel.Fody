@@ -17,7 +17,7 @@ will be weaved into
     public string FirstName
     {
         get { return GetValue<string>(FirstNameProperty); }
- 	      set { SetValue(FirstNameProperty, value); }
+ 	    set { SetValue(FirstNameProperty, value); }
     }
 
     public static readonly PropertyData FirstNameProperty = RegisterProperty("FirstName", typeof(string));
