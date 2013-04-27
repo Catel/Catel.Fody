@@ -10,17 +10,17 @@ properties that are used inside Catel.
 It will rewrite all properties on the DataObjectBase and ViewModelBase. So, a
 property that is written as this:
 
-* public string FirstName { get; set; }
+    public string FirstName { get; set; }
 
 will be weaved into
 
-* public string FirstName
-* {
-* 	get { return GetValue<string>(FirstNameProperty); }
-* 	set { SetValue(FirstNameProperty, value); }
-* }
-* 
-* public static readonly PropertyData FirstNameProperty = RegisterProperty("FirstName", typeof(string));
+    public string FirstName
+    {
+        get { return GetValue<string>(FirstNameProperty); }
+ 	    set { SetValue(FirstNameProperty, value); }
+    }
+
+    public static readonly PropertyData FirstNameProperty = RegisterProperty("FirstName", typeof(string));
 
 For more information about Catel.Fody, visit https://github.com/Catel/Catel.Fody
 
