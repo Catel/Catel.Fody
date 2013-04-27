@@ -1,35 +1,31 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TypeResolver.cs" company="Catel development team">
+// <copyright file="ResolvingExtensions.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Catel.Fody
 {
     using System;
     using System.Collections.Generic;
+
     using Mono.Cecil;
 
-    public class TypeResolver
+    public static class ResolvingExtensions
     {
-        private readonly Dictionary<string, TypeDefinition> _definitions;
+        private static readonly Dictionary<string, TypeDefinition> _definitions = new Dictionary<string, TypeDefinition>();
 
-        public TypeResolver()
-        {
-            _definitions = new Dictionary<string, TypeDefinition>();
-        }
-
-        public TypeDefinition Resolve(TypeReference reference)
+        public static TypeDefinition ResolveType(this TypeReference reference)
         {
             TypeDefinition definition;
             if (_definitions.TryGetValue(reference.FullName, out definition))
             {
                 return definition;
             }
-            return _definitions[reference.FullName] = InnerResolve(reference);
+
+            return _definitions[reference.FullName] = InnerResolveType(reference);
         }
 
-        private static TypeDefinition InnerResolve(TypeReference reference)
+        private static TypeDefinition InnerResolveType(this TypeReference reference)
         {
             try
             {

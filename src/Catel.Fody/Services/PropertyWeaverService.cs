@@ -14,15 +14,12 @@ namespace Catel.Fody.Services
     {
         private readonly ModuleWeaver _moduleWeaver;
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
-        private readonly TypeResolver _typeResolver;
         private readonly List<TypeDefinition> _types;
 
-        public PropertyWeaverService(ModuleWeaver moduleWeaver, CatelTypeNodeBuilder catelTypeNodeBuilder, TypeResolver typeResolver, 
-            List<TypeDefinition> types)
+        public PropertyWeaverService(ModuleWeaver moduleWeaver, CatelTypeNodeBuilder catelTypeNodeBuilder, List<TypeDefinition> types)
         {
             _moduleWeaver = moduleWeaver;
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
-            _typeResolver = typeResolver;
             _types = types;
         }
 
@@ -31,7 +28,7 @@ namespace Catel.Fody.Services
             new DoNotNotifyTypeCleaner(_catelTypeNodeBuilder).Execute();
             new CodeGenTypeCleaner(_catelTypeNodeBuilder).Execute();
             var methodGenerifier = new MethodGenerifier(_moduleWeaver);
-            new CatelPropertyMethodsFinder(methodGenerifier, _catelTypeNodeBuilder, _typeResolver).Execute();
+            new CatelPropertyMethodsFinder(methodGenerifier, _catelTypeNodeBuilder).Execute();
 
             new AllPropertiesFinder(_catelTypeNodeBuilder).Execute();
             new MappingFinder(_catelTypeNodeBuilder).Execute();

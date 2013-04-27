@@ -3,15 +3,16 @@
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Catel.Fody
 {
     using System;
     using System.Linq;
     using System.Xml.Linq;
+
+    using Catel.Fody.Services;
+
     using Mono.Cecil;
     using Mono.Cecil.Cil;
-    using Services;
 
     public class ModuleWeaver
     {
@@ -32,7 +33,9 @@ namespace Catel.Fody
         /// <summary>
         /// Gets or sets the configuration element. Contains the full element from <c>FodyWeavers.xml</c>.
         /// </summary>
-        /// <value>The config.</value>
+        /// <value>
+        /// The config.
+        /// </value>
         public XElement Config { get; set; }
 
         /// <summary>
@@ -49,16 +52,22 @@ namespace Catel.Fody
         public Action<string, SequencePoint> LogErrorPoint { get; set; }
 
         /// <summary>
-        /// Gets or sets the assembly resolver. Contains a <seealso cref="Mono.Cecil.IAssemblyResolver"/> 
+        /// Gets or sets the assembly resolver. Contains a 
+        /// <seealso cref="Mono.Cecil.IAssemblyResolver"/>
+        /// 
         /// for resolving dependencies.
         /// </summary>
-        /// <value>The assembly resolver.</value>
+        /// <value>
+        /// The assembly resolver.
+        /// </value>
         public IAssemblyResolver AssemblyResolver { get; set; }
 
         /// <summary>
         /// Gets or sets the module definition. Contains the Cecil representation of the assembly being built.
         /// </summary>
-        /// <value>The module definition.</value>
+        /// <value>
+        /// The module definition.
+        /// </value>
         public ModuleDefinition ModuleDefinition { get; set; }
 
         public void Execute()
@@ -69,19 +78,17 @@ namespace Catel.Fody
 
             var types = ModuleDefinition.GetTypes().Where(x => x.BaseType != null).ToList();
 
-            var typeResolver = new TypeResolver();
-            var notifyInterfaceFinder = new CatelModelBaseFinder(typeResolver);
-            var typeNodeBuilder = new CatelTypeNodeBuilder(this, notifyInterfaceFinder, typeResolver, types);
+            var typeNodeBuilder = new CatelTypeNodeBuilder(this, types);
             typeNodeBuilder.Execute();
 
             // 2nd step: Property weaving
-            var propertyWeaverService = new PropertyWeaverService(this, typeNodeBuilder, typeResolver, types);
+            var propertyWeaverService = new PropertyWeaverService(this, typeNodeBuilder, types);
             propertyWeaverService.Execute();
 
             // 3rd step: Argument weaving
-			//TODO
-			//var argumentWeaverService = new ArgumentWeaverService();
-			//argumentWeaverService.Execute();
+            // TODO
+            // var argumentWeaverService = new ArgumentWeaverService();
+            // argumentWeaverService.Execute();
 
             // 4th step: Xml schema weaving
             var xmlSchemasWeaverService = new XmlSchemasWeaverService(this, msCoreReferenceFinder, typeNodeBuilder);

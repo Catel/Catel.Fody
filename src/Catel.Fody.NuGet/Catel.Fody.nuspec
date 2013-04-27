@@ -4,10 +4,10 @@
     <id>Catel.Fody</id>
     <version>$version$</version>
     <title>Catel.Fody</title>
-    <authors>GeertvanHorrik</authors>
-    <owners>GeertvanHorrik</owners>
-    <licenseUrl>http://catel.codeplex.com/license</licenseUrl>
-    <projectUrl>http://catelfody.codeplex.com</projectUrl>
+    <authors>GeertvanHorrik,simoncropp</authors>
+    <owners>GeertvanHorrik,simoncropp</owners>
+    <licenseUrl>http://www.catelproject.com/license/</licenseUrl>
+    <projectUrl>http://www.catelproject.com/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <iconUrl>http://www.catenalogic.com/catel.png</iconUrl>
     <description>Fody add-in for transforming automatic properties into Catel properties.</description>

@@ -12,13 +12,26 @@ https://github.com/Catel/Catel.Fody
 
 **********************************************************
 
-===========
-Version 1.0
-===========
+=============
+Version 1.xxx
+=============
 
 Release date:
 =============
-2012/xx/xx
+2013/xx/xx
 
 Added/fixed:
 ============
+
+
+=============
+Version 1.5.2
+=============
+
+Release date:
+=============
+2013/04/27
+
+Added/fixed:
+============
+(x) Fixed bug where all types were weaved into the XmlSchema provder

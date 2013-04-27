@@ -14,13 +14,11 @@ namespace Catel.Fody.Weaving.Properties
     {
         private readonly MethodGenerifier _methodGenerifier;
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
-        private readonly TypeResolver _typeResolver;
 
-        public CatelPropertyMethodsFinder(MethodGenerifier methodGenerifier, CatelTypeNodeBuilder catelTypeNodeBuilder, TypeResolver typeResolver)
+        public CatelPropertyMethodsFinder(MethodGenerifier methodGenerifier, CatelTypeNodeBuilder catelTypeNodeBuilder)
         {
             _methodGenerifier = methodGenerifier;
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
-            _typeResolver = typeResolver;
         }
 
         private void ProcessChildNode(CatelTypeNode node)
@@ -65,7 +63,7 @@ namespace Catel.Fody.Weaving.Properties
                     return null;
                 }
 
-                currentTypeDefinition = _typeResolver.Resolve(baseType);
+                currentTypeDefinition = baseType.ResolveType();
             } while (true);
 
             return methodDefinition;
@@ -91,7 +89,7 @@ namespace Catel.Fody.Weaving.Properties
                 {
                     return null;
                 }
-                currentTypeDefinition = _typeResolver.Resolve(baseType);
+                currentTypeDefinition = baseType.ResolveType();
             } while (true);
 
             return _methodGenerifier.GetMethodReference(typeDefinitions, methodDefinition);

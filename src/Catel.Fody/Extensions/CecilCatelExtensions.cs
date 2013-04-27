@@ -1,29 +1,40 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CatelModelBaseFinder.cs" company="Catel development team">
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CecilCatelExtensions.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Catel.Fody
 {
     using System.Collections.Generic;
+
     using Mono.Cecil;
 
-    public class CatelModelBaseFinder
+    public static class CecilCatelExtensions
     {
-        private readonly TypeResolver _typeResolver;
+        private static readonly Dictionary<string, bool> _typeReferencesImplementingDataObjectBase = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> _typeReferencesImplementingModelBase = new Dictionary<string, bool>();
 
-        private readonly Dictionary<string, bool> _typeReferencesImplementingDataObjectBase;
-        private readonly Dictionary<string, bool> _typeReferencesImplementingModelBase;
-
-        public CatelModelBaseFinder(TypeResolver typeResolver)
+        public static bool ImplementsCatelModel(this TypeReference typeReference)
         {
-            _typeResolver = typeResolver;
-            _typeReferencesImplementingDataObjectBase = new Dictionary<string, bool>();
-            _typeReferencesImplementingModelBase = new Dictionary<string, bool>();
+            if (typeReference == null)
+            {
+                return false;
+            }
+
+            if (ImplementsModelBase(typeReference))
+            {
+                return true;
+            }
+
+            if (ImplementsDataObjectBase(typeReference))
+            {
+                return true;
+            }
+
+            return false;
         }
 
-        public bool HierarchyImplementsDataObjectBase(TypeReference typeReference)
+        public static bool ImplementsDataObjectBase(this TypeReference typeReference)
         {
             if (typeReference == null)
             {
@@ -37,12 +48,12 @@ namespace Catel.Fody
                 return implementsDataObjectBase;
             }
 
-            implementsDataObjectBase = HierarchyImplementsBaseType(typeReference, "Catel.Data.DataObjectBase");
+            implementsDataObjectBase = ImplementsBaseType(typeReference, "Catel.Data.DataObjectBase");
             _typeReferencesImplementingDataObjectBase[fullName] = implementsDataObjectBase;
             return implementsDataObjectBase;
         }
 
-        public bool HierachyImplementsModelBase(TypeReference typeReference)
+        public static bool ImplementsModelBase(this TypeReference typeReference)
         {
             if (typeReference == null)
             {
@@ -56,12 +67,12 @@ namespace Catel.Fody
                 return implementsModelBase;
             }
 
-            implementsModelBase = HierarchyImplementsBaseType(typeReference, "Catel.Data.ModelBase");
+            implementsModelBase = ImplementsBaseType(typeReference, "Catel.Data.ModelBase");
             _typeReferencesImplementingModelBase[fullName] = implementsModelBase;
             return implementsModelBase;
         }
 
-        private bool HierarchyImplementsBaseType(TypeReference typeReference, string typeName)
+        public static bool ImplementsBaseType(this TypeReference typeReference, string typeName)
         {
             if (typeReference == null)
             {
@@ -71,11 +82,11 @@ namespace Catel.Fody
             TypeDefinition typeDefinition;
             if (typeReference.IsDefinition)
             {
-                typeDefinition = (TypeDefinition) typeReference;
+                typeDefinition = (TypeDefinition)typeReference;
             }
             else
             {
-                typeDefinition = _typeResolver.Resolve(typeReference);
+                typeDefinition = typeReference.ResolveType();
             }
 
             if (DerivesFromType(typeDefinition, typeName))
@@ -83,10 +94,10 @@ namespace Catel.Fody
                 return true;
             }
 
-            return HierarchyImplementsBaseType(typeDefinition.BaseType, typeName);
+            return ImplementsBaseType(typeDefinition.BaseType, typeName);
         }
 
-        public static bool DerivesFromType(TypeDefinition typeDefinition, string typeName)
+        public static bool DerivesFromType(this TypeDefinition typeDefinition, string typeName)
         {
             if (typeDefinition == null)
             {

@@ -3,29 +3,28 @@
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Catel.Fody
 {
     using System.Collections.Generic;
     using System.Linq;
+
     using Mono.Cecil;
 
     public class CatelTypeNodeBuilder
     {
         private readonly ModuleWeaver _moduleWeaver;
-        private readonly CatelModelBaseFinder _catelModelBaseFinder;
-        private readonly TypeResolver _typeResolver;
+
         private readonly List<TypeDefinition> _allClasses;
+
         private ModuleDefinition _moduleDefinition;
 
         public List<CatelTypeNode> Nodes;
+
         public List<CatelTypeNode> NotifyNodes;
 
-        public CatelTypeNodeBuilder(ModuleWeaver moduleWeaver, CatelModelBaseFinder catelModelBaseFinder, TypeResolver typeResolver, List<TypeDefinition> allTypes)
+        public CatelTypeNodeBuilder(ModuleWeaver moduleWeaver, List<TypeDefinition> allTypes)
         {
             _moduleWeaver = moduleWeaver;
-            _catelModelBaseFinder = catelModelBaseFinder;
-            _typeResolver = typeResolver;
 
             _allClasses = allTypes.Where(x => x.IsClass).ToList();
         }
@@ -35,7 +34,8 @@ namespace Catel.Fody
             _moduleDefinition = _moduleWeaver.ModuleDefinition;
             Nodes = new List<CatelTypeNode>();
             NotifyNodes = new List<CatelTypeNode>();
-            //allClasses = new List<TypeDefinition>();
+
+            // allClasses = new List<TypeDefinition>();
             WalkAllTypeDefinitions();
             foreach (var typeDefinition in _allClasses.ToList())
             {
@@ -50,14 +50,7 @@ namespace Catel.Fody
         {
             foreach (var node in typeNodes)
             {
-                if (_catelModelBaseFinder.HierachyImplementsModelBase(node.TypeDefinition))
-                {
-                    NotifyNodes.Add(node);
-                    continue;
-                }
-
-                // Backward compatibility
-                if (_catelModelBaseFinder.HierarchyImplementsDataObjectBase(node.TypeDefinition))
+                if (node.TypeDefinition.ImplementsCatelModel())
                 {
                     NotifyNodes.Add(node);
                     continue;
@@ -75,10 +68,7 @@ namespace Catel.Fody
             }
 
             _allClasses.Remove(typeDefinition);
-            var typeNode = new CatelTypeNode
-                               {
-                                   TypeDefinition = typeDefinition
-                               };
+            var typeNode = new CatelTypeNode { TypeDefinition = typeDefinition };
 
             if (typeDefinition.BaseType == null)
             {
@@ -91,7 +81,7 @@ namespace Catel.Fody
             }
             else
             {
-                var baseType = _typeResolver.Resolve(typeDefinition.BaseType);
+                var baseType = typeDefinition.BaseType.ResolveType();
                 var parentNode = FindClassNode(baseType, Nodes);
                 if (parentNode == null)
                 {
@@ -99,6 +89,7 @@ namespace Catel.Fody
                 }
                 parentNode.Nodes.Add(typeNode);
             }
+
             return typeNode;
         }
 
@@ -121,7 +112,7 @@ namespace Catel.Fody
 
         public void WalkAllTypeDefinitions()
         {
-            //First is always module so we will skip that;
+            // First is always module so we will skip that;
             GetTypes(_moduleDefinition.Types.Skip(1));
         }
 

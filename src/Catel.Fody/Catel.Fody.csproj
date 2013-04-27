@@ -59,6 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\CecilCatelExtensions.cs" />
+    <Compile Include="Extensions\ResolvingExtensions.cs" />
     <Compile Include="Services\ArgumentWeaverService.cs" />
     <Compile Include="Weaving\Properties\CatelPropertyMethodsFinder.cs" />
     <Compile Include="Extensions\InstructionExtensions.cs" />
@@ -74,7 +76,6 @@
     <Compile Include="Weaving\Properties\Models\MemberMapping.cs" />
     <Compile Include="Core\MethodGenerifier.cs" />
     <Compile Include="Core\MsCoreReferenceFinder.cs" />
-    <Compile Include="Core\CatelModelBaseFinder.cs" />
     <Compile Include="Weaving\Properties\Models\PropertyData.cs" />
     <Compile Include="Weaving\Properties\PropertyDataWalker.cs" />
     <Compile Include="Weaving\Properties\CatelPropertyWeaver.cs" />
@@ -84,7 +85,6 @@
     <Compile Include="Weaving\Properties\Models\CatelTypeNode.cs" />
     <Compile Include="Core\CatelTypeNodeBuilder.cs" />
     <Compile Include="Weaving\Properties\CatelTypeProcessor.cs" />
-    <Compile Include="Core\TypeResolver.cs" />
     <Compile Include="Weaving\Properties\WarningChecker.cs" />
     <Compile Include="Core\WeavingException.cs" />
     <Compile Include="Services\XmlSchemasWeaverService.cs" />

@@ -28,6 +28,16 @@ namespace Catel.Fody.Weaving.XmlSchemas
                 return;
             }
 
+            if (catelTypeNode.TypeDefinition.IsEnum)
+            {
+                return;
+            }
+
+            if (!catelTypeNode.TypeDefinition.ImplementsCatelModel())
+            {
+                return;
+            }
+
             _moduleWeaver.LogInfo("\t\t Adding xml schema for type " + catelTypeNode.TypeDefinition.FullName);
 
             AddXmlSchemaProviderAttribute(catelTypeNode);
