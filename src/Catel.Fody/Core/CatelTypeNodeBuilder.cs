@@ -37,16 +37,17 @@ namespace Catel.Fody
 
             // allClasses = new List<TypeDefinition>();
             WalkAllTypeDefinitions();
+
             foreach (var typeDefinition in _allClasses.ToList())
             {
                 AddClass(typeDefinition);
             }
-            var typeNodes = Nodes;
 
-            PopulateINotifyNodes(typeNodes);
+            var typeNodes = Nodes;
+            PopulateCatelModelNodes(typeNodes);
         }
 
-        private void PopulateINotifyNodes(List<CatelTypeNode> typeNodes)
+        private void PopulateCatelModelNodes(List<CatelTypeNode> typeNodes)
         {
             foreach (var node in typeNodes)
             {
@@ -56,7 +57,7 @@ namespace Catel.Fody
                     continue;
                 }
 
-                PopulateINotifyNodes(node.Nodes);
+                PopulateCatelModelNodes(node.Nodes);
             }
         }
 
@@ -75,6 +76,11 @@ namespace Catel.Fody
                 return null;
             }
 
+            if (Nodes.Contains(typeNode))
+            {
+                return typeNode;
+            }
+
             if (typeDefinition.BaseType.Scope.Name != _moduleDefinition.Name)
             {
                 Nodes.Add(typeNode);
@@ -87,6 +93,7 @@ namespace Catel.Fody
                 {
                     parentNode = AddClass(baseType);
                 }
+
                 parentNode.Nodes.Add(typeNode);
             }
 
@@ -101,12 +108,14 @@ namespace Catel.Fody
                 {
                     return node;
                 }
+
                 var findNode = FindClassNode(type, node.Nodes);
                 if (findNode != null)
                 {
                     return findNode;
                 }
             }
+
             return null;
         }
 
@@ -121,6 +130,7 @@ namespace Catel.Fody
             foreach (var typeDefinition in typeDefinitions)
             {
                 GetTypes(typeDefinition.NestedTypes);
+
                 if (typeDefinition.IsClass)
                 {
                     _allClasses.Add(typeDefinition);

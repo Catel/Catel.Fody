@@ -52,10 +52,7 @@ namespace Catel.Fody
         public Action<string, SequencePoint> LogErrorPoint { get; set; }
 
         /// <summary>
-        /// Gets or sets the assembly resolver. Contains a 
-        /// <seealso cref="Mono.Cecil.IAssemblyResolver"/>
-        /// 
-        /// for resolving dependencies.
+        /// Gets or sets the assembly resolver. Contains a  <seealso cref="Mono.Cecil.IAssemblyResolver"/> for resolving dependencies.
         /// </summary>
         /// <value>
         /// The assembly resolver.
@@ -71,7 +68,7 @@ namespace Catel.Fody
         public ModuleDefinition ModuleDefinition { get; set; }
 
         public void Execute()
-        {
+        {            
             // 1st step: set up the basics
             var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
             msCoreReferenceFinder.Execute();

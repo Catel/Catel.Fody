@@ -40,24 +40,34 @@ namespace Catel.Fody.Weaving.XmlSchemas
 
             _moduleWeaver.LogInfo("\t\t Adding xml schema for type " + catelTypeNode.TypeDefinition.FullName);
 
-            AddXmlSchemaProviderAttribute(catelTypeNode);
+            if (AddXmlSchemaProviderAttribute(catelTypeNode))
+            {
+                AddGetXmlSchemaMethod(catelTypeNode);
+            }
 
-            AddGetXmlSchemaMethod(catelTypeNode);
+            foreach (var childNode in catelTypeNode.Nodes)
+            {
+                Execute(childNode);
+            }
         }
 
-        private void AddXmlSchemaProviderAttribute(CatelTypeNode catelTypeNode)
+        private bool AddXmlSchemaProviderAttribute(CatelTypeNode catelTypeNode)
         {
             var catelType = catelTypeNode.TypeDefinition;
 
-            var alreadyHandled = (from attribute in catelType.CustomAttributes
-                                  where attribute.AttributeType.Name == "XmlSchemaProviderAttribute"
-                                  select attribute).Any();
-            if (alreadyHandled)
-            {
-                return;
-            }
-
             var methodName = GetXmlSchemaMethodName(catelTypeNode);
+
+            var existingCustomAttribute = (from attribute in catelType.CustomAttributes
+                                           where attribute.AttributeType.Name == "XmlSchemaProviderAttribute"
+                                           select attribute).FirstOrDefault();
+            if (existingCustomAttribute != null)
+            {
+                var constructorArgument = existingCustomAttribute.ConstructorArguments[0];
+                if (string.Equals(constructorArgument.Value, methodName))
+                {
+                    return false;
+                }
+            }
 
             var xmlSchemaProviderAttribute = catelType.Module.FindType("System.Xml", "System.Xml.Serialization.XmlSchemaProviderAttribute");
 
@@ -66,6 +76,8 @@ namespace Catel.Fody.Weaving.XmlSchemas
             customAttribute.ConstructorArguments.Add(new CustomAttributeArgument(catelType.Module.TypeSystem.String, methodName));
 
             catelType.CustomAttributes.Add(customAttribute);
+
+            return true;
         }
 
         private void AddGetXmlSchemaMethod(CatelTypeNode catelTypeNode)

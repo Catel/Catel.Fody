@@ -6,6 +6,8 @@
 
 namespace Catel.Fody.Services
 {
+    using System;
+
     using Mono.Cecil;
     using Weaving.XmlSchemas;
 
@@ -29,17 +31,34 @@ namespace Catel.Fody.Services
             var xmlSchemaWeaver = new XmlSchemaWeaver(_moduleWeaver, _msCoreReferenceFinder);
             foreach (var catelTypeNode in _catelTypeNodeBuilder.Nodes)
             {
-                if (!CatelVersionSupportsXmlSchemaManager(catelTypeNode))
+                try
                 {
-                    return;
-                }
+                    if (!CatelVersionSupportsXmlSchemaManager(catelTypeNode))
+                    {
+                        return;
+                    }
 
-                xmlSchemaWeaver.Execute(catelTypeNode);
+                    xmlSchemaWeaver.Execute(catelTypeNode);
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    System.Diagnostics.Debugger.Launch();
+#endif
+
+                    string error = string.Format("An error occurred while weaving type '{0}'", catelTypeNode.TypeDefinition.FullName);
+                    _moduleWeaver.LogError(error);
+                }
             }
         }
 
         private bool CatelVersionSupportsXmlSchemaManager(CatelTypeNode catelTypeNode)
         {
+            if (catelTypeNode == null)
+            {
+                return false;
+            }
+
             if (!_isSupported.HasValue)
             {
                 if (_msCoreReferenceFinder.XmlQualifiedName == null || _msCoreReferenceFinder.XmlSchemaSet == null)

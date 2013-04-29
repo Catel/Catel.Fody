@@ -11,5 +11,5 @@ using System.Reflection;
 [assembly: AssemblyCompany("CatenaLogic")]
 [assembly: AssemblyProduct("Catel.Fody")]
 [assembly: AssemblyCopyright("Copyright © CatenaLogic 2012 - 2013")]
-[assembly: AssemblyVersion("1.5.2")]
-[assembly: AssemblyInformationalVersion("1.5.2")]
+[assembly: AssemblyVersion("1.5.3")]
+[assembly: AssemblyInformationalVersion("1.5.3")]
