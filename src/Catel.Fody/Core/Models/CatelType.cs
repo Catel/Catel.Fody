@@ -1,39 +1,120 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CatelPropertyMethodsFinder.cs" company="Catel development team">
+// <copyright file="CatelTypeNode.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Catel.Fody.Weaving.Properties
+namespace Catel.Fody
 {
     using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
 
-    public class CatelPropertyMethodsFinder
+    public enum CatelTypeType
     {
-        private readonly MethodGenerifier _methodGenerifier;
-        private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
+        Model,
 
-        public CatelPropertyMethodsFinder(MethodGenerifier methodGenerifier, CatelTypeNodeBuilder catelTypeNodeBuilder)
+        ViewModel,
+
+        Unknown
+    }
+
+    public class CatelType
+    {
+        public CatelType(TypeDefinition typeDefinition)
         {
-            _methodGenerifier = methodGenerifier;
-            _catelTypeNodeBuilder = catelTypeNodeBuilder;
+            Nodes = new List<CatelType>();
+            Mappings = new List<MemberMapping>();
+            Properties = new List<CatelTypeProperty>();
+
+            TypeDefinition = typeDefinition;
+
+            DetermineCatelType();
+            DetermineTypes();
+            DetermineMethods();
+            Properties = DetermineProperties();
+            DetermineMappings();
         }
 
-        private void ProcessChildNode(CatelTypeNode node)
+        public TypeDefinition TypeDefinition { get; private set; }
+        public CatelTypeType Type { get; private set; }
+
+        public List<CatelType> Nodes { get; private set; }
+
+        public List<MemberMapping> Mappings { get; set; }
+
+        public TypeReference PropertyDataType { get; private set; }
+
+        public MethodReference RegisterPropertyInvoker { get; private set; }
+        public MethodReference SetValueInvoker { get; private set; }
+        public MethodReference GetValueInvoker { get; private set; }
+
+        public List<CatelTypeProperty> Properties { get; private set; }
+
+        private void DetermineCatelType()
         {
-            var module = node.TypeDefinition.Module;
-
-            node.RegisterPropertyInvoker = module.Import(FindRegisterPropertyMethod(node.TypeDefinition));
-            node.GetValueInvoker = module.Import(RecursiveFindMethod(node.TypeDefinition, "GetValue", true).GetGeneric());
-            node.SetValueInvoker = module.Import(RecursiveFindMethod(node.TypeDefinition, "SetValue"));
-            node.PropertyDataType = module.Import(node.TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
-
-            foreach (var childNode in node.Nodes)
+            if (TypeDefinition.ImplementsViewModelBase())
             {
-                ProcessChildNode(childNode);
+                Type = CatelTypeType.ViewModel;
             }
+            else if (TypeDefinition.ImplementsCatelModel())
+            {
+                Type = CatelTypeType.Model;
+            }
+            else
+            {
+                Type = CatelTypeType.Unknown;
+            }
+        }
+
+        private void DetermineTypes()
+        {
+            var module = TypeDefinition.Module;
+
+            PropertyDataType = module.Import(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
+        }
+
+        private void DetermineMethods()
+        {
+            var module = TypeDefinition.Module;
+
+            RegisterPropertyInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition));
+            GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", true).GetGeneric());
+            SetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "SetValue"));   
+        }
+
+        private List<CatelTypeProperty> DetermineProperties()
+        {
+            var properties = new List<CatelTypeProperty>();
+            var typeProperties = TypeDefinition.Properties;
+
+            foreach (var typeProperty in typeProperties)
+            {
+                if (typeProperty.IsDecoratedWithAttribute("NoWeavingAttribute"))
+                {
+                    typeProperty.RemoveAttribute("NoWeavingAttribute");
+                    continue;
+                }
+
+                if (typeProperty.SetMethod == null)
+                {
+                    continue;
+                }
+
+                if (typeProperty.SetMethod.IsStatic)
+                {
+                    continue;
+                }
+
+                properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty));
+            }
+
+            return properties;
+        }
+
+        private void DetermineMappings()
+        {
+            
         }
 
         private MethodReference FindRegisterPropertyMethod(TypeDefinition typeDefinition)
@@ -89,10 +170,11 @@ namespace Catel.Fody.Weaving.Properties
                 {
                     return null;
                 }
+
                 currentTypeDefinition = baseType.ResolveType();
             } while (true);
 
-            return _methodGenerifier.GetMethodReference(typeDefinitions, methodDefinition);
+            return methodDefinition.GetMethodReference(typeDefinitions);
         }
 
         private bool FindMethodDefinition(TypeDefinition type, string methodName, bool findGenericDefinition, out MethodDefinition methodDefinition)
@@ -115,12 +197,5 @@ namespace Catel.Fody.Weaving.Properties
             return methodDefinition != null;
         }
 
-        public void Execute()
-        {
-            foreach (var notifyNode in _catelTypeNodeBuilder.NotifyNodes)
-            {
-                ProcessChildNode(notifyNode);
-            }
-        }
     }
 }

@@ -52,9 +52,9 @@ namespace Catel.Fody.Services
             }
         }
 
-        private bool CatelVersionSupportsXmlSchemaManager(CatelTypeNode catelTypeNode)
+        private bool CatelVersionSupportsXmlSchemaManager(CatelType catelType)
         {
-            if (catelTypeNode == null)
+            if (catelType == null)
             {
                 return false;
             }
@@ -66,7 +66,7 @@ namespace Catel.Fody.Services
                     return false;
                 }
 
-                var xmlSchemaManager = (TypeDefinition) catelTypeNode.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
+                var xmlSchemaManager = (TypeDefinition) catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
                 _isSupported = xmlSchemaManager != null;
             }
 

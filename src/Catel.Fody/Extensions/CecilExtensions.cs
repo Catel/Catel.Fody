@@ -12,7 +12,7 @@ namespace Catel.Fody
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
 
-    public static class CecilExtensions
+    public static partial class CecilExtensions
     {
         private static readonly Dictionary<string, TypeReference> _cachedTypes = new Dictionary<string, TypeReference>();
 

@@ -34,8 +34,10 @@
     <None Include="uninstall.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)Catel.Fody\Catel.Fody.csproj">
+    <ProjectReference Include="..\Catel.Fody\Catel.Fody.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Project>{D9600EEB-B52A-4861-AFA4-2A3E38A06196}</Project>
+      <Name>Catel.Fody</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

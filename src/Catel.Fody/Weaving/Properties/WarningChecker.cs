@@ -20,17 +20,17 @@ namespace Catel.Fody.Weaving.Properties
             _moduleWeaver = moduleWeaver;
         }
 
-        private void Process(List<CatelTypeNode> notifyNodes)
+        private void Process(List<CatelType> notifyNodes)
         {
             foreach (var node in notifyNodes)
             {
-                foreach (var propertyData in node.PropertyDatas.ToList())
+                foreach (var propertyData in node.Properties.ToList())
                 {
                     var warning = CheckForWarning(propertyData);
                     if (warning != null)
                     {
                         _moduleWeaver.LogInfo(string.Format("\t{0} {1} Property will be ignored.", propertyData.PropertyDefinition.GetName(), warning));
-                        node.PropertyDatas.Remove(propertyData);
+                        node.Properties.Remove(propertyData);
                     }
                 }
 
@@ -38,7 +38,7 @@ namespace Catel.Fody.Weaving.Properties
             }
         }
 
-        public string CheckForWarning(PropertyData propertyData)
+        public string CheckForWarning(CatelTypeProperty propertyData)
         {
             var propertyDefinition = propertyData.PropertyDefinition;
             var setMethod = propertyDefinition.SetMethod;

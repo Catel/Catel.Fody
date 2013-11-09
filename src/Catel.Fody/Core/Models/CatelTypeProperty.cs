@@ -1,46 +1,48 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MappingFinder.cs" company="Catel development team">
+// <copyright file="CatelTypeProperty.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Catel.Fody.Weaving.Properties
+
+namespace Catel.Fody
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
     using Mono.Cecil.Cil;
 
-    public class MappingFinder
+    public class CatelTypeProperty
     {
-        private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
-
-        public MappingFinder(CatelTypeNodeBuilder catelTypeNodeBuilder)
+        public CatelTypeProperty(TypeDefinition typeDefinition, PropertyDefinition propertyDefinition)
         {
-            _catelTypeNodeBuilder = catelTypeNodeBuilder;
+            TypeDefinition = typeDefinition;
+            PropertyDefinition = propertyDefinition;
+
+            DetermineFields();
+            DetermineMethods();
         }
 
-        private void Process(List<CatelTypeNode> notifyNodes)
+        #region Fields
+        public TypeDefinition TypeDefinition { get; private set; }
+        public PropertyDefinition PropertyDefinition { get; private set; }
+
+        public FieldReference BackingFieldReference { get; set; }
+        public MethodReference ChangeCallbackReference { get; set; }
+
+        #endregion
+
+        private void DetermineFields()
         {
-            foreach (var node in notifyNodes)
-            {
-                var typeDefinition = node.TypeDefinition;
-                node.Mappings = GetMappings(typeDefinition).ToList();
-                Process(node.Nodes);
-            }
+             BackingFieldReference = TryGetField(TypeDefinition, PropertyDefinition);
         }
 
-        public static IEnumerable<MemberMapping> GetMappings(TypeDefinition typeDefinition)
+        private void DetermineMethods()
         {
-            foreach (var property in typeDefinition.Properties)
-            {
-                var fieldDefinition = TryGetField(typeDefinition, property);
-                yield return new MemberMapping
-                                 {
-                                     PropertyDefinition = property,
-                                     FieldDefinition = fieldDefinition
-                                 };
-            }
+            string methodName = string.Format("On{0}Changed", PropertyDefinition.Name);
+
+            ChangeCallbackReference = (from method in PropertyDefinition.DeclaringType.Methods
+                                       where method.Name == methodName
+                                       select method).FirstOrDefault();
         }
 
         private static FieldDefinition TryGetField(TypeDefinition typeDefinition, PropertyDefinition property)
@@ -124,12 +126,6 @@ namespace Catel.Fody.Weaving.Properties
                 return fieldReference.Resolve();
             }
             return null;
-        }
-
-        public void Execute()
-        {
-            var notifyNodes = _catelTypeNodeBuilder.NotifyNodes;
-            Process(notifyNodes);
         }
     }
 }

@@ -21,43 +21,43 @@ namespace Catel.Fody.Weaving.XmlSchemas
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
 
-        public void Execute(CatelTypeNode catelTypeNode)
+        public void Execute(CatelType catelType)
         {
-            if (catelTypeNode.TypeDefinition.IsAbstract)
+            if (catelType.TypeDefinition.IsAbstract)
             {
                 return;
             }
 
-            if (catelTypeNode.TypeDefinition.IsEnum)
+            if (catelType.TypeDefinition.IsEnum)
             {
                 return;
             }
 
-            if (!catelTypeNode.TypeDefinition.ImplementsCatelModel())
+            if (!catelType.TypeDefinition.ImplementsCatelModel())
             {
                 return;
             }
 
-            _moduleWeaver.LogInfo("\t\t Adding xml schema for type " + catelTypeNode.TypeDefinition.FullName);
+            _moduleWeaver.LogInfo("\t\t Adding xml schema for type " + catelType.TypeDefinition.FullName);
 
-            if (AddXmlSchemaProviderAttribute(catelTypeNode))
+            if (AddXmlSchemaProviderAttribute(catelType))
             {
-                AddGetXmlSchemaMethod(catelTypeNode);
+                AddGetXmlSchemaMethod(catelType);
             }
 
-            foreach (var childNode in catelTypeNode.Nodes)
+            foreach (var childNode in catelType.Nodes)
             {
                 Execute(childNode);
             }
         }
 
-        private bool AddXmlSchemaProviderAttribute(CatelTypeNode catelTypeNode)
+        private bool AddXmlSchemaProviderAttribute(CatelType catelType)
         {
-            var catelType = catelTypeNode.TypeDefinition;
+            var catelTypeDefinition = catelType.TypeDefinition;
 
-            var methodName = GetXmlSchemaMethodName(catelTypeNode);
+            var methodName = GetXmlSchemaMethodName(catelType);
 
-            var existingCustomAttribute = (from attribute in catelType.CustomAttributes
+            var existingCustomAttribute = (from attribute in catelTypeDefinition.CustomAttributes
                                            where attribute.AttributeType.Name == "XmlSchemaProviderAttribute"
                                            select attribute).FirstOrDefault();
             if (existingCustomAttribute != null)
@@ -69,24 +69,24 @@ namespace Catel.Fody.Weaving.XmlSchemas
                 }
             }
 
-            var xmlSchemaProviderAttribute = catelType.Module.FindType("System.Xml", "System.Xml.Serialization.XmlSchemaProviderAttribute");
+            var xmlSchemaProviderAttribute = catelTypeDefinition.Module.FindType("System.Xml", "System.Xml.Serialization.XmlSchemaProviderAttribute");
 
-            var attributeConstructor = catelType.Module.Import(xmlSchemaProviderAttribute.Resolve().Constructor(false));
+            var attributeConstructor = catelTypeDefinition.Module.Import(xmlSchemaProviderAttribute.Resolve().Constructor(false));
             var customAttribute = new CustomAttribute(attributeConstructor);
-            customAttribute.ConstructorArguments.Add(new CustomAttributeArgument(catelType.Module.TypeSystem.String, methodName));
+            customAttribute.ConstructorArguments.Add(new CustomAttributeArgument(catelTypeDefinition.Module.TypeSystem.String, methodName));
 
-            catelType.CustomAttributes.Add(customAttribute);
+            catelTypeDefinition.CustomAttributes.Add(customAttribute);
 
             return true;
         }
 
-        private void AddGetXmlSchemaMethod(CatelTypeNode catelTypeNode)
+        private void AddGetXmlSchemaMethod(CatelType catelType)
         {
-            var catelType = catelTypeNode.TypeDefinition;
+            var catelTypeDefinition = catelType.TypeDefinition;
 
-            var methodName = GetXmlSchemaMethodName(catelTypeNode);
+            var methodName = GetXmlSchemaMethodName(catelType);
 
-            var alreadyHandled = (from method in catelType.Methods
+            var alreadyHandled = (from method in catelTypeDefinition.Methods
                                   where method.Name == methodName
                                   select method).Any();
             if (alreadyHandled)
@@ -94,11 +94,11 @@ namespace Catel.Fody.Weaving.XmlSchemas
                 return;
             }
 
-            var getTypeFromHandle = catelType.Module.GetMethod("GetTypeFromHandle");
-            var importedGetTypeFromHandle = catelType.Module.Import(getTypeFromHandle);
+            var getTypeFromHandle = catelTypeDefinition.Module.GetMethod("GetTypeFromHandle");
+            var importedGetTypeFromHandle = catelTypeDefinition.Module.Import(getTypeFromHandle);
 
-            var xmlSchemaManager = (TypeDefinition)catelType.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
-            var getXmlSchemaMethodOnXmlSchemaManager = catelType.Module.Import(xmlSchemaManager.Methods.First(x => x.IsStatic && x.Name == "GetXmlSchema"));
+            var xmlSchemaManager = (TypeDefinition)catelTypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
+            var getXmlSchemaMethodOnXmlSchemaManager = catelTypeDefinition.Module.Import(xmlSchemaManager.Methods.First(x => x.IsStatic && x.Name == "GetXmlSchema"));
 
             //public static XmlQualifiedName GetXmlSchema(XmlSchemaSet schemas)
             //{
@@ -106,18 +106,18 @@ namespace Catel.Fody.Weaving.XmlSchemas
             //    return XmlSchemaManager.GetXmlSchema(callingType, schemas);
             //}
 
-            var getXmlSchemaMethod = new MethodDefinition(methodName, MethodAttributes.Public | MethodAttributes.Static, catelType.Module.Import(_msCoreReferenceFinder.XmlQualifiedName));
+            var getXmlSchemaMethod = new MethodDefinition(methodName, MethodAttributes.Public | MethodAttributes.Static, catelTypeDefinition.Module.Import(_msCoreReferenceFinder.XmlQualifiedName));
 
-            var compilerGeneratedAttribute = catelType.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
-            getXmlSchemaMethod.CustomAttributes.Add(new CustomAttribute(catelType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
+            var compilerGeneratedAttribute = catelTypeDefinition.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
+            getXmlSchemaMethod.CustomAttributes.Add(new CustomAttribute(catelTypeDefinition.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
 
-            getXmlSchemaMethod.Parameters.Add(new ParameterDefinition("xmlSchemaSet", ParameterAttributes.None, catelType.Module.Import(_msCoreReferenceFinder.XmlSchemaSet)));
+            getXmlSchemaMethod.Parameters.Add(new ParameterDefinition("xmlSchemaSet", ParameterAttributes.None, catelTypeDefinition.Module.Import(_msCoreReferenceFinder.XmlSchemaSet)));
 
             var ldloc1Instruction = Instruction.Create(OpCodes.Ldloc_1);
 
             var instructions = getXmlSchemaMethod.Body.Instructions;
             instructions.Insert(0, Instruction.Create(OpCodes.Nop),
-                                Instruction.Create(OpCodes.Ldtoken, catelType),
+                                Instruction.Create(OpCodes.Ldtoken, catelTypeDefinition),
                                 Instruction.Create(OpCodes.Call, importedGetTypeFromHandle),
                                 Instruction.Create(OpCodes.Stloc_0),
                                 Instruction.Create(OpCodes.Ldloc_0),
@@ -129,15 +129,15 @@ namespace Catel.Fody.Weaving.XmlSchemas
                                 Instruction.Create(OpCodes.Ret));
 
             getXmlSchemaMethod.Body.InitLocals = true;
-            getXmlSchemaMethod.Body.Variables.Add(new VariableDefinition("callingType", catelType.Module.Import(catelType.Module.FindType("mscorlib", "System.Type"))));
-            getXmlSchemaMethod.Body.Variables.Add(new VariableDefinition(catelType.Module.Import(_msCoreReferenceFinder.XmlQualifiedName)));
+            getXmlSchemaMethod.Body.Variables.Add(new VariableDefinition("callingType", catelTypeDefinition.Module.Import(catelTypeDefinition.Module.FindType("mscorlib", "System.Type"))));
+            getXmlSchemaMethod.Body.Variables.Add(new VariableDefinition(catelTypeDefinition.Module.Import(_msCoreReferenceFinder.XmlQualifiedName)));
 
-            catelType.Methods.Add(getXmlSchemaMethod);
+            catelTypeDefinition.Methods.Add(getXmlSchemaMethod);
         }
 
-        private string GetXmlSchemaMethodName(CatelTypeNode catelTypeNode)
+        private string GetXmlSchemaMethodName(CatelType catelType)
         {
-            var methodName = string.Format("GetXmlSchemaFor{0}", catelTypeNode.TypeDefinition.FullName);
+            var methodName = string.Format("GetXmlSchemaFor{0}", catelType.TypeDefinition.FullName);
 
             return methodName.Replace(".", string.Empty).Replace("<", string.Empty).Replace(">", string.Empty).Replace("`", string.Empty);
         }

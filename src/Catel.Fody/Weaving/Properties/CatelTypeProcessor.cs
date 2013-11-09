@@ -27,7 +27,7 @@ namespace Catel.Fody.Weaving.Properties
             Process(_catelTypeNodeBuilder.NotifyNodes);
         }
 
-        private void Process(List<CatelTypeNode> notifyNodes)
+        private void Process(List<CatelType> notifyNodes)
         {
             foreach (var node in notifyNodes)
             {
@@ -38,7 +38,7 @@ namespace Catel.Fody.Weaving.Properties
 
                 _moduleWeaver.LogInfo("\t" + node.TypeDefinition.FullName);
 
-                foreach (var propertyData in node.PropertyDatas)
+                foreach (var propertyData in node.Properties)
                 {
                     if (AlreadyContainsCallToMember(propertyData.PropertyDefinition, node.GetValueInvoker.Name) ||
                         AlreadyContainsCallToMember(propertyData.PropertyDefinition, node.SetValueInvoker.Name))

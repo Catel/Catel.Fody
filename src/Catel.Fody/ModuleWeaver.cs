@@ -68,7 +68,9 @@ namespace Catel.Fody
         public ModuleDefinition ModuleDefinition { get; set; }
 
         public void Execute()
-        {            
+        {
+            FodyEnvironment.ModuleDefinition = ModuleDefinition;
+
             // 1st step: set up the basics
             var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
             msCoreReferenceFinder.Execute();
@@ -82,17 +84,22 @@ namespace Catel.Fody
             var propertyWeaverService = new PropertyWeaverService(this, typeNodeBuilder, types);
             propertyWeaverService.Execute();
 
-            // 3rd step: Argument weaving
+            // 3rd step: Exposed properties weaving
+            var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService();
+            exposedPropertiesWeaverService.Execute();
+
+            // 4th step: Argument weaving
             // TODO
             // var argumentWeaverService = new ArgumentWeaverService();
             // argumentWeaverService.Execute();
 
-            // 4th step: Xml schema weaving
+            // 5th step: Xml schema weaving
             var xmlSchemasWeaverService = new XmlSchemasWeaverService(this, msCoreReferenceFinder, typeNodeBuilder);
             xmlSchemasWeaverService.Execute();
 
             // Last step: clean up
-            new ReferenceCleaner(this).Execute();
+            var referenceCleaner = new ReferenceCleaner(this);
+            referenceCleaner.Execute();
         }
     }
 }

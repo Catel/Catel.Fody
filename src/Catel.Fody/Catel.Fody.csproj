@@ -59,30 +59,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Models\CatelTypeProperty.cs" />
     <Compile Include="Extensions\CecilCatelExtensions.cs" />
+    <Compile Include="Extensions\CecilExtensions.attributes.cs" />
+    <Compile Include="Extensions\CecilExtensions.methods.cs" />
     <Compile Include="Extensions\ResolvingExtensions.cs" />
+    <Compile Include="FodyEnvironment.cs" />
     <Compile Include="Services\ArgumentWeaverService.cs" />
-    <Compile Include="Weaving\Properties\CatelPropertyMethodsFinder.cs" />
+    <Compile Include="Services\ExposedPropertiesWeaverService.cs" />
+    <Compile Include="Weaving\ExposedProperties\ExposedPropertiesWeaver.cs" />
     <Compile Include="Extensions\InstructionExtensions.cs" />
     <Compile Include="ModuleWeaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Weaving\Properties\AllPropertiesFinder.cs" />
-    <Compile Include="Weaving\Properties\AttributeCleaner.cs" />
     <Compile Include="Extensions\CecilExtensions.cs" />
     <Compile Include="Core\CodeGenTypeCleaner.cs" />
-    <Compile Include="Weaving\Properties\DoNotNotifyTypeCleaner.cs" />
     <Compile Include="Extensions\InstructionListExtensions.cs" />
-    <Compile Include="Weaving\Properties\MappingFinder.cs" />
-    <Compile Include="Weaving\Properties\Models\MemberMapping.cs" />
-    <Compile Include="Core\MethodGenerifier.cs" />
+    <Compile Include="Core\Models\MemberMapping.cs" />
     <Compile Include="Core\MsCoreReferenceFinder.cs" />
-    <Compile Include="Weaving\Properties\Models\PropertyData.cs" />
-    <Compile Include="Weaving\Properties\PropertyDataWalker.cs" />
     <Compile Include="Weaving\Properties\CatelPropertyWeaver.cs" />
     <Compile Include="Services\PropertyWeaverService.cs" />
     <Compile Include="Core\RecursiveIlFinder.cs" />
     <Compile Include="Core\ReferenceCleaner.cs" />
-    <Compile Include="Weaving\Properties\Models\CatelTypeNode.cs" />
+    <Compile Include="Core\Models\CatelType.cs" />
     <Compile Include="Core\CatelTypeNodeBuilder.cs" />
     <Compile Include="Weaving\Properties\CatelTypeProcessor.cs" />
     <Compile Include="Weaving\Properties\WarningChecker.cs" />
@@ -97,7 +95,14 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Weaving\Argument\Models\" />
+    <Folder Include="Weaving\Properties\Models\" />
     <Folder Include="Weaving\XmlSchemas\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj">
+      <Project>{6dbff54d-e909-40a3-9c99-9f3793d8c491}</Project>
+      <Name>Catel.Fody.Attributes</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

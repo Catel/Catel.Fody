@@ -3,37 +3,41 @@
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+
 namespace Catel.Fody
 {
     using System.Collections.Generic;
     using System.Linq;
-
     using Mono.Cecil;
 
     public class CatelTypeNodeBuilder
     {
+        #region Fields
+        private readonly List<TypeDefinition> _allClasses;
         private readonly ModuleWeaver _moduleWeaver;
 
-        private readonly List<TypeDefinition> _allClasses;
+        public List<CatelType> Nodes;
 
+        public List<CatelType> NotifyNodes;
         private ModuleDefinition _moduleDefinition;
+        #endregion
 
-        public List<CatelTypeNode> Nodes;
-
-        public List<CatelTypeNode> NotifyNodes;
-
+        #region Constructors
         public CatelTypeNodeBuilder(ModuleWeaver moduleWeaver, List<TypeDefinition> allTypes)
         {
             _moduleWeaver = moduleWeaver;
 
             _allClasses = allTypes.Where(x => x.IsClass).ToList();
         }
+        #endregion
 
+        #region Methods
         public void Execute()
         {
             _moduleDefinition = _moduleWeaver.ModuleDefinition;
-            Nodes = new List<CatelTypeNode>();
-            NotifyNodes = new List<CatelTypeNode>();
+            Nodes = new List<CatelType>();
+            NotifyNodes = new List<CatelType>();
 
             // allClasses = new List<TypeDefinition>();
             WalkAllTypeDefinitions();
@@ -47,7 +51,7 @@ namespace Catel.Fody
             PopulateCatelModelNodes(typeNodes);
         }
 
-        private void PopulateCatelModelNodes(List<CatelTypeNode> typeNodes)
+        private void PopulateCatelModelNodes(List<CatelType> typeNodes)
         {
             foreach (var node in typeNodes)
             {
@@ -61,7 +65,7 @@ namespace Catel.Fody
             }
         }
 
-        private CatelTypeNode AddClass(TypeDefinition typeDefinition)
+        private CatelType AddClass(TypeDefinition typeDefinition)
         {
             if (typeDefinition == null)
             {
@@ -69,7 +73,7 @@ namespace Catel.Fody
             }
 
             _allClasses.Remove(typeDefinition);
-            var typeNode = new CatelTypeNode { TypeDefinition = typeDefinition };
+            var typeNode = new CatelType(typeDefinition);
 
             if (typeDefinition.BaseType == null)
             {
@@ -100,7 +104,7 @@ namespace Catel.Fody
             return typeNode;
         }
 
-        private CatelTypeNode FindClassNode(TypeDefinition type, IEnumerable<CatelTypeNode> typeNode)
+        private CatelType FindClassNode(TypeDefinition type, IEnumerable<CatelType> typeNode)
         {
             foreach (var node in typeNode)
             {
@@ -137,5 +141,6 @@ namespace Catel.Fody
                 }
             }
         }
+        #endregion
     }
 }

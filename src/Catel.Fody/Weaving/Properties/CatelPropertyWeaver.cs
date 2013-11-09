@@ -15,23 +15,22 @@ namespace Catel.Fody.Weaving.Properties
     public class CatelPropertyWeaver
     {
         private readonly ModuleWeaver _moduleWeaver;
-        private readonly PropertyData _propertyData;
-        private readonly CatelTypeNode _catelTypeNode;
+        private readonly CatelTypeProperty _propertyData;
+        private readonly CatelType _catelType;
 
         private readonly Dictionary<string, string> _cachedFieldNames = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _cachedFieldInitializerNames = new Dictionary<string, string>();
 
-        public CatelPropertyWeaver(ModuleWeaver moduleWeaver, PropertyData propertyData, CatelTypeNode catelTypeNode)
+        public CatelPropertyWeaver(ModuleWeaver moduleWeaver, CatelTypeProperty propertyData, CatelType catelType)
         {
             _moduleWeaver = moduleWeaver;
             _propertyData = propertyData;
-            _catelTypeNode = catelTypeNode;
+            _catelType = catelType;
         }
 
         public void Execute()
         {
             var property = _propertyData.PropertyDefinition;
-
             if (property == null)
             {
                 _moduleWeaver.LogWarning("Skipping an unknown property because it has no property definition");
@@ -132,7 +131,7 @@ namespace Catel.Fody.Weaving.Properties
             }
         }
 
-        private void AddChangeNotificationHandlerField(PropertyDefinition property, PropertyData propertyData)
+        private void AddChangeNotificationHandlerField(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             if (propertyData.ChangeCallbackReference == null)
             {
@@ -190,10 +189,10 @@ namespace Catel.Fody.Weaving.Properties
             var declaringType = property.DeclaringType;
 
             declaringType.Fields.Add(new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly,
-                                                         _catelTypeNode.PropertyDataType));
+                                                         _catelType.PropertyDataType));
         }
 
-        private void AddPropertyRegistration(PropertyDefinition property, PropertyData propertyData)
+        private void AddPropertyRegistration(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             string fieldName = string.Format("{0}Property", property.Name);
             var declaringType = property.DeclaringType;
@@ -274,7 +273,7 @@ namespace Catel.Fody.Weaving.Properties
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
             }
 
-            var parameters = _catelTypeNode.RegisterPropertyInvoker.Parameters.Reverse().ToList();
+            var parameters = _catelType.RegisterPropertyInvoker.Parameters.Reverse().ToList();
             for (int i = 0; i < parameters.Count; i++)
             {
                 var parameterType = parameters[i];
@@ -288,7 +287,7 @@ namespace Catel.Fody.Weaving.Properties
 
             instructionsToInsert.AddRange(new[]
                                               {
-                                                  Instruction.Create(OpCodes.Call, _catelTypeNode.RegisterPropertyInvoker),
+                                                  Instruction.Create(OpCodes.Call, _catelType.RegisterPropertyInvoker),
                                                   Instruction.Create(OpCodes.Stsfld, fieldReference)
                                               });
 
@@ -301,9 +300,9 @@ namespace Catel.Fody.Weaving.Properties
         {
             _moduleWeaver.LogInfo(string.Format("\t\t\t{0} - adding GetValue call", property.Name));
 
-            var genericGetValue = new GenericInstanceMethod(_catelTypeNode.GetValueInvoker);
+            var genericGetValue = new GenericInstanceMethod(_catelType.GetValueInvoker);
 
-            foreach (var genericParameter in _catelTypeNode.GetValueInvoker.GenericParameters)
+            foreach (var genericParameter in _catelType.GetValueInvoker.GenericParameters)
             {
                 genericGetValue.GenericParameters.Add(genericParameter);
             }
@@ -360,7 +359,7 @@ namespace Catel.Fody.Weaving.Properties
 
             instructionsToAdd.AddRange(new[]
                                            {
-                                               Instruction.Create(OpCodes.Call, _catelTypeNode.SetValueInvoker),
+                                               Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker),
                                                Instruction.Create(OpCodes.Nop),
                                                Instruction.Create(OpCodes.Ret)
                                            });

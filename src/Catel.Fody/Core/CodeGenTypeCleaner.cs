@@ -18,7 +18,7 @@ namespace Catel.Fody
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
         }
 
-        private void Process(List<CatelTypeNode> notifyNodes)
+        private void Process(List<CatelType> notifyNodes)
         {
             foreach (var node in notifyNodes.ToList())
             {

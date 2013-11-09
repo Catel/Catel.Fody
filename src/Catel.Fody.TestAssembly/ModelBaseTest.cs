@@ -14,7 +14,7 @@ namespace Catel.Fody.TestAssembly
     /// DataObjectBaseTest class which fully supports serialization, property changed notifications,
     /// backwards compatibility and error checking.
     /// </summary>
-    public class ModelBaseTest : ModelBase<ModelBaseTest>
+    public class ModelBaseTest : ModelBase
     {
         /// <summary>
         /// Initializes a new object from scratch.

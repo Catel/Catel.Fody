@@ -11,8 +11,7 @@ namespace Catel.Fody
 
     public static class CecilCatelExtensions
     {
-        private static readonly Dictionary<string, bool> _typeReferencesImplementingDataObjectBase = new Dictionary<string, bool>();
-        private static readonly Dictionary<string, bool> _typeReferencesImplementingModelBase = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> _implementsTypeCache = new Dictionary<string, bool>();
 
         public static bool ImplementsCatelModel(this TypeReference typeReference)
         {
@@ -36,40 +35,17 @@ namespace Catel.Fody
 
         public static bool ImplementsDataObjectBase(this TypeReference typeReference)
         {
-            if (typeReference == null)
-            {
-                return false;
-            }
-
-            bool implementsDataObjectBase;
-            var fullName = typeReference.FullName;
-            if (_typeReferencesImplementingDataObjectBase.TryGetValue(fullName, out implementsDataObjectBase))
-            {
-                return implementsDataObjectBase;
-            }
-
-            implementsDataObjectBase = ImplementsBaseType(typeReference, "Catel.Data.DataObjectBase");
-            _typeReferencesImplementingDataObjectBase[fullName] = implementsDataObjectBase;
-            return implementsDataObjectBase;
+            return ImplementsBaseType(typeReference, "Catel.Data.DataObjectBase");
         }
 
         public static bool ImplementsModelBase(this TypeReference typeReference)
         {
-            if (typeReference == null)
-            {
-                return false;
-            }
+            return ImplementsBaseType(typeReference, "Catel.Data.ModelBase");
+        }
 
-            bool implementsModelBase;
-            var fullName = typeReference.FullName;
-            if (_typeReferencesImplementingDataObjectBase.TryGetValue(fullName, out implementsModelBase))
-            {
-                return implementsModelBase;
-            }
-
-            implementsModelBase = ImplementsBaseType(typeReference, "Catel.Data.ModelBase");
-            _typeReferencesImplementingModelBase[fullName] = implementsModelBase;
-            return implementsModelBase;
+        public static bool ImplementsViewModelBase(this TypeReference typeReference)
+        {
+            return ImplementsBaseType(typeReference, "Catel.MVVM.ViewModelBase");
         }
 
         public static bool ImplementsBaseType(this TypeReference typeReference, string typeName)
@@ -77,6 +53,13 @@ namespace Catel.Fody
             if (typeReference == null)
             {
                 return false;
+            }
+
+            string requestKey = string.Format("{0}_{1}", typeReference.FullName, typeName);
+            bool implementsModelBase;
+            if (_implementsTypeCache.TryGetValue(requestKey, out implementsModelBase))
+            {
+                return implementsModelBase;
             }
 
             TypeDefinition typeDefinition;
@@ -91,10 +74,13 @@ namespace Catel.Fody
 
             if (DerivesFromType(typeDefinition, typeName))
             {
+                _implementsTypeCache[requestKey] = true;
                 return true;
             }
 
-            return ImplementsBaseType(typeDefinition.BaseType, typeName);
+            var result =  ImplementsBaseType(typeDefinition.BaseType, typeName);
+            _implementsTypeCache[requestKey] = result;
+            return result;
         }
 
         public static bool DerivesFromType(this TypeDefinition typeDefinition, string typeName)

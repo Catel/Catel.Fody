@@ -1,14 +1,16 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PropertyData.cs" company="Catel development team">
+// <copyright file="ExposeAttribute.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Mono.Cecil;
 
-public class PropertyData
+namespace Catel.Fody
 {
-    public FieldReference BackingFieldReference;
-    public PropertyDefinition PropertyDefinition;
-    public MethodReference ChangeCallbackReference;
+    using System;
+
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class ExposeAttribute : Attribute
+    {
+    }
 }

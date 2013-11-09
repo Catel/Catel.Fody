@@ -8,7 +8,7 @@ namespace Catel.Fody.TestAssembly
 {
     using Data;
 
-    public class BaseClass : ModelBase<InheritedClass>
+    public class BaseClass : ModelBase
     {
         public string PropertyOnBase { get; set; }
     }

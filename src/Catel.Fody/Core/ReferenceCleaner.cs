@@ -19,15 +19,15 @@ namespace Catel.Fody
 
         public void Execute()
         {
-            var referenceToRemove = _moduleWeaver.ModuleDefinition.AssemblyReferences.FirstOrDefault(x => x.Name == "PropertyChanged");
+            var referenceToRemove = _moduleWeaver.ModuleDefinition.AssemblyReferences.FirstOrDefault(x => x.Name == "Catel.Fody.Attributes");
             if (referenceToRemove == null)
             {
-                _moduleWeaver.LogInfo("\tNo reference to 'PropertyChanged' found. References not modified.");
+                _moduleWeaver.LogInfo("\tNo reference to 'Catel.Fody.Attributes' found. References not modified.");
                 return;
             }
 
             _moduleWeaver.ModuleDefinition.AssemblyReferences.Remove(referenceToRemove);
-            _moduleWeaver.LogInfo("\tRemoving reference to 'PropertyChanged'.");
+            _moduleWeaver.LogInfo("\tRemoving reference to 'Catel.Fody.Attributes'.");
         }
     }
 }

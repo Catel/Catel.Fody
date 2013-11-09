@@ -25,19 +25,11 @@ namespace Catel.Fody.Services
 
         public void Execute()
         {
-            new DoNotNotifyTypeCleaner(_catelTypeNodeBuilder).Execute();
             new CodeGenTypeCleaner(_catelTypeNodeBuilder).Execute();
-            var methodGenerifier = new MethodGenerifier(_moduleWeaver);
-            new CatelPropertyMethodsFinder(methodGenerifier, _catelTypeNodeBuilder).Execute();
 
-            new AllPropertiesFinder(_catelTypeNodeBuilder).Execute();
-            new MappingFinder(_catelTypeNodeBuilder).Execute();
-            new PropertyDataWalker(_catelTypeNodeBuilder).Execute();
             new WarningChecker(_catelTypeNodeBuilder, _moduleWeaver).Execute();
 
             new CatelTypeProcessor(_catelTypeNodeBuilder, _moduleWeaver).Execute();
-
-            new AttributeCleaner(_types).Execute();
         }
     }
 }
