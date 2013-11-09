@@ -12,6 +12,7 @@ namespace Catel.Fody.TestAssembly
     [NoWeaving]
     public class NoWeavingModelTest : ModelBase
     {
+        public string FirstName { get; set; }
     }
 
     public class NoPropertyWeavingModelTest : ModelBase

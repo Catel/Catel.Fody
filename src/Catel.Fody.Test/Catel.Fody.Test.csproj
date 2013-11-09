@@ -71,8 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyWeaver.cs" />
+    <Compile Include="InheritanceFacts.cs" />
     <Compile Include="MockAssemblyResolver.cs" />
-    <Compile Include="WeavingTest.cs" />
+    <Compile Include="ModelBaseFacts.cs" />
+    <Compile Include="NoWeavingFacts.cs" />
+    <Compile Include="ViewModelBaseFacts.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
