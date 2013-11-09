@@ -44,11 +44,6 @@ namespace Catel.Fody.Weaving.XmlSchemas
             {
                 AddGetXmlSchemaMethod(catelType);
             }
-
-            foreach (var childNode in catelType.Nodes)
-            {
-                Execute(childNode);
-            }
         }
 
         private bool AddXmlSchemaProviderAttribute(CatelType catelType)

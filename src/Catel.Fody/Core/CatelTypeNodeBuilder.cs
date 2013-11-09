@@ -16,11 +16,10 @@ namespace Catel.Fody
         #region Fields
         private readonly List<TypeDefinition> _allClasses;
         private readonly ModuleWeaver _moduleWeaver;
-
-        public List<CatelType> Nodes;
-
-        public List<CatelType> NotifyNodes;
         private ModuleDefinition _moduleDefinition;
+
+        public List<CatelType> CatelTypes { get; private set; }
+
         #endregion
 
         #region Constructors
@@ -36,110 +35,44 @@ namespace Catel.Fody
         public void Execute()
         {
             _moduleDefinition = _moduleWeaver.ModuleDefinition;
-            Nodes = new List<CatelType>();
-            NotifyNodes = new List<CatelType>();
 
-            // allClasses = new List<TypeDefinition>();
-            WalkAllTypeDefinitions();
-
-            foreach (var typeDefinition in _allClasses.ToList())
+            CatelTypes = new List<CatelType>();
+            foreach (var typeDefinition in _allClasses)
             {
-                AddClass(typeDefinition);
-            }
-
-            var typeNodes = Nodes;
-            PopulateCatelModelNodes(typeNodes);
-        }
-
-        private void PopulateCatelModelNodes(List<CatelType> typeNodes)
-        {
-            foreach (var node in typeNodes)
-            {
-                if (node.TypeDefinition.ImplementsCatelModel())
-                {
-                    NotifyNodes.Add(node);
-                    continue;
-                }
-
-                PopulateCatelModelNodes(node.Nodes);
+                AddCatelTypeIfRequired(typeDefinition);
             }
         }
 
-        private CatelType AddClass(TypeDefinition typeDefinition)
+        private void AddCatelTypeIfRequired(TypeDefinition typeDefinition)
         {
             if (typeDefinition == null)
             {
-                return null;
+                return;
             }
-
-            _allClasses.Remove(typeDefinition);
-            var typeNode = new CatelType(typeDefinition);
 
             if (typeDefinition.BaseType == null)
             {
-                return null;
+                return;
             }
 
-            if (Nodes.Contains(typeNode))
+            if (typeDefinition.IsDecoratedWithAttribute("Catel.Fody.NoWeavingAttribute"))
             {
-                return typeNode;
+                typeDefinition.RemoveAttribute("Catel.Fody.NoWeavingAttribute");
+                return;
             }
 
-            if (typeDefinition.BaseType.Scope.Name != _moduleDefinition.Name)
+            if (!typeDefinition.ImplementsCatelModel())
             {
-                Nodes.Add(typeNode);
+                return;
             }
-            else
+
+            var typeNode = new CatelType(typeDefinition);
+            if (CatelTypes.Contains(typeNode))
             {
-                var baseType = typeDefinition.BaseType.ResolveType();
-                var parentNode = FindClassNode(baseType, Nodes);
-                if (parentNode == null)
-                {
-                    parentNode = AddClass(baseType);
-                }
-
-                parentNode.Nodes.Add(typeNode);
+                return;
             }
 
-            return typeNode;
-        }
-
-        private CatelType FindClassNode(TypeDefinition type, IEnumerable<CatelType> typeNode)
-        {
-            foreach (var node in typeNode)
-            {
-                if (type == node.TypeDefinition)
-                {
-                    return node;
-                }
-
-                var findNode = FindClassNode(type, node.Nodes);
-                if (findNode != null)
-                {
-                    return findNode;
-                }
-            }
-
-            return null;
-        }
-
-        public void WalkAllTypeDefinitions()
-        {
-            // First is always module so we will skip that;
-            GetTypes(_moduleDefinition.Types.Skip(1));
-        }
-
-        private void GetTypes(IEnumerable<TypeDefinition> typeDefinitions)
-        {
-            foreach (var typeDefinition in typeDefinitions)
-            {
-                GetTypes(typeDefinition.NestedTypes);
-
-                if (typeDefinition.IsClass)
-                {
-                    _allClasses.Add(typeDefinition);
-                }
-            }
+            CatelTypes.Add(typeNode);
         }
         #endregion
     }

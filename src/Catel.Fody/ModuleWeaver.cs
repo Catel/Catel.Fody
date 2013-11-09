@@ -6,6 +6,7 @@
 namespace Catel.Fody
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Xml.Linq;
 
@@ -69,13 +70,18 @@ namespace Catel.Fody
 
         public void Execute()
         {
+#if DEBUG
+            Debugger.Launch();
+#endif
+
             FodyEnvironment.ModuleDefinition = ModuleDefinition;
 
             // 1st step: set up the basics
             var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
             msCoreReferenceFinder.Execute();
 
-            var types = ModuleDefinition.GetTypes().Where(x => x.BaseType != null).ToList();
+            // Note: nested types not supported because we only list actual types (thus not nested)
+            var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
 
             var typeNodeBuilder = new CatelTypeNodeBuilder(this, types);
             typeNodeBuilder.Execute();

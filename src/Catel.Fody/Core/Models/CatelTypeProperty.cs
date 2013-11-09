@@ -7,33 +7,38 @@
 
 namespace Catel.Fody
 {
+    using System.Diagnostics;
     using System.Linq;
     using Mono.Cecil;
     using Mono.Cecil.Cil;
 
+    [DebuggerDisplay("{Name}")]
     public class CatelTypeProperty
     {
         public CatelTypeProperty(TypeDefinition typeDefinition, PropertyDefinition propertyDefinition)
         {
             TypeDefinition = typeDefinition;
             PropertyDefinition = propertyDefinition;
+            Name = propertyDefinition.Name;
 
             DetermineFields();
             DetermineMethods();
         }
 
         #region Fields
+        public string Name { get; private set; }
+
         public TypeDefinition TypeDefinition { get; private set; }
         public PropertyDefinition PropertyDefinition { get; private set; }
 
-        public FieldReference BackingFieldReference { get; set; }
+        public FieldDefinition BackingFieldDefinition { get; set; }
         public MethodReference ChangeCallbackReference { get; set; }
 
         #endregion
 
         private void DetermineFields()
         {
-             BackingFieldReference = TryGetField(TypeDefinition, PropertyDefinition);
+             BackingFieldDefinition = TryGetField(TypeDefinition, PropertyDefinition);
         }
 
         private void DetermineMethods()

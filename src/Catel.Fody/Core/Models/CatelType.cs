@@ -7,6 +7,7 @@
 namespace Catel.Fody
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Mono.Cecil;
 
@@ -19,15 +20,16 @@ namespace Catel.Fody
         Unknown
     }
 
+    [DebuggerDisplay("{Name}")]
     public class CatelType
     {
         public CatelType(TypeDefinition typeDefinition)
         {
-            Nodes = new List<CatelType>();
             Mappings = new List<MemberMapping>();
             Properties = new List<CatelTypeProperty>();
 
             TypeDefinition = typeDefinition;
+            Name = typeDefinition.FullName;
 
             DetermineCatelType();
             DetermineTypes();
@@ -36,10 +38,10 @@ namespace Catel.Fody
             DetermineMappings();
         }
 
+        public string Name { get; private set; }
+
         public TypeDefinition TypeDefinition { get; private set; }
         public CatelTypeType Type { get; private set; }
-
-        public List<CatelType> Nodes { get; private set; }
 
         public List<MemberMapping> Mappings { get; set; }
 
@@ -114,7 +116,10 @@ namespace Catel.Fody
 
         private void DetermineMappings()
         {
-            
+            foreach (var property in Properties)
+            {
+                Mappings.Add(new MemberMapping(property.BackingFieldDefinition, property.PropertyDefinition));
+            }
         }
 
         private MethodReference FindRegisterPropertyMethod(TypeDefinition typeDefinition)

@@ -29,7 +29,7 @@ namespace Catel.Fody.Services
         public void Execute()
         {
             var xmlSchemaWeaver = new XmlSchemaWeaver(_moduleWeaver, _msCoreReferenceFinder);
-            foreach (var catelTypeNode in _catelTypeNodeBuilder.Nodes)
+            foreach (var catelTypeNode in _catelTypeNodeBuilder.CatelTypes)
             {
                 try
                 {

@@ -18,23 +18,22 @@ namespace Catel.Fody
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
         }
 
-        private void Process(List<CatelType> notifyNodes)
+        private void Process(List<CatelType> catelTypes)
         {
-            foreach (var node in notifyNodes.ToList())
+            foreach (var catelType in catelTypes.ToList())
             {
-                var customAttributes = node.TypeDefinition.CustomAttributes;
+                var customAttributes = catelType.TypeDefinition.CustomAttributes;
                 if (customAttributes.ContainsAttribute("System.Runtime.CompilerServices.CompilerGeneratedAttribute"))
                 {
-                    notifyNodes.Remove(node);
+                    catelTypes.Remove(catelType);
                     continue;
                 }
-                Process(node.Nodes);
             }
         }
 
         public void Execute()
         {
-            Process(_catelTypeNodeBuilder.NotifyNodes);
+            Process(_catelTypeNodeBuilder.CatelTypes);
         }
     }
 }

@@ -24,24 +24,24 @@ namespace Catel.Fody.Weaving.Properties
 
         public void Execute()
         {
-            Process(_catelTypeNodeBuilder.NotifyNodes);
+            Process(_catelTypeNodeBuilder.CatelTypes);
         }
 
-        private void Process(List<CatelType> notifyNodes)
+        private void Process(List<CatelType> catelTypes)
         {
-            foreach (var node in notifyNodes)
+            foreach (var catelType in catelTypes)
             {
-                if (node.SetValueInvoker == null)
+                if (catelType.SetValueInvoker == null)
                 {
                     continue;
                 }
 
-                _moduleWeaver.LogInfo("\t" + node.TypeDefinition.FullName);
+                _moduleWeaver.LogInfo("\t" + catelType.TypeDefinition.FullName);
 
-                foreach (var propertyData in node.Properties)
+                foreach (var propertyData in catelType.Properties)
                 {
-                    if (AlreadyContainsCallToMember(propertyData.PropertyDefinition, node.GetValueInvoker.Name) ||
-                        AlreadyContainsCallToMember(propertyData.PropertyDefinition, node.SetValueInvoker.Name))
+                    if (AlreadyContainsCallToMember(propertyData.PropertyDefinition, catelType.GetValueInvoker.Name) ||
+                        AlreadyContainsCallToMember(propertyData.PropertyDefinition, catelType.SetValueInvoker.Name))
                     {
                         _moduleWeaver.LogInfo(string.Format("\t{0} Already has GetValue and/or SetValue functionality. Property will be ignored.", propertyData.PropertyDefinition.GetName()));
                         continue;
@@ -51,14 +51,12 @@ namespace Catel.Fody.Weaving.Properties
 
                     body.SimplifyMacros();
 
-                    var propertyWeaver = new CatelPropertyWeaver(_moduleWeaver, propertyData, node);
+                    var propertyWeaver = new CatelPropertyWeaver(_moduleWeaver, propertyData, catelType);
                     propertyWeaver.Execute();
 
                     body.InitLocals = true;
                     body.OptimizeMacros();
                 }
-
-                Process(node.Nodes);
             }
         }
 

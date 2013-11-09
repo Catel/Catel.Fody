@@ -20,21 +20,19 @@ namespace Catel.Fody.Weaving.Properties
             _moduleWeaver = moduleWeaver;
         }
 
-        private void Process(List<CatelType> notifyNodes)
+        private void Process(List<CatelType> catelTypes)
         {
-            foreach (var node in notifyNodes)
+            foreach (var catelType in catelTypes)
             {
-                foreach (var propertyData in node.Properties.ToList())
+                foreach (var propertyData in catelType.Properties.ToList())
                 {
                     var warning = CheckForWarning(propertyData);
                     if (warning != null)
                     {
                         _moduleWeaver.LogInfo(string.Format("\t{0} {1} Property will be ignored.", propertyData.PropertyDefinition.GetName(), warning));
-                        node.Properties.Remove(propertyData);
+                        catelType.Properties.Remove(propertyData);
                     }
                 }
-
-                Process(node.Nodes);
             }
         }
 
@@ -50,7 +48,7 @@ namespace Catel.Fody.Weaving.Properties
             {
                 return "Property is abstract.";
             }
-            if ((propertyData.BackingFieldReference == null) && (propertyDefinition.GetMethod == null))
+            if ((propertyData.BackingFieldDefinition == null) && (propertyDefinition.GetMethod == null))
             {
                 return "Property has no field set logic or it contains multiple sets and the names cannot be mapped to a property.";
             }
@@ -59,7 +57,7 @@ namespace Catel.Fody.Weaving.Properties
 
         public void Execute()
         {
-            Process(_catelTypeNodeBuilder.NotifyNodes);
+            Process(_catelTypeNodeBuilder.CatelTypes);
         }
     }
 }
