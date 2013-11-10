@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultValueModel.cs" />
+    <Compile Include="ExposingViewModel.cs" />
     <Compile Include="ModelBaseTest.cs" />
     <Compile Include="Inheritance.cs" />
     <Compile Include="MyViewModelBase.cs" />

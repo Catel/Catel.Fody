@@ -86,12 +86,16 @@ namespace Catel.Fody
             var typeNodeBuilder = new CatelTypeNodeBuilder(types);
             typeNodeBuilder.Execute();
 
+            // Remove any code generated types from the list of types to process
+            var codeGenTypeCleaner = new CodeGenTypeCleaner(typeNodeBuilder);
+            codeGenTypeCleaner.Execute();
+
             // 2nd step: Auto property weaving
             var propertyWeaverService = new AutoPropertiesWeaverService(typeNodeBuilder);
             propertyWeaverService.Execute();
 
             // 3rd step: Exposed properties weaving
-            var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService();
+            var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder);
             exposedPropertiesWeaverService.Execute();
 
             // 4th step: Argument weaving

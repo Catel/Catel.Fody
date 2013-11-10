@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="AssemblyWeaver.cs" />
     <Compile Include="DefaultValueFacts.cs" />
+    <Compile Include="ExposeFacts.cs" />
     <Compile Include="InheritanceFacts.cs" />
     <Compile Include="MockAssemblyResolver.cs" />
     <Compile Include="ModelBaseFacts.cs" />

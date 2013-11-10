@@ -7,16 +7,24 @@
 
 namespace Catel.Fody.Services
 {
+    using Catel.Fody.Weaving.ExposedProperties;
+
     public class ExposedPropertiesWeaverService
     {
-        public ExposedPropertiesWeaverService()
+        private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
+
+        public ExposedPropertiesWeaverService(CatelTypeNodeBuilder catelTypeNodeBuilder)
         {
-            
+            _catelTypeNodeBuilder = catelTypeNodeBuilder;
         }
 
         public void Execute()
         {
-            
+            var warningChecker = new ExposedPropertiesWarningChecker(_catelTypeNodeBuilder);
+            warningChecker.Execute();
+
+            var weaver = new ExposedPropertiesWeaver(_catelTypeNodeBuilder);
+            weaver.Execute();
         }
     }
 }

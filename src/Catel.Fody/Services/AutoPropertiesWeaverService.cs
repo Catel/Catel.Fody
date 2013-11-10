@@ -19,11 +19,11 @@ namespace Catel.Fody.Services
 
         public void Execute()
         {
-            new CodeGenTypeCleaner(_catelTypeNodeBuilder).Execute();
+            var warningChecker = new AutoPropertiesWarningChecker(_catelTypeNodeBuilder);
+            warningChecker.Execute();
 
-            new WarningChecker(_catelTypeNodeBuilder).Execute();
-
-            new AutoPropertiesWeaver(_catelTypeNodeBuilder).Execute();
+            var weaver = new AutoPropertiesWeaver(_catelTypeNodeBuilder);
+            weaver.Execute();
         }
     }
 }

@@ -16,11 +16,6 @@ namespace Catel.Fody.TestAssembly
     /// </summary>
     public class ModelBaseTest : ModelBase
     {
-        static ModelBaseTest()
-        {
-            
-        }
-
         /// <summary>
         /// Initializes a new object from scratch.
         /// </summary>

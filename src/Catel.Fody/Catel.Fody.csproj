@@ -67,6 +67,7 @@
     <Compile Include="FodyEnvironment.cs" />
     <Compile Include="Services\ArgumentWeaverService.cs" />
     <Compile Include="Services\ExposedPropertiesWeaverService.cs" />
+    <Compile Include="Weaving\ExposedProperties\ExposedPropertiesWarningChecker.cs" />
     <Compile Include="Weaving\ExposedProperties\ExposedPropertiesWeaver.cs" />
     <Compile Include="Extensions\InstructionExtensions.cs" />
     <Compile Include="ModuleWeaver.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="Core\Models\CatelType.cs" />
     <Compile Include="Core\CatelTypeNodeBuilder.cs" />
     <Compile Include="Weaving\AutoProperties\AutoPropertiesWeaver.cs" />
-    <Compile Include="Weaving\AutoProperties\WarningChecker.cs" />
+    <Compile Include="Weaving\AutoProperties\AutoPropertiesWarningChecker.cs" />
     <Compile Include="Core\WeavingException.cs" />
     <Compile Include="Services\XmlSchemasWeaverService.cs" />
     <Compile Include="Weaving\XmlSchemas\XmlSchemasWeaver.cs" />

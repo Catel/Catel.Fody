@@ -4,16 +4,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Catel.Fody.Weaving.AutoProperties
+namespace Catel.Fody.Weaving.ExposedProperties
 {
     using System.Collections.Generic;
     using System.Linq;
 
-    public class WarningChecker
+    public class ExposedPropertiesWarningChecker
     {
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
 
-        public WarningChecker(CatelTypeNodeBuilder catelTypeNodeBuilder)
+        public ExposedPropertiesWarningChecker(CatelTypeNodeBuilder catelTypeNodeBuilder)
         {
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
         }
