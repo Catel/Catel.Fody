@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.Test
 {
+    using System;
     using Catel.Data;
     using Catel.Fody.TestAssembly;
     using Catel.Reflection;
@@ -19,13 +20,14 @@ namespace Catel.Fody.Test
         [TestMethod]
         public void CreatesExposedProperties()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
+            var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingModel");
+            var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
-            var model = new ExposingModel();
-            var viewModel = new ExposingViewModel(model);
+            var model = Activator.CreateInstance(modelType);
+            var viewModel = Activator.CreateInstance(viewModelType, new object[] {model});
 
-            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"));
-            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "MappedLastName"));
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "FirstName"));
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "MappedLastName"));
 
             // Default value of the FirstName property on the model is "Geert"
             Assert.AreEqual("Geert",  PropertyHelper.GetPropertyValue<string>(viewModel, "FirstName"));
