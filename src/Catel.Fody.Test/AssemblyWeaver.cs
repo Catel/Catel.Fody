@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -30,6 +31,8 @@ public static class AssemblyWeaver
         var type = typeof (ViewModelBaseTest);
         BeforeAssemblyPath = Path.GetFullPath("Catel.Fody.TestAssembly.dll");
         AfterAssemblyPath = BeforeAssemblyPath.Replace(".dll", "2.dll");
+
+        Console.WriteLine("Weaving assembly on-demand from '{0}' to '{1}'", BeforeAssemblyPath, AfterAssemblyPath);
 
         File.Copy(BeforeAssemblyPath, AfterAssemblyPath, true);
 
