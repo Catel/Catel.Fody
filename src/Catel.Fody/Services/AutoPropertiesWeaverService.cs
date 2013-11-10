@@ -6,30 +6,24 @@
 
 namespace Catel.Fody.Services
 {
-    using System.Collections.Generic;
-    using Mono.Cecil;
-    using Weaving.Properties;
+    using Weaving.AutoProperties;
 
-    public class PropertyWeaverService
+    public class AutoPropertiesWeaverService
     {
-        private readonly ModuleWeaver _moduleWeaver;
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
-        private readonly List<TypeDefinition> _types;
 
-        public PropertyWeaverService(ModuleWeaver moduleWeaver, CatelTypeNodeBuilder catelTypeNodeBuilder, List<TypeDefinition> types)
+        public AutoPropertiesWeaverService(CatelTypeNodeBuilder catelTypeNodeBuilder)
         {
-            _moduleWeaver = moduleWeaver;
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
-            _types = types;
         }
 
         public void Execute()
         {
             new CodeGenTypeCleaner(_catelTypeNodeBuilder).Execute();
 
-            new WarningChecker(_catelTypeNodeBuilder, _moduleWeaver).Execute();
+            new WarningChecker(_catelTypeNodeBuilder).Execute();
 
-            new CatelTypeProcessor(_catelTypeNodeBuilder, _moduleWeaver).Execute();
+            new AutoPropertiesWeaver(_catelTypeNodeBuilder).Execute();
         }
     }
 }

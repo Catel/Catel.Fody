@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Catel.Fody.Weaving.Properties
+namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -12,12 +12,10 @@ namespace Catel.Fody.Weaving.Properties
     public class WarningChecker
     {
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
-        private readonly ModuleWeaver _moduleWeaver;
 
-        public WarningChecker(CatelTypeNodeBuilder catelTypeNodeBuilder, ModuleWeaver moduleWeaver)
+        public WarningChecker(CatelTypeNodeBuilder catelTypeNodeBuilder)
         {
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
-            _moduleWeaver = moduleWeaver;
         }
 
         private void Process(List<CatelType> catelTypes)
@@ -29,7 +27,7 @@ namespace Catel.Fody.Weaving.Properties
                     var warning = CheckForWarning(propertyData);
                     if (warning != null)
                     {
-                        _moduleWeaver.LogInfo(string.Format("\t{0} {1} Property will be ignored.", propertyData.PropertyDefinition.GetName(), warning));
+                        FodyEnvironment.LogInfo(string.Format("\t{0} {1} property will be ignored.", propertyData.PropertyDefinition.GetName(), warning));
                         catelType.Properties.Remove(propertyData);
                     }
                 }

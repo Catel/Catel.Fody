@@ -76,17 +76,16 @@
     <Compile Include="Extensions\InstructionListExtensions.cs" />
     <Compile Include="Core\Models\MemberMapping.cs" />
     <Compile Include="Core\MsCoreReferenceFinder.cs" />
-    <Compile Include="Weaving\Properties\CatelPropertyWeaver.cs" />
-    <Compile Include="Services\PropertyWeaverService.cs" />
-    <Compile Include="Core\RecursiveIlFinder.cs" />
+    <Compile Include="Core\CatelPropertyWeaver.cs" />
+    <Compile Include="Services\AutoPropertiesWeaverService.cs" />
     <Compile Include="Core\ReferenceCleaner.cs" />
     <Compile Include="Core\Models\CatelType.cs" />
     <Compile Include="Core\CatelTypeNodeBuilder.cs" />
-    <Compile Include="Weaving\Properties\CatelTypeProcessor.cs" />
-    <Compile Include="Weaving\Properties\WarningChecker.cs" />
+    <Compile Include="Weaving\AutoProperties\AutoPropertiesWeaver.cs" />
+    <Compile Include="Weaving\AutoProperties\WarningChecker.cs" />
     <Compile Include="Core\WeavingException.cs" />
     <Compile Include="Services\XmlSchemasWeaverService.cs" />
-    <Compile Include="Weaving\XmlSchemas\XmlSchemaWeaver.cs" />
+    <Compile Include="Weaving\XmlSchemas\XmlSchemasWeaver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
@@ -94,15 +93,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Weaving\Argument\Models\" />
-    <Folder Include="Weaving\Properties\Models\" />
-    <Folder Include="Weaving\XmlSchemas\Models\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj">
-      <Project>{6dbff54d-e909-40a3-9c99-9f3793d8c491}</Project>
-      <Name>Catel.Fody.Attributes</Name>
-    </ProjectReference>
+    <Folder Include="Weaving\Argument\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

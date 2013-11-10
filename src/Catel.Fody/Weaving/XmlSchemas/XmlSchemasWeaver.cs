@@ -10,14 +10,12 @@ namespace Catel.Fody.Weaving.XmlSchemas
     using Mono.Cecil;
     using Mono.Cecil.Cil;
 
-    public class XmlSchemaWeaver
+    public class XmlSchemasWeaver
     {
-        private readonly ModuleWeaver _moduleWeaver;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-        public XmlSchemaWeaver(ModuleWeaver moduleWeaver, MsCoreReferenceFinder msCoreReferenceFinder)
+        public XmlSchemasWeaver(MsCoreReferenceFinder msCoreReferenceFinder)
         {
-            _moduleWeaver = moduleWeaver;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
 
@@ -38,7 +36,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
                 return;
             }
 
-            _moduleWeaver.LogInfo("\t\t Adding xml schema for type " + catelType.TypeDefinition.FullName);
+            FodyEnvironment.LogInfo("\t\t Adding xml schema for type " + catelType.TypeDefinition.FullName);
 
             if (AddXmlSchemaProviderAttribute(catelType))
             {

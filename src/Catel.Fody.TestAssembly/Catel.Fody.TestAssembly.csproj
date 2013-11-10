@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultValueModel.cs" />
     <Compile Include="ModelBaseTest.cs" />
     <Compile Include="Inheritance.cs" />
     <Compile Include="MyViewModelBase.cs" />

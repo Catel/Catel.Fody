@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultValueAttribute.cs" />
     <Compile Include="ExposeAttribute.cs" />
     <Compile Include="NoWeavingAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

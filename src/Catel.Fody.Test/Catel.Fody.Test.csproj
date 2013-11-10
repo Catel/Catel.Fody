@@ -36,8 +36,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catel.Core">
-      <HintPath>..\..\lib\Catel.Core.3.7.1311041845-beta\lib\net45\Catel.Core.dll</HintPath>
+    <Reference Include="Catel.Core, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Catel\output\debug\NET45\Catel.Core\Catel.Core.dll</HintPath>
     </Reference>
     <Reference Include="Catel.MVVM">
       <HintPath>..\..\lib\Catel.MVVM.3.7.1311041845-beta\lib\net45\Catel.MVVM.dll</HintPath>
@@ -71,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyWeaver.cs" />
+    <Compile Include="DefaultValueFacts.cs" />
     <Compile Include="InheritanceFacts.cs" />
     <Compile Include="MockAssemblyResolver.cs" />
     <Compile Include="ModelBaseFacts.cs" />

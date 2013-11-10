@@ -16,6 +16,11 @@ namespace Catel.Fody.TestAssembly
     /// </summary>
     public class ModelBaseTest : ModelBase
     {
+        static ModelBaseTest()
+        {
+            
+        }
+
         /// <summary>
         /// Initializes a new object from scratch.
         /// </summary>
@@ -53,14 +58,8 @@ namespace Catel.Fody.TestAssembly
         /// </summary>
         public static readonly PropertyData FullNameProperty = RegisterProperty("FullName", typeof(string), string.Empty);
 
-        /// <summary>
-        /// Gets or sets the full name with change callback.
-        /// </summary>
         public string FullNameWithChangeCallback { get; set; }
 
-        /// <summary>
-        /// Another.
-        /// </summary>
         public string AnotherPropertyWithChangeCallback { get; set; }
 
         public ObservableCollection<int> CollectionProperty { get; set; }

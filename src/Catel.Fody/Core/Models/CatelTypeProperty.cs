@@ -7,6 +7,7 @@
 
 namespace Catel.Fody
 {
+    using System;
     using System.Diagnostics;
     using System.Linq;
     using Mono.Cecil;
@@ -23,6 +24,7 @@ namespace Catel.Fody
 
             DetermineFields();
             DetermineMethods();
+            DetermineDefaultValue();
         }
 
         #region Fields
@@ -31,11 +33,12 @@ namespace Catel.Fody
         public TypeDefinition TypeDefinition { get; private set; }
         public PropertyDefinition PropertyDefinition { get; private set; }
 
+        public object DefaultValue { get; private set; }
+
         public FieldDefinition BackingFieldDefinition { get; set; }
         public MethodReference ChangeCallbackReference { get; set; }
 
         #endregion
-
         private void DetermineFields()
         {
              BackingFieldDefinition = TryGetField(TypeDefinition, PropertyDefinition);
@@ -48,6 +51,18 @@ namespace Catel.Fody
             ChangeCallbackReference = (from method in PropertyDefinition.DeclaringType.Methods
                                        where method.Name == methodName
                                        select method).FirstOrDefault();
+        }
+
+        private void DetermineDefaultValue()
+        {
+            var defaultValueAttribute = PropertyDefinition.GetAttribute("Catel.Fody.DefaultValueAttribute");
+            if (defaultValueAttribute != null)
+            {
+                var attributeValue = (CustomAttributeArgument) defaultValueAttribute.ConstructorArguments[0].Value;
+                DefaultValue = attributeValue.Value;
+
+                PropertyDefinition.RemoveAttribute("Catel.Fody.DefaultValueAttribute");
+            }
         }
 
         private static FieldDefinition TryGetField(TypeDefinition typeDefinition, PropertyDefinition property)

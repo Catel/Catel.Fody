@@ -80,7 +80,7 @@ namespace Catel.Fody
         {
             var module = TypeDefinition.Module;
 
-            RegisterPropertyInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition));
+            RegisterPropertyInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition).GetGeneric());
             GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", true).GetGeneric());
             SetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "SetValue"));   
         }
@@ -132,14 +132,18 @@ namespace Catel.Fody
             {
                 typeDefinitions.Push(currentTypeDefinition);
 
+                // Search for this method:         
+                // public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                 var methods = (from method in currentTypeDefinition.Methods
-                               where method.Name == "RegisterProperty" && method.IsPublic
+                               where method.Name == "RegisterProperty" && method.IsPublic && 
+                                     method.HasGenericParameters && method.Parameters.Count == 7 &&
+                                     method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                     !method.Parameters[2].ParameterType.FullName.Contains("System.Func")
                                select method).ToList();
 
                 if (methods.Count > 0)
                 {
-                    // We now we have to use the last one
-                    methodDefinition = methods[methods.Count - 1];
+                    methodDefinition = methods.First();
                     break;
                 }
 

@@ -13,6 +13,23 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
+        public static CustomAttribute GetAttribute(this TypeDefinition typeDefinition, string attributeName)
+        {
+            return GetAttribute(typeDefinition.CustomAttributes, attributeName);
+        }
+
+        public static CustomAttribute GetAttribute(this PropertyDefinition propertyDefinition, string attributeName)
+        {
+            return GetAttribute(propertyDefinition.CustomAttributes, attributeName);
+        }
+
+        public static CustomAttribute GetAttribute(Collection<CustomAttribute> customAttributes, string attributeName)
+        {
+            return (from attribute in customAttributes
+                    where attribute.Constructor.DeclaringType.FullName.Contains(attributeName)
+                    select attribute).FirstOrDefault();
+        }
+
         public static bool IsDecoratedWithAttribute(this TypeDefinition typeDefinition, string attributeName)
         {
             return IsDecoratedWithAttribute(typeDefinition.CustomAttributes, attributeName);
@@ -25,9 +42,7 @@ namespace Catel.Fody
 
         public static bool IsDecoratedWithAttribute(Collection<CustomAttribute> customAttributes, string attributeName)
         {
-            return (from attribute in customAttributes
-                    where attribute.Constructor.DeclaringType.FullName.Contains(attributeName)
-                    select attribute).Any();
+            return GetAttribute(customAttributes, attributeName) != null;
         }
 
         public static void RemoveAttribute(this TypeDefinition typeDefinition, string attributeName)

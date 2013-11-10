@@ -13,22 +13,20 @@ namespace Catel.Fody.Services
 
     public class XmlSchemasWeaverService
     {
-        private readonly ModuleWeaver _moduleWeaver;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
 
         private bool? _isSupported;
 
-        public XmlSchemasWeaverService(ModuleWeaver moduleWeaver, MsCoreReferenceFinder msCoreReferenceFinder, CatelTypeNodeBuilder catelTypeNodeBuilder)
+        public XmlSchemasWeaverService(MsCoreReferenceFinder msCoreReferenceFinder, CatelTypeNodeBuilder catelTypeNodeBuilder)
         {
-            _moduleWeaver = moduleWeaver;
             _msCoreReferenceFinder = msCoreReferenceFinder;
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
         }
 
         public void Execute()
         {
-            var xmlSchemaWeaver = new XmlSchemaWeaver(_moduleWeaver, _msCoreReferenceFinder);
+            var xmlSchemaWeaver = new XmlSchemasWeaver(_msCoreReferenceFinder);
             foreach (var catelTypeNode in _catelTypeNodeBuilder.CatelTypes)
             {
                 try
@@ -47,7 +45,7 @@ namespace Catel.Fody.Services
 #endif
 
                     string error = string.Format("An error occurred while weaving type '{0}'", catelTypeNode.TypeDefinition.FullName);
-                    _moduleWeaver.LogError(error);
+                    FodyEnvironment.LogError(error);
                 }
             }
         }

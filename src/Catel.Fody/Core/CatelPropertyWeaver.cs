@@ -4,7 +4,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Catel.Fody.Weaving.Properties
+
+namespace Catel.Fody
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -14,42 +15,45 @@ namespace Catel.Fody.Weaving.Properties
 
     public class CatelPropertyWeaver
     {
-        private readonly ModuleWeaver _moduleWeaver;
-        private readonly CatelTypeProperty _propertyData;
+        #region Fields
+        private static readonly Dictionary<string, string> _cachedFieldInitializerNames = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> _cachedFieldNames = new Dictionary<string, string>();
+
         private readonly CatelType _catelType;
+        private readonly CatelTypeProperty _propertyData;
+        #endregion
 
-        private readonly Dictionary<string, string> _cachedFieldNames = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _cachedFieldInitializerNames = new Dictionary<string, string>();
-
-        public CatelPropertyWeaver(ModuleWeaver moduleWeaver, CatelTypeProperty propertyData, CatelType catelType)
+        #region Constructors
+        public CatelPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData)
         {
-            _moduleWeaver = moduleWeaver;
-            _propertyData = propertyData;
             _catelType = catelType;
+            _propertyData = propertyData;
         }
+        #endregion
 
+        #region Methods
         public void Execute()
         {
             var property = _propertyData.PropertyDefinition;
             if (property == null)
             {
-                _moduleWeaver.LogWarning("Skipping an unknown property because it has no property definition");
+                FodyEnvironment.LogWarning("Skipping an unknown property because it has no property definition");
                 return;
             }
 
             if (!HasBackingField(property))
             {
-                _moduleWeaver.LogInfo(string.Format("\t\tSkipping '{0}' because it has no backing field", property.Name));
+                FodyEnvironment.LogInfo(string.Format("\t\tSkipping '{0}' because it has no backing field", property.Name));
                 return;
             }
 
             if (ImplementsICommand(property))
             {
-                _moduleWeaver.LogInfo(string.Format("\t\tSkipping '{0}' because it implements ICommand", property.Name));
+                FodyEnvironment.LogInfo(string.Format("\t\tSkipping '{0}' because it implements ICommand", property.Name));
                 return;
             }
 
-            _moduleWeaver.LogInfo("\t\t" + property.Name);
+            FodyEnvironment.LogInfo("\t\t" + property.Name);
 
             EnsureStaticConstructor(property.DeclaringType);
 
@@ -113,10 +117,10 @@ namespace Catel.Fody.Weaving.Properties
             var staticConstructor = type.Constructor(true);
             if (staticConstructor == null)
             {
-                _moduleWeaver.LogInfo(string.Format("\t\t\t{0} - adding static constructor", type.Name));
+                FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - adding static constructor", type.Name));
 
                 staticConstructor = new MethodDefinition(".cctor", MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.Static | MethodAttributes.RTSpecialName,
-                                                         type.Module.Import(typeof (void)));
+                    type.Module.Import(typeof(void)));
 
                 var body = staticConstructor.Body;
                 body.SimplifyMacros();
@@ -127,7 +131,7 @@ namespace Catel.Fody.Weaving.Properties
 
                 type.Methods.Add(staticConstructor);
 
-                _moduleWeaver.LogInfo(string.Format("\t\t\t{0} - added static constructor", type.Name));
+                FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - added static constructor", type.Name));
             }
         }
 
@@ -138,7 +142,7 @@ namespace Catel.Fody.Weaving.Properties
                 return;
             }
 
-            _moduleWeaver.LogInfo(string.Format("\t\t\t{0} - adding On{0}Changed invocation", property.Name));
+            FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - adding On{0}Changed invocation", property.Name));
 
             var declaringType = property.DeclaringType;
             string fieldName = GetChangeNotificationHandlerFieldName(property);
@@ -167,18 +171,18 @@ namespace Catel.Fody.Weaving.Properties
 
             string initializationMethodName = GetChangeNotificationHandlerConstructorName(property);
             var initializationMethod = new MethodDefinition(initializationMethodName,
-                                                            MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.Import(typeof (void)));
+                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.Import(typeof(void)));
             initializationMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
-            initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.Import(typeof (object))));
+            initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.Import(typeof(object))));
             initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, declaringType.Module.Import(advancedPropertyChangedEventArgsType)));
 
             var body = initializationMethod.Body;
             body.Instructions.Insert(0,
-                                     Instruction.Create(OpCodes.Ldarg_0),
-                                     Instruction.Create(OpCodes.Castclass, declaringType),
-                                     Instruction.Create(OpCodes.Callvirt, propertyData.ChangeCallbackReference),
-                                     Instruction.Create(OpCodes.Nop),
-                                     Instruction.Create(OpCodes.Ret));
+                Instruction.Create(OpCodes.Ldarg_0),
+                Instruction.Create(OpCodes.Castclass, declaringType),
+                Instruction.Create(OpCodes.Callvirt, propertyData.ChangeCallbackReference),
+                Instruction.Create(OpCodes.Nop),
+                Instruction.Create(OpCodes.Ret));
 
             declaringType.Methods.Add(initializationMethod);
         }
@@ -189,7 +193,7 @@ namespace Catel.Fody.Weaving.Properties
             var declaringType = property.DeclaringType;
 
             declaringType.Fields.Add(new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly,
-                                                         _catelType.PropertyDataType));
+                _catelType.PropertyDataType));
         }
 
         private void AddPropertyRegistration(PropertyDefinition property, CatelTypeProperty propertyData)
@@ -224,12 +228,60 @@ namespace Catel.Fody.Weaving.Properties
 
             var instructionsToInsert = new List<Instruction>();
             instructionsToInsert.AddRange(new[]
-                                              {
-                                                  Instruction.Create(OpCodes.Ldstr, property.Name),
-                                                  Instruction.Create(OpCodes.Ldtoken, property.PropertyType),
-                                                  Instruction.Create(OpCodes.Call, importedGetTypeFromHandle),
-                                                  Instruction.Create(OpCodes.Ldnull)
-                                              });
+            {
+                Instruction.Create(OpCodes.Ldstr, property.Name),
+                Instruction.Create(OpCodes.Ldtoken, property.PropertyType),
+                Instruction.Create(OpCodes.Call, importedGetTypeFromHandle),
+            });
+
+            // Default value
+            if (propertyData.DefaultValue is string)
+            {
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldstr, (string)propertyData.DefaultValue));
+            }
+            else if (propertyData.DefaultValue is int)
+            {
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)propertyData.DefaultValue));
+            }
+            else if (propertyData.DefaultValue is long)
+            {
+                if ((long)propertyData.DefaultValue <= int.MaxValue)
+                {
+                    // Note: don't use Ldc_I8 here, although it is a long
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int) (long) propertyData.DefaultValue));
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Conv_I8));
+                }
+                else
+                {
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I8, (long)propertyData.DefaultValue));
+                }   
+            }
+            else if (propertyData.DefaultValue is float)
+            {
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_R4, (float)propertyData.DefaultValue));
+            }
+            else if (propertyData.DefaultValue is double)
+            {
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_R8, (double)propertyData.DefaultValue));
+            }
+            else
+            {
+                // Use default value
+                var propertyType = propertyData.PropertyDefinition.PropertyType;
+                if (propertyType.IsValueType && !propertyType.IsPrimitive)
+                {
+                    var variableDefinition = new VariableDefinition(propertyType);
+                    body.Variables.Add(variableDefinition);
+
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldloca_S, variableDefinition));
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Initobj, propertyType));
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldloc, variableDefinition));
+                }
+                else
+                {
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));                    
+                }
+            }
 
             if (propertyData.ChangeCallbackReference != null)
             {
@@ -257,16 +309,16 @@ namespace Catel.Fody.Weaving.Properties
                 var finalInstruction = Instruction.Create(OpCodes.Ldsfld, handlerField);
 
                 instructionsToInsert.AddRange(new[]
-                                                  {
-                                                      Instruction.Create(OpCodes.Ldsfld, handlerField),
-                                                      Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
-                                                      Instruction.Create(OpCodes.Ldnull),
-                                                      Instruction.Create(OpCodes.Ldftn, handlerConstructor),
-                                                      Instruction.Create(OpCodes.Newobj, genericConstructor),
-                                                      Instruction.Create(OpCodes.Stsfld, handlerField),
-                                                      Instruction.Create(OpCodes.Br_S, finalInstruction),
-                                                      finalInstruction
-                                                  });
+                {
+                    Instruction.Create(OpCodes.Ldsfld, handlerField),
+                    Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
+                    Instruction.Create(OpCodes.Ldnull),
+                    Instruction.Create(OpCodes.Ldftn, handlerConstructor),
+                    Instruction.Create(OpCodes.Newobj, genericConstructor),
+                    Instruction.Create(OpCodes.Stsfld, handlerField),
+                    Instruction.Create(OpCodes.Br_S, finalInstruction),
+                    finalInstruction
+                });
             }
             else
             {
@@ -277,7 +329,7 @@ namespace Catel.Fody.Weaving.Properties
             for (int i = 0; i < parameters.Count; i++)
             {
                 var parameterType = parameters[i];
-                if (string.CompareOrdinal(parameterType.ParameterType.FullName, _moduleWeaver.ModuleDefinition.TypeSystem.Boolean.FullName) != 0)
+                if (string.CompareOrdinal(parameterType.ParameterType.FullName, FodyEnvironment.ModuleDefinition.TypeSystem.Boolean.FullName) != 0)
                 {
                     break;
                 }
@@ -285,11 +337,20 @@ namespace Catel.Fody.Weaving.Properties
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_1));
             }
 
+            // Make call to register property generic
+            var genericRegisterProperty = new GenericInstanceMethod(_catelType.RegisterPropertyInvoker);
+            foreach (var genericParameter in _catelType.RegisterPropertyInvoker.GenericParameters)
+            {
+                genericRegisterProperty.GenericParameters.Add(genericParameter);
+            }
+
+            genericRegisterProperty.GenericArguments.Add(property.PropertyType);
+
             instructionsToInsert.AddRange(new[]
-                                              {
-                                                  Instruction.Create(OpCodes.Call, _catelType.RegisterPropertyInvoker),
-                                                  Instruction.Create(OpCodes.Stsfld, fieldReference)
-                                              });
+            {
+                Instruction.Create(OpCodes.Call, genericRegisterProperty),
+                Instruction.Create(OpCodes.Stsfld, fieldReference)
+            });
 
             instructions.Insert(index, instructionsToInsert);
 
@@ -298,7 +359,7 @@ namespace Catel.Fody.Weaving.Properties
 
         private int AddGetValueCall(PropertyDefinition property)
         {
-            _moduleWeaver.LogInfo(string.Format("\t\t\t{0} - adding GetValue call", property.Name));
+            FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - adding GetValue call", property.Name));
 
             var genericGetValue = new GenericInstanceMethod(_catelType.GetValueInvoker);
 
@@ -316,11 +377,11 @@ namespace Catel.Fody.Weaving.Properties
             instructions.Clear();
 
             var finalIndex = instructions.Insert(0,
-                                                 Instruction.Create(OpCodes.Nop),
-                                                 Instruction.Create(OpCodes.Ldarg_0),
-                                                 Instruction.Create(OpCodes.Ldstr, property.Name),
-                                                 Instruction.Create(OpCodes.Call, genericGetValue),
-                                                 Instruction.Create(OpCodes.Ret));
+                Instruction.Create(OpCodes.Nop),
+                Instruction.Create(OpCodes.Ldarg_0),
+                Instruction.Create(OpCodes.Ldstr, property.Name),
+                Instruction.Create(OpCodes.Call, genericGetValue),
+                Instruction.Create(OpCodes.Ret));
 
             body.OptimizeMacros();
 
@@ -329,7 +390,7 @@ namespace Catel.Fody.Weaving.Properties
 
         private int AddSetValueCall(PropertyDefinition property)
         {
-            _moduleWeaver.LogInfo(string.Format("\t\t\t{0} - adding SetValue call", property.Name));
+            FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - adding SetValue call", property.Name));
 
             //string fieldName = string.Format("{0}Property", property.Name);
             //var declaringType = property.DeclaringType;
@@ -345,12 +406,12 @@ namespace Catel.Fody.Weaving.Properties
 
             var instructionsToAdd = new List<Instruction>();
             instructionsToAdd.AddRange(new[]
-                                           {
-                                               Instruction.Create(OpCodes.Nop),
-                                               Instruction.Create(OpCodes.Ldarg_0),
-                                               Instruction.Create(OpCodes.Ldstr, property.Name),
-                                               Instruction.Create(OpCodes.Ldarg_1)
-                                           });
+            {
+                Instruction.Create(OpCodes.Nop),
+                Instruction.Create(OpCodes.Ldarg_0),
+                Instruction.Create(OpCodes.Ldstr, property.Name),
+                Instruction.Create(OpCodes.Ldarg_1)
+            });
 
             if (property.PropertyType.IsValueType)
             {
@@ -358,11 +419,11 @@ namespace Catel.Fody.Weaving.Properties
             }
 
             instructionsToAdd.AddRange(new[]
-                                           {
-                                               Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker),
-                                               Instruction.Create(OpCodes.Nop),
-                                               Instruction.Create(OpCodes.Ret)
-                                           });
+            {
+                Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker),
+                Instruction.Create(OpCodes.Nop),
+                Instruction.Create(OpCodes.Ret)
+            });
 
             var finalIndex = instructions.Insert(0, instructionsToAdd.ToArray());
 
@@ -381,7 +442,7 @@ namespace Catel.Fody.Weaving.Properties
             var genericHandlerType = property.Module.FindType("mscorlib", "System.EventHandler`1");
             if (genericHandlerType == null)
             {
-                _moduleWeaver.LogError("Expected to find EventHandler<T>, but type was not  found");
+                FodyEnvironment.LogError("Expected to find EventHandler<T>, but type was not  found");
                 return null;
             }
 
@@ -403,12 +464,12 @@ namespace Catel.Fody.Weaving.Properties
 
         private bool ImplementsICommand(PropertyDefinition property)
         {
-            var commandInterfaces = new List<string>(new[] {"ICommand", "ICatelCommand"});
+            var commandInterfaces = new List<string>(new[] { "ICommand", "ICatelCommand" });
 
             var resolvedType = property.PropertyType.Resolve();
             if (resolvedType == null)
             {
-                _moduleWeaver.LogWarning(string.Format("Could not resolve type '{0}'", property.PropertyType));
+                FodyEnvironment.LogWarning(string.Format("Could not resolve type '{0}'", property.PropertyType));
                 return false;
             }
 
@@ -453,5 +514,6 @@ namespace Catel.Fody.Weaving.Properties
                     where method.Name == methodName
                     select method).FirstOrDefault();
         }
+        #endregion
     }
 }

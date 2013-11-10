@@ -15,18 +15,14 @@ namespace Catel.Fody
     {
         #region Fields
         private readonly List<TypeDefinition> _allClasses;
-        private readonly ModuleWeaver _moduleWeaver;
-        private ModuleDefinition _moduleDefinition;
 
         public List<CatelType> CatelTypes { get; private set; }
 
         #endregion
 
         #region Constructors
-        public CatelTypeNodeBuilder(ModuleWeaver moduleWeaver, List<TypeDefinition> allTypes)
+        public CatelTypeNodeBuilder(List<TypeDefinition> allTypes)
         {
-            _moduleWeaver = moduleWeaver;
-
             _allClasses = allTypes.Where(x => x.IsClass).ToList();
         }
         #endregion
@@ -34,8 +30,6 @@ namespace Catel.Fody
         #region Methods
         public void Execute()
         {
-            _moduleDefinition = _moduleWeaver.ModuleDefinition;
-
             CatelTypes = new List<CatelType>();
             foreach (var typeDefinition in _allClasses)
             {
@@ -57,6 +51,8 @@ namespace Catel.Fody
 
             if (typeDefinition.IsDecoratedWithAttribute("Catel.Fody.NoWeavingAttribute"))
             {
+                FodyEnvironment.LogInfo(string.Format("\t{0} is decorated with the NoWeaving attribute, type will be ignored.", typeDefinition.FullName));
+
                 typeDefinition.RemoveAttribute("Catel.Fody.NoWeavingAttribute");
                 return;
             }
