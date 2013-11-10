@@ -13,11 +13,13 @@ namespace Catel.Fody
     public class ExposeAttribute : Attribute
     {
         /// <summary>
-        ///   Initializes a new instance of the <see cref = "ExposeAttribute" /> class.
+        /// Initializes a new instance of the <see cref="ExposeAttribute" /> class.
         /// </summary>
-        /// <param name = "propertyName">Name of the property.</param>
-        /// <exception cref = "ArgumentException">The <paramref name = "propertyName" /> is <c>null</c> or whitespace.</exception>
-        public ExposeAttribute(string propertyName)
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="propertyNameOnModel">The property name configuration model.</param>
+        /// <exception cref="System.ArgumentException">The argument cannot be null or whitespace;propertyName</exception>
+        /// <exception cref="ArgumentException">The <paramref name="propertyName" /> is <c>null</c> or whitespace.</exception>
+        public ExposeAttribute(string propertyName, string propertyNameOnModel = null)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
@@ -25,7 +27,7 @@ namespace Catel.Fody
             }
 
             PropertyName = propertyName;
-            PropertyNameOnModel = propertyName;
+            PropertyNameOnModel = propertyNameOnModel ?? propertyName;
             //Mode = ViewModelToModelMode.TwoWay;
         }
 
@@ -53,7 +55,7 @@ namespace Catel.Fody
         ///   </example>
         /// </summary>
         /// <value>The property name on model.</value>
-        public string PropertyNameOnModel { get; set; }
+        public string PropertyNameOnModel { get; private set; }
 
         ///// <summary>
         ///// Gets or sets the mode of the mapping.

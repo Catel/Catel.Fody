@@ -38,10 +38,11 @@
   <ItemGroup>
     <Reference Include="Catel.Core, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Catel\output\debug\NET45\Catel.Core\Catel.Core.dll</HintPath>
+      <HintPath>..\..\..\Catel\output\debug\NET45\Catel.MVVM\Catel.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Catel.MVVM">
-      <HintPath>..\..\lib\Catel.MVVM.3.7.1311041845-beta\lib\net45\Catel.MVVM.dll</HintPath>
+    <Reference Include="Catel.MVVM, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Catel\output\debug\NET45\Catel.MVVM\Catel.MVVM.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />

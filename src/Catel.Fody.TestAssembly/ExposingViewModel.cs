@@ -16,6 +16,7 @@ namespace Catel.Fody.TestAssembly
         [DefaultValue("Geert")]
         public string FirstName { get; set; }
 
+        [DefaultValue("van Horrik")]
         public string LastName { get; set; }
         #endregion
     }
@@ -29,7 +30,7 @@ namespace Catel.Fody.TestAssembly
 
         [Model]
         [Fody.Expose("FirstName")]
-        [Fody.Expose("LastName")]
+        [Fody.Expose("MappedLastName", "LastName")]
         public ExposingModel Model { get; private set; }
     }
 }

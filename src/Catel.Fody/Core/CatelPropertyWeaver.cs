@@ -32,7 +32,7 @@ namespace Catel.Fody
         #endregion
 
         #region Methods
-        public void Execute()
+        public void Execute(bool force = false)
         {
             var property = _propertyData.PropertyDefinition;
             if (property == null)
@@ -41,7 +41,7 @@ namespace Catel.Fody
                 return;
             }
 
-            if (!HasBackingField(property))
+            if (!force && !HasBackingField(property))
             {
                 FodyEnvironment.LogInfo(string.Format("\t\tSkipping '{0}' because it has no backing field", property.Name));
                 return;
@@ -154,7 +154,6 @@ namespace Catel.Fody
 
             var field = new FieldDefinition(fieldName, FieldAttributes.Private | FieldAttributes.Static, declaringType.Module.Import(handlerType));
             var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
-            //var compilerGeneratedAttribute = _allTypes.First(x => x.FullName == "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
             field.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
             declaringType.Fields.Add(field);
 
@@ -192,8 +191,12 @@ namespace Catel.Fody
             string fieldName = string.Format("{0}Property", property.Name);
             var declaringType = property.DeclaringType;
 
-            declaringType.Fields.Add(new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly,
-                _catelType.PropertyDataType));
+            var fieldDefinition = new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly, _catelType.PropertyDataType);
+
+            var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
+            fieldDefinition.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
+
+            declaringType.Fields.Add(fieldDefinition);
         }
 
         private void AddPropertyRegistration(PropertyDefinition property, CatelTypeProperty propertyData)
@@ -370,6 +373,17 @@ namespace Catel.Fody
 
             genericGetValue.GenericArguments.Add(property.PropertyType);
 
+            if (property.GetMethod == null)
+            {
+                var getMethod = new MethodDefinition(string.Format("get_{0}", property.Name), MethodAttributes.Public, property.PropertyType);
+
+                var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
+                getMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
+
+                property.DeclaringType.Methods.Add(getMethod);
+                property.GetMethod = getMethod;
+            }
+
             var body = property.GetMethod.Body;
             body.SimplifyMacros();
 
@@ -397,6 +411,18 @@ namespace Catel.Fody
             //var fieldReference = GetField(declaringType, fieldName);
 
             // Writes SetValue(PropertyData propertyName, object value)
+
+            if (property.SetMethod == null)
+            {
+                var setMethod = new MethodDefinition(string.Format("set_{0}", property.Name), MethodAttributes.Public, property.DeclaringType.Module.Import(typeof(void)));
+                setMethod.Parameters.Add(new ParameterDefinition(property.PropertyType));
+
+                var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
+                setMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
+
+                property.DeclaringType.Methods.Add(setMethod);
+                property.SetMethod = setMethod;
+            }
 
             var body = property.SetMethod.Body;
             body.SimplifyMacros();

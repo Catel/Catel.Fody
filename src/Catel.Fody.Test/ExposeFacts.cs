@@ -24,14 +24,14 @@ namespace Catel.Fody.Test
             var model = new ExposingModel();
             var viewModel = new ExposingViewModel(model);
 
-            Assert.IsFalse(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"));
-            Assert.IsFalse(PropertyDataManager.Default.IsPropertyRegistered(type, "LastName"));
-
-            // Get dynamic property
-            var firstName = PropertyHelper.GetPropertyValue<string>(viewModel, "FirstName");
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"));
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "MappedLastName"));
 
             // Default value of the FirstName property on the model is "Geert"
-            Assert.AreEqual("Geert", firstName);
+            Assert.AreEqual("Geert",  PropertyHelper.GetPropertyValue<string>(viewModel, "FirstName"));
+
+            // Default value of the LastName property on the model is "Geert"
+            Assert.AreEqual("van Horrik", PropertyHelper.GetPropertyValue<string>(viewModel, "MappedLastName"));
         }
         #endregion
     }

@@ -7,6 +7,7 @@
 
 namespace Catel.Fody
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
     using Mono.Collections.Generic;
@@ -25,9 +26,24 @@ namespace Catel.Fody
 
         public static CustomAttribute GetAttribute(Collection<CustomAttribute> customAttributes, string attributeName)
         {
+            return GetAttributes(customAttributes, attributeName).FirstOrDefault();
+        }
+
+        public static IEnumerable<CustomAttribute> GetAttributes(this TypeDefinition typeDefinition, string attributeName)
+        {
+            return GetAttributes(typeDefinition.CustomAttributes, attributeName);
+        }
+
+        public static IEnumerable<CustomAttribute> GetAttributes(this PropertyDefinition propertyDefinition, string attributeName)
+        {
+            return GetAttributes(propertyDefinition.CustomAttributes, attributeName);
+        }
+
+        public static IEnumerable<CustomAttribute> GetAttributes(Collection<CustomAttribute> customAttributes, string attributeName)
+        {
             return (from attribute in customAttributes
                     where attribute.Constructor.DeclaringType.FullName.Contains(attributeName)
-                    select attribute).FirstOrDefault();
+                    select attribute);
         }
 
         public static bool IsDecoratedWithAttribute(this TypeDefinition typeDefinition, string attributeName)
