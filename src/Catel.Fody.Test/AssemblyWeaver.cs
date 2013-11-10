@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 using Catel.Fody;
 using Catel.Fody.TestAssembly;
+using Catel.Reflection;
 using Mono.Cecil;
 
 public static class AssemblyWeaver
@@ -29,7 +30,9 @@ public static class AssemblyWeaver
     {
         //Force ref since MSTest is a POS
         var type = typeof (ViewModelBaseTest);
-        BeforeAssemblyPath = Path.GetFullPath("Catel.Fody.TestAssembly.dll");
+
+        BeforeAssemblyPath = type.GetAssemblyEx().Location;
+        //BeforeAssemblyPath =  Path.GetFullPath("Catel.Fody.TestAssembly.dll");
         AfterAssemblyPath = BeforeAssemblyPath.Replace(".dll", "2.dll");
 
         Console.WriteLine("Weaving assembly on-demand from '{0}' to '{1}'", BeforeAssemblyPath, AfterAssemblyPath);
