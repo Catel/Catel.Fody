@@ -12,7 +12,7 @@
     <iconUrl>http://www.catenalogic.com/catel.png</iconUrl>
     <description>Fody add-in for transforming automatic properties into Catel properties.</description>
     <language>en-US</language>
-    <tags>WPF Silverlight WP7 WindowsPhone MVVM Catel</tags>
+    <tags>WPF Silverlight WindowsPhone MVVM Catel</tags>
 	<dependencies>
 		<dependency id="Fody"/>
 		<dependency id="Catel.Core"/>
