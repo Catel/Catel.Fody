@@ -24,7 +24,7 @@
     <Copy SourceFiles="$(SolutionDir)Catel.Fody.NuGet\Fody_ToBeDeleted.txt" DestinationFolder="..\..\output\NuGetBuild\$(ConfigurationName)\Content" />
     <Copy SourceFiles="$(SolutionDir)Catel.Fody.NuGet\Catel.Fody.nuspec" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
     <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody\Catel.Fody.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
-	<Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
+    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
     <Copy SourceFiles="$(ProjectDir)install.ps1" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\Tools" />
     <Copy SourceFiles="$(ProjectDir)uninstall.ps1" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\Tools" />
     <PepitaPackage.WeavingTask NuGetBuildDirectory="..\..\output\$(ConfigurationName)\NuGetBuild" MetadataAssembly="..\..\output\$(ConfigurationName)\Catel.Fody\Catel.Fody.dll" />
@@ -37,10 +37,6 @@
     <None Include="uninstall.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj">
-      <Project>{6dbff54d-e909-40a3-9c99-9f3793d8c491}</Project>
-      <Name>Catel.Fody.Attributes</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Catel.Fody\Catel.Fody.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <Project>{D9600EEB-B52A-4861-AFA4-2A3E38A06196}</Project>

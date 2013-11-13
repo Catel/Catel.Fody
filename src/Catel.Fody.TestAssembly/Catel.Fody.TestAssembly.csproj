@@ -67,9 +67,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj">
-      <Project>{6dbff54d-e909-40a3-9c99-9f3793d8c491}</Project>
-      <Name>Catel.Fody.Attributes</Name>
+    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.NET40\Catel.Fody.Attributes.NET40.csproj">
+      <Project>{31c6e889-2d4c-4a9b-9e94-c3d6b3585049}</Project>
+      <Name>Catel.Fody.Attributes.NET40</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
