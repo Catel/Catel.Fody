@@ -21,13 +21,18 @@
   <UsingTask TaskName="PepitaPackage.WeavingTask" AssemblyFile="..\..\tools\pepita\PepitaPackage.dll" />
   <Target Name="NuGetBuild" DependsOnTargets="Clean">
     <MakeDir Directories="..\..\output\$(ConfigurationName)\NuGetBuild" />
-    <Copy SourceFiles="$(SolutionDir)Catel.Fody.NuGet\Fody_ToBeDeleted.txt" DestinationFolder="..\..\output\NuGetBuild\$(ConfigurationName)\Content" />
-    <Copy SourceFiles="$(SolutionDir)Catel.Fody.NuGet\Catel.Fody.nuspec" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
-    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody\Catel.Fody.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
-    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
+    <Copy SourceFiles="$(SolutionDir)\Catel.Fody.NuGet\Catel.Fody.nuspec" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
+	<Copy SourceFiles="$(SolutionDir)\Catel.Fody.NuGet\Fody_ToBeDeleted.txt" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\Content" />
     <Copy SourceFiles="$(ProjectDir)install.ps1" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\Tools" />
     <Copy SourceFiles="$(ProjectDir)uninstall.ps1" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\Tools" />
-    <PepitaPackage.WeavingTask NuGetBuildDirectory="..\..\output\$(ConfigurationName)\NuGetBuild" MetadataAssembly="..\..\output\$(ConfigurationName)\Catel.Fody\Catel.Fody.dll" />
+    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody\Catel.Fody.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild" />
+    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\NET40\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\lib\net40" />
+    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\NET45\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\lib\net45" />
+    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\SL5\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\lib\sl50" />
+    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\WP80\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\lib\wp8" />
+    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\WIN80\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\lib\win80" />
+    <Copy SourceFiles="..\..\output\$(ConfigurationName)\Catel.Fody.Attributes\WIN81\Catel.Fody.Attributes.dll" DestinationFolder="..\..\output\$(ConfigurationName)\NuGetBuild\lib\win81" />
+    <PepitaPackage.WeavingTask NuGetBuildDirectory="..\..\output\$(ConfigurationName)\NuGetBuild" MetadataAssembly="..\..\output\$(ConfigurationName)\NuGetBuild\Catel.Fody.dll" />
   </Target>
   <ItemGroup>
     <None Include="Catel.Fody.nuspec">

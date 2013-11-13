@@ -56,7 +56,11 @@ _ReSharper*
 
 # Finalbuilder
 *.fbl7
+*.fb7lck
 *.fbpInf
+
+# Ghostdoc
+*.GhostDoc.xml
 
 # Deployments
 deployment/FinalBuilder/backup
@@ -64,7 +68,6 @@ deployment/InnoSetup/template/templates
 deployment/InnoSetup/template/snippets
 deployment/InnoSetup/template/libraries
 deployment/InnoSetup/template/doc
-deployment/NuGet
 
 # Installshield output folder 
 [Ee]xpress
