@@ -102,17 +102,20 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Compile Include="..\Catel.Fody.Attributes.NET40\DefaultValueAttribute.cs">
-      <Link>DefaultValueAttribute.cs</Link>
-    </Compile>
-    <Compile Include="..\Catel.Fody.Attributes.NET40\ExposeAttribute.cs">
-      <Link>ExposeAttribute.cs</Link>
+    <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\NotNullAttribute.cs">
+      <Link>ArgumentAttributes\NotNullAttribute.cs</Link>
     </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\NoWeavingAttribute.cs">
       <Link>NoWeavingAttribute.cs</Link>
     </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Catel.Fody.Attributes.NET40\PropertyAttributes\DefaultValueAttribute.cs">
+      <Link>PropertyAttributes\DefaultValueAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Catel.Fody.Attributes.NET40\PropertyAttributes\ExposeAttribute.cs">
+      <Link>PropertyAttributes\ExposeAttribute.cs</Link>
     </Compile>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">

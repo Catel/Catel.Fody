@@ -41,8 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultValueAttribute.cs" />
-    <Compile Include="ExposeAttribute.cs" />
+    <Compile Include="ArgumentAttributes\NotNullAttribute.cs" />
+    <Compile Include="PropertyAttributes\DefaultValueAttribute.cs" />
+    <Compile Include="PropertyAttributes\ExposeAttribute.cs" />
     <Compile Include="NoWeavingAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

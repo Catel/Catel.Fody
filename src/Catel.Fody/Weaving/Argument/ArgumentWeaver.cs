@@ -1,35 +1,39 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ArgumentWeaverService.cs" company="Catel development team">
+// <copyright file="ArgumentWeaver.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 
-namespace Catel.Fody.Services
+namespace Catel.Fody.Weaving.Argument
 {
-    using System.Collections.Generic;
-    using Catel.Fody.Weaving.Argument;
     using Mono.Cecil;
 
-    public class ArgumentWeaverService
+    public class ArgumentWeaver
     {
-        private readonly List<TypeDefinition> _allTypes;
+        #region Fields
+        private readonly TypeDefinition _typeDefinition;
+        #endregion
 
         #region Constructors
-        public ArgumentWeaverService(List<TypeDefinition> allTypes)
+        public ArgumentWeaver(TypeDefinition typeDefinition)
         {
-            _allTypes = allTypes;
+            _typeDefinition = typeDefinition;
         }
         #endregion
 
         #region Methods
         public void Execute()
         {
-            foreach (var type in _allTypes)
+            foreach (var method in _typeDefinition.Methods)
             {
-                var argumentWeaver = new ArgumentWeaver(type);
-                argumentWeaver.Execute();
+                ProcessMethod(method);
             }
+        }
+
+        private void ProcessMethod(MethodDefinition method)
+        {
+            // TODO: Implement
         }
         #endregion
     }

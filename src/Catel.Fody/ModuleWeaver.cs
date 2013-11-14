@@ -70,9 +70,9 @@ namespace Catel.Fody
 
         public void Execute()
         {
-//#if DEBUG
-//            Debugger.Launch();
-//#endif
+            //#if DEBUG
+            //            Debugger.Launch();
+            //#endif
 
             InitializeEnvironment();
 
@@ -99,9 +99,8 @@ namespace Catel.Fody
             exposedPropertiesWeaverService.Execute();
 
             // 4th step: Argument weaving
-            // TODO
-            // var argumentWeaverService = new ArgumentWeaverService();
-            // argumentWeaverService.Execute();
+            var argumentWeaverService = new ArgumentWeaverService(types);
+            argumentWeaverService.Execute();
 
             // 5th step: Xml schema weaving
             var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);
