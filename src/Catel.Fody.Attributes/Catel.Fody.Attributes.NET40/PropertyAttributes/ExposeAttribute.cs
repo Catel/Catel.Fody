@@ -16,10 +16,23 @@ namespace Catel.Fody
         /// Initializes a new instance of the <see cref="ExposeAttribute" /> class.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        /// <param name="propertyNameOnModel">The property name configuration model.</param>
-        /// <exception cref="System.ArgumentException">The argument cannot be null or whitespace;propertyName</exception>
         /// <exception cref="ArgumentException">The <paramref name="propertyName" /> is <c>null</c> or whitespace.</exception>
-        public ExposeAttribute(string propertyName, string propertyNameOnModel = null)
+        /// <remarks>
+        /// Do not create default values for attribute constructors! For more information, see:
+        /// http://stackoverflow.com/questions/8290853/attribute-argument-must-be-a-constant-error-when-using-an-optional-parameter-in 
+        /// </remarks>
+        public ExposeAttribute(string propertyName)
+            : this(propertyName, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExposeAttribute" /> class.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="propertyNameOnModel">The property name configuration model.</param>
+        /// <exception cref="ArgumentException">The <paramref name="propertyName" /> is <c>null</c> or whitespace.</exception>
+        public ExposeAttribute(string propertyName, string propertyNameOnModel)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
