@@ -50,6 +50,11 @@ namespace Catel.Fody
         {
             return IsDecoratedWithAttribute(typeDefinition.CustomAttributes, attributeName);
         }
+        
+        public static bool IsDecoratedWithAttribute(this ParameterDefinition parameterDefinition, string attributeName)
+        {
+            return IsDecoratedWithAttribute(parameterDefinition.CustomAttributes, attributeName);
+        }
 
         public static bool IsDecoratedWithAttribute(this PropertyDefinition propertyDefinition, string attributeName)
         {
@@ -62,6 +67,11 @@ namespace Catel.Fody
         }
 
         public static void RemoveAttribute(this TypeDefinition typeDefinition, string attributeName)
+        {
+            RemoveAttribute(typeDefinition.CustomAttributes, attributeName);
+        }
+
+        public static void RemoveAttribute(this ParameterDefinition typeDefinition, string attributeName)
         {
             RemoveAttribute(typeDefinition.CustomAttributes, attributeName);
         }
