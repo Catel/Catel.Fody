@@ -9,7 +9,6 @@ namespace Catel.Fody.Weaving.Argument
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
@@ -18,37 +17,44 @@ namespace Catel.Fody.Weaving.Argument
     public class ArgumentWeaver
     {
         #region Fields
-        private static readonly Dictionary<string, Action<CustomAttribute, MethodBody, ParameterDefinition, int>> ArgumentWaveActions = new Dictionary<string, Action<CustomAttribute, MethodBody, ParameterDefinition, int>> { { "Catel.Fody.NotNullAttribute", NotNullWeave } };
- 
+        private static readonly Dictionary<string, Action<TypeDefinition, CustomAttribute, MethodBody, ParameterDefinition, int>> ArgumentWeaveActions;
+        private static readonly TypeDefinition ArgumentTypeDefinition;
+
         private readonly TypeDefinition _typeDefinition;
+        private readonly ModuleDefinition _moduleDefinition;
         #endregion
 
         #region Constructors
+        static ArgumentWeaver()
+        {
+            ArgumentWeaveActions = new Dictionary<string, Action<TypeDefinition, CustomAttribute, MethodBody, ParameterDefinition, int>>();
+            ArgumentWeaveActions["Catel.Fody.NotNullAttribute"] = NotNullWeave;
+
+            ArgumentTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.Core", "Catel.Argument");
+        }
+
         public ArgumentWeaver(TypeDefinition typeDefinition)
         {
             _typeDefinition = typeDefinition;
+            _moduleDefinition = typeDefinition.Module;
         }
         #endregion
 
         #region Methods
-        /// <summary>
-        /// TODO: Create a weaver class instaed this and register it into the dictionary.
-        /// </summary>
-        /// <param name="customAttribute"></param>
-        /// <param name="body"></param>
-        /// <param name="parameter"></param>
-        /// <param name="parameterIdx"></param>
-        private static void NotNullWeave(CustomAttribute customAttribute, MethodBody body, ParameterDefinition parameter, int parameterIdx)
+        // TODO: Create a weaver class instead this and register it into the dictionary.
+        private static void NotNullWeave(TypeDefinition type, CustomAttribute customAttribute, MethodBody body, ParameterDefinition parameter, int parameterIndex)
         {
-            TypeDefinition argumentTypeDefinition = FodyEnvironment.ModuleDefinition.GetType("Catel.Argument");
-            MethodDefinition methodDefinition = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotNull" && definition.Parameters.Count == 2);
+            var methodDefinition = ArgumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotNull" && definition.Parameters.Count == 2);
 
-            body.SimplifyMacros();
+            // Note: you need to import methods in other classes so it knows what assembly / type to call
+            var importedMethod = type.Module.Import(methodDefinition);
 
             Collection<Instruction> instructions = body.Instructions;
-            instructions.Insert(0, Instruction.Create(OpCodes.Nop), Instruction.Create(OpCodes.Ldstr, parameter.Name), Instruction.Create(OpCodes.Ldarg_S, parameterIdx), Instruction.Create(OpCodes.Call, methodDefinition));
-
-            body.OptimizeMacros();
+            instructions.Insert(0, 
+                //Instruction.Create(OpCodes.Nop), // Only required in debug mode
+                Instruction.Create(OpCodes.Ldstr, parameter.Name), 
+                Instruction.Create(OpCodes.Ldarg_S, parameter),
+                Instruction.Create(OpCodes.Call, importedMethod));
         }
 
         public void Execute()
@@ -61,22 +67,28 @@ namespace Catel.Fody.Weaving.Argument
 
         private void ProcessMethod(MethodDefinition method)
         {
+            var methodBody = method.Body;
+            methodBody.SimplifyMacros();
+
             int parameterIdx = 0;
-            foreach (ParameterDefinition parameter in method.Parameters)
+            foreach (var parameter in method.Parameters)
             {
-                for (int i = parameter.CustomAttributes.Count - 1; i >= 0; i--)
+                for (int i = 0; i < parameter.CustomAttributes.Count; i++)
+                //for (int i = parameter.CustomAttributes.Count - 1; i >= 0; i--)
                 {
                     var customAttribute = parameter.CustomAttributes[i];
                     string attributeFullName = customAttribute.AttributeType.FullName;
-                    if (ArgumentWaveActions.ContainsKey(attributeFullName))
+                    if (ArgumentWeaveActions.ContainsKey(attributeFullName))
                     {
-                        ArgumentWaveActions[attributeFullName].Invoke(customAttribute, method.Body, parameter, parameterIdx);
+                        ArgumentWeaveActions[attributeFullName].Invoke(_typeDefinition, customAttribute, method.Body, parameter, parameterIdx);
                         parameter.RemoveAttribute(attributeFullName);
                     }
                 }
 
                 parameterIdx++;
             }
+
+            methodBody.OptimizeMacros();
         }
 
         #endregion

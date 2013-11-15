@@ -60,7 +60,11 @@ namespace Catel.Fody.Weaving.ExposedProperties
         {
             var modelName = modelProperty.Name;
             var viewModelPropertyName = (string)exposeAttribute.ConstructorArguments[0].Value;
-            var modelPropertyName = (string)(exposeAttribute.ConstructorArguments[1].Value ?? viewModelPropertyName);
+            var modelPropertyName = viewModelPropertyName;
+            if (exposeAttribute.ConstructorArguments.Count > 1)
+            {
+                modelPropertyName = (string) (exposeAttribute.ConstructorArguments[1].Value ?? viewModelPropertyName);
+            }
 
             // Check property definition on model
             var modelType = modelProperty.PropertyDefinition.PropertyType;
