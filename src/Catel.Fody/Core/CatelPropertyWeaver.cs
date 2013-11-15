@@ -433,7 +433,7 @@ namespace Catel.Fody
             var instructionsToAdd = new List<Instruction>();
             instructionsToAdd.AddRange(new[]
             {
-                Instruction.Create(OpCodes.Nop),
+                //Instruction.Create(OpCodes.Nop),
                 Instruction.Create(OpCodes.Ldarg_0),
                 Instruction.Create(OpCodes.Ldstr, property.Name),
                 Instruction.Create(OpCodes.Ldarg_1)
@@ -447,7 +447,7 @@ namespace Catel.Fody
             instructionsToAdd.AddRange(new[]
             {
                 Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker),
-                Instruction.Create(OpCodes.Nop),
+                //Instruction.Create(OpCodes.Nop),
                 Instruction.Create(OpCodes.Ret)
             });
 

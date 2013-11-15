@@ -25,7 +25,8 @@ namespace Catel.Fody.Test
             var instance = Activator.CreateInstance(type);
 
             var method = type.GetMethod("CheckForNull");
-            ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] {null}));
+
+            CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null }));
         }
 
         [TestMethod]
@@ -41,5 +42,36 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "some value" });
         }
         #endregion
+
+        private static void CallMethodAndExpectException<TException>(Action action)
+        {
+            try
+            {
+                action();
+
+                Assert.Fail("Expected exception '{0}'", typeof(TException).Name);
+            }
+            catch (Exception ex)
+            {
+                Type exceptionType = ex.GetType();
+
+                if (exceptionType == typeof(TException))
+                {
+                    return;
+                }
+
+                if (ex.InnerException != null)
+                {
+                    exceptionType = ex.InnerException.GetType();
+                }
+
+                if (exceptionType == typeof(TException))
+                {
+                    return;
+                }
+
+                Assert.Fail("Expected exception '{0}' but got '{1}'", typeof(TException).Name, ex.GetType().Name);
+            }
+        }
     }
 }
