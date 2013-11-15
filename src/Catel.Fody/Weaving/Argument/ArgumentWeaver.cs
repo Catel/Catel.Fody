@@ -64,8 +64,9 @@ namespace Catel.Fody.Weaving.Argument
             int parameterIdx = 0;
             foreach (ParameterDefinition parameter in method.Parameters)
             {
-                foreach (CustomAttribute customAttribute in parameter.CustomAttributes)
+                for (int i = parameter.CustomAttributes.Count - 1; i >= 0; i--)
                 {
+                    var customAttribute = parameter.CustomAttributes[i];
                     string attributeFullName = customAttribute.AttributeType.FullName;
                     if (ArgumentWaveActions.ContainsKey(attributeFullName))
                     {
