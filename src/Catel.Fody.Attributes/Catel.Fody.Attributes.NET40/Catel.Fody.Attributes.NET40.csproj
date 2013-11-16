@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentAttributes\ImplementsInterfaceAttribute.cs" />
+    <Compile Include="ArgumentAttributes\OfTypeAttribute.cs" />
     <Compile Include="ArgumentAttributes\MatchAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotMatchAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotNullOrEmptyArrayAttribute.cs" />

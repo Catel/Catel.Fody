@@ -7,38 +7,59 @@
 
 namespace Catel.Fody.TestAssembly
 {
+    using System;
     using System.Text.RegularExpressions;
 
     public class ArgumentChecksClass
     {
+        /// <exception cref="System.ArgumentException">The <paramref name="myString"/> is <c>null</c> or empty.</exception>
         public void CheckForNullOrEmpty([NotNullOrEmpty] string myString)
         {
+            // Argument.IsNotNullOrEmpty(() => myString);
         }
 
+        /// <exception cref="System.ArgumentException">The <paramref name="myString"/> is <c>null</c> or whitespace.</exception>
         public void CheckForNullOrWhitespace([NotNullOrWhitespace] string myString)
         {
-        }    
-        
+            // Argument.IsNotNullOrWhitespace(() => myString);
+        }
+
+        /// <exception cref="System.ArgumentException">The <paramref name="myArray"/> is <c>null</c> or an empty array.</exception>
         public void CheckForNullOrEmptyArray([NotNullOrEmptyArray] object[] myArray)
         {
+            // Argument.IsNotNullOrEmptyArray(() => myArray);
         }
 
+        /// <exception cref="System.ArgumentNullException">The <paramref name="myObject"/> is <c>null</c>.</exception>
         public void CheckForNull([NotNull] object myObject)
         {
+            // Argument.IsNotNull(() => myObject);
         }
 
+        /// <exception cref="System.ArgumentException">The <paramref name="myObject"/> is not of type <see cref="IComparable"/>.</exception>
+        public void CheckForOfType([OfType(typeof(IComparable))]object myObject)
+        {
+            // Argument.IsOfType(() => myObject, typeof(IComparable));
+        }
+
+        /// <exception cref="System.ArgumentException">The <paramref name="myObject"/> does not implement the <see cref="IComparable"/> interface.</exception>
+        public void CheckForOfImplementsInterface([OfType(typeof(IComparable))]object myObject)
+        {
+            // Argument.ImplementsInterface(() => myObject, typeof(IComparable));
+        }
+
+        /// <exception cref="System.ArgumentException">The <paramref name="myString"/> doesn't match with pattern <c><![CDATA[\\d+]]></c>.</exception>
         public void CheckForMatch([Match("\\d+")] string myString)
         {
+            // Argument.IsMatch(() => myString, "\\d+");
         }
 
+        /// <exception cref="System.ArgumentException">The <paramref name="myString"/> does match with pattern <c><![CDATA[\\d+]]></c>.</exception>
         public void CheckForNotMatch([NotMatch("\\d+")] string myString)
         {
+            // Argument.IsNotMatch(() => myString, "\\d+");
         }
 
-        public void Check([NotMatch("\\d+")] string myString, [Match("\\d+")] string myString2)
-        {
-        }  
-   
         public void CheckForNullWithMultipleParameters([NotNull] object myObject1, [NotNull] object myObject2, [NotNull] object myObject3,
             [NotNull] object myObject4, [NotNull] object myObject5, [NotNull] object myObject6, [NotNull] object myObject7)
         {

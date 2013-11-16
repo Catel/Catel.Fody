@@ -195,6 +195,54 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "abcd" });
         }
 
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNotTypeOf()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOfType");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object() }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForTypeOf()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOfType");
+
+            method.Invoke(instance, new object[] { 2 });
+        }       
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNotInterfaceImplemented()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOfImplementsInterface");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object() }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForNotInterfaceImplemented()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOfImplementsInterface");
+
+            method.Invoke(instance, new object[] { 2 });
+        }
+
         private static void CallMethodAndExpectException<TException>(Action action)
         {
             try

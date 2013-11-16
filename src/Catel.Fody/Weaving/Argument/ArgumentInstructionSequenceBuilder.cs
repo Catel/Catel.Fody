@@ -31,6 +31,13 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Ldstr, parameter.Name);
             yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
         }
+
+        public static IEnumerable<Instruction> BuildIsOfTypeOrImplementsInterfaceInstructions(ParameterDefinition parameter, CustomAttribute attribute)
+        {
+            yield return Instruction.Create(OpCodes.Ldstr, parameter.Name);
+            yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
+            yield return Instruction.Create(OpCodes.Ldtoken, (TypeReference)attribute.ConstructorArguments[0].Value);
+        }
         #endregion
     }
 }
