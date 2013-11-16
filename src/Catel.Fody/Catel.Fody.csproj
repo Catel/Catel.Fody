@@ -68,8 +68,7 @@
     <Compile Include="Services\ArgumentWeaverService.cs" />
     <Compile Include="Services\ExposedPropertiesWeaverService.cs" />
     <Compile Include="Weaving\Argument\ArgumentWeaver.cs" />
-    <Compile Include="Weaving\Argument\BasicArgumentMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\ArgumentMethodCallWeaver.cs" />
+    <Compile Include="Weaving\Argument\ArgumentMethodCallWeaverBase.cs" />
     <Compile Include="Weaving\Argument\IsNotNullArgumentMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\IsNotNullOrEmptyArgumentMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\IsNotNullOrWhitespaceArgumentMethodCallWeaver.cs" />

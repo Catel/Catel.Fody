@@ -6,7 +6,7 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
-    public sealed class IsNotNullOrEmptyArgumentMethodCallWeaver : BasicArgumentMethodCallWeaver
+    public sealed class IsNotNullOrEmptyArgumentMethodCallWeaver : ArgumentMethodCallWeaverBase
     {
         #region Constructors
         public IsNotNullOrEmptyArgumentMethodCallWeaver()

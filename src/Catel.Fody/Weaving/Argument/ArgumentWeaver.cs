@@ -7,6 +7,7 @@
 namespace Catel.Fody.Weaving.Argument
 {
     using Mono.Cecil;
+    using Mono.Cecil.Rocks;
 
     public class ArgumentWeaver
     {
@@ -20,9 +21,9 @@ namespace Catel.Fody.Weaving.Argument
         #region Constructors
         static ArgumentWeaver()
         {
-            ArgumentMethodCallWeaver.WellKnownWeavers["Catel.Fody.NotNullAttribute"] = new IsNotNullArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaver.WellKnownWeavers["Catel.Fody.NotNullOrEmptyAttribute"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaver.WellKnownWeavers["Catel.Fody.NotNullOrWhitespaceAttribute"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
+            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullAttribute"] = new IsNotNullArgumentMethodCallWeaver();
+            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyAttribute"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
+            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrWhitespaceAttribute"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
         }
 
         public ArgumentWeaver(TypeDefinition typeDefinition)
@@ -42,6 +43,8 @@ namespace Catel.Fody.Weaving.Argument
 
         private void ProcessMethod(MethodDefinition method)
         {
+            bool hasSimplifiedMethod = false;
+
             for (int i = method.Parameters.Count - 1; i >= 0; i--)
             {
                 var parameter = method.Parameters[i];
@@ -49,12 +52,23 @@ namespace Catel.Fody.Weaving.Argument
                 {
                     var customAttribute = parameter.CustomAttributes[j];
                     string attributeFullName = customAttribute.AttributeType.FullName;
-                    if (ArgumentMethodCallWeaver.WellKnownWeavers.ContainsKey(attributeFullName))
+                    if (ArgumentMethodCallWeaverBase.WellKnownWeavers.ContainsKey(attributeFullName))
                     {
-                        ArgumentMethodCallWeaver.WellKnownWeavers[attributeFullName].Execute(_typeDefinition, method, parameter, customAttribute);
+                        if (!hasSimplifiedMethod)
+                        {
+                            method.Body.SimplifyMacros();
+                            hasSimplifiedMethod = true;
+                        }
+
+                        ArgumentMethodCallWeaverBase.WellKnownWeavers[attributeFullName].Execute(_typeDefinition, method, parameter, customAttribute);
                         parameter.RemoveAttribute(attributeFullName);
                     }
                 }
+            }
+
+            if (hasSimplifiedMethod)
+            {
+                method.Body.OptimizeMacros();
             }
         }
         #endregion
