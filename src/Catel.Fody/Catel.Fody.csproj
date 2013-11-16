@@ -67,8 +67,11 @@
     <Compile Include="FodyEnvironment.cs" />
     <Compile Include="Services\ArgumentWeaverService.cs" />
     <Compile Include="Services\ExposedPropertiesWeaverService.cs" />
+    <Compile Include="Weaving\Argument\ArgumentInstructionSequenceBuilder.cs" />
     <Compile Include="Weaving\Argument\ArgumentWeaver.cs" />
     <Compile Include="Weaving\Argument\ArgumentMethodCallWeaverBase.cs" />
+    <Compile Include="Weaving\Argument\DefaultArgumentMethodCallWeaveBase.cs" />
+    <Compile Include="Weaving\Argument\IsMatchOrIsNotMatchArgumentMethodCallWeaverBase.cs" />
     <Compile Include="Weaving\Argument\IsNotMatchArgumentMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\IsMatchArgumentMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\IsNotNullArgumentMethodCallWeaver.cs" />

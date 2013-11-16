@@ -6,20 +6,12 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
-    using System.Collections.Generic;
     using System.Linq;
 
     using Mono.Cecil;
-    using Mono.Cecil.Cil;
 
-    public sealed class IsNotNullArgumentMethodCallWeaver : ArgumentMethodCallWeaverBase
+    public sealed class IsNotNullArgumentMethodCallWeaver : DefaultArgumentMethodCallWeaveBase
     {
-        protected override void BuildInstructions(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions)
-        {
-            instructions.Add(Instruction.Create(OpCodes.Ldstr, parameter.Name));
-            instructions.Add(Instruction.Create(OpCodes.Ldarg_S, parameter));
-        }
-
         protected override void SelectMethod(TypeDefinition argumentTypeDefinition, out MethodDefinition selectedMethod)
         {
             selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotNull" && definition.Parameters.Count == 2);

@@ -33,13 +33,12 @@ namespace Catel.Fody.TestAssembly
 
         public void CheckForNotMatch([NotMatch("\\d+")] string myString)
         {
-        }  
-        
-        public void CheckForMatch2(string myString)
-        {
-            Argument.IsMatch("myString", myString, "\\d+", RegexOptions.Compiled);
         }
 
+        public void Check([NotMatch("\\d+")] string myString, [Match("\\d+")] string myString2)
+        {
+        }  
+   
         public void CheckForNullWithMultipleParameters([NotNull] object myObject1, [NotNull] object myObject2, [NotNull] object myObject3,
             [NotNull] object myObject4, [NotNull] object myObject5, [NotNull] object myObject6, [NotNull] object myObject7)
         {
