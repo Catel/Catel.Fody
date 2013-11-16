@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -88,6 +88,12 @@
   <ItemGroup>
     <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\NotNullAttribute.cs">
       <Link>ArgumentAttributes\NotNullAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\NotNullOrEmptyAttribute.cs">
+      <Link>ArgumentAttributes\NotNullOrEmptyAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\NotNullOrWhitespaceAttribute.cs">
+      <Link>ArgumentAttributes\NotNullOrWhitespaceAttribute.cs</Link>
     </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\NoWeavingAttribute.cs">
       <Link>NoWeavingAttribute.cs</Link>

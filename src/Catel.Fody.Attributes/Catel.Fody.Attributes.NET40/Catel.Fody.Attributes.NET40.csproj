@@ -41,7 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentAttributes\NotNullOrEmptyAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotNullAttribute.cs" />
+    <Compile Include="ArgumentAttributes\NotNullOrWhitespaceAttribute.cs" />
     <Compile Include="PropertyAttributes\DefaultValueAttribute.cs" />
     <Compile Include="PropertyAttributes\ExposeAttribute.cs" />
     <Compile Include="NoWeavingAttribute.cs" />

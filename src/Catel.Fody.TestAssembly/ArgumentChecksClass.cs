@@ -9,9 +9,16 @@ namespace Catel.Fody.TestAssembly
 {
     public class ArgumentChecksClass
     {
+        public void CheckForNullOrEmpty([NotNullOrEmpty] string myString)
+        {
+        }
+
+        public void CheckForNullOrWhitespace([NotNullOrWhitespace] string myString)
+        {
+        }
+
         public void CheckForNull([NotNull] object myObject)
         {
-            Argument.IsNotNull("myObject", myObject);
         }
 
         public void CheckForNullWithMultipleParameters([NotNull] object myObject1, [NotNull] object myObject2, [NotNull] object myObject3,

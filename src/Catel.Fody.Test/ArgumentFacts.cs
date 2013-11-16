@@ -4,11 +4,10 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace Catel.Fody.Test
 {
     using System;
-    using Catel.Test;
+
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -32,16 +31,85 @@ namespace Catel.Fody.Test
         [TestMethod]
         public void CorrectlyThrowsNoArgumentNullExceptionForNotNullTypes()
         {
-            // Note: do NOT instantiate the type, then you will get the "unweaved" types. You need to use this helper during unit tests
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
 
-            // Instantiate to have properties registered
             var instance = Activator.CreateInstance(type);
 
             var method = type.GetMethod("CheckForNull");
             method.Invoke(instance, new object[] { "some value" });
         }
-        #endregion
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNullString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrEmpty");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (string)null }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForEmptyString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrEmpty");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { string.Empty }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForNoNullOrEmptyString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrEmpty");
+
+            method.Invoke(instance, new object[] { "some value" });
+        } 
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNullString2()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrWhitespace");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (string)null }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForWhitespaceString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrWhitespace");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "   " }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForNoNullOrWhitespaceString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrWhitespace");
+
+            method.Invoke(instance, new object[] { "some value" });
+        }
 
         private static void CallMethodAndExpectException<TException>(Action action)
         {
@@ -73,5 +141,6 @@ namespace Catel.Fody.Test
                 Assert.Fail("Expected exception '{0}' but got '{1}'", typeof(TException).Name, ex.GetType().Name);
             }
         }
+        #endregion
     }
 }
