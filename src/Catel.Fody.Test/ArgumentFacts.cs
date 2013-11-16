@@ -73,6 +73,42 @@ namespace Catel.Fody.Test
             var method = type.GetMethod("CheckForNullOrEmpty");
 
             method.Invoke(instance, new object[] { "some value" });
+        }         
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNullArray()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrEmptyArray");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (object[])null }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForEmptyArray()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrEmptyArray");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object[] { } }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForNoNullOrEmptyArray()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNullOrEmptyArray");
+
+            method.Invoke(instance, new object[] { new object[] { 1, "some value" } });
         } 
         
         [TestMethod]
@@ -109,6 +145,54 @@ namespace Catel.Fody.Test
             var method = type.GetMethod("CheckForNullOrWhitespace");
 
             method.Invoke(instance, new object[] { "some value" });
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNotMatchString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMatch");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "abcd" }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForMatchString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMatch");
+
+            method.Invoke(instance, new object[] { "12345" });
+        }       
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForMatchString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNotMatch");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "12345" }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForNotMatchString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForNotMatch");
+
+            method.Invoke(instance, new object[] { "abcd" });
         }
 
         private static void CallMethodAndExpectException<TException>(Action action)

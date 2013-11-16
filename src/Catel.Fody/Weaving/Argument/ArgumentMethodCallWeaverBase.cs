@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BasicArgumentMethodCallWeaver.cs" company="Catel development team">
+// <copyright file="ArgumentMethodCallWeaverBase.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -7,52 +7,37 @@
 namespace Catel.Fody.Weaving.Argument
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     using Mono.Cecil;
     using Mono.Cecil.Cil;
-    using Mono.Collections.Generic;
 
     public abstract class ArgumentMethodCallWeaverBase
     {
         #region Constants
         public static readonly Dictionary<string, ArgumentMethodCallWeaverBase> WellKnownWeavers = new Dictionary<string, ArgumentMethodCallWeaverBase>();
-        #endregion
 
-        #region Fields
-        private readonly string _methodName;
-        #endregion
-
-        #region Constructors
-        protected ArgumentMethodCallWeaverBase(string methodName)
-        {
-            _methodName = methodName;
-
-            ArgumentTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.Core", "Catel.Argument");
-        }
-        #endregion
-
-        #region Properties
-        protected TypeDefinition ArgumentTypeDefinition { get; private set; }
+        private static readonly TypeDefinition ArgumentTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.Core", "Catel.Argument");
         #endregion
 
         #region Methods
-        public void Execute(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute customAttribute)
+        public void Execute(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute)
         {
-            OnExecute(type, methodDefinition, parameter, customAttribute);
+            MethodDefinition selectedMethod;
+
+            SelectMethod(ArgumentTypeDefinition, out selectedMethod);
+            var importedMethod = type.Module.Import(selectedMethod);
+
+            var instructions = new List<Instruction>();
+            BuildInstructions(type, methodDefinition, parameter, attribute, instructions);
+
+            instructions.Add(Instruction.Create(OpCodes.Call, importedMethod));
+
+            methodDefinition.Body.Instructions.Insert(0, instructions);
         }
 
-        protected virtual void OnExecute(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute customAttribute)
-        {
-            var argumentMethodDefinitionToCall = ArgumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == _methodName && definition.Parameters.Count == 2);
+        protected abstract void BuildInstructions(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions);
 
-            var importedMethod = type.Module.Import(argumentMethodDefinitionToCall);
-
-            Collection<Instruction> instructions = methodDefinition.Body.Instructions;
-            instructions.Insert(0, Instruction.Create(OpCodes.Ldstr, parameter.Name),
-                Instruction.Create(OpCodes.Ldarg_S, parameter),
-                Instruction.Create(OpCodes.Call, importedMethod));
-        }
+        protected abstract void SelectMethod(TypeDefinition argumentTypeDefinition, out MethodDefinition selectedMethod);
         #endregion
     }
 }

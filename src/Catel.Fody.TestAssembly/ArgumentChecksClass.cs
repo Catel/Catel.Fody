@@ -7,6 +7,8 @@
 
 namespace Catel.Fody.TestAssembly
 {
+    using System.Text.RegularExpressions;
+
     public class ArgumentChecksClass
     {
         public void CheckForNullOrEmpty([NotNullOrEmpty] string myString)
@@ -15,10 +17,27 @@ namespace Catel.Fody.TestAssembly
 
         public void CheckForNullOrWhitespace([NotNullOrWhitespace] string myString)
         {
+        }    
+        
+        public void CheckForNullOrEmptyArray([NotNullOrEmptyArray] object[] myArray)
+        {
         }
 
         public void CheckForNull([NotNull] object myObject)
         {
+        }
+
+        public void CheckForMatch([Match("\\d+")] string myString)
+        {
+        }
+
+        public void CheckForNotMatch([NotMatch("\\d+")] string myString)
+        {
+        }  
+        
+        public void CheckForMatch2(string myString)
+        {
+            Argument.IsMatch("myString", myString, "\\d+", RegexOptions.Compiled);
         }
 
         public void CheckForNullWithMultipleParameters([NotNull] object myObject1, [NotNull] object myObject2, [NotNull] object myObject3,
