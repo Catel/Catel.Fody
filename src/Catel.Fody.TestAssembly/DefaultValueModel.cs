@@ -65,7 +65,7 @@ namespace Catel.Fody.TestAssembly
         /// <summary>
         /// Register the DoubleValueCatel property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData DoubleValueCatelProperty = RegisterProperty("DoubleValueCatel", typeof(double), 42d);
+        public static readonly PropertyData DoubleValueCatelProperty = RegisterProperty("DoubleValueCatel", typeof(double));
 
         [DefaultValue(42f)]
         public float FloatValue { get; set; }

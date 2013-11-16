@@ -269,21 +269,23 @@ namespace Catel.Fody
             }
             else
             {
-                // Use default value
-                var propertyType = propertyData.PropertyDefinition.PropertyType;
-                if (propertyType.IsValueType && !propertyType.IsPrimitive)
-                {
-                    var variableDefinition = new VariableDefinition(propertyType);
-                    body.Variables.Add(variableDefinition);
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
 
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldloca_S, variableDefinition));
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Initobj, propertyType));
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldloc, variableDefinition));
-                }
-                else
-                {
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));                    
-                }
+                //// Use default value
+                //var propertyType = propertyData.PropertyDefinition.PropertyType;
+                //if (propertyType.IsValueType && !propertyType.IsPrimitive)
+                //{
+                //    var variableDefinition = new VariableDefinition(propertyType);
+                //    body.Variables.Add(variableDefinition);
+
+                //    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldloca_S, variableDefinition));
+                //    instructionsToInsert.Add(Instruction.Create(OpCodes.Initobj, propertyType));
+                //    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldloc, variableDefinition));
+                //}
+                //else
+                //{
+                //    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));                    
+                //}
             }
 
             if (propertyData.ChangeCallbackReference != null)
@@ -328,7 +330,9 @@ namespace Catel.Fody
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
             }
 
-            var parameters = _catelType.RegisterPropertyInvoker.Parameters.Reverse().ToList();
+            var registerPropertyInvoker = (propertyData.DefaultValue == null) ? _catelType.RegisterPropertyWithoutDefaultValueInvoker : _catelType.RegisterPropertyWithDefaultValueInvoker;
+
+            var parameters = registerPropertyInvoker.Parameters.Reverse().ToList();
             for (int i = 0; i < parameters.Count; i++)
             {
                 var parameterType = parameters[i];
@@ -341,13 +345,16 @@ namespace Catel.Fody
             }
 
             // Make call to register property generic
-            var genericRegisterProperty = new GenericInstanceMethod(_catelType.RegisterPropertyInvoker);
-            foreach (var genericParameter in _catelType.RegisterPropertyInvoker.GenericParameters)
+            var genericRegisterProperty = new GenericInstanceMethod(registerPropertyInvoker);
+            if (registerPropertyInvoker.HasGenericParameters)
             {
-                genericRegisterProperty.GenericParameters.Add(genericParameter);
-            }
+                foreach (var genericParameter in registerPropertyInvoker.GenericParameters)
+                {
+                    genericRegisterProperty.GenericParameters.Add(genericParameter);
+                }
 
-            genericRegisterProperty.GenericArguments.Add(property.PropertyType);
+                genericRegisterProperty.GenericArguments.Add(property.PropertyType);
+            }
 
             instructionsToInsert.AddRange(new[]
             {

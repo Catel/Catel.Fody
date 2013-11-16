@@ -58,6 +58,7 @@
     <Compile Include="ExposingViewModel.cs" />
     <Compile Include="ModelBaseTest.cs" />
     <Compile Include="Inheritance.cs" />
+    <Compile Include="ModelWithDoubleValues.cs" />
     <Compile Include="MyViewModelBase.cs" />
     <Compile Include="NoWeavingModelTest.cs" />
     <Compile Include="ViewModelBaseTest.cs" />

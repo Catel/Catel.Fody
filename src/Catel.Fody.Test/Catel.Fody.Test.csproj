@@ -79,6 +79,7 @@
     <Compile Include="InheritanceFacts.cs" />
     <Compile Include="MockAssemblyResolver.cs" />
     <Compile Include="ModelBaseFacts.cs" />
+    <Compile Include="ModelWithDoubleValuesFacts.cs" />
     <Compile Include="NoWeavingFacts.cs" />
     <Compile Include="ViewModelBaseFacts.cs" />
   </ItemGroup>
