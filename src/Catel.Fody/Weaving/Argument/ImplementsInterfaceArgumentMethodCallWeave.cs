@@ -10,13 +10,13 @@ namespace Catel.Fody.Weaving.Argument
 
     using Mono.Cecil;
 
-    public class ImplementsInterfaceArgumentMethodCallWeave : IsOfTypeOrImplementsInterfaceArgumentBase
+    public class ImplementsInterfaceArgumentMethodCallWeave : TypeCheckRelatedArgumentMethodCallWeaverBase
     {
         #region Methods
 
-        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, out MethodDefinition selectedMethod)
+        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod)
         {
-            selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsOfType" && definition.Parameters.Count == 3);
+            selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsOfType" && definition.Parameters.Count == 3 && ((parameter.ParameterType.FullName == "System.Type" && definition.Parameters[1].ParameterType.FullName == "System.Type") || (parameter.ParameterType.FullName != "System.Type" && definition.Parameters[1].ParameterType.FullName == "System.Object")));
         }
         #endregion
     }

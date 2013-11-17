@@ -12,7 +12,7 @@ namespace Catel.Fody.Weaving.Argument
 
     public sealed class IsNotNullOrWhitespaceArgumentMethodCallWeaver : DefaultArgumentMethodCallWeaveBase
     {
-        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, out MethodDefinition selectedMethod)
+        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod)
         {
             selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotNullOrWhitespace" && definition.Parameters.Count == 2);
         }

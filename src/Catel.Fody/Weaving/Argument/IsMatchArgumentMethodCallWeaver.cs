@@ -10,10 +10,10 @@ namespace Catel.Fody.Weaving.Argument
 
     using Mono.Cecil;
 
-    public sealed class IsNotMatchArgumentMethodCallWeaver : IsMatchOrIsNotMatchArgumentMethodCallWeaverBase
+    public sealed class IsNotMatchArgumentMethodCallWeaver : RegexRelatedArgumentMethodCallWeaverBase
     {
         #region Methods
-        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, out MethodDefinition selectedMethod)
+        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod)
         {
             selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotMatch" && definition.Parameters.Count == 4);
         }

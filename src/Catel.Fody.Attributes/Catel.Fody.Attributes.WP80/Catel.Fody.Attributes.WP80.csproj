@@ -109,7 +109,10 @@
     </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\ImplementsInterfaceAttribute.cs">
       <Link>ArgumentAttributes\ImplementsInterfaceAttribute.cs</Link>
-    </Compile>    
+    </Compile>  
+    <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\InheritsFromAttribute.cs">
+      <Link>ArgumentAttributes\InheritsFromAttribute.cs</Link>
+    </Compile>  
   	<Compile Include="..\Catel.Fody.Attributes.NET40\NoWeavingAttribute.cs">
       <Link>NoWeavingAttribute.cs</Link>
     </Compile>

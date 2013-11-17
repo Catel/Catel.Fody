@@ -1,5 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IsMatchOrIsNotMatchArgumentMethodCallWeaverBase.cs" company="Catel development team">
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IsOfTypeOrImplementsInterfaceArgumentBase.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -11,12 +11,12 @@ namespace Catel.Fody.Weaving.Argument
     using Mono.Cecil;
     using Mono.Cecil.Cil;
 
-    public abstract class IsMatchOrIsNotMatchArgumentMethodCallWeaverBase : ArgumentMethodCallWeaverBase
+    public abstract class TypeCheckRelatedArgumentMethodCallWeaverBase : ArgumentMethodCallWeaverBase
     {
         #region Methods
         protected override sealed void BuildInstructions(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions)
         {
-            instructions.AddRange(ArgumentInstructionSequenceBuilder.BuildIsMatchOrIsNotMatchInstructions(parameter, attribute));
+            instructions.AddRange(ArgumentInstructionSequenceBuilder.BuildTypeCheckRelatedInstructions(parameter, attribute));
         }
         #endregion
     }

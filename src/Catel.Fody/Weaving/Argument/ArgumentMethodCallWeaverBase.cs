@@ -24,20 +24,23 @@ namespace Catel.Fody.Weaving.Argument
         {
             MethodDefinition selectedMethod;
 
-            SelectMethod(ArgumentTypeDefinition, out selectedMethod);
-            var importedMethod = type.Module.Import(selectedMethod);
+            SelectMethod(ArgumentTypeDefinition, parameter, out selectedMethod);
+            if (selectedMethod != null)
+            {
+                var importedMethod = type.Module.Import(selectedMethod);
 
-            var instructions = new List<Instruction>();
-            BuildInstructions(type, methodDefinition, parameter, attribute, instructions);
+                var instructions = new List<Instruction>();
+                BuildInstructions(type, methodDefinition, parameter, attribute, instructions);
 
-            instructions.Add(Instruction.Create(OpCodes.Call, importedMethod));
+                instructions.Add(Instruction.Create(OpCodes.Call, importedMethod));
 
-            methodDefinition.Body.Instructions.Insert(0, instructions);
+                methodDefinition.Body.Instructions.Insert(0, instructions);        
+            }
         }
 
         protected abstract void BuildInstructions(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions);
 
-        protected abstract void SelectMethod(TypeDefinition argumentTypeDefinition, out MethodDefinition selectedMethod);
+        protected abstract void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod);
         #endregion
     }
 }

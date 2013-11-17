@@ -195,6 +195,57 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "abcd" });
         }
 
+        /*
+        BUG: Dead lock in Argument.InheritsFrom
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForInheritsFrom");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new Exception() }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForInheritsFrom()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForInheritsFrom");
+
+            method.Invoke(instance, new object[] { new ArgumentNullException() });
+        }        
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom2()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForInheritsFrom2");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(Exception) }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForInheritsFrom2()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForInheritsFrom2");
+
+            method.Invoke(instance, new object[] { typeof(ArgumentNullException) });
+        }   
+        */
+
         [TestMethod]
         public void CorrectlyThrowsArgumentExceptionForNotTypeOf()
         {
@@ -217,8 +268,32 @@ namespace Catel.Fody.Test
             var method = type.GetMethod("CheckForOfType");
 
             method.Invoke(instance, new object[] { 2 });
-        }       
+        }        
         
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNotTypeOf2()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOfType2");
+
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(object) }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForTypeOf2()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOfType2");
+
+            method.Invoke(instance, new object[] { typeof(int) });
+        }      
+
         [TestMethod]
         public void CorrectlyThrowsArgumentExceptionForNotInterfaceImplemented()
         {
@@ -228,7 +303,7 @@ namespace Catel.Fody.Test
 
             var method = type.GetMethod("CheckForOfImplementsInterface");
 
-            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object() }));
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new[] { new object() }));
         }
 
         [TestMethod]
@@ -241,8 +316,32 @@ namespace Catel.Fody.Test
             var method = type.GetMethod("CheckForOfImplementsInterface");
 
             method.Invoke(instance, new object[] { 2 });
-        }
+        }        
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentExceptionForNotInterfaceImplemented2()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
 
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOfImplementsInterface2");
+       
+            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(object) }));
+        }
+      
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentExceptionForNotInterfaceImplemented2()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOfImplementsInterface2");
+
+            method.Invoke(instance, new object[] { typeof(int) });
+        }
+        
         private static void CallMethodAndExpectException<TException>(Action action)
         {
             try

@@ -8,10 +8,19 @@
 namespace Catel.Fody.TestAssembly
 {
     using System;
-    using System.Text.RegularExpressions;
 
     public class ArgumentChecksClass
     {
+        public void CheckForInheritsFrom([InheritsFrom(typeof(ArgumentException))]object myObject)
+        {
+            // Argument.InheritsFrom("myObject", myObject, typeof(ArgumentException));
+        }
+
+        public void CheckForInheritsFrom2([InheritsFrom(typeof(ArgumentException))]Type myType)
+        {
+            Argument.InheritsFrom("myType", myType, typeof(ArgumentException));
+        }
+        
         /// <exception cref="System.ArgumentException">The <paramref name="myString"/> is <c>null</c> or empty.</exception>
         public void CheckForNullOrEmpty([NotNullOrEmpty] string myString)
         {
@@ -42,10 +51,22 @@ namespace Catel.Fody.TestAssembly
             // Argument.IsOfType(() => myObject, typeof(IComparable));
         }
 
+        /// <exception cref="System.ArgumentException">The <paramref name="myType"/> is not of type <see cref="IComparable"/>.</exception>
+        public void CheckForOfType2([OfType(typeof(IComparable))]Type myType)
+        {
+            // Argument.IsOfType(() => myType, typeof(IComparable));
+        }    
+        
         /// <exception cref="System.ArgumentException">The <paramref name="myObject"/> does not implement the <see cref="IComparable"/> interface.</exception>
         public void CheckForOfImplementsInterface([OfType(typeof(IComparable))]object myObject)
         {
             // Argument.ImplementsInterface(() => myObject, typeof(IComparable));
+        }       
+        
+        /// <exception cref="System.ArgumentException">The <paramref name="myType"/> does not implement the <see cref="IComparable"/> interface.</exception>
+        public void CheckForOfImplementsInterface2([OfType(typeof(IComparable))]Type myType)
+        {
+            // Argument.ImplementsInterface(() => myType, typeof(IComparable));
         }
 
         /// <exception cref="System.ArgumentException">The <paramref name="myString"/> doesn't match with pattern <c><![CDATA[\\d+]]></c>.</exception>

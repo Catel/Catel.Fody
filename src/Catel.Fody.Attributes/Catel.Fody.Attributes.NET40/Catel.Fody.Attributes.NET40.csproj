@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentAttributes\InheritsFromAttribute.cs" />
     <Compile Include="ArgumentAttributes\ImplementsInterfaceAttribute.cs" />
     <Compile Include="ArgumentAttributes\OfTypeAttribute.cs" />
     <Compile Include="ArgumentAttributes\MatchAttribute.cs" />

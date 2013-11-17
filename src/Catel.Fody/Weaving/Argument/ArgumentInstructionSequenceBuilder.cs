@@ -15,13 +15,16 @@ namespace Catel.Fody.Weaving.Argument
     internal static class ArgumentInstructionSequenceBuilder
     {
         #region Methods
-        public static IEnumerable<Instruction> BuildIsMatchOrIsNotMatchInstructions(ParameterDefinition parameter, CustomAttribute attribute)
+        public static IEnumerable<Instruction> BuildRegexRelatedInstructions(ParameterDefinition parameter, CustomAttribute attribute)
         {
             var pattern = (string)attribute.ConstructorArguments[0].Value;
             var regexOptions = (RegexOptions)attribute.ConstructorArguments[1].Value;
 
-            yield return Instruction.Create(OpCodes.Ldstr, parameter.Name);
-            yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
+            foreach (var instruction in BuildDefaultInstructions(parameter))
+            {
+                yield return instruction;
+            }
+
             yield return Instruction.Create(OpCodes.Ldstr, pattern);
             yield return Instruction.Create(OpCodes.Ldc_I4, (int)regexOptions);
         }
@@ -32,11 +35,16 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
         }
 
-        public static IEnumerable<Instruction> BuildIsOfTypeOrImplementsInterfaceInstructions(ParameterDefinition parameter, CustomAttribute attribute)
+        public static IEnumerable<Instruction> BuildTypeCheckRelatedInstructions(ParameterDefinition parameter, CustomAttribute attribute)
         {
-            yield return Instruction.Create(OpCodes.Ldstr, parameter.Name);
-            yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
-            yield return Instruction.Create(OpCodes.Ldtoken, (TypeReference)attribute.ConstructorArguments[0].Value);
+            var typeReference = (TypeReference)attribute.ConstructorArguments[0].Value;
+  
+            foreach (var instruction in BuildDefaultInstructions(parameter))
+            {
+                yield return instruction;
+            }
+
+            yield return Instruction.Create(OpCodes.Ldtoken, typeReference);
         }
         #endregion
     }
