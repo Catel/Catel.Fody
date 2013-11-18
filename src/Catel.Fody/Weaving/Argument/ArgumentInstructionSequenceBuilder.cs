@@ -35,17 +35,33 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
         }
 
-        public static IEnumerable<Instruction> BuildTypeCheckRelatedInstructions(ParameterDefinition parameter, CustomAttribute attribute)
+        public static IEnumerable<Instruction> BuildTypeCheckRelatedInstructions(ModuleDefinition module, ParameterDefinition parameter, CustomAttribute attribute)
         {
             var typeReference = (TypeReference)attribute.ConstructorArguments[0].Value;
-  
             foreach (var instruction in BuildDefaultInstructions(parameter))
             {
                 yield return instruction;
             }
 
+            var getTypeFromHandle = module.GetMethod("GetTypeFromHandle");
+            var importedGetTypeFromHandle = module.Import(getTypeFromHandle);
+
             yield return Instruction.Create(OpCodes.Ldtoken, typeReference);
+            yield return Instruction.Create(OpCodes.Call, importedGetTypeFromHandle);
         }
         #endregion
+
+        public static IEnumerable<Instruction> IsNotOutOfRangeInstructions(ParameterDefinition parameter, CustomAttribute attribute)
+        {
+            var minValue = (int)attribute.ConstructorArguments[0].Value;
+            var maxValue = (int)attribute.ConstructorArguments[1].Value;
+            foreach (var instruction in BuildDefaultInstructions(parameter))
+            {
+                yield return instruction;
+            }
+
+            yield return Instruction.Create(OpCodes.Ldc_I4, minValue);
+            yield return Instruction.Create(OpCodes.Ldc_I4, maxValue);
+        }
     }
 }

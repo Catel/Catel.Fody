@@ -16,7 +16,7 @@ namespace Catel.Fody.Weaving.Argument
         #region Methods
         protected override sealed void BuildInstructions(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions)
         {
-            instructions.AddRange(ArgumentInstructionSequenceBuilder.BuildTypeCheckRelatedInstructions(parameter, attribute));
+            instructions.AddRange(ArgumentInstructionSequenceBuilder.BuildTypeCheckRelatedInstructions(type.Module, parameter, attribute));
         }
         #endregion
     }
