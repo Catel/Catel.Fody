@@ -195,8 +195,6 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "abcd" });
         }
 
-        /*
-        BUG: Dead lock in Argument.InheritsFrom
         [TestMethod]
         public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom()
         {
@@ -244,7 +242,6 @@ namespace Catel.Fody.Test
 
             method.Invoke(instance, new object[] { typeof(ArgumentNullException) });
         }   
-        */
 
         [TestMethod]
         public void CorrectlyThrowsArgumentExceptionForNotTypeOf()
