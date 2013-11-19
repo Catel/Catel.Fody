@@ -6,6 +6,7 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
+    using System;
     using System.Collections.Generic;
 
     using Mono.Cecil;
@@ -27,18 +28,27 @@ namespace Catel.Fody.Weaving.Argument
             SelectMethod(ArgumentTypeDefinition, parameter, out selectedMethod);
             if (selectedMethod != null)
             {
-                var importedMethod = type.Module.Import(selectedMethod);
+                ModuleDefinition moduleDefinition = type.Module;
+                var importedMethod = moduleDefinition.Import(selectedMethod);
 
                 var instructions = new List<Instruction>();
-                BuildInstructions(type, methodDefinition, parameter, attribute, instructions);
-
-                instructions.Add(Instruction.Create(OpCodes.Call, importedMethod));
+                BuildInstructions(moduleDefinition, type, methodDefinition, parameter, attribute, instructions);
+                if (importedMethod.HasGenericParameters)
+                {
+                    var genericInstanceMethod = new GenericInstanceMethod(importedMethod);
+                    genericInstanceMethod.GenericArguments.Add(parameter.ParameterType);
+                    instructions.Add(Instruction.Create(OpCodes.Call, genericInstanceMethod));
+                }
+                else
+                {
+                    instructions.Add(Instruction.Create(OpCodes.Call, importedMethod));
+                }
 
                 methodDefinition.Body.Instructions.Insert(0, instructions);        
             }
         }
 
-        protected abstract void BuildInstructions(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions);
+        protected abstract void BuildInstructions(ModuleDefinition module, TypeDefinition type, MethodDefinition method, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions);
 
         protected abstract void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod);
         #endregion

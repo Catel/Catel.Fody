@@ -193,7 +193,105 @@ namespace Catel.Fody.Test
             var method = type.GetMethod("CheckForNotMatch");
 
             method.Invoke(instance, new object[] { "abcd" });
+        } 
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeInt()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOutOfRangeInt");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5 }));
         }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeInt()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOutOfRangeInt");
+
+            method.Invoke(instance, new object[] { 3 });
+        }    
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeDouble()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOutOfRangeDouble");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5.0d }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeDouble()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOutOfRangeDouble");
+
+            method.Invoke(instance, new object[] { 3.0d });
+        }        
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeFloat()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOutOfRangeFloat");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5.0f }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeFloat()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOutOfRangeFloat");
+
+            method.Invoke(instance, new object[] { 3.0f });
+        }        
+        
+        /*
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOutOfRangeString");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { "z" }));
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeString()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForOutOfRangeString");
+
+            method.Invoke(instance, new object[] { "d" });
+        }
+        */
 
         /*
         BUG: Dead lock in Argument.InheritsFrom

@@ -14,7 +14,7 @@ namespace Catel.Fody.Weaving.Argument
     public abstract class RegexRelatedArgumentMethodCallWeaverBase : ArgumentMethodCallWeaverBase
     {
         #region Methods
-        protected override sealed void BuildInstructions(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions)
+        protected override sealed void BuildInstructions(ModuleDefinition module, TypeDefinition type, MethodDefinition method, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions)
         {
             instructions.AddRange(ArgumentInstructionSequenceBuilder.BuildRegexRelatedInstructions(parameter, attribute));
         }

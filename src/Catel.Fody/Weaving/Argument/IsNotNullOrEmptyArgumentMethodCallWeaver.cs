@@ -10,7 +10,7 @@ namespace Catel.Fody.Weaving.Argument
 
     using Mono.Cecil;
 
-    public sealed class IsNotNullOrEmptyArgumentMethodCallWeaver : DefaultArgumentMethodCallWeaveBase
+    public sealed class IsNotNullOrEmptyArgumentMethodCallWeaver : DefaultArgumentMethodCallWeaverBase
     {
         protected override void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod)
         {

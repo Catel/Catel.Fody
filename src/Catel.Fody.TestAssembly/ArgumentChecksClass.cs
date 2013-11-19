@@ -11,6 +11,26 @@ namespace Catel.Fody.TestAssembly
 
     public class ArgumentChecksClass
     {
+        public void CheckForOutOfRangeInt([NotOutOfRange(1, 4)]int myValue)
+        {
+            // Argument.IsNotOutOfRange<int>("myValue", myValue, 1, 4);
+        }           
+        
+        public void CheckForOutOfRangeString([NotOutOfRange("a", "d")]string myValue)
+        {
+            // Argument.IsNotOutOfRange<string>("myValue", myValue, "a", "d");
+        }      
+        
+        public void CheckForOutOfRangeDouble([NotOutOfRange(1.0d, 4.0d)]double myValue)
+        {
+            // Argument.IsNotOutOfRange<double>("myValue", myValue, 1.0d, 4.0d);
+        }
+        
+        public void CheckForOutOfRangeFloat([NotOutOfRange(1.0f, 4.0f)]float myValue)
+        {
+            // Argument.IsNotOutOfRange<float>("myValue", myValue, 1.0f, 4.0f);
+        }
+
         public void CheckForInheritsFrom([InheritsFrom(typeof(ArgumentException))]object myObject)
         {
             // Argument.InheritsFrom("myObject", myObject, typeof(ArgumentException));

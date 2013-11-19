@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentAttributes\NotNullAttribute.cs" />
     <Compile Include="ArgumentAttributes\InheritsFromAttribute.cs" />
     <Compile Include="ArgumentAttributes\ImplementsInterfaceAttribute.cs" />
     <Compile Include="ArgumentAttributes\OfTypeAttribute.cs" />
@@ -48,7 +49,7 @@
     <Compile Include="ArgumentAttributes\NotMatchAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotNullOrEmptyArrayAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotNullOrEmptyAttribute.cs" />
-    <Compile Include="ArgumentAttributes\NotNullAttribute.cs" />
+    <Compile Include="ArgumentAttributes\NotOutOfRangeAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotNullOrWhitespaceAttribute.cs" />
     <Compile Include="PropertyAttributes\DefaultValueAttribute.cs" />
     <Compile Include="PropertyAttributes\ExposeAttribute.cs" />

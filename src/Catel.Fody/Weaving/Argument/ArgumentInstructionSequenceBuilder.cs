@@ -43,25 +43,69 @@ namespace Catel.Fody.Weaving.Argument
                 yield return instruction;
             }
 
-            var getTypeFromHandle = module.GetMethod("GetTypeFromHandle");
-            var importedGetTypeFromHandle = module.Import(getTypeFromHandle);
+            var importedGetTypeFromHandle = module.Import(module.GetMethod("GetTypeFromHandle"));
 
             yield return Instruction.Create(OpCodes.Ldtoken, typeReference);
             yield return Instruction.Create(OpCodes.Call, importedGetTypeFromHandle);
         }
-        #endregion
 
         public static IEnumerable<Instruction> IsNotOutOfRangeInstructions(ParameterDefinition parameter, CustomAttribute attribute)
         {
-            var minValue = (int)attribute.ConstructorArguments[0].Value;
-            var maxValue = (int)attribute.ConstructorArguments[1].Value;
+            object minValue = attribute.ConstructorArguments[0].Value;
+            object maxValue = attribute.ConstructorArguments[1].Value;
+
             foreach (var instruction in BuildDefaultInstructions(parameter))
             {
                 yield return instruction;
             }
 
-            yield return Instruction.Create(OpCodes.Ldc_I4, minValue);
-            yield return Instruction.Create(OpCodes.Ldc_I4, maxValue);
+            if (minValue is string)
+            {
+                yield return Instruction.Create(OpCodes.Ldstr, (string)minValue);
+                yield return Instruction.Create(OpCodes.Ldstr, (string)maxValue);
+            }
+            else if (minValue is int)
+            {
+                yield return Instruction.Create(OpCodes.Ldc_I4, (int)minValue);
+                yield return Instruction.Create(OpCodes.Ldc_I4, (int)maxValue);
+            }
+            else if (minValue is long)
+            {
+                foreach (var longInstruction in BuildLongInstructions(minValue))
+                {
+                    yield return longInstruction;
+                }
+
+                foreach (var longInstruction in BuildLongInstructions(maxValue))
+                {
+                    yield return longInstruction;
+                }
+            }
+            else if (minValue is float)
+            {
+                yield return Instruction.Create(OpCodes.Ldc_R4, (float)minValue);
+                yield return Instruction.Create(OpCodes.Ldc_R4, (float)maxValue);
+            }
+            else if (minValue is double)
+            {
+                yield return Instruction.Create(OpCodes.Ldc_R8, (double)minValue);
+                yield return Instruction.Create(OpCodes.Ldc_R8, (double)maxValue);
+            }
         }
+
+        private static IEnumerable<Instruction> BuildLongInstructions(object minValue)
+        {
+            if ((long)minValue <= int.MaxValue)
+            {
+                // Note: don't use Ldc_I8 here, although it is a long
+                yield return Instruction.Create(OpCodes.Ldc_I4, (int)(long)minValue);
+                yield return Instruction.Create(OpCodes.Conv_I8);
+            }
+            else
+            {
+                yield return Instruction.Create(OpCodes.Ldc_I8, (long)minValue);
+            }
+        }
+        #endregion
     }
 }
