@@ -11,6 +11,36 @@ namespace Catel.Fody.TestAssembly
 
     public class ArgumentChecksClass
     {
+        public void CheckForMinimalInt([Minimal(1)]int myValue)
+        {
+            // Argument.IsMinimal<int>("myValue", myValue, 1);
+        }          
+        
+        public void CheckForMinimalDouble([Minimal(1.0d)]double myValue)
+        {
+            // Argument.IsMinimal<double>("myValue", myValue, 1.0d);
+        }            
+        
+        public void CheckForMinimalFloat([Minimal(1.0f)]float myValue)
+        {
+            // Argument.IsMinimal<int>("myValue", myValue, 1.0f);
+        }         
+        
+        public void CheckForMaximumInt([Maximum(5)]int myValue)
+        {
+            // Argument.IsMaximum<int>("myValue", myValue, 1);
+        }
+
+        public void CheckForMaximumDouble([Maximum(5.0d)]double myValue)
+        {
+            // Argument.IsMaximum<double>("myValue", myValue, 1.0d);
+        }
+
+        public void CheckForMaximumFloat([Maximum(5.0f)]float myValue)
+        {
+            // Argument.IsMaximum<int>("myValue", myValue, 1.0f);
+        }      
+
         public void CheckForOutOfRangeInt([NotOutOfRange(1, 4)]int myValue)
         {
             // Argument.IsNotOutOfRange<int>("myValue", myValue, 1, 4);

@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentAttributes\MaximumAttribute.cs" />
+    <Compile Include="ArgumentAttributes\MinimalAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotNullAttribute.cs" />
     <Compile Include="ArgumentAttributes\InheritsFromAttribute.cs" />
     <Compile Include="ArgumentAttributes\ImplementsInterfaceAttribute.cs" />

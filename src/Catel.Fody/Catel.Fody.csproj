@@ -70,6 +70,8 @@
     <Compile Include="Weaving\Argument\ArgumentInstructionSequenceBuilder.cs" />
     <Compile Include="Weaving\Argument\ArgumentWeaver.cs" />
     <Compile Include="Weaving\Argument\ArgumentMethodCallWeaverBase.cs" />
+    <Compile Include="Weaving\Argument\IsMaximumMethodCallWeaver.cs" />
+    <Compile Include="Weaving\Argument\IsMinimalMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\IsNotOutOfRangeMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\InheritsFromArgumentMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\ImplementsInterfaceArgumentMethodCallWeave.cs" />

@@ -49,47 +49,39 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Call, importedGetTypeFromHandle);
         }
 
-        public static IEnumerable<Instruction> IsNotOutOfRangeInstructions(ParameterDefinition parameter, CustomAttribute attribute)
+        public static IEnumerable<Instruction> BuildOutOfRangeInstructions(ParameterDefinition parameter, CustomAttribute attribute)
         {
-            object minValue = attribute.ConstructorArguments[0].Value;
-            object maxValue = attribute.ConstructorArguments[1].Value;
-
             foreach (var instruction in BuildDefaultInstructions(parameter))
             {
                 yield return instruction;
             }
 
-            if (minValue is string)
+            foreach (var argument in attribute.ConstructorArguments)
             {
-                yield return Instruction.Create(OpCodes.Ldstr, (string)minValue);
-                yield return Instruction.Create(OpCodes.Ldstr, (string)maxValue);
-            }
-            else if (minValue is int)
-            {
-                yield return Instruction.Create(OpCodes.Ldc_I4, (int)minValue);
-                yield return Instruction.Create(OpCodes.Ldc_I4, (int)maxValue);
-            }
-            else if (minValue is long)
-            {
-                foreach (var longInstruction in BuildLongInstructions(minValue))
+                object value = argument.Value;
+                if (value is string)
                 {
-                    yield return longInstruction;
+                    yield return Instruction.Create(OpCodes.Ldstr, (string)value);
                 }
-
-                foreach (var longInstruction in BuildLongInstructions(maxValue))
+                else if (value is int)
                 {
-                    yield return longInstruction;
+                    yield return Instruction.Create(OpCodes.Ldc_I4, (int)value);
                 }
-            }
-            else if (minValue is float)
-            {
-                yield return Instruction.Create(OpCodes.Ldc_R4, (float)minValue);
-                yield return Instruction.Create(OpCodes.Ldc_R4, (float)maxValue);
-            }
-            else if (minValue is double)
-            {
-                yield return Instruction.Create(OpCodes.Ldc_R8, (double)minValue);
-                yield return Instruction.Create(OpCodes.Ldc_R8, (double)maxValue);
+                else if (value is long)
+                {
+                    foreach (var instruction in BuildLongInstructions(value))
+                    {
+                        yield return instruction;
+                    }
+                }
+                else if (value is float)
+                {
+                    yield return Instruction.Create(OpCodes.Ldc_R4, (float)value);
+                }
+                else if (value is double)
+                {
+                    yield return Instruction.Create(OpCodes.Ldc_R8, (double)value);
+                }
             }
         }
 

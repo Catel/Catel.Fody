@@ -193,7 +193,157 @@ namespace Catel.Fody.Test
             var method = type.GetMethod("CheckForNotMatch");
 
             method.Invoke(instance, new object[] { "abcd" });
-        } 
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalInt()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMinimalInt");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0 }));
+        }
+
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMinimalInt()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMinimalInt");
+
+            method.Invoke(instance, new object[] { 3 });
+        }     
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalDouble()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMinimalDouble");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0.0d }));
+        }
+
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMinimalDouble()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMinimalDouble");
+
+            method.Invoke(instance, new object[] { 3.0d });
+        }      
+        
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalFloat()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMinimalFloat");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0.0f }));
+        }
+
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMinimalFloat()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMinimalFloat");
+
+            method.Invoke(instance, new object[] { 3.0f });
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMaximalInt()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMaximumInt");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6 }));
+        }
+
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMaximalInt()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMaximumInt");
+
+            method.Invoke(instance, new object[] { 0 });
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMaximalDouble()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMaximumDouble");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6.0d }));
+        }
+
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMaximalDouble()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMaximumDouble");
+
+            method.Invoke(instance, new object[] { 0.0d });
+        }
+
+        [TestMethod]
+        public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMaximalFloat()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMaximumFloat");
+
+            CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6.0f }));
+        }
+
+
+        [TestMethod]
+        public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMaximalFloat()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+
+            var method = type.GetMethod("CheckForMaximumFloat");
+
+            method.Invoke(instance, new object[] { 0.0f });
+        }    
         
         [TestMethod]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeInt()

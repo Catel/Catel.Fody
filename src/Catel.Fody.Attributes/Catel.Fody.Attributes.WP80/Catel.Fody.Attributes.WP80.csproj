@@ -113,6 +113,15 @@
     <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\InheritsFromAttribute.cs">
       <Link>ArgumentAttributes\InheritsFromAttribute.cs</Link>
     </Compile>  
+    <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\NotOutOfRangeAttribute.cs">
+      <Link>ArgumentAttributes\NotOutOfRangeAttribute.cs</Link>
+    </Compile>  
+    <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\MinimalAttribute.cs">
+      <Link>ArgumentAttributes\MinimalAttribute.cs</Link>
+    </Compile>  
+    <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\MaximumAttribute.cs">
+      <Link>ArgumentAttributes\MaximumAttribute.cs</Link>
+    </Compile>    
   	<Compile Include="..\Catel.Fody.Attributes.NET40\NoWeavingAttribute.cs">
       <Link>NoWeavingAttribute.cs</Link>
     </Compile>

@@ -31,6 +31,8 @@ namespace Catel.Fody.Weaving.Argument
             ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.ImplementsInterfaceAttribute"] = new ImplementsInterfaceArgumentMethodCallWeave();
             ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.InheritsFromAttribute"] = new InheritsFromArgumentMethodCallWeaver();
             ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotOutOfRangeAttribute"] = new IsNotOutOfRangeMethodCallWeaver();
+            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MinimalAttribute"] = new IsMinimalMethodCallWeaver();
+            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MaximumAttribute"] = new IsMaximumMethodCallWeaver();
         }
 
         public ArgumentWeaver(TypeDefinition typeDefinition)
