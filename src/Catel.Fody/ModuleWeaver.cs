@@ -70,10 +70,6 @@ namespace Catel.Fody
 
         public void Execute()
         {
-            //#if DEBUG
-            //            Debugger.Launch();
-            //#endif
-
             InitializeEnvironment();
 
             // 1st step: set up the basics
@@ -122,6 +118,26 @@ namespace Catel.Fody
             FodyEnvironment.LogWarningPoint = LogWarningPoint;
             FodyEnvironment.LogError = LogError;
             FodyEnvironment.LogErrorPoint = LogErrorPoint;
+
+            var assemblyResolver = ModuleDefinition.AssemblyResolver;
+
+            try
+            {
+                FodyEnvironment.IsCatelCoreAvailable = assemblyResolver.Resolve("Catel.Core") != null;
+            }
+            catch (Exception)
+            {
+                LogError("Catel.Core is not references, cannot weave without a Catel.Core reference");
+            }
+
+            try
+            {
+                FodyEnvironment.IsCatelMvvmAvailable = assemblyResolver.Resolve("Catel.MVVM") != null;
+            }
+            catch (Exception)
+            {
+                LogInfo("Catel.MVVM is not referenced, skipping Catel.MVVM specific functionality");
+            }
         }
     }
 }

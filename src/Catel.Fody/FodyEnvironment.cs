@@ -36,9 +36,6 @@ namespace Catel.Fody
         /// </value>
         public static XElement Config { get; set; }
 
-        /// <summary>
-        /// Gets or sets the log info delegate.
-        /// </summary>
         public static Action<string> LogInfo { get; set; }
 
         public static Action<string> LogWarning { get; set; }
@@ -48,5 +45,9 @@ namespace Catel.Fody
         public static Action<string> LogError { get; set; }
 
         public static Action<string, SequencePoint> LogErrorPoint { get; set; }
+
+        public static bool IsCatelCoreAvailable { get; set; }
+
+        public static bool IsCatelMvvmAvailable { get; set; }
     }
 }

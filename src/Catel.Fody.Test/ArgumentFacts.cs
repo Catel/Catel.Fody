@@ -207,6 +207,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5 }));
         }
 
+
         [TestMethod]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeInt()
         {
@@ -292,9 +293,6 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "d" });
         }
         */
-
-        /*
-        BUG: Dead lock in Argument.InheritsFrom
         [TestMethod]
         public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom()
         {
@@ -342,7 +340,7 @@ namespace Catel.Fody.Test
 
             method.Invoke(instance, new object[] { typeof(ArgumentNullException) });
         }   
-        */
+
 
         [TestMethod]
         public void CorrectlyThrowsArgumentExceptionForNotTypeOf()
