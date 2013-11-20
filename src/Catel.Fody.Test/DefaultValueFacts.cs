@@ -40,6 +40,18 @@ namespace Catel.Fody.Test
         }
 
         [TestMethod]
+        public void SetsDefaultValueForBoolWhenAttributeDefined()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+
+            // Instantiate to have properties registered
+            Activator.CreateInstance(type);
+
+            var propertyData = PropertyDataManager.Default.GetPropertyData(type, "BoolValue");
+            Assert.AreEqual(true, propertyData.GetDefaultValue());
+        }
+
+        [TestMethod]
         public void SetsDefaultValueForIntWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");

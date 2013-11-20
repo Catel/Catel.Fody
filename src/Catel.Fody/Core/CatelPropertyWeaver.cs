@@ -242,6 +242,10 @@ namespace Catel.Fody
             {
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldstr, (string)propertyData.DefaultValue));
             }
+            else if (propertyData.DefaultValue is bool)
+            {
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (bool)propertyData.DefaultValue ? 1 : 0));
+            }
             else if (propertyData.DefaultValue is int)
             {
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)propertyData.DefaultValue));
