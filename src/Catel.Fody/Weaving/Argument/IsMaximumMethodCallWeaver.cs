@@ -10,7 +10,7 @@ namespace Catel.Fody.Weaving.Argument
 
     using Mono.Cecil;
 
-    public sealed class IsMaximumMethodCallWeaver : RangeArgumentMethodCallWeaverBase
+    public sealed class IsMaximumMethodCallWeaver : BoundariesCheckRelatedArgumentMethodCallWeaverBase
     {
         #region Methods
 

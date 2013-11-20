@@ -70,6 +70,7 @@
     <Compile Include="Weaving\Argument\ArgumentInstructionSequenceBuilder.cs" />
     <Compile Include="Weaving\Argument\ArgumentWeaver.cs" />
     <Compile Include="Weaving\Argument\ArgumentMethodCallWeaverBase.cs" />
+    <Compile Include="Weaving\Argument\BoundariesCheckRelatedArgumentMethodCallWeaverBase.cs" />
     <Compile Include="Weaving\Argument\IsMaximumMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\IsMinimalMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\IsNotOutOfRangeMethodCallWeaver.cs" />
@@ -77,7 +78,6 @@
     <Compile Include="Weaving\Argument\ImplementsInterfaceArgumentMethodCallWeave.cs" />
     <Compile Include="Weaving\Argument\IsOfTypeArgumentMethodCallWeave.cs" />
     <Compile Include="Weaving\Argument\DefaultArgumentMethodCallWeaverBase.cs" />
-    <Compile Include="Weaving\Argument\RangeArgumentMethodCallWeaverBase.cs" />
     <Compile Include="Weaving\Argument\RegexRelatedArgumentMethodCallWeaverBase.cs" />
     <Compile Include="Weaving\Argument\IsNotMatchArgumentMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\IsMatchArgumentMethodCallWeaver.cs" />

@@ -10,7 +10,7 @@ namespace Catel.Fody.Weaving.Argument
 
     using Mono.Cecil;
 
-    public sealed class IsNotOutOfRangeMethodCallWeaver : RangeArgumentMethodCallWeaverBase
+    public sealed class IsNotOutOfRangeMethodCallWeaver : BoundariesCheckRelatedArgumentMethodCallWeaverBase
     {
         #region Methods
 

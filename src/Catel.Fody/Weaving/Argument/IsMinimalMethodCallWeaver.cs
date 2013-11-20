@@ -4,7 +4,7 @@
 
     using Mono.Cecil;
 
-    public class IsMinimalMethodCallWeaver : RangeArgumentMethodCallWeaverBase
+    public class IsMinimalMethodCallWeaver : BoundariesCheckRelatedArgumentMethodCallWeaverBase
     {
         #region Methods
 
