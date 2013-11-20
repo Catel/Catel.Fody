@@ -49,7 +49,7 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Call, importedGetTypeFromHandle);
         }
 
-        public static IEnumerable<Instruction> BuildOutOfRangeInstructions(ParameterDefinition parameter, CustomAttribute attribute)
+        public static IEnumerable<Instruction> BuildBoundariesCheckInstructions(ParameterDefinition parameter, CustomAttribute attribute)
         {
             foreach (var instruction in BuildDefaultInstructions(parameter))
             {
