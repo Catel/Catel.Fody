@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.TestAssembly
 {
+    using System.ComponentModel;
     using Catel.Data;
 
     public class DefaultValueModel : ModelBase

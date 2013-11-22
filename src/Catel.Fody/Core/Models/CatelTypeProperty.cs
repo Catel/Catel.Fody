@@ -41,7 +41,7 @@ namespace Catel.Fody
         #endregion
         private void DetermineFields()
         {
-             BackingFieldDefinition = TryGetField(TypeDefinition, PropertyDefinition);
+            BackingFieldDefinition = TryGetField(TypeDefinition, PropertyDefinition);
         }
 
         private void DetermineMethods()
@@ -55,13 +55,19 @@ namespace Catel.Fody
 
         private void DetermineDefaultValue()
         {
-            var defaultValueAttribute = PropertyDefinition.GetAttribute("Catel.Fody.DefaultValueAttribute");
+            //var defaultValueAttribute = PropertyDefinition.GetAttribute("Catel.Fody.DefaultValueAttribute");
+            var defaultValueAttribute = PropertyDefinition.GetAttribute("System.ComponentModel.DefaultValueAttribute");
             if (defaultValueAttribute != null)
             {
-                var attributeValue = (CustomAttributeArgument) defaultValueAttribute.ConstructorArguments[0].Value;
-                DefaultValue = attributeValue.Value;
+                DefaultValue = defaultValueAttribute.ConstructorArguments[0].Value;
 
-                PropertyDefinition.RemoveAttribute("Catel.Fody.DefaultValueAttribute");
+                // Catel.Fody attribute style
+                //var attributeValue = (CustomAttributeArgument) defaultValueAttribute.ConstructorArguments[0].Value;
+                //DefaultValue = attributeValue.Value;
+
+                // Note: do not remove since we are now using System.ComponentModel.DefaultValueAttribute after
+                // the discussion at https://catelproject.atlassian.net/browse/CTL-244
+                //PropertyDefinition.RemoveAttribute("Catel.Fody.DefaultValueAttribute");
             }
         }
 
