@@ -233,7 +233,7 @@ namespace Catel.Fody
             instructionsToInsert.AddRange(new[]
             {
                 Instruction.Create(OpCodes.Ldstr, property.Name),
-                Instruction.Create(OpCodes.Ldtoken, property.PropertyType),
+                Instruction.Create(OpCodes.Ldtoken, ImportPropertyType(property)),
                 Instruction.Create(OpCodes.Call, importedGetTypeFromHandle),
             });
 
@@ -274,22 +274,6 @@ namespace Catel.Fody
             else
             {
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
-
-                //// Use default value
-                //var propertyType = propertyData.PropertyDefinition.PropertyType;
-                //if (propertyType.IsValueType && !propertyType.IsPrimitive)
-                //{
-                //    var variableDefinition = new VariableDefinition(propertyType);
-                //    body.Variables.Add(variableDefinition);
-
-                //    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldloca_S, variableDefinition));
-                //    instructionsToInsert.Add(Instruction.Create(OpCodes.Initobj, propertyType));
-                //    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldloc, variableDefinition));
-                //}
-                //else
-                //{
-                //    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));                    
-                //}
             }
 
             if (propertyData.ChangeCallbackReference != null)
@@ -357,7 +341,7 @@ namespace Catel.Fody
                     genericRegisterProperty.GenericParameters.Add(genericParameter);
                 }
 
-                genericRegisterProperty.GenericArguments.Add(property.PropertyType);
+                genericRegisterProperty.GenericArguments.Add(ImportPropertyType(property));
             }
 
             instructionsToInsert.AddRange(new[]
@@ -382,11 +366,11 @@ namespace Catel.Fody
                 genericGetValue.GenericParameters.Add(genericParameter);
             }
 
-            genericGetValue.GenericArguments.Add(property.PropertyType);
+            genericGetValue.GenericArguments.Add(ImportPropertyType(property));
 
             if (property.GetMethod == null)
             {
-                var getMethod = new MethodDefinition(string.Format("get_{0}", property.Name), MethodAttributes.Public, property.PropertyType);
+                var getMethod = new MethodDefinition(string.Format("get_{0}", property.Name), MethodAttributes.Public, ImportPropertyType(property));
 
                 var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
                 getMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
@@ -426,7 +410,7 @@ namespace Catel.Fody
             if (property.SetMethod == null)
             {
                 var setMethod = new MethodDefinition(string.Format("set_{0}", property.Name), MethodAttributes.Public, property.DeclaringType.Module.Import(typeof(void)));
-                setMethod.Parameters.Add(new ParameterDefinition(property.PropertyType));
+                setMethod.Parameters.Add(new ParameterDefinition(ImportPropertyType(property)));
 
                 var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
                 setMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
@@ -452,7 +436,7 @@ namespace Catel.Fody
 
             if (property.PropertyType.IsValueType)
             {
-                instructionsToAdd.Add(Instruction.Create(OpCodes.Box, property.PropertyType));
+                instructionsToAdd.Add(Instruction.Create(OpCodes.Box, ImportPropertyType(property)));
             }
 
             instructionsToAdd.AddRange(new[]
@@ -536,6 +520,11 @@ namespace Catel.Fody
             {
                 property.DeclaringType.Fields.Remove(field);
             }
+        }
+
+        private static TypeReference ImportPropertyType(PropertyDefinition propertyDefinition)
+        {
+            return propertyDefinition.DeclaringType.Module.Import(propertyDefinition.PropertyType);
         }
 
         private static FieldDefinition GetField(TypeDefinition declaringType, string fieldName)
