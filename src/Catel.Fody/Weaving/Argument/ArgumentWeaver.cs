@@ -41,7 +41,7 @@ namespace Catel.Fody.Weaving.Argument
         }
         #endregion
 
-            #region Methods
+        #region Methods
         public void Execute()
         {
             foreach (var method in _typeDefinition.Methods)

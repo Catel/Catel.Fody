@@ -80,7 +80,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             var modelPropertyType = modelPropertyToMap.PropertyType;
 
-            var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, modelPropertyType);
+            var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, FodyEnvironment.ModuleDefinition.Import(modelPropertyType));
             viewModelPropertyDefinition.DeclaringType = catelType.TypeDefinition;
 
             var compilerGeneratedAttribute = catelType.TypeDefinition.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
