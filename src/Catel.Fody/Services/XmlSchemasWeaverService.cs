@@ -64,7 +64,7 @@ namespace Catel.Fody.Services
                     return false;
                 }
 
-                var xmlSchemaManager = (TypeDefinition) catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
+                var xmlSchemaManager = (TypeDefinition) catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.Xml.XmlSchemaManager");
                 _isSupported = xmlSchemaManager != null;
             }
 

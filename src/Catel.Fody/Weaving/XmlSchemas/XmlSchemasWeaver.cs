@@ -90,7 +90,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
             var getTypeFromHandle = catelTypeDefinition.Module.GetMethod("GetTypeFromHandle");
             var importedGetTypeFromHandle = catelTypeDefinition.Module.Import(getTypeFromHandle);
 
-            var xmlSchemaManager = (TypeDefinition)catelTypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
+            var xmlSchemaManager = (TypeDefinition)catelTypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.Xml.XmlSchemaManager");
             var getXmlSchemaMethodOnXmlSchemaManager = catelTypeDefinition.Module.Import(xmlSchemaManager.Methods.First(x => x.IsStatic && x.Name == "GetXmlSchema"));
 
             //public static XmlQualifiedName GetXmlSchema(XmlSchemaSet schemas)
