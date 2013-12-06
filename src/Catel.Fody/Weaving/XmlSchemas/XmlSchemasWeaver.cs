@@ -91,6 +91,12 @@ namespace Catel.Fody.Weaving.XmlSchemas
             var importedGetTypeFromHandle = catelTypeDefinition.Module.Import(getTypeFromHandle);
 
             var xmlSchemaManager = (TypeDefinition)catelTypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.Xml.XmlSchemaManager");
+            if (xmlSchemaManager == null)
+            {
+                // Support versions before 3.8
+                xmlSchemaManager = (TypeDefinition)catelTypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
+            }
+
             var getXmlSchemaMethodOnXmlSchemaManager = catelTypeDefinition.Module.Import(xmlSchemaManager.Methods.First(x => x.IsStatic && x.Name == "GetXmlSchema"));
 
             //public static XmlQualifiedName GetXmlSchema(XmlSchemaSet schemas)
