@@ -29,6 +29,7 @@ namespace Catel.Fody
 
         #region Fields
         public string Name { get; private set; }
+        public bool IsReadOnly { get; set; }
 
         public TypeDefinition TypeDefinition { get; private set; }
         public PropertyDefinition PropertyDefinition { get; private set; }

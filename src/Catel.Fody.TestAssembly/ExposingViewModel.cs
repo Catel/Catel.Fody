@@ -19,6 +19,9 @@ namespace Catel.Fody.TestAssembly
 
         [DefaultValue("van Horrik")]
         public string LastName { get; set; }
+
+        [DefaultValue("ReadOnly")]
+        public string ReadOnlyProperty { get; set; }
         #endregion
     }
 
@@ -33,6 +36,7 @@ namespace Catel.Fody.TestAssembly
         [Fody.Expose("FirstName")]
         [Fody.Expose("MappedLastName", "LastName")]
         [Fody.Expose("ExternalTypeProperty")]
+        [Fody.Expose("ReadOnlyProperty", IsReadOnly = true)]
         public ExposingModel Model { get; private set; }
 
         [Model]

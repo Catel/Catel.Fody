@@ -63,7 +63,7 @@ namespace Catel.Fody
             AddPropertyRegistration(property, _propertyData);
 
             AddGetValueCall(property);
-            AddSetValueCall(property);
+            AddSetValueCall(property, _propertyData.IsReadOnly);
 
             RemoveBackingField(property);
         }
@@ -397,7 +397,7 @@ namespace Catel.Fody
             return finalIndex;
         }
 
-        private int AddSetValueCall(PropertyDefinition property)
+        private int AddSetValueCall(PropertyDefinition property, bool isReadOnly)
         {
             FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - adding SetValue call", property.Name));
 
@@ -417,6 +417,13 @@ namespace Catel.Fody
 
                 property.DeclaringType.Methods.Add(setMethod);
                 property.SetMethod = setMethod;
+            }
+
+            var finalSetMethod = property.SetMethod;
+            if (isReadOnly)
+            {
+                finalSetMethod.IsPrivate = true;
+                finalSetMethod.IsPublic = false;
             }
 
             var body = property.SetMethod.Body;

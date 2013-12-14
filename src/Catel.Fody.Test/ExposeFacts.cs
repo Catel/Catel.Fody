@@ -24,7 +24,7 @@ namespace Catel.Fody.Test
             var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
             var model = Activator.CreateInstance(modelType);
-            var viewModel = Activator.CreateInstance(viewModelType, new object[] {model});
+            var viewModel = Activator.CreateInstance(viewModelType, new [] {model});
 
             Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "FirstName"));
             Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "MappedLastName"));
@@ -43,12 +43,22 @@ namespace Catel.Fody.Test
             var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
             var model = Activator.CreateInstance(modelType);
-            var viewModel = Activator.CreateInstance(viewModelType, new object[] { model });
+            var viewModel = Activator.CreateInstance(viewModelType, new [] { model });
 
             Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "IsOk"));
 
             // Default value of the ExternalTypeProperty property on the model is "null"
             Assert.AreEqual(null, PropertyHelper.GetPropertyValue<bool?>(viewModel, "IsOk"));
+        }
+
+        [TestMethod]
+        public void CanCreateReadOnlyExposedProperties()
+        {
+            var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
+
+            var propertyInfo = viewModelType.GetPropertyEx("ReadOnlyProperty");
+
+            Assert.IsFalse(propertyInfo.GetSetMethod(true).IsPublic);
         }
         #endregion
     }

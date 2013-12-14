@@ -63,7 +63,17 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var modelPropertyName = viewModelPropertyName;
             if (exposeAttribute.ConstructorArguments.Count > 1)
             {
-                modelPropertyName = (string) (exposeAttribute.ConstructorArguments[1].Value ?? viewModelPropertyName);
+                modelPropertyName = (string)(exposeAttribute.ConstructorArguments[1].Value ?? viewModelPropertyName);
+            }
+
+            bool isReadOnly = false;
+            var isReadOnlyProperty = (from property in exposeAttribute.Properties
+                                      where string.Equals(property.Name, "IsReadOnly")
+                                      select property).FirstOrDefault();
+
+            if (isReadOnlyProperty.Argument.Value != null)
+            {
+                isReadOnly = (bool) isReadOnlyProperty.Argument.Value;
             }
 
             // Check property definition on model
@@ -88,11 +98,12 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             catelType.TypeDefinition.Properties.Add(viewModelPropertyDefinition);
             var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
+            catelTypeProperty.IsReadOnly = isReadOnly;
 
             var catelPropertyWeaver = new CatelPropertyWeaver(catelType, catelTypeProperty);
             catelPropertyWeaver.Execute(true);
 
-            var stringTypeDefinition = catelType.TypeDefinition.Module.Import(typeof (string));
+            var stringTypeDefinition = catelType.TypeDefinition.Module.Import(typeof(string));
 
             var attributeConstructor = catelType.TypeDefinition.Module.Import(ViewModelToModelAttributeTypeDefinition.Constructor(false));
             var viewModelToModelAttribute = new CustomAttribute(attributeConstructor);
