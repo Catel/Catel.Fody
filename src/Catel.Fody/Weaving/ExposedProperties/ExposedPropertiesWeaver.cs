@@ -78,10 +78,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             // Check property definition on model
             var modelType = modelProperty.PropertyDefinition.PropertyType;
-            var modelPropertyToMap = (from property in modelType.Resolve().Properties
-                                      where string.Equals(modelPropertyName, property.Name)
-                                      select property).FirstOrDefault();
-
+            var modelPropertyToMap = modelType.GetProperty(modelPropertyName);
             if (modelPropertyToMap == null)
             {
                 FodyEnvironment.LogError(string.Format("Exposed property '{0}' does not exist on model '{1}', make sure to set the right mapping", modelPropertyName, modelType.FullName));

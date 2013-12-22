@@ -20,7 +20,7 @@ namespace Catel.Fody.Test
         [TestMethod]
         public void CreatesExposedProperties()
         {
-            var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingModel");
+            var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingDerivedModel");
             var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
             var model = Activator.CreateInstance(modelType);
@@ -39,7 +39,7 @@ namespace Catel.Fody.Test
         [TestMethod]
         public void CreatesExposedPropertiesFromExternalTypes()
         {
-            var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingModel");
+            var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingDerivedModel");
             var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
             var model = Activator.CreateInstance(modelType);
@@ -58,7 +58,11 @@ namespace Catel.Fody.Test
 
             var propertyInfo = viewModelType.GetPropertyEx("ReadOnlyProperty");
 
-            Assert.IsFalse(propertyInfo.GetSetMethod(true).IsPublic);
+            var setMethod = propertyInfo.GetSetMethod(true);
+            if (setMethod != null)
+            {
+                Assert.IsFalse(setMethod.IsPublic);    
+            }
         }
         #endregion
     }

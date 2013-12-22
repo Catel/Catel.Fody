@@ -25,9 +25,14 @@ namespace Catel.Fody.TestAssembly
         #endregion
     }
 
+    public class ExposingDerivedModel : ExposingModel
+    {
+        public string PropertyInDerivedClass { get; set; }
+    }
+
     public class ExposingViewModel : ViewModelBase
     {
-        public ExposingViewModel(ExposingModel model)
+        public ExposingViewModel(ExposingDerivedModel model)
         {
             Model = model;
         }
@@ -37,7 +42,8 @@ namespace Catel.Fody.TestAssembly
         [Fody.Expose("MappedLastName", "LastName")]
         [Fody.Expose("ExternalTypeProperty")]
         [Fody.Expose("ReadOnlyProperty", IsReadOnly = true)]
-        public ExposingModel Model { get; private set; }
+        [Fody.Expose("PropertyInDerivedClass")]
+        public ExposingDerivedModel Model { get; private set; }
 
         [Model]
         [Catel.Fody.Expose("Query")]
