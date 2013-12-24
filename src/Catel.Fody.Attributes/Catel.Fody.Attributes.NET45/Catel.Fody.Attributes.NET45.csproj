@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -64,19 +64,19 @@
     </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\ImplementsInterfaceAttribute.cs">
       <Link>ArgumentAttributes\ImplementsInterfaceAttribute.cs</Link>
-    </Compile>    
+    </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\InheritsFromAttribute.cs">
       <Link>ArgumentAttributes\InheritsFromAttribute.cs</Link>
-    </Compile>  
+    </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\NotOutOfRangeAttribute.cs">
       <Link>ArgumentAttributes\NotOutOfRangeAttribute.cs</Link>
-    </Compile>  
+    </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\MinimalAttribute.cs">
       <Link>ArgumentAttributes\MinimalAttribute.cs</Link>
-    </Compile>  
+    </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\ArgumentAttributes\MaximumAttribute.cs">
       <Link>ArgumentAttributes\MaximumAttribute.cs</Link>
-    </Compile>  
+    </Compile>
     <Compile Include="..\Catel.Fody.Attributes.NET40\NoWeavingAttribute.cs">
       <Link>NoWeavingAttribute.cs</Link>
     </Compile>
@@ -98,4 +98,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="$(ProjectDir)\..\..\..\Tools\Pepita\PepitaGet.targets" />
 </Project>

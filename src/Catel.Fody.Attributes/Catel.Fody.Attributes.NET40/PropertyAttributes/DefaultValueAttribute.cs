@@ -9,7 +9,10 @@ namespace Catel.Fody
 {
     using System;
 
+    // Note: disabled after discussion: https://catelproject.atlassian.net/browse/CTL-244 
+
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [Obsolete("Use System.ComponentModel.DefaultValueAttribute instead", true)]
     public class DefaultValueAttribute : Attribute
     {
         public DefaultValueAttribute(object defaultValue)

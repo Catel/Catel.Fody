@@ -30,9 +30,9 @@ namespace Catel.Fody
                 reference.Parameters.Add(new ParameterDefinition(parameter.ParameterType));
             }
 
-            foreach (var generic_parameter in self.GenericParameters)
+            foreach (var genericParameter in self.GenericParameters)
             {
-                reference.GenericParameters.Add(new GenericParameter(generic_parameter.Name, reference));
+                reference.GenericParameters.Add(new GenericParameter(genericParameter.Name, reference));
             }
 
             return reference;
@@ -67,6 +67,31 @@ namespace Catel.Fody
                     _cachedTypeDefinitions[cacheKey] = type;
                     return type;
                 }
+            }
+
+            return null;
+        }
+
+        public static PropertyReference GetProperty(this TypeReference typeReference, string propertyName)
+        {
+            return GetProperty(typeReference.Resolve(), propertyName);
+        }
+
+        public static PropertyReference GetProperty(this TypeDefinition typeDefinition, string propertyName)
+        {
+            var type = typeDefinition;
+            while (type != null && !type.FullName.Contains("System.Object"))
+            {
+                var propertyDefinition = (from property in type.Properties
+                                          where string.Equals(propertyName, property.Name)
+                                          select property).FirstOrDefault();
+
+                if (propertyDefinition != null)
+                {
+                    return propertyDefinition;
+                }
+
+                type = type.BaseType.Resolve();
             }
 
             return null;

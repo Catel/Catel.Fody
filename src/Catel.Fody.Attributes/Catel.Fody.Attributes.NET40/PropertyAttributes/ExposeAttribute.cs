@@ -70,6 +70,12 @@ namespace Catel.Fody
         /// <value>The property name on model.</value>
         public string PropertyNameOnModel { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether this property is read only.
+        /// </summary>
+        /// <value><c>true</c> if this property is read only; otherwise, <c>false</c>.</value>
+        public bool IsReadOnly { get; set; }
+
         ///// <summary>
         ///// Gets or sets the mode of the mapping.
         ///// <para />

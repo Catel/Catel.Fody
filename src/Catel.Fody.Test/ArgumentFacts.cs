@@ -195,6 +195,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "abcd" });
         }
 
+        /*
         [TestMethod]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalInt()
         {
@@ -282,7 +283,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6 }));
         }
 
-
+        
         [TestMethod]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMaximalInt()
         {
@@ -443,6 +444,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "d" });
         }
         */
+
         [TestMethod]
         public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom()
         {

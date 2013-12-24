@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.TestAssembly
 {
+    using System.ComponentModel;
     using Catel.Data;
 
     public class DefaultValueModel : ModelBase
@@ -15,6 +16,23 @@ namespace Catel.Fody.TestAssembly
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
+
+        [DefaultValue(true)]
+        public bool BoolValue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool BoolValueCatel
+        {
+            get { return GetValue<bool>(BoolValueCatelProperty); }
+            set { SetValue(BoolValueCatelProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the BoolValueCatel property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData BoolValueCatelProperty = RegisterProperty("BoolValueCatel", typeof(bool), true);
 
         [DefaultValue(42)]
         public int IntValue { get; set; }

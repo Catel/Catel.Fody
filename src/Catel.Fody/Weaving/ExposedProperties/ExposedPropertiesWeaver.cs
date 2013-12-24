@@ -63,15 +63,22 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var modelPropertyName = viewModelPropertyName;
             if (exposeAttribute.ConstructorArguments.Count > 1)
             {
-                modelPropertyName = (string) (exposeAttribute.ConstructorArguments[1].Value ?? viewModelPropertyName);
+                modelPropertyName = (string)(exposeAttribute.ConstructorArguments[1].Value ?? viewModelPropertyName);
+            }
+
+            bool isReadOnly = false;
+            var isReadOnlyProperty = (from property in exposeAttribute.Properties
+                                      where string.Equals(property.Name, "IsReadOnly")
+                                      select property).FirstOrDefault();
+
+            if (isReadOnlyProperty.Argument.Value != null)
+            {
+                isReadOnly = (bool) isReadOnlyProperty.Argument.Value;
             }
 
             // Check property definition on model
             var modelType = modelProperty.PropertyDefinition.PropertyType;
-            var modelPropertyToMap = (from property in modelType.Resolve().Properties
-                                      where string.Equals(modelPropertyName, property.Name)
-                                      select property).FirstOrDefault();
-
+            var modelPropertyToMap = modelType.GetProperty(modelPropertyName);
             if (modelPropertyToMap == null)
             {
                 FodyEnvironment.LogError(string.Format("Exposed property '{0}' does not exist on model '{1}', make sure to set the right mapping", modelPropertyName, modelType.FullName));
@@ -80,7 +87,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             var modelPropertyType = modelPropertyToMap.PropertyType;
 
-            var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, modelPropertyType);
+            var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, FodyEnvironment.ModuleDefinition.Import(modelPropertyType));
             viewModelPropertyDefinition.DeclaringType = catelType.TypeDefinition;
 
             var compilerGeneratedAttribute = catelType.TypeDefinition.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
@@ -88,11 +95,12 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             catelType.TypeDefinition.Properties.Add(viewModelPropertyDefinition);
             var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
+            catelTypeProperty.IsReadOnly = isReadOnly;
 
             var catelPropertyWeaver = new CatelPropertyWeaver(catelType, catelTypeProperty);
             catelPropertyWeaver.Execute(true);
 
-            var stringTypeDefinition = catelType.TypeDefinition.Module.Import(typeof (string));
+            var stringTypeDefinition = catelType.TypeDefinition.Module.Import(typeof(string));
 
             var attributeConstructor = catelType.TypeDefinition.Module.Import(ViewModelToModelAttributeTypeDefinition.Constructor(false));
             var viewModelToModelAttribute = new CustomAttribute(attributeConstructor);

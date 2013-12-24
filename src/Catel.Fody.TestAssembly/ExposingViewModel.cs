@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.TestAssembly
 {
+    using System.ComponentModel;
     using Catel.Data;
     using Catel.MVVM;
 
@@ -18,12 +19,20 @@ namespace Catel.Fody.TestAssembly
 
         [DefaultValue("van Horrik")]
         public string LastName { get; set; }
+
+        [DefaultValue("ReadOnly")]
+        public string ReadOnlyProperty { get; set; }
         #endregion
+    }
+
+    public class ExposingDerivedModel : ExposingModel
+    {
+        public string PropertyInDerivedClass { get; set; }
     }
 
     public class ExposingViewModel : ViewModelBase
     {
-        public ExposingViewModel(ExposingModel model)
+        public ExposingViewModel(ExposingDerivedModel model)
         {
             Model = model;
         }
@@ -31,6 +40,15 @@ namespace Catel.Fody.TestAssembly
         [Model]
         [Fody.Expose("FirstName")]
         [Fody.Expose("MappedLastName", "LastName")]
-        public ExposingModel Model { get; private set; }
+        [Fody.Expose("ExternalTypeProperty")]
+        [Fody.Expose("ReadOnlyProperty", IsReadOnly = true)]
+        [Fody.Expose("PropertyInDerivedClass")]
+        public ExposingDerivedModel Model { get; private set; }
+
+        [Model]
+        [Catel.Fody.Expose("Query")]
+        [Catel.Fody.Expose("Items")]
+        [Catel.Fody.Expose("IsOk")]
+        public ISimpleModel ExternalAssemblyModel { get; private set; }
     }
 }
