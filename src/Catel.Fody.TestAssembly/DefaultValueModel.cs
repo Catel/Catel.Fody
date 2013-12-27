@@ -10,6 +10,15 @@ namespace Catel.Fody.TestAssembly
     using System.ComponentModel;
     using Catel.Data;
 
+    public enum ExampleEnum
+    {
+        A,
+
+        B,
+
+        C
+    }
+
     public class DefaultValueModel : ModelBase
     {
         [DefaultValue("Geert")]
@@ -101,5 +110,22 @@ namespace Catel.Fody.TestAssembly
         /// Register the FloatValueCatel property so it is known in the class.
         /// </summary>
         public static readonly PropertyData FloatValueCatelProperty = RegisterProperty("FloatValueCatel", typeof(float), 42f);
+
+        [DefaultValue(ExampleEnum.B)]
+        public ExampleEnum EnumValue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public ExampleEnum EnumValueCatel
+        {
+            get { return GetValue<ExampleEnum>(EnumValueCatelProperty); }
+            set { SetValue(EnumValueCatelProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the EnumValueCatel property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData EnumValueCatelProperty = RegisterProperty("EnumValueCatel", typeof(ExampleEnum), ExampleEnum.B);
     }
 }

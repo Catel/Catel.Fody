@@ -241,6 +241,8 @@ namespace Catel.Fody
                 Instruction.Create(OpCodes.Call, importedGetTypeFromHandle),
             });
 
+            var resolvedPropertyType = propertyData.PropertyDefinition.PropertyType.Resolve();
+
             // Default value
             if (propertyData.DefaultValue is string)
             {
@@ -274,6 +276,10 @@ namespace Catel.Fody
             else if (propertyData.DefaultValue is double)
             {
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_R8, (double)propertyData.DefaultValue));
+            }
+            else if (resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
+            {
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)((CustomAttributeArgument)propertyData.DefaultValue).Value));
             }
             else
             {
