@@ -8,6 +8,9 @@
 namespace Catel.Fody.Test
 {
     using System;
+    using System.Collections.ObjectModel;
+    using Catel.Data;
+    using Catel.Fody.TestAssembly;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -102,6 +105,19 @@ namespace Catel.Fody.Test
             Assert.IsFalse(modelBase.OnLastNameChangedCalled);
             modelBase.LastName = "change";
             Assert.IsTrue(modelBase.OnLastNameChangedCalled);
+        }
+
+        [TestMethod]
+        public void CorrectlyWorksOnGenericClasses()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericModelBaseTest");
+            var model = (dynamic)Activator.CreateInstance(type);
+
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "Operations"));
+
+            model.Operations = new ObservableCollection<int>();
+
+            Assert.IsTrue(model.HasChangedNotificationBeenCalled);
         }
         #endregion
     }

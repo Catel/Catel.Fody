@@ -59,11 +59,13 @@ namespace Catel.Fody
 
             AddChangeNotificationHandlerField(property, _propertyData);
 
-            AddPropertyFieldDefinition(property);
+            var fieldDefinition = AddPropertyFieldDefinition(property);
             AddPropertyRegistration(property, _propertyData);
 
-            AddGetValueCall(property);
-            AddSetValueCall(property, _propertyData.IsReadOnly);
+            var fieldReference = GetFieldReference(property.DeclaringType, fieldDefinition.Name, true);
+
+            AddGetValueCall(property, fieldReference);
+            AddSetValueCall(property, fieldReference, _propertyData.IsReadOnly);
 
             RemoveBackingField(property);
         }
@@ -80,7 +82,7 @@ namespace Catel.Fody
             while (true)
             {
                 string fieldName = string.Format("CS$<>9__CachedAnonymousMethodDelegate{0}", counter);
-                if (GetField(property.DeclaringType, fieldName) == null)
+                if (GetFieldDefinition(property.DeclaringType, fieldName, false) == null)
                 {
                     _cachedFieldNames[key] = fieldName;
                     return fieldName;
@@ -102,7 +104,7 @@ namespace Catel.Fody
             while (true)
             {
                 string methodName = string.Format("<.cctor>b__{0}", counter);
-                if (GetMethod(property.DeclaringType, methodName) == null)
+                if (GetMethodReference(property.DeclaringType, methodName, false) == null)
                 {
                     _cachedFieldInitializerNames[key] = methodName;
                     return methodName;
@@ -178,7 +180,7 @@ namespace Catel.Fody
             var body = initializationMethod.Body;
             body.Instructions.Insert(0,
                 Instruction.Create(OpCodes.Ldarg_0),
-                Instruction.Create(OpCodes.Castclass, declaringType),
+                Instruction.Create(OpCodes.Castclass, declaringType.MakeGenericIfRequired()),
                 Instruction.Create(OpCodes.Callvirt, propertyData.ChangeCallbackReference),
                 Instruction.Create(OpCodes.Nop),
                 Instruction.Create(OpCodes.Ret));
@@ -186,7 +188,7 @@ namespace Catel.Fody
             declaringType.Methods.Add(initializationMethod);
         }
 
-        private void AddPropertyFieldDefinition(PropertyDefinition property)
+        private FieldDefinition AddPropertyFieldDefinition(PropertyDefinition property)
         {
             string fieldName = string.Format("{0}Property", property.Name);
             var declaringType = property.DeclaringType;
@@ -197,13 +199,15 @@ namespace Catel.Fody
             fieldDefinition.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
 
             declaringType.Fields.Add(fieldDefinition);
+
+            return fieldDefinition;
         }
 
         private void AddPropertyRegistration(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             string fieldName = string.Format("{0}Property", property.Name);
             var declaringType = property.DeclaringType;
-            var fieldReference = GetField(declaringType, fieldName);
+            var fieldReference = GetFieldReference(declaringType, fieldName, true);
 
             var staticConstructor = declaringType.Constructor(true);
 
@@ -255,13 +259,13 @@ namespace Catel.Fody
                 if ((long)propertyData.DefaultValue <= int.MaxValue)
                 {
                     // Note: don't use Ldc_I8 here, although it is a long
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int) (long) propertyData.DefaultValue));
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)(long)propertyData.DefaultValue));
                     instructionsToInsert.Add(Instruction.Create(OpCodes.Conv_I8));
                 }
                 else
                 {
                     instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I8, (long)propertyData.DefaultValue));
-                }   
+                }
             }
             else if (propertyData.DefaultValue is float)
             {
@@ -290,8 +294,8 @@ namespace Catel.Fody
                 string handlerFieldName = GetChangeNotificationHandlerFieldName(property);
                 string handlerConstructorFieldName = GetChangeNotificationHandlerConstructorName(property);
 
-                var handlerField = GetField(property.DeclaringType, handlerFieldName);
-                var handlerConstructor = GetMethod(property.DeclaringType, handlerConstructorFieldName);
+                var handlerField = GetFieldReference(property.DeclaringType, handlerFieldName, true);
+                var handlerConstructor = GetMethodReference(property.DeclaringType, handlerConstructorFieldName, true);
                 var handlerType = GetEventHandlerAdvancedPropertyChangedEventArgs(property);
                 var importedHandlerType = handlerType.Resolve();
 
@@ -355,7 +359,7 @@ namespace Catel.Fody
             body.OptimizeMacros();
         }
 
-        private int AddGetValueCall(PropertyDefinition property)
+        private int AddGetValueCall(PropertyDefinition property, FieldReference fieldReference)
         {
             FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - adding GetValue call", property.Name));
 
@@ -388,7 +392,7 @@ namespace Catel.Fody
             var finalIndex = instructions.Insert(0,
                 Instruction.Create(OpCodes.Nop),
                 Instruction.Create(OpCodes.Ldarg_0),
-                Instruction.Create(OpCodes.Ldstr, property.Name),
+                Instruction.Create(OpCodes.Ldsfld, fieldReference),
                 Instruction.Create(OpCodes.Call, genericGetValue),
                 Instruction.Create(OpCodes.Ret));
 
@@ -397,7 +401,7 @@ namespace Catel.Fody
             return finalIndex;
         }
 
-        private int AddSetValueCall(PropertyDefinition property, bool isReadOnly)
+        private int AddSetValueCall(PropertyDefinition property, FieldReference fieldReference, bool isReadOnly)
         {
             FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - adding SetValue call", property.Name));
 
@@ -437,7 +441,7 @@ namespace Catel.Fody
             {
                 //Instruction.Create(OpCodes.Nop),
                 Instruction.Create(OpCodes.Ldarg_0),
-                Instruction.Create(OpCodes.Ldstr, property.Name),
+                Instruction.Create(OpCodes.Ldsfld, fieldReference),
                 Instruction.Create(OpCodes.Ldarg_1)
             });
 
@@ -486,7 +490,7 @@ namespace Catel.Fody
         {
             var fieldName = GetBackingFieldName(property);
 
-            var field = GetField(property.DeclaringType, fieldName);
+            var field = GetFieldReference(property.DeclaringType, fieldName, false);
             return (field != null);
         }
 
@@ -522,7 +526,7 @@ namespace Catel.Fody
         {
             var fieldName = GetBackingFieldName(property);
 
-            var field = GetField(property.DeclaringType, fieldName);
+            var field = GetFieldDefinition(property.DeclaringType, fieldName, false);
             if (field != null)
             {
                 property.DeclaringType.Fields.Remove(field);
@@ -534,18 +538,60 @@ namespace Catel.Fody
             return propertyDefinition.DeclaringType.Module.Import(propertyDefinition.PropertyType);
         }
 
-        private static FieldDefinition GetField(TypeDefinition declaringType, string fieldName)
+        private static FieldDefinition GetFieldDefinition(TypeDefinition declaringType, string fieldName, bool allowGenericResolving)
         {
-            return (from field in declaringType.Fields
-                    where field.Name == fieldName
-                    select field).FirstOrDefault();
+            var fieldReference = GetFieldReference(declaringType, fieldName, allowGenericResolving);
+
+            return fieldReference != null ? fieldReference.Resolve() : null;
         }
 
-        private static MethodDefinition GetMethod(TypeDefinition declaringType, string methodName)
+        private static FieldReference GetFieldReference(TypeDefinition declaringType, string fieldName, bool allowGenericResolving)
         {
-            return (from method in declaringType.Methods
-                    where method.Name == methodName
-                    select method).FirstOrDefault();
+            var field = (from x in declaringType.Fields
+                         where x.Name == fieldName
+                         select x).FirstOrDefault();
+
+            if (field == null)
+            {
+                return null;
+            }
+
+            FieldReference fieldReference = field;
+
+            if (declaringType.HasGenericParameters && allowGenericResolving)
+            {
+                fieldReference = field.MakeGeneric(declaringType);
+            }
+
+            return fieldReference;
+        }
+
+        private static MethodDefinition GetMethodDefinition(TypeDefinition declaringType, string methodName, bool allowGenericResolving)
+        {
+            var methodReference = GetMethodReference(declaringType, methodName, allowGenericResolving);
+
+            return methodReference != null ? methodReference.Resolve() : null;
+        }
+
+        private static MethodReference GetMethodReference(TypeDefinition declaringType, string methodName, bool allowGenericResolving)
+        {
+            var method = (from x in declaringType.Methods
+                          where x.Name == methodName
+                          select x).FirstOrDefault();
+
+            if (method == null)
+            {
+                return null;
+            }
+
+            MethodReference methodReference = method;
+
+            if (declaringType.HasGenericParameters && allowGenericResolving)
+            {
+                methodReference = method.MakeGeneric(declaringType);
+            }
+
+            return methodReference;
         }
         #endregion
     }

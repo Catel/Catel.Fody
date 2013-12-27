@@ -37,7 +37,7 @@ namespace Catel.Fody
         public object DefaultValue { get; private set; }
 
         public FieldDefinition BackingFieldDefinition { get; set; }
-        public MethodReference ChangeCallbackReference { get; set; }
+        public MethodReference ChangeCallbackReference { get; private set; }
 
         #endregion
         private void DetermineFields()
@@ -49,9 +49,21 @@ namespace Catel.Fody
         {
             string methodName = string.Format("On{0}Changed", PropertyDefinition.Name);
 
-            ChangeCallbackReference = (from method in PropertyDefinition.DeclaringType.Methods
-                                       where method.Name == methodName
-                                       select method).FirstOrDefault();
+            var declaringType = PropertyDefinition.DeclaringType;
+
+            MethodReference callbackReference = (from method in declaringType.Methods
+                                                 where method.Name == methodName
+                                                 select method).FirstOrDefault();
+
+            if (callbackReference != null)
+            {
+                if (declaringType.HasGenericParameters)
+                {
+                    callbackReference = callbackReference.MakeGeneric(declaringType);
+                }
+
+                ChangeCallbackReference = callbackReference;
+            }
         }
 
         private void DetermineDefaultValue()

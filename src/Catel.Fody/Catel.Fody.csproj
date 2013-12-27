@@ -62,6 +62,7 @@
     <Compile Include="Core\Models\CatelTypeProperty.cs" />
     <Compile Include="Extensions\CecilCatelExtensions.cs" />
     <Compile Include="Extensions\CecilExtensions.attributes.cs" />
+    <Compile Include="Extensions\CecilExtensions.fields.cs" />
     <Compile Include="Extensions\CecilExtensions.methods.cs" />
     <Compile Include="Extensions\ResolvingExtensions.cs" />
     <Compile Include="FodyEnvironment.cs" />
