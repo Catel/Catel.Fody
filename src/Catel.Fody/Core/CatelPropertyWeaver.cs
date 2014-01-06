@@ -7,6 +7,7 @@
 
 namespace Catel.Fody
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
@@ -55,19 +56,29 @@ namespace Catel.Fody
 
             FodyEnvironment.LogInfo("\t\t" + property.Name);
 
-            EnsureStaticConstructor(property.DeclaringType);
+            try
+            {
+                EnsureStaticConstructor(property.DeclaringType);
 
-            AddChangeNotificationHandlerField(property, _propertyData);
+                AddChangeNotificationHandlerField(property, _propertyData);
 
-            var fieldDefinition = AddPropertyFieldDefinition(property);
-            AddPropertyRegistration(property, _propertyData);
+                var fieldDefinition = AddPropertyFieldDefinition(property);
+                if (!AddPropertyRegistration(property, _propertyData))
+                {
+                    return;
+                }
 
-            var fieldReference = GetFieldReference(property.DeclaringType, fieldDefinition.Name, true);
+                var fieldReference = GetFieldReference(property.DeclaringType, fieldDefinition.Name, true);
 
-            AddGetValueCall(property, fieldReference);
-            AddSetValueCall(property, fieldReference, _propertyData.IsReadOnly);
+                AddGetValueCall(property, fieldReference);
+                AddSetValueCall(property, fieldReference, _propertyData.IsReadOnly);
 
-            RemoveBackingField(property);
+                RemoveBackingField(property);
+            }
+            catch (Exception ex)
+            {
+                FodyEnvironment.LogError(string.Format("\t\tFailed to handle property '{0}.{1}'\n{2}\n{3}", property.DeclaringType.Name, property.Name, ex.Message, ex.StackTrace));
+            }
         }
 
         private string GetChangeNotificationHandlerFieldName(PropertyDefinition property)
@@ -203,11 +214,16 @@ namespace Catel.Fody
             return fieldDefinition;
         }
 
-        private void AddPropertyRegistration(PropertyDefinition property, CatelTypeProperty propertyData)
+        private bool AddPropertyRegistration(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             string fieldName = string.Format("{0}Property", property.Name);
             var declaringType = property.DeclaringType;
             var fieldReference = GetFieldReference(declaringType, fieldName, true);
+            if (fieldReference == null)
+            {
+                FodyEnvironment.LogWarning(string.Format("\t\tCannot handle property '{0}.{1}' because backing field is not found", _catelType.Name, property.Name));
+                return false;
+            }
 
             var staticConstructor = declaringType.Constructor(true);
 
@@ -363,6 +379,8 @@ namespace Catel.Fody
             instructions.Insert(index, instructionsToInsert);
 
             body.OptimizeMacros();
+
+            return true;
         }
 
         private int AddGetValueCall(PropertyDefinition property, FieldReference fieldReference)
