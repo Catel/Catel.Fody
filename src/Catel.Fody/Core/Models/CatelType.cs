@@ -6,6 +6,7 @@
 
 namespace Catel.Fody
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -83,8 +84,8 @@ namespace Catel.Fody
 
             RegisterPropertyWithDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, true).GetGeneric());
             RegisterPropertyWithoutDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, false));
-            GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", true).GetGeneric());
-            SetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "SetValue"));
+            GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true).GetGeneric());
+            SetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "SetValue", new[] { "property", "value" }));
         }
 
         private List<CatelTypeProperty> DetermineProperties()
@@ -153,7 +154,7 @@ namespace Catel.Fody
                     // public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     methods = (from method in currentTypeDefinition.Methods
                                where method.Name == "RegisterProperty" && method.IsPublic &&
-                                     !method.HasGenericParameters && 
+                                     !method.HasGenericParameters &&
                                      method.Parameters[0].ParameterType.FullName.Contains("System.String")
                                select method).ToList();
                 }
@@ -176,7 +177,7 @@ namespace Catel.Fody
             return methodDefinition;
         }
 
-        private MethodReference RecursiveFindMethod(TypeDefinition typeDefinition, string methodName, bool findGenericDefinition = false)
+        private MethodReference RecursiveFindMethod(TypeDefinition typeDefinition, string methodName, string[] parameterNames = null, bool findGenericDefinition = false)
         {
             var typeDefinitions = new Stack<TypeDefinition>();
             MethodDefinition methodDefinition;
@@ -186,7 +187,7 @@ namespace Catel.Fody
             {
                 typeDefinitions.Push(currentTypeDefinition);
 
-                if (FindMethodDefinition(currentTypeDefinition, methodName, findGenericDefinition, out methodDefinition))
+                if (FindMethodDefinition(currentTypeDefinition, methodName, parameterNames, findGenericDefinition, out methodDefinition))
                 {
                     break;
                 }
@@ -203,22 +204,30 @@ namespace Catel.Fody
             return methodDefinition.GetMethodReference(typeDefinitions);
         }
 
-        private bool FindMethodDefinition(TypeDefinition type, string methodName, bool findGenericDefinition, out MethodDefinition methodDefinition)
+        private bool FindMethodDefinition(TypeDefinition type, string methodName, string[] parameterNames, bool findGenericDefinition, out MethodDefinition methodDefinition)
         {
+            List<MethodDefinition> methodDefinitions;
+
             if (!findGenericDefinition)
             {
-                methodDefinition = type.Methods
-                                       .Where(x => x.Name == methodName)
-                                       .OrderBy(definition => definition.Parameters.Count)
-                                       .FirstOrDefault();
+                methodDefinitions = type.Methods
+                    .Where(x => x.Name == methodName)
+                    .OrderBy(definition => definition.Parameters.Count).ToList();
             }
             else
             {
-                methodDefinition = (from method in type.Methods
-                                    where method.Name == methodName &&
-                                          method.HasGenericParameters
-                                    select method).FirstOrDefault();
+                methodDefinitions = (from method in type.Methods
+                                     where method.Name == methodName &&
+                                           method.HasGenericParameters
+                                     select method).ToList();
             }
+
+            if (parameterNames != null)
+            {
+                methodDefinitions = methodDefinitions.Where(x => x.Parameters.Select(y => y.Name).ToArray().SequenceEqual(parameterNames)).ToList();
+            }
+
+            methodDefinition = methodDefinitions.FirstOrDefault();
 
             return methodDefinition != null;
         }

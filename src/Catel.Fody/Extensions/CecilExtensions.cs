@@ -16,6 +16,22 @@ namespace Catel.Fody
     {
         private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = new Dictionary<string, TypeDefinition>();
 
+        public static TypeReference MakeGenericIfRequired(this TypeReference typeReference)
+        {
+            if (typeReference.HasGenericParameters)
+            {
+                var genericDeclaringType = new GenericInstanceType(typeReference);
+                foreach (var genericParameter in typeReference.GenericParameters)
+                {
+                    genericDeclaringType.GenericArguments.Add(genericParameter);
+                }
+
+                typeReference = genericDeclaringType;
+            }
+
+            return typeReference;
+        }
+
         public static MethodReference MakeHostInstanceGeneric(this MethodReference self, params TypeReference[] arguments)
         {
             var reference = new MethodReference(self.Name, self.ReturnType, self.DeclaringType.MakeGenericInstanceType(arguments))

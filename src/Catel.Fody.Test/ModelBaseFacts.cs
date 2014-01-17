@@ -8,6 +8,10 @@
 namespace Catel.Fody.Test
 {
     using System;
+    using System.Collections.ObjectModel;
+    using Catel.Data;
+    using Catel.Fody.TestAssembly;
+    using Catel.Reflection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -102,6 +106,62 @@ namespace Catel.Fody.Test
             Assert.IsFalse(modelBase.OnLastNameChangedCalled);
             modelBase.LastName = "change";
             Assert.IsTrue(modelBase.OnLastNameChangedCalled);
+        }
+
+        [TestMethod]
+        public void IgnoresChangeNotificationsWithoutRightSignature()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var modelBase = (dynamic)Activator.CreateInstance(type);
+
+            Assert.IsFalse(modelBase.OnLastNameChangedCalled);
+            modelBase.LastName = "change";
+            Assert.IsTrue(modelBase.OnLastNameChangedCalled);
+        }
+
+        [TestMethod]
+        public void CorrectlyWorksOnGenericClasses()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericModelBaseTest");
+            var model = (dynamic)Activator.CreateInstance(type);
+
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "Operations"));
+
+            model.Operations = new ObservableCollection<int>();
+
+            Assert.IsTrue(model.HasChangedNotificationBeenCalled);
+        }
+
+        [TestMethod]
+        public void CorrectlyWorksOnClassesWithGenericModelsWithValueTypes()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsInt");
+            var model = Activator.CreateInstance(type);
+
+            string propertyNameToCheck = "MyModel";
+
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck));
+
+            PropertyHelper.SetPropertyValue(model, propertyNameToCheck, 42);
+
+            Assert.AreEqual(42, PropertyHelper.GetPropertyValue<int>(model, propertyNameToCheck));
+        }
+
+        [TestMethod]
+        public void CorrectlyWorksOnClassesWithGenericModelsWithReferenceTypes()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsObject");
+            var model = Activator.CreateInstance(type);
+
+            string propertyNameToCheck = "MyModel";
+
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck));
+
+            var tempObject = new object();
+
+            PropertyHelper.SetPropertyValue(model, propertyNameToCheck, tempObject);
+
+            Assert.AreEqual(tempObject, PropertyHelper.GetPropertyValue<object>(model, propertyNameToCheck));
         }
         #endregion
     }

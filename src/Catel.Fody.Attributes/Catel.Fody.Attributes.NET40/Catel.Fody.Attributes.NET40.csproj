@@ -53,7 +53,6 @@
     <Compile Include="ArgumentAttributes\NotNullOrEmptyAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotOutOfRangeAttribute.cs" />
     <Compile Include="ArgumentAttributes\NotNullOrWhitespaceAttribute.cs" />
-    <Compile Include="PropertyAttributes\DefaultValueAttribute.cs" />
     <Compile Include="PropertyAttributes\ExposeAttribute.cs" />
     <Compile Include="NoWeavingAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

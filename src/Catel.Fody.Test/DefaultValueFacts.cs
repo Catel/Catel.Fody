@@ -10,6 +10,7 @@ namespace Catel.Fody.Test
     using System;
     using System.Runtime.Remoting;
     using Catel.Data;
+    using Catel.Fody.TestAssembly;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -97,6 +98,18 @@ namespace Catel.Fody.Test
 
             var propertyData = PropertyDataManager.Default.GetPropertyData(type, "FloatValue");
             Assert.AreEqual(42f, propertyData.GetDefaultValue());
+        }
+
+        [TestMethod]
+        public void SetsDefaultValueForEnumWhenAttributeDefined()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+
+            // Instantiate to have properties registered
+            Activator.CreateInstance(type);
+
+            var propertyData = PropertyDataManager.Default.GetPropertyData(type, "EnumValue");
+            Assert.AreEqual(ExampleEnum.B, (ExampleEnum)propertyData.GetDefaultValue());
         }
     }
 }
