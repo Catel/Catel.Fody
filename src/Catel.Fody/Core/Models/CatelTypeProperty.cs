@@ -51,18 +51,29 @@ namespace Catel.Fody
 
             var declaringType = PropertyDefinition.DeclaringType;
 
-            MethodReference callbackReference = (from method in declaringType.Methods
-                                                 where method.Name == methodName
-                                                 select method).FirstOrDefault();
+            var callbackReferences = (from method in declaringType.Methods
+                                     where method.Name == methodName
+                                     select method).ToList();
 
-            if (callbackReference != null)
+            foreach (var callbackReference in callbackReferences)
             {
-                if (declaringType.HasGenericParameters)
+                if (callbackReference != null)
                 {
-                    callbackReference = callbackReference.MakeGeneric(declaringType);
-                }
+                    if (callbackReference.HasParameters)
+                    {
+                        FodyEnvironment.LogWarning(string.Format("Method '{0}.{1}' matches automatic change method name but has parameters and will not be used as automatic change callback. Rename the method to remove this warning or remove parameters to use as automatic callback method.", declaringType.FullName, callbackReference.Name));
+                        continue;
+                    }
 
-                ChangeCallbackReference = callbackReference;
+                    MethodReference finalCallbackReference = callbackReference;
+                    if (declaringType.HasGenericParameters)
+                    {
+                        finalCallbackReference = finalCallbackReference.MakeGeneric(declaringType);
+                    }
+
+                    ChangeCallbackReference = finalCallbackReference;
+                    break;
+                }
             }
         }
 

@@ -11,6 +11,7 @@ namespace Catel.Fody.Test
     using System.Collections.ObjectModel;
     using Catel.Data;
     using Catel.Fody.TestAssembly;
+    using Catel.Reflection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -108,6 +109,17 @@ namespace Catel.Fody.Test
         }
 
         [TestMethod]
+        public void IgnoresChangeNotificationsWithoutRightSignature()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var modelBase = (dynamic)Activator.CreateInstance(type);
+
+            Assert.IsFalse(modelBase.OnLastNameChangedCalled);
+            modelBase.LastName = "change";
+            Assert.IsTrue(modelBase.OnLastNameChangedCalled);
+        }
+
+        [TestMethod]
         public void CorrectlyWorksOnGenericClasses()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericModelBaseTest");
@@ -119,6 +131,19 @@ namespace Catel.Fody.Test
 
             Assert.IsTrue(model.HasChangedNotificationBeenCalled);
         }
+
+        //[TestMethod]
+        //public void CorrectlyWorksOnClassesWithGenericModels()
+        //{
+        //    var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsInt");
+        //    var model = Activator.CreateInstance(type);
+
+        //    Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "MyModel"));
+
+        //    PropertyHelper.SetPropertyValue(model, "MyModel", 42);
+
+        //    Assert.AreEqual(42, PropertyHelper.GetPropertyValue<int>(model, "MyModel"));
+        //}
         #endregion
     }
 }

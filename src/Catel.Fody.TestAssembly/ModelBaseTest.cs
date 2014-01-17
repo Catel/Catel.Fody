@@ -97,6 +97,11 @@ namespace Catel.Fody.TestAssembly
 
         public bool OnLastNameChangedCalled { get; set; }
 
+        private void OnLastNameChanged(int someParameter)
+        {
+            // This method must only raise warning, but not be used
+        }
+
         private void OnLastNameChanged()
         {
             OnLastNameChangedCalled = true;
