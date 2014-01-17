@@ -132,18 +132,37 @@ namespace Catel.Fody.Test
             Assert.IsTrue(model.HasChangedNotificationBeenCalled);
         }
 
-        //[TestMethod]
-        //public void CorrectlyWorksOnClassesWithGenericModels()
-        //{
-        //    var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsInt");
-        //    var model = Activator.CreateInstance(type);
+        [TestMethod]
+        public void CorrectlyWorksOnClassesWithGenericModelsWithValueTypes()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsInt");
+            var model = Activator.CreateInstance(type);
 
-        //    Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "MyModel"));
+            string propertyNameToCheck = "MyModel";
 
-        //    PropertyHelper.SetPropertyValue(model, "MyModel", 42);
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck));
 
-        //    Assert.AreEqual(42, PropertyHelper.GetPropertyValue<int>(model, "MyModel"));
-        //}
+            PropertyHelper.SetPropertyValue(model, propertyNameToCheck, 42);
+
+            Assert.AreEqual(42, PropertyHelper.GetPropertyValue<int>(model, propertyNameToCheck));
+        }
+
+        [TestMethod]
+        public void CorrectlyWorksOnClassesWithGenericModelsWithReferenceTypes()
+        {
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsObject");
+            var model = Activator.CreateInstance(type);
+
+            string propertyNameToCheck = "MyModel";
+
+            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck));
+
+            var tempObject = new object();
+
+            PropertyHelper.SetPropertyValue(model, propertyNameToCheck, tempObject);
+
+            Assert.AreEqual(tempObject, PropertyHelper.GetPropertyValue<object>(model, propertyNameToCheck));
+        }
         #endregion
     }
 }

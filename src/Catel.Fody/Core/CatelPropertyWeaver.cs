@@ -293,7 +293,7 @@ namespace Catel.Fody
             {
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_R8, (double)propertyData.DefaultValue));
             }
-            else if (resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
+            else if (resolvedPropertyType != null && resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
             {
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)((CustomAttributeArgument)propertyData.DefaultValue).Value));
             }
@@ -463,13 +463,12 @@ namespace Catel.Fody
             var instructionsToAdd = new List<Instruction>();
             instructionsToAdd.AddRange(new[]
             {
-                //Instruction.Create(OpCodes.Nop),
                 Instruction.Create(OpCodes.Ldarg_0),
                 Instruction.Create(OpCodes.Ldsfld, fieldReference),
                 Instruction.Create(OpCodes.Ldarg_1)
             });
 
-            if (property.PropertyType.IsValueType)
+            if (property.PropertyType.IsValueType || property.PropertyType.IsGenericParameter)
             {
                 instructionsToAdd.Add(Instruction.Create(OpCodes.Box, ImportPropertyType(property)));
             }
@@ -477,7 +476,6 @@ namespace Catel.Fody
             instructionsToAdd.AddRange(new[]
             {
                 Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker),
-                //Instruction.Create(OpCodes.Nop),
                 Instruction.Create(OpCodes.Ret)
             });
 

@@ -56,6 +56,7 @@
     <Compile Include="ArgumentChecksClass.cs" />
     <Compile Include="DefaultValueModel.cs" />
     <Compile Include="ExposingViewModel.cs" />
+    <Compile Include="GenericPropertyModel.cs" />
     <Compile Include="ModelBaseTest.cs" />
     <Compile Include="Inheritance.cs" />
     <Compile Include="ModelWithDoubleValues.cs" />
