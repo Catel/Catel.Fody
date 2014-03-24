@@ -31,20 +31,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catel.Core, Version=3.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Catel.Core, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Catel.Core.3.8.1312242252-beta\lib\net40\Catel.Core.dll</HintPath>
+      <HintPath>..\..\lib\Catel.Core.3.9.0.1403191158-beta\lib\net40\Catel.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Catel.MVVM, Version=3.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Catel.MVVM, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Catel.MVVM.3.8.1312242252-beta\lib\net40\Catel.MVVM.dll</HintPath>
+      <HintPath>..\..\lib\Catel.MVVM.3.9.0.1403191158-beta\lib\net40\Catel.MVVM.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\Catel.MVVM.3.8.1312242252-beta\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\lib\Catel.MVVM.3.9.0.1403191158-beta\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -70,9 +70,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.NET40\Catel.Fody.Attributes.NET40.csproj">
-      <Project>{31c6e889-2d4c-4a9b-9e94-c3d6b3585049}</Project>
-      <Name>Catel.Fody.Attributes.NET40</Name>
+    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj">
+      <Project>{5e735b00-1edf-4acd-a777-91baba85b2c5}</Project>
+      <Name>Catel.Fody.Attributes</Name>
     </ProjectReference>
     <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly\Catel.Fody.TestExternalTypesAssembly.csproj">
       <Project>{b9b894ee-7946-4020-b254-3625993ae0d0}</Project>

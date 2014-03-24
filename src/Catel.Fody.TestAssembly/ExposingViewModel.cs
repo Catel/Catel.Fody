@@ -38,17 +38,17 @@ namespace Catel.Fody.TestAssembly
         }
 
         [Model]
-        [Fody.Expose("FirstName")]
-        [Fody.Expose("MappedLastName", "LastName")]
-        [Fody.Expose("ExternalTypeProperty")]
-        [Fody.Expose("ReadOnlyProperty", IsReadOnly = true)]
-        [Fody.Expose("PropertyInDerivedClass")]
+        [Expose("FirstName")]
+        [Expose("MappedLastName", "LastName")]
+        [Expose("ExternalTypeProperty")]
+        [Expose("ReadOnlyProperty", IsReadOnly = true)]
+        [Expose("PropertyInDerivedClass")]
         public ExposingDerivedModel Model { get; private set; }
 
         [Model]
-        [Catel.Fody.Expose("Query")]
-        [Catel.Fody.Expose("Items")]
-        [Catel.Fody.Expose("IsOk")]
+        [Expose("Query")]
+        [Expose("Items")]
+        [Expose("IsOk")]
         public ISimpleModel ExternalAssemblyModel { get; private set; }
     }
 }
