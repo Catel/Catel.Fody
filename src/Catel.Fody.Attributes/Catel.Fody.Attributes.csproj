@@ -36,10 +36,16 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>..\..\output\release\Catel.Fody.Attributes\Catel.Fody.Attributes.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionAssemblyInfo.cs">
+      <Link>Properties\SolutionAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ArgumentAttributes\ImplementsInterfaceAttribute.cs" />
     <Compile Include="ArgumentAttributes\InheritsFromAttribute.cs" />
     <Compile Include="ArgumentAttributes\MatchAttribute.cs" />
