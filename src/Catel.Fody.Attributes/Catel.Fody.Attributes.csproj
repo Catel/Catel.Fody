@@ -37,7 +37,7 @@
     <DocumentationFile>..\..\output\release\Catel.Fody.Attributes\Catel.Fody.Attributes.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->

@@ -3,7 +3,8 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion></ProductVersion>
+    <ProductVersion>
+    </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2CB08E71-BE32-4DA1-A312-458CB50B8622}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -89,14 +90,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj">
+      <Project>{5e735b00-1edf-4acd-a777-91baba85b2c5}</Project>
+      <Name>Catel.Fody.Attributes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Catel.Fody\Catel.Fody.csproj">
       <Project>{d9600eeb-b52a-4861-afa4-2a3e38a06196}</Project>
       <Name>Catel.Fody</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Catel.Fody.TestAssembly\Catel.Fody.TestAssembly.csproj">
-      <Name>Catel.Fody.TestAssembly</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
