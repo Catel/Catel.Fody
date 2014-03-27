@@ -7,6 +7,9 @@
 
 using System.Reflection;
 
-[assembly: AssemblyTitle("Catel.Fody")]
-[assembly: AssemblyProduct("Catel.Fody")]
-[assembly: AssemblyDescription("Catel plugin for Fody")]
+[assembly: AssemblyTitle("Catel.Fody.Attributes")]
+[assembly: AssemblyProduct("Catel.Fody.Attributes")]
+[assembly: AssemblyDescription("Catel.Fody attributes class")]
+
+// Sign attributes assembly
+[assembly: AssemblyKeyFile(@"..\..\..\Catel.snk")]
