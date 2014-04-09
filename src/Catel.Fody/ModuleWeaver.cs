@@ -70,41 +70,52 @@ namespace Catel.Fody
 
         public void Execute()
         {
-            InitializeEnvironment();
+            try
+            {
+                InitializeEnvironment();
 
-            // 1st step: set up the basics
-            var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
-            msCoreReferenceFinder.Execute();
+                // 1st step: set up the basics
+                var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
+                msCoreReferenceFinder.Execute();
 
-            // Note: nested types not supported because we only list actual types (thus not nested)
-            var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
+                // Note: nested types not supported because we only list actual types (thus not nested)
+                var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
 
-            var typeNodeBuilder = new CatelTypeNodeBuilder(types);
-            typeNodeBuilder.Execute();
+                var typeNodeBuilder = new CatelTypeNodeBuilder(types);
+                typeNodeBuilder.Execute();
 
-            // Remove any code generated types from the list of types to process
-            var codeGenTypeCleaner = new CodeGenTypeCleaner(typeNodeBuilder);
-            codeGenTypeCleaner.Execute();
+                // Remove any code generated types from the list of types to process
+                var codeGenTypeCleaner = new CodeGenTypeCleaner(typeNodeBuilder);
+                codeGenTypeCleaner.Execute();
 
-            // 2nd step: Auto property weaving
-            var propertyWeaverService = new AutoPropertiesWeaverService(typeNodeBuilder);
-            propertyWeaverService.Execute();
+                // 2nd step: Auto property weaving
+                var propertyWeaverService = new AutoPropertiesWeaverService(typeNodeBuilder);
+                propertyWeaverService.Execute();
 
-            // 3rd step: Exposed properties weaving
-            var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder);
-            exposedPropertiesWeaverService.Execute();
+                // 3rd step: Exposed properties weaving
+                var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder);
+                exposedPropertiesWeaverService.Execute();
 
-            // 4th step: Argument weaving
-            var argumentWeaverService = new ArgumentWeaverService(types);
-            argumentWeaverService.Execute();
+                // 4th step: Argument weaving
+                var argumentWeaverService = new ArgumentWeaverService(types);
+                argumentWeaverService.Execute();
 
-            // 5th step: Xml schema weaving
-            var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);
-            xmlSchemasWeaverService.Execute();
+                // 5th step: Xml schema weaving
+                var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);
+                xmlSchemasWeaverService.Execute();
 
-            // Last step: clean up
-            var referenceCleaner = new ReferenceCleaner(this);
-            referenceCleaner.Execute();
+                // Last step: clean up
+                var referenceCleaner = new ReferenceCleaner(this);
+                referenceCleaner.Execute();
+            }
+            catch (Exception ex)
+            {
+                LogError(ex.Message);
+
+#if DEBUG
+                Debugger.Launch();
+#endif
+            }
         }
 
         private void InitializeEnvironment()
