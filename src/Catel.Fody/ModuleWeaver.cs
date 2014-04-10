@@ -72,7 +72,17 @@ namespace Catel.Fody
         {
             try
             {
+//#if DEBUG
+//                Debugger.Launch();
+//#endif
+
+                // Clear cache because static members will be re-used over multiple builds over multiple systems
+                CacheHelper.ClearAllCaches();
+
                 InitializeEnvironment();
+
+                //  First index the current assemblies
+                var referencedAssemblies = ModuleDefinition.AssemblyReferences.ToList();
 
                 // 1st step: set up the basics
                 var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
@@ -89,11 +99,11 @@ namespace Catel.Fody
                 codeGenTypeCleaner.Execute();
 
                 // 2nd step: Auto property weaving
-                var propertyWeaverService = new AutoPropertiesWeaverService(typeNodeBuilder);
+                var propertyWeaverService = new AutoPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
                 propertyWeaverService.Execute();
 
                 // 3rd step: Exposed properties weaving
-                var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder);
+                var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
                 exposedPropertiesWeaverService.Execute();
 
                 // 4th step: Argument weaving
@@ -105,7 +115,7 @@ namespace Catel.Fody
                 xmlSchemasWeaverService.Execute();
 
                 // Last step: clean up
-                var referenceCleaner = new ReferenceCleaner(this);
+                var referenceCleaner = new ReferenceCleaner(this, referencedAssemblies);
                 referenceCleaner.Execute();
             }
             catch (Exception ex)

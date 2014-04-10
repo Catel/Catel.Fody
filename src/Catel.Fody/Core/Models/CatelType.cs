@@ -29,17 +29,34 @@ namespace Catel.Fody
             Mappings = new List<MemberMapping>();
             Properties = new List<CatelTypeProperty>();
 
+            Ignore = true;
             TypeDefinition = typeDefinition;
             Name = typeDefinition.FullName;
 
             DetermineCatelType();
-            DetermineTypes();
-            DetermineMethods();
-            Properties = DetermineProperties();
-            DetermineMappings();
+            if (Type == CatelTypeType.Unknown)
+            {
+                FodyEnvironment.LogWarning(string.Format("Cannot determine the Catel type used for '{0}', type will be ignored for weaving", Name));
+                return;
+            }
+
+            try
+            {
+                DetermineTypes();
+                DetermineMethods();
+                Properties = DetermineProperties();
+                DetermineMappings();
+
+                Ignore = false;
+            }
+            catch (Exception)
+            {
+                FodyEnvironment.LogWarning(string.Format("Failed to get additional information about type '{0}', type will be ignored for weaving", Name));
+            }
         }
 
         public string Name { get; private set; }
+        public bool Ignore { get; private set; }
 
         public TypeDefinition TypeDefinition { get; private set; }
         public CatelTypeType Type { get; private set; }

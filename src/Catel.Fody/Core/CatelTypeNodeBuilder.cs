@@ -63,7 +63,7 @@ namespace Catel.Fody
             }
 
             var typeNode = new CatelType(typeDefinition);
-            if (CatelTypes.Contains(typeNode))
+            if (typeNode.Ignore || CatelTypes.Contains(typeNode))
             {
                 return;
             }

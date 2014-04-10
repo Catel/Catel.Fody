@@ -13,16 +13,15 @@ namespace Catel.Fody.Weaving.ExposedProperties
     public class ExposedPropertiesWeaver
     {
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
-        private static readonly TypeDefinition ViewModelToModelAttributeTypeDefinition;
+        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
+        private readonly TypeDefinition ViewModelToModelAttributeTypeDefinition;
 
-        static ExposedPropertiesWeaver()
+        public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             ViewModelToModelAttributeTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.MVVM", "Catel.MVVM.ViewModelToModelAttribute") as TypeDefinition;
-        }
 
-        public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder)
-        {
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
+            _msCoreReferenceFinder = msCoreReferenceFinder;
         }
 
         public void Execute()
@@ -97,10 +96,11 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
             catelTypeProperty.IsReadOnly = isReadOnly;
 
-            var catelPropertyWeaver = new CatelPropertyWeaver(catelType, catelTypeProperty);
+            var catelPropertyWeaver = new CatelPropertyWeaver(catelType, catelTypeProperty, _msCoreReferenceFinder);
             catelPropertyWeaver.Execute(true);
 
-            var stringTypeDefinition = catelType.TypeDefinition.Module.Import(typeof(string));
+            var stringType = _msCoreReferenceFinder.GetCoreTypeReference("String");
+            var stringTypeDefinition = catelType.TypeDefinition.Module.Import(stringType);
 
             var attributeConstructor = catelType.TypeDefinition.Module.Import(ViewModelToModelAttributeTypeDefinition.Constructor(false));
             var viewModelToModelAttribute = new CustomAttribute(attributeConstructor);

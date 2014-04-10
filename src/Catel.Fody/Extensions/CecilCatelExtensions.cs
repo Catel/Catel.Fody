@@ -6,12 +6,11 @@
 namespace Catel.Fody
 {
     using System.Collections.Generic;
-
     using Mono.Cecil;
 
     public static class CecilCatelExtensions
     {
-        private static readonly Dictionary<string, bool> _implementsTypeCache = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> _implementsTypeCache = CacheHelper.GetCache<Dictionary<string, bool>>("CecilCatelExtensions");
 
         public static bool ImplementsCatelModel(this TypeReference typeReference)
         {

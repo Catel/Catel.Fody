@@ -17,18 +17,20 @@ namespace Catel.Fody
     public class CatelPropertyWeaver
     {
         #region Fields
-        private static readonly Dictionary<string, string> _cachedFieldInitializerNames = new Dictionary<string, string>();
-        private static readonly Dictionary<string, string> _cachedFieldNames = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _cachedFieldInitializerNames = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _cachedFieldNames = new Dictionary<string, string>();
 
         private readonly CatelType _catelType;
         private readonly CatelTypeProperty _propertyData;
+        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         #endregion
 
         #region Constructors
-        public CatelPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData)
+        public CatelPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _catelType = catelType;
             _propertyData = propertyData;
+            _msCoreReferenceFinder = msCoreReferenceFinder;
         }
         #endregion
 
@@ -132,8 +134,10 @@ namespace Catel.Fody
             {
                 FodyEnvironment.LogInfo(string.Format("\t\t\t{0} - adding static constructor", type.Name));
 
+                var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
+
                 staticConstructor = new MethodDefinition(".cctor", MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.Static | MethodAttributes.RTSpecialName,
-                    type.Module.Import(typeof(void)));
+                    type.Module.Import(voidType));
 
                 var body = staticConstructor.Body;
                 body.SimplifyMacros();
@@ -181,11 +185,14 @@ namespace Catel.Fody
             //    L_000c: ret 
             //}
 
+            var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
+            var objectType = _msCoreReferenceFinder.GetCoreTypeReference("Object");
+
             string initializationMethodName = GetChangeNotificationHandlerConstructorName(property);
             var initializationMethod = new MethodDefinition(initializationMethodName,
-                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.Import(typeof(void)));
+                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.Import(voidType));
             initializationMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
-            initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.Import(typeof(object))));
+            initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.Import(objectType)));
             initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, declaringType.Module.Import(advancedPropertyChangedEventArgsType)));
 
             var body = initializationMethod.Body;
@@ -437,7 +444,9 @@ namespace Catel.Fody
 
             if (property.SetMethod == null)
             {
-                var setMethod = new MethodDefinition(string.Format("set_{0}", property.Name), MethodAttributes.Public, property.DeclaringType.Module.Import(typeof(void)));
+                var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
+
+                var setMethod = new MethodDefinition(string.Format("set_{0}", property.Name), MethodAttributes.Public, property.DeclaringType.Module.Import(voidType));
                 setMethod.Parameters.Add(new ParameterDefinition(ImportPropertyType(property)));
 
                 var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");

@@ -14,7 +14,7 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
-        private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = new Dictionary<string, TypeDefinition>();
+        private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
 
         public static TypeReference MakeGenericIfRequired(this TypeReference typeReference)
         {

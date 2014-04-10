@@ -11,10 +11,12 @@ namespace Catel.Fody.Services
     public class AutoPropertiesWeaverService
     {
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
+        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-        public AutoPropertiesWeaverService(CatelTypeNodeBuilder catelTypeNodeBuilder)
+        public AutoPropertiesWeaverService(CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
+            _msCoreReferenceFinder = msCoreReferenceFinder;
         }
 
         public void Execute()
@@ -22,7 +24,7 @@ namespace Catel.Fody.Services
             var warningChecker = new AutoPropertiesWarningChecker(_catelTypeNodeBuilder);
             warningChecker.Execute();
 
-            var weaver = new AutoPropertiesWeaver(_catelTypeNodeBuilder);
+            var weaver = new AutoPropertiesWeaver(_catelTypeNodeBuilder, _msCoreReferenceFinder);
             weaver.Execute();
         }
     }

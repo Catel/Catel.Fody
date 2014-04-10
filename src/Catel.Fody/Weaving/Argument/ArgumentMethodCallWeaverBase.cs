@@ -6,7 +6,6 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
-    using System;
     using System.Collections.Generic;
 
     using Mono.Cecil;
@@ -15,9 +14,9 @@ namespace Catel.Fody.Weaving.Argument
     public abstract class ArgumentMethodCallWeaverBase
     {
         #region Constants
-        public static readonly Dictionary<string, ArgumentMethodCallWeaverBase> WellKnownWeavers = new Dictionary<string, ArgumentMethodCallWeaverBase>();
+        public static readonly Dictionary<string, ArgumentMethodCallWeaverBase> WellKnownWeavers = CacheHelper.GetCache<Dictionary<string, ArgumentMethodCallWeaverBase>>("ArgumentMethodCallWeaverBase");
 
-        private static readonly TypeDefinition ArgumentTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.Core", "Catel.Argument");
+        private readonly TypeDefinition ArgumentTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.Core", "Catel.Argument");
         #endregion
 
         #region Methods

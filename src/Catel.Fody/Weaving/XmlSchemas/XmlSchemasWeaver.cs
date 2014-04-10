@@ -36,6 +36,11 @@ namespace Catel.Fody.Weaving.XmlSchemas
                 return;
             }
 
+            if (catelType.TypeDefinition.ImplementsViewModelBase())
+            {
+                return;
+            }
+
             FodyEnvironment.LogInfo("\t\t Adding xml schema for type " + catelType.TypeDefinition.FullName);
 
             if (AddXmlSchemaProviderAttribute(catelType))
@@ -51,7 +56,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
             var methodName = GetXmlSchemaMethodName(catelType);
 
             var existingCustomAttribute = (from attribute in catelTypeDefinition.CustomAttributes
-                                           where attribute.AttributeType.Name == "XmlSchemaProviderAttribute"
+                                           where string.Equals(attribute.AttributeType.Name, "XmlSchemaProviderAttribute")
                                            select attribute).FirstOrDefault();
             if (existingCustomAttribute != null)
             {
