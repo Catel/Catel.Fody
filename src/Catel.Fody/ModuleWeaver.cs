@@ -81,9 +81,6 @@ namespace Catel.Fody
 
                 InitializeEnvironment();
 
-                //  First index the current assemblies
-                var referencedAssemblies = ModuleDefinition.AssemblyReferences.ToList();
-
                 // 1st step: set up the basics
                 var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
                 msCoreReferenceFinder.Execute();
@@ -115,7 +112,7 @@ namespace Catel.Fody
                 xmlSchemasWeaverService.Execute();
 
                 // Last step: clean up
-                var referenceCleaner = new ReferenceCleaner(this, referencedAssemblies);
+                var referenceCleaner = new ReferenceCleaner(this);
                 referenceCleaner.Execute();
             }
             catch (Exception ex)
