@@ -9,6 +9,7 @@ namespace Catel.Fody
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Mono.Cecil;
     using Mono.Cecil.Cil;
@@ -374,7 +375,7 @@ namespace Catel.Fody
                     genericRegisterProperty.GenericParameters.Add(genericParameter);
                 }
 
-                genericRegisterProperty.GenericArguments.Add(ImportPropertyType(property));
+                genericRegisterProperty.GenericArguments.Add(ImportPropertyType(property, true));
             }
 
             instructionsToInsert.AddRange(new[]
@@ -564,9 +565,20 @@ namespace Catel.Fody
             }
         }
 
-        private static TypeReference ImportPropertyType(PropertyDefinition propertyDefinition)
+        private static TypeReference ImportPropertyType(PropertyDefinition propertyDefinition, bool checkForNullableValueTypes = false)
         {
-            return propertyDefinition.DeclaringType.Module.Import(propertyDefinition.PropertyType);
+            var module = propertyDefinition.DeclaringType.Module;
+
+            if (checkForNullableValueTypes)
+            {
+                var nullableValueType = propertyDefinition.PropertyType.GetNullableValueType();
+                if (nullableValueType != null)
+                {
+                    return module.Import(nullableValueType);
+                }
+            }
+
+            return module.Import(propertyDefinition.PropertyType);
         }
 
         private static FieldDefinition GetFieldDefinition(TypeDefinition declaringType, string fieldName, bool allowGenericResolving)

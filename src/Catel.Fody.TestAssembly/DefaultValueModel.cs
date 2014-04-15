@@ -29,6 +29,15 @@ namespace Catel.Fody.TestAssembly
         [DefaultValue(true)]
         public bool BoolValue { get; set; }
 
+        [DefaultValue(null)]
+        public bool? NullableBoolDefaultNullValue { get; set; }
+
+        [DefaultValue(true)]
+        public bool? NullableBoolDefaultTrueValue { get; set; }
+
+        [DefaultValue(false)]
+        public bool? NullableBoolDefaultFalseValue { get; set; }
+
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -42,6 +51,48 @@ namespace Catel.Fody.TestAssembly
         /// Register the BoolValueCatel property so it is known in the class.
         /// </summary>
         public static readonly PropertyData BoolValueCatelProperty = RegisterProperty("BoolValueCatel", typeof(bool), true);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool? NullableBoolDefaultNullValueCatel
+        {
+            get { return GetValue<bool?>(NullableBoolDefaultNullValueCatelProperty); }
+            set { SetValue(NullableBoolDefaultNullValueCatelProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the BoolValueCatel property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData NullableBoolDefaultNullValueCatelProperty = RegisterProperty("NullableBoolDefaultNullValueCatel", typeof(bool?), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool? NullableBoolDefaultTrueValueCatel
+        {
+            get { return GetValue<bool?>(NullableBoolDefaultTrueValueCatelProperty); }
+            set { SetValue(NullableBoolDefaultTrueValueCatelProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the BoolValueCatel property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData NullableBoolDefaultTrueValueCatelProperty = RegisterProperty("NullableBoolDefaultTrueValueCatel", typeof(bool?), true);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool? NullableBoolDefaultFalseValueCatel
+        {
+            get { return GetValue<bool?>(NullableBoolDefaultFalseValueCatelProperty); }
+            set { SetValue(NullableBoolDefaultFalseValueCatelProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the BoolValueCatel property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData NullableBoolDefaultFalseValueCatelProperty = RegisterProperty("NullableBoolDefaultFalseValueCatel", typeof(bool?), false);
 
         [DefaultValue(42)]
         public int IntValue { get; set; }
