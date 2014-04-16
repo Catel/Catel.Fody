@@ -14,10 +14,12 @@ namespace Catel.Fody.Weaving.AutoProperties
     public class AutoPropertiesWeaver
     {
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
+        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-        public AutoPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder)
+        public AutoPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
+            _msCoreReferenceFinder = msCoreReferenceFinder;
         }
 
         public void Execute()
@@ -49,7 +51,7 @@ namespace Catel.Fody.Weaving.AutoProperties
 
                     body.SimplifyMacros();
 
-                    var propertyWeaver = new CatelPropertyWeaver(catelType, propertyData);
+                    var propertyWeaver = new CatelPropertyWeaver(catelType, propertyData, _msCoreReferenceFinder);
                     propertyWeaver.Execute();
 
                     body.InitLocals = true;

@@ -12,7 +12,7 @@ namespace Catel.Fody
 
     public static class ResolvingExtensions
     {
-        private static readonly Dictionary<string, TypeDefinition> _definitions = new Dictionary<string, TypeDefinition>();
+        private static readonly Dictionary<string, TypeDefinition> _definitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("ResolvingExtensions");
 
         public static TypeDefinition ResolveType(this TypeReference reference)
         {

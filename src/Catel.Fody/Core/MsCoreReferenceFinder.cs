@@ -6,7 +6,9 @@
 
 namespace Catel.Fody
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using Mono.Cecil;
 
     public class MsCoreReferenceFinder
@@ -14,12 +16,11 @@ namespace Catel.Fody
         private readonly ModuleWeaver _moduleWeaver;
         private readonly IAssemblyResolver _assemblyResolver;
 
+        private readonly IDictionary<string, TypeReference> _typeReferences = new Dictionary<string, TypeReference>();
+
         // Types
         public TypeReference XmlQualifiedName;
         public TypeReference XmlSchemaSet;
-
-        // Methods
-        public MethodReference ObjectConstructor;
 
         public MsCoreReferenceFinder(ModuleWeaver moduleWeaver, IAssemblyResolver assemblyResolver)
         {
@@ -32,46 +33,67 @@ namespace Catel.Fody
             var msCoreLibDefinition = _assemblyResolver.Resolve("mscorlib");
             var msCoreTypes = msCoreLibDefinition.MainModule.Types;
 
-            var objectDefinition = msCoreTypes.FirstOrDefault(x => x.Name == "Object");
+            var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
             if (objectDefinition == null)
             {
-                ExecuteWinRT();
                 return;
             }
-            var module = _moduleWeaver.ModuleDefinition;
-            var constructorDefinition = objectDefinition.Methods.First(x => x.IsConstructor);
-            ObjectConstructor = module.Import(constructorDefinition);
-
-            //var nullableDefinition = msCoreTypes.FirstOrDefault(x => x.Name == "Nullable");
-            //NullableEqualsMethod = module.Import(nullableDefinition).Resolve().Methods.First(x => x.Name == "Equals");
-
-            //var systemDefinition = _assemblyResolver.Resolve("System");
-            //var systemTypes = systemDefinition.MainModule.Types;
 
             var xmlDefinition = _assemblyResolver.Resolve("System.Xml");
             var xmlTypes = xmlDefinition.MainModule.Types;
 
             XmlQualifiedName = (from t in xmlTypes
-                                where t.FullName == "System.Xml.XmlQualifiedName"
+                                where string.Equals(t.FullName, "System.Xml.XmlQualifiedName")
                                 select t).FirstOrDefault();
 
             XmlSchemaSet = (from t in xmlTypes
-                            where t.FullName == "System.Xml.Schema.XmlSchemaSet"
+                            where string.Equals(t.FullName, "System.Xml.Schema.XmlSchemaSet")
                             select t).FirstOrDefault();
         }
 
-        public void ExecuteWinRT()
+        public TypeReference GetCoreTypeReference(string typeName)
+        {
+            if (!_typeReferences.ContainsKey(typeName))
+            {
+                var types = GetTypes();
+                _typeReferences[typeName] = types.First(x => string.Equals(x.Name, typeName));
+            }
+
+            return _typeReferences[typeName];
+        }
+
+        private IEnumerable<TypeReference> GetTypes()
+        {
+            var msCoreLibDefinition = _assemblyResolver.Resolve("mscorlib");
+            var msCoreTypes = msCoreLibDefinition.MainModule.Types.Cast<TypeReference>().ToList();
+
+            var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
+            if (objectDefinition == null)
+            {
+                msCoreTypes.AddRange(GetWinRtTypes());
+            }
+            else
+            {
+                msCoreTypes.AddRange(GetDotNetTypes());
+            }
+
+            return msCoreTypes;
+        }
+
+        private IEnumerable<TypeReference> GetDotNetTypes()
+        {
+            var systemDefinition = _assemblyResolver.Resolve("System");
+            var systemTypes = systemDefinition.MainModule.Types;
+
+            return systemTypes;
+        }
+
+        private IEnumerable<TypeReference> GetWinRtTypes()
         {
             var systemRuntime = _assemblyResolver.Resolve("System.Runtime");
             var systemRuntimeTypes = systemRuntime.MainModule.Types;
 
-            var objectDefinition = systemRuntimeTypes.First(x => x.Name == "Object");
-            var module = _moduleWeaver.ModuleDefinition;
-            var constructorDefinition = objectDefinition.Methods.First(x => x.IsConstructor);
-            ObjectConstructor = module.Import(constructorDefinition);
-
-            //var nullableDefinition = systemRuntimeTypes.FirstOrDefault(x => x.Name == "Nullable");
-            //NullableEqualsMethod = module.Import(nullableDefinition).Resolve().Methods.First(x => x.Name == "Equals");
+            return systemRuntimeTypes;
         }
     }
 }

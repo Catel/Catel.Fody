@@ -11,7 +11,6 @@ namespace Catel.Fody
     public class ReferenceCleaner
     {
         private readonly ModuleWeaver _moduleWeaver;
-
         public ReferenceCleaner(ModuleWeaver moduleWeaver)
         {
             _moduleWeaver = moduleWeaver;
@@ -19,15 +18,12 @@ namespace Catel.Fody
 
         public void Execute()
         {
-            var referenceToRemove = _moduleWeaver.ModuleDefinition.AssemblyReferences.FirstOrDefault(x => x.Name == "Catel.Fody.Attributes");
-            if (referenceToRemove == null)
+            var catelFodyAttributesReference = _moduleWeaver.ModuleDefinition.AssemblyReferences.FirstOrDefault(x => string.Equals(x.Name, "Catel.Fody.Attributes"));
+            if (catelFodyAttributesReference != null)
             {
-                _moduleWeaver.LogInfo("\tNo reference to 'Catel.Fody.Attributes' found. References not modified.");
-                return;
+                _moduleWeaver.LogInfo("\tRemoving reference to 'Catel.Fody.Attributes'.");
+                _moduleWeaver.ModuleDefinition.AssemblyReferences.Remove(catelFodyAttributesReference);
             }
-
-            _moduleWeaver.ModuleDefinition.AssemblyReferences.Remove(referenceToRemove);
-            _moduleWeaver.LogInfo("\tRemoving reference to 'Catel.Fody.Attributes'.");
         }
     }
 }

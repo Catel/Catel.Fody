@@ -14,7 +14,7 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
-        private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = new Dictionary<string, TypeDefinition>();
+        private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
 
         public static TypeReference MakeGenericIfRequired(this TypeReference typeReference)
         {
@@ -30,6 +30,43 @@ namespace Catel.Fody
             }
 
             return typeReference;
+        }
+
+        public static TypeReference GetNullableValueType(this TypeReference typeReference)
+        {
+            if (!typeReference.IsGenericInstance)
+            {
+                return null;
+            }
+
+            if (!typeReference.FullName.Contains("System.Nullable`1"))
+            {
+                return null;
+            }
+
+            var genericInstanceType = typeReference as GenericInstanceType;
+            if (genericInstanceType == null)
+            {
+                return null;
+            }
+
+            if (genericInstanceType.GenericArguments.Count != 1)
+            {
+                return null;
+            }
+
+            var genericParameter = genericInstanceType.GenericArguments[0];
+            if (!genericParameter.IsValueType)
+            {
+                return null;
+            }
+
+            return genericParameter.GetElementType();
+        }
+
+        public static bool IsNullableValueType(this TypeReference typeReference)
+        {
+            return GetNullableValueType(typeReference) != null;
         }
 
         public static MethodReference MakeHostInstanceGeneric(this MethodReference self, params TypeReference[] arguments)
@@ -246,7 +283,7 @@ namespace Catel.Fody
 
                     if (mappedFromSuperType.Any())
                     {
-                        currentBase = ((GenericInstanceType) currentBase).ElementType.MakeGenericInstanceType(previousGenericArgsMap.Select(x => x.Value).ToArray());
+                        currentBase = ((GenericInstanceType)currentBase).ElementType.MakeGenericInstanceType(previousGenericArgsMap.Select(x => x.Value).ToArray());
                         mappedFromSuperType.Clear();
                     }
                 }
@@ -282,7 +319,7 @@ namespace Catel.Fody
 
                     if (mappedFromSuperType.Any())
                     {
-                        result = ((GenericInstanceType) iface).ElementType.MakeGenericInstanceType(map.Select(x => x.Value).ToArray());
+                        result = ((GenericInstanceType)iface).ElementType.MakeGenericInstanceType(map.Select(x => x.Value).ToArray());
                     }
                 }
 
@@ -300,8 +337,8 @@ namespace Catel.Fody
                 return result;
             }
 
-            var genericArgs = ((GenericInstanceType) type).GenericArguments;
-            var genericPars = ((GenericInstanceType) type).ElementType.Resolve().GenericParameters;
+            var genericArgs = ((GenericInstanceType)type).GenericArguments;
+            var genericPars = ((GenericInstanceType)type).ElementType.Resolve().GenericParameters;
 
             /*
 
@@ -361,13 +398,13 @@ namespace Catel.Fody
                     }
                     //else
                     //{
-                        //            throw new Exception(string.Format(
-                        //"GetGenericArgsMap: A mapping from supertype was not found. " +
-                        //"Program searched for generic argument of name {0} in supertype generic arguments map " +
-                        //"as it should server as value form generic argument for generic parameter {1} in the type {2}",
-                        //arg.Name,
-                        //param.Name,
-                        //type.FullName));
+                    //            throw new Exception(string.Format(
+                    //"GetGenericArgsMap: A mapping from supertype was not found. " +
+                    //"Program searched for generic argument of name {0} in supertype generic arguments map " +
+                    //"as it should server as value form generic argument for generic parameter {1} in the type {2}",
+                    //arg.Name,
+                    //param.Name,
+                    //type.FullName));
                     //}
                 }
                 else

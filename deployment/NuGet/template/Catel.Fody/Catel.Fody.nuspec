@@ -7,6 +7,8 @@
     <authors>GeertvanHorrik,simoncropp</authors>
     <owners>GeertvanHorrik,simoncropp</owners>
 	
+	<developmentDependency>true</developmentDependency>
+	
 	<description>
 	  Fody add-in for transforming automatic properties into Catel properties.
 	</description>
