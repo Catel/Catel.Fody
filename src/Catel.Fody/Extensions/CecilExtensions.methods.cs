@@ -18,7 +18,6 @@ namespace Catel.Fody
             var reference = new MethodReference(method.Name, method.ReturnType)
             {
                 DeclaringType = declaringType.MakeGenericIfRequired(),
-                //DeclaringType = method.DeclaringType,
                 HasThis = method.HasThis,
                 ExplicitThis = method.ExplicitThis,
                 CallingConvention = method.CallingConvention,

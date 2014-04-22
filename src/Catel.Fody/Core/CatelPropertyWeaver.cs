@@ -367,20 +367,26 @@ namespace Catel.Fody
             }
 
             // Make call to register property generic
-            var genericRegisterProperty = new GenericInstanceMethod(registerPropertyInvoker);
+            var finalRegisterPropertyMethod = registerPropertyInvoker;
             if (registerPropertyInvoker.HasGenericParameters)
             {
-                foreach (var genericParameter in registerPropertyInvoker.GenericParameters)
+                var genericRegisterProperty = new GenericInstanceMethod(registerPropertyInvoker);
+                if (registerPropertyInvoker.HasGenericParameters)
                 {
-                    genericRegisterProperty.GenericParameters.Add(genericParameter);
+                    foreach (var genericParameter in registerPropertyInvoker.GenericParameters)
+                    {
+                        genericRegisterProperty.GenericParameters.Add(genericParameter);
+                    }
+
+                    genericRegisterProperty.GenericArguments.Add(ImportPropertyType(property, true));
                 }
 
-                genericRegisterProperty.GenericArguments.Add(ImportPropertyType(property, true));
+                finalRegisterPropertyMethod = genericRegisterProperty;
             }
 
             instructionsToInsert.AddRange(new[]
             {
-                Instruction.Create(OpCodes.Call, genericRegisterProperty),
+                Instruction.Create(OpCodes.Call, finalRegisterPropertyMethod),
                 Instruction.Create(OpCodes.Stsfld, fieldReference)
             });
 
@@ -607,13 +613,6 @@ namespace Catel.Fody
             }
 
             return fieldReference;
-        }
-
-        private static MethodDefinition GetMethodDefinition(TypeDefinition declaringType, string methodName, bool allowGenericResolving)
-        {
-            var methodReference = GetMethodReference(declaringType, methodName, allowGenericResolving);
-
-            return methodReference != null ? methodReference.Resolve() : null;
         }
 
         private static MethodReference GetMethodReference(TypeDefinition declaringType, string methodName, bool allowGenericResolving)
