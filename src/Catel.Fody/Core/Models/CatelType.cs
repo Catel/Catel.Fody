@@ -99,9 +99,9 @@ namespace Catel.Fody
         {
             var module = TypeDefinition.Module;
 
-            RegisterPropertyWithDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, true).GetGeneric());
+            RegisterPropertyWithDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, true));
             RegisterPropertyWithoutDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, false));
-            GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true).GetGeneric());
+            GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true));
             SetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "SetValue", new[] { "property", "value" }));
         }
 
@@ -159,8 +159,8 @@ namespace Catel.Fody
                     // Search for this method:         
                     // public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     methods = (from method in currentTypeDefinition.Methods
-                               where method.Name == "RegisterProperty" && method.IsPublic &&
-                                     method.HasGenericParameters && method.Parameters.Count == 7 &&
+                               where method.Name == "RegisterProperty" && method.IsPublic && method.Parameters.Count == 7 &&
+                                     method.HasGenericParameters && method.GenericParameters.Count == 1 && 
                                      method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
                                      !method.Parameters[2].ParameterType.FullName.Contains("System.Func")
                                select method).ToList();

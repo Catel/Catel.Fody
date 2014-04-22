@@ -16,7 +16,6 @@ namespace Catel.Fody
             var reference = new FieldReference(field.Name, field.FieldType)
             {
                 DeclaringType = declaringType.MakeGenericIfRequired(),
-                //DeclaringType = method.DeclaringType,
             };
 
             return reference;
