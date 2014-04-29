@@ -91,7 +91,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             catelType.TypeDefinition.Properties.Add(viewModelPropertyDefinition);
 
-            viewModelPropertyDefinition.MarkAsCompilerGenerated(catelType.TypeDefinition.Module);
+            viewModelPropertyDefinition.MarkAsCompilerGenerated(_msCoreReferenceFinder);
 
             var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
             catelTypeProperty.IsReadOnly = isReadOnly;

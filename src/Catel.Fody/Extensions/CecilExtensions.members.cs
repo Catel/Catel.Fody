@@ -7,49 +7,46 @@
 
 namespace Catel.Fody
 {
-    using System;
     using Mono.Cecil;
 
     public static partial class CecilExtensions
     {
-        public static void MarkAsCompilerGenerated(this MemberReference member, ModuleDefinition module = null)
+        public static void MarkAsCompilerGenerated(this MemberReference member, MsCoreReferenceFinder msCoreReferenceFinder)
         {
-            if (module == null)
-            {
-                module = member.Module;
-            }
-
+            var module = member.Module;
             if (module == null)
             {
                 return;
             }
 
-            var compilerGeneratedAttribute = module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
+            var compilerGeneratedAttribute = (TypeDefinition)msCoreReferenceFinder.GetCoreTypeReference("System.Runtime.CompilerServices.CompilerGeneratedAttribute");
             if (compilerGeneratedAttribute != null)
             {
+                var attribute = CreateAttribute(compilerGeneratedAttribute, module);
+
                 var fieldDefinition = member as FieldDefinition;
                 if (fieldDefinition != null)
                 {
-                    fieldDefinition.CustomAttributes.Add(CreateAttribute(member, compilerGeneratedAttribute));
+                    fieldDefinition.CustomAttributes.Add(attribute);
                 }
 
                 var propertyDefinition = member as PropertyDefinition;
                 if (propertyDefinition != null)
                 {
-                    propertyDefinition.CustomAttributes.Add(CreateAttribute(member, compilerGeneratedAttribute));
+                    propertyDefinition.CustomAttributes.Add(attribute);
                 }
 
                 var methodDefinition = member as MethodDefinition;
                 if (methodDefinition != null)
                 {
-                    methodDefinition.CustomAttributes.Add(CreateAttribute(member, compilerGeneratedAttribute));
+                    methodDefinition.CustomAttributes.Add(attribute);
                 }
             }
         }
 
-        private static CustomAttribute CreateAttribute(MemberReference member, TypeDefinition attributeDefinition)
+        private static CustomAttribute CreateAttribute(TypeDefinition attributeDefinition, ModuleDefinition importingModule)
         {
-            return new CustomAttribute(member.DeclaringType.Module.Import(attributeDefinition.Resolve().Constructor(false)));
+            return new CustomAttribute(importingModule.Import(attributeDefinition.Resolve().Constructor(false)));
         }
     }
 }

@@ -135,7 +135,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
 
             catelTypeDefinition.Methods.Add(getXmlSchemaMethod);
 
-            getXmlSchemaMethod.MarkAsCompilerGenerated();
+            getXmlSchemaMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
         }
 
         private string GetXmlSchemaMethodName(CatelType catelType)

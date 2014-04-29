@@ -178,7 +178,7 @@ namespace Catel.Fody
 
             declaringType.Fields.Add(field);
 
-            field.MarkAsCompilerGenerated();
+            field.MarkAsCompilerGenerated(_msCoreReferenceFinder);
 
             //.method private hidebysig static void <.cctor>b__0(object s, class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs e) cil managed
             //{
@@ -211,7 +211,7 @@ namespace Catel.Fody
 
             declaringType.Methods.Add(initializationMethod);
 
-            initializationMethod.MarkAsCompilerGenerated();
+            initializationMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
         }
 
         private FieldDefinition AddPropertyFieldDefinition(PropertyDefinition property)
@@ -223,7 +223,7 @@ namespace Catel.Fody
 
             declaringType.Fields.Add(fieldDefinition);
 
-            fieldDefinition.MarkAsCompilerGenerated();
+            fieldDefinition.MarkAsCompilerGenerated(_msCoreReferenceFinder);
 
             return fieldDefinition;
         }
@@ -422,7 +422,7 @@ namespace Catel.Fody
 
                 property.DeclaringType.Methods.Add(getMethod);
 
-                getMethod.MarkAsCompilerGenerated();
+                getMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
 
                 property.GetMethod = getMethod;
             }
@@ -464,7 +464,7 @@ namespace Catel.Fody
 
                 property.DeclaringType.Methods.Add(setMethod);
 
-                setMethod.MarkAsCompilerGenerated();
+                setMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
 
                 property.SetMethod = setMethod;
             }
@@ -515,7 +515,7 @@ namespace Catel.Fody
 
         private GenericInstanceType GetEventHandlerAdvancedPropertyChangedEventArgs(PropertyDefinition property)
         {
-            var genericHandlerType = property.Module.FindType("mscorlib", "System.EventHandler`1");
+            var genericHandlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.EventHandler`1");
             if (genericHandlerType == null)
             {
                 FodyEnvironment.LogError("Expected to find EventHandler<T>, but type was not  found");
