@@ -112,9 +112,6 @@ namespace Catel.Fody.Weaving.XmlSchemas
 
             var getXmlSchemaMethod = new MethodDefinition(methodName, MethodAttributes.Public | MethodAttributes.Static, catelTypeDefinition.Module.Import(_msCoreReferenceFinder.XmlQualifiedName));
 
-            var compilerGeneratedAttribute = catelTypeDefinition.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
-            getXmlSchemaMethod.CustomAttributes.Add(new CustomAttribute(catelTypeDefinition.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
-
             getXmlSchemaMethod.Parameters.Add(new ParameterDefinition("xmlSchemaSet", ParameterAttributes.None, catelTypeDefinition.Module.Import(_msCoreReferenceFinder.XmlSchemaSet)));
 
             var ldloc1Instruction = Instruction.Create(OpCodes.Ldloc_1);
@@ -137,6 +134,8 @@ namespace Catel.Fody.Weaving.XmlSchemas
             getXmlSchemaMethod.Body.Variables.Add(new VariableDefinition(catelTypeDefinition.Module.Import(_msCoreReferenceFinder.XmlQualifiedName)));
 
             catelTypeDefinition.Methods.Add(getXmlSchemaMethod);
+
+            getXmlSchemaMethod.MarkAsCompilerGenerated();
         }
 
         private string GetXmlSchemaMethodName(CatelType catelType)
