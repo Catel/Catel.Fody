@@ -89,10 +89,10 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, FodyEnvironment.ModuleDefinition.Import(modelPropertyType));
             viewModelPropertyDefinition.DeclaringType = catelType.TypeDefinition;
 
-            var compilerGeneratedAttribute = catelType.TypeDefinition.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
-            viewModelPropertyDefinition.CustomAttributes.Add(new CustomAttribute(catelType.TypeDefinition.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
-
             catelType.TypeDefinition.Properties.Add(viewModelPropertyDefinition);
+
+            viewModelPropertyDefinition.MarkAsCompilerGenerated(_msCoreReferenceFinder);
+
             var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
             catelTypeProperty.IsReadOnly = isReadOnly;
 

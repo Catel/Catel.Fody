@@ -81,6 +81,10 @@ namespace Catel.Fody
             catch (Exception ex)
             {
                 FodyEnvironment.LogError(string.Format("\t\tFailed to handle property '{0}.{1}'\n{2}\n{3}", property.DeclaringType.Name, property.Name, ex.Message, ex.StackTrace));
+
+#if DEBUG
+                Debugger.Launch();
+#endif
             }
         }
 
@@ -171,9 +175,10 @@ namespace Catel.Fody
             //.field private static class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> CS$<>9__CachedAnonymousMethodDelegate1
 
             var field = new FieldDefinition(fieldName, FieldAttributes.Private | FieldAttributes.Static, declaringType.Module.Import(handlerType));
-            var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
-            field.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
+
             declaringType.Fields.Add(field);
+
+            field.MarkAsCompilerGenerated(_msCoreReferenceFinder);
 
             //.method private hidebysig static void <.cctor>b__0(object s, class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs e) cil managed
             //{
@@ -192,7 +197,7 @@ namespace Catel.Fody
             string initializationMethodName = GetChangeNotificationHandlerConstructorName(property);
             var initializationMethod = new MethodDefinition(initializationMethodName,
                 MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.Import(voidType));
-            initializationMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
+
             initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.Import(objectType)));
             initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, declaringType.Module.Import(advancedPropertyChangedEventArgsType)));
 
@@ -205,6 +210,8 @@ namespace Catel.Fody
                 Instruction.Create(OpCodes.Ret));
 
             declaringType.Methods.Add(initializationMethod);
+
+            initializationMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
         }
 
         private FieldDefinition AddPropertyFieldDefinition(PropertyDefinition property)
@@ -214,10 +221,9 @@ namespace Catel.Fody
 
             var fieldDefinition = new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly, _catelType.PropertyDataType);
 
-            var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
-            fieldDefinition.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
-
             declaringType.Fields.Add(fieldDefinition);
+
+            fieldDefinition.MarkAsCompilerGenerated(_msCoreReferenceFinder);
 
             return fieldDefinition;
         }
@@ -414,10 +420,10 @@ namespace Catel.Fody
             {
                 var getMethod = new MethodDefinition(string.Format("get_{0}", property.Name), MethodAttributes.Public, ImportPropertyType(property));
 
-                var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
-                getMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
-
                 property.DeclaringType.Methods.Add(getMethod);
+
+                getMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
+
                 property.GetMethod = getMethod;
             }
 
@@ -456,10 +462,10 @@ namespace Catel.Fody
                 var setMethod = new MethodDefinition(string.Format("set_{0}", property.Name), MethodAttributes.Public, property.DeclaringType.Module.Import(voidType));
                 setMethod.Parameters.Add(new ParameterDefinition(ImportPropertyType(property)));
 
-                var compilerGeneratedAttribute = property.Module.FindType("mscorlib", "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
-                setMethod.CustomAttributes.Add(new CustomAttribute(property.DeclaringType.Module.Import(compilerGeneratedAttribute.Resolve().Constructor(false))));
-
                 property.DeclaringType.Methods.Add(setMethod);
+
+                setMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
+
                 property.SetMethod = setMethod;
             }
 
@@ -509,7 +515,7 @@ namespace Catel.Fody
 
         private GenericInstanceType GetEventHandlerAdvancedPropertyChangedEventArgs(PropertyDefinition property)
         {
-            var genericHandlerType = property.Module.FindType("mscorlib", "System.EventHandler`1");
+            var genericHandlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.EventHandler`1");
             if (genericHandlerType == null)
             {
                 FodyEnvironment.LogError("Expected to find EventHandler<T>, but type was not  found");

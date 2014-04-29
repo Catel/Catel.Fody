@@ -56,7 +56,7 @@ namespace Catel.Fody
             if (!_typeReferences.ContainsKey(typeName))
             {
                 var types = GetTypes();
-                _typeReferences[typeName] = types.First(x => string.Equals(x.Name, typeName));
+                _typeReferences[typeName] = types.FirstOrDefault(x => string.Equals(x.Name, typeName) || string.Equals(x.FullName, typeName));
             }
 
             return _typeReferences[typeName];
