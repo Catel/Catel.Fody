@@ -11,11 +11,16 @@ namespace Catel.Fody
 
     public class Configuration
     {
-        public Configuration(XElement element)
+        public Configuration(XElement config)
         {
             GenerateXmlSchemas = false;
 
-            element.ReadBool("GenerateXmlSchemas", value => GenerateXmlSchemas = value);
+            if (config == null)
+            {
+                return;
+            }
+
+            config.ReadBool("GenerateXmlSchemas", value => GenerateXmlSchemas = value);
         }
 
         public bool GenerateXmlSchemas { get; private set; }

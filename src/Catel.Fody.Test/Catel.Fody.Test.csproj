@@ -65,6 +65,7 @@
       <HintPath>..\..\lib\Catel.MVVM.3.9.0.1403191158-beta\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
@@ -74,6 +75,7 @@
   <ItemGroup>
     <Compile Include="ArgumentFacts.cs" />
     <Compile Include="AssemblyWeaver.cs" />
+    <Compile Include="ConfigurationFacts.cs" />
     <Compile Include="DefaultValueFacts.cs" />
     <Compile Include="ExposeFacts.cs" />
     <Compile Include="InheritanceFacts.cs" />
