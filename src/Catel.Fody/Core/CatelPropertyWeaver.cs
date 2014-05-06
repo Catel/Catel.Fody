@@ -252,7 +252,7 @@ namespace Catel.Fody
             var index = (returnInstruction != null) ? instructions.IndexOf(returnInstruction) : instructions.Count;
 
             //L_0000: ldstr "FullName"
-            //L_0005: ldtoken string // not that this is the property type
+            //L_0005: ldtoken string // note that this is the property type
             //L_000a: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
             //L_000f: ldnull 
             //L_0010: ldnull 
