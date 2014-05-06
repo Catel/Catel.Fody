@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
-  <metadata>
+  <metadata minClientVersion="2.8">
     <id>Catel.Fody</id>
     <version>[VERSION]</version>
 	<title>Catel.Fody</title>

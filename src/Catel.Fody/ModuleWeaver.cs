@@ -10,19 +10,13 @@ namespace Catel.Fody
     using System.Linq;
     using System.Xml.Linq;
 
-    using Catel.Fody.Services;
+    using Services;
 
     using Mono.Cecil;
     using Mono.Cecil.Cil;
 
     public class ModuleWeaver
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModuleWeaver"/> class.
-        /// </summary>
-        /// <remarks>
-        /// The class must contain an empty constructor.
-        /// </remarks>
         public ModuleWeaver()
         {
             // Init logging delegates to make testing easier
@@ -31,41 +25,15 @@ namespace Catel.Fody
             LogError = s => { };
         }
 
-        /// <summary>
-        /// Gets or sets the configuration element. Contains the full element from <c>FodyWeavers.xml</c>.
-        /// </summary>
-        /// <value>
-        /// The config.
-        /// </value>
         public XElement Config { get; set; }
 
-        /// <summary>
-        /// Gets or sets the log info delegate.
-        /// </summary>
         public Action<string> LogInfo { get; set; }
-
         public Action<string> LogWarning { get; set; }
-
         public Action<string, SequencePoint> LogWarningPoint { get; set; }
-
         public Action<string> LogError { get; set; }
-
         public Action<string, SequencePoint> LogErrorPoint { get; set; }
 
-        /// <summary>
-        /// Gets or sets the assembly resolver. Contains a  <seealso cref="Mono.Cecil.IAssemblyResolver"/> for resolving dependencies.
-        /// </summary>
-        /// <value>
-        /// The assembly resolver.
-        /// </value>
         public IAssemblyResolver AssemblyResolver { get; set; }
-
-        /// <summary>
-        /// Gets or sets the module definition. Contains the Cecil representation of the assembly being built.
-        /// </summary>
-        /// <value>
-        /// The module definition.
-        /// </value>
         public ModuleDefinition ModuleDefinition { get; set; }
 
         public void Execute()
@@ -78,6 +46,8 @@ namespace Catel.Fody
 
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
                 CacheHelper.ClearAllCaches();
+
+                var configuration = new Configuration(Config);
 
                 InitializeEnvironment();
 
@@ -108,8 +78,11 @@ namespace Catel.Fody
                 argumentWeaverService.Execute();
 
                 // 5th step: Xml schema weaving
-                var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);
-                xmlSchemasWeaverService.Execute();
+                if (configuration.GenerateXmlSchemas)
+                {
+                    var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);
+                    xmlSchemasWeaverService.Execute();
+                }
 
                 // Last step: clean up
                 var referenceCleaner = new ReferenceCleaner(this);

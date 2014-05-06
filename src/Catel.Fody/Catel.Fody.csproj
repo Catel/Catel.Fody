@@ -62,6 +62,7 @@
     <Compile Include="..\SolutionAssemblyInfo.cs">
       <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Configuration.cs" />
     <Compile Include="Core\Models\CatelTypeProperty.cs" />
     <Compile Include="Extensions\CecilCatelExtensions.cs" />
     <Compile Include="Extensions\CecilExtensions.attributes.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Extensions\CecilExtensions.members.cs" />
     <Compile Include="Extensions\CecilExtensions.methods.cs" />
     <Compile Include="Extensions\ResolvingExtensions.cs" />
+    <Compile Include="Extensions\XmlExtensions.cs" />
     <Compile Include="FodyEnvironment.cs" />
     <Compile Include="Helpers\CacheHelper.cs" />
     <Compile Include="Services\ArgumentWeaverService.cs" />
