@@ -61,7 +61,7 @@ namespace Catel.Fody.Test
             var setMethod = propertyInfo.GetSetMethod(true);
             if (setMethod != null)
             {
-                Assert.IsFalse(setMethod.IsPublic);    
+                Assert.IsFalse(setMethod.IsPublic);
             }
         }
         #endregion

@@ -75,6 +75,7 @@
     <Compile Include="Helpers\CacheHelper.cs" />
     <Compile Include="Services\ArgumentWeaverService.cs" />
     <Compile Include="Services\ExposedPropertiesWeaverService.cs" />
+    <Compile Include="Services\LoggingWeaverService.cs" />
     <Compile Include="Weaving\Argument\ArgumentInstructionSequenceBuilder.cs" />
     <Compile Include="Weaving\Argument\ArgumentWeaver.cs" />
     <Compile Include="Weaving\Argument\ArgumentMethodCallWeaverBase.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="Weaving\AutoProperties\AutoPropertiesWarningChecker.cs" />
     <Compile Include="Core\WeavingException.cs" />
     <Compile Include="Services\XmlSchemasWeaverService.cs" />
+    <Compile Include="Weaving\Logging\LoggingWeaver.cs" />
     <Compile Include="Weaving\XmlSchemas\XmlSchemasWeaver.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -77,7 +77,11 @@ namespace Catel.Fody
                 var argumentWeaverService = new ArgumentWeaverService(types);
                 argumentWeaverService.Execute();
 
-                // 5th step: Xml schema weaving
+                // 5th step: Argument weaving
+                var loggingWeaver = new LoggingWeaverService(types);
+                loggingWeaver.Execute();
+
+                // 6th step: Xml schema weaving
                 if (configuration.GenerateXmlSchemas)
                 {
                     var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);

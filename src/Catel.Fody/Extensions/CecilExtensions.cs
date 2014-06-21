@@ -150,6 +150,17 @@ namespace Catel.Fody
             return null;
         }
 
+        public static MethodReference GetMethodAndImport(this ModuleDefinition module, string methodName)
+        {
+            var method = GetMethod(module, methodName);
+            if (method == null)
+            {
+                return method;
+            }
+
+            return module.Import(method);
+        }
+
         public static MethodReference GetMethod(this ModuleDefinition module, string methodName)
         {
             var resolver = module.AssemblyResolver;
