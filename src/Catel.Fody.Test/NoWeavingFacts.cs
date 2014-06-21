@@ -7,8 +7,7 @@
 
 namespace Catel.Fody.Test
 {
-    using System;
-    using Catel.Data;
+    using Data;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

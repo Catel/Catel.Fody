@@ -260,15 +260,14 @@ namespace Catel.Fody
             //L_0012: call class [Catel.Core]Catel.Data.PropertyData [Catel.Core]Catel.Data.ModelBase::RegisterProperty(string, class [mscorlib]System.Type, class [mscorlib]System.Func`1<object>, class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs>, bool)
             //L_0017: stsfld class [Catel.Core]Catel.Data.PropertyData Catel.Fody.TestAssembly.ViewModelBaseTest::FullNameProperty
 
-            var getTypeFromHandle = property.Module.GetMethod("GetTypeFromHandle");
-            var importedGetTypeFromHandle = property.Module.Import(getTypeFromHandle);
+            var getTypeFromHandle = property.Module.GetMethodAndImport("GetTypeFromHandle");
 
             var instructionsToInsert = new List<Instruction>();
             instructionsToInsert.AddRange(new[]
             {
                 Instruction.Create(OpCodes.Ldstr, property.Name),
                 Instruction.Create(OpCodes.Ldtoken, ImportPropertyType(property)),
-                Instruction.Create(OpCodes.Call, importedGetTypeFromHandle),
+                Instruction.Create(OpCodes.Call, getTypeFromHandle),
             });
 
             var resolvedPropertyType = propertyData.PropertyDefinition.PropertyType.Resolve();

@@ -79,6 +79,7 @@
     <Compile Include="DefaultValueFacts.cs" />
     <Compile Include="ExposeFacts.cs" />
     <Compile Include="InheritanceFacts.cs" />
+    <Compile Include="LoggingFacts.cs" />
     <Compile Include="MockAssemblyResolver.cs" />
     <Compile Include="ModelBaseFacts.cs" />
     <Compile Include="ModelWithDoubleValuesFacts.cs" />
