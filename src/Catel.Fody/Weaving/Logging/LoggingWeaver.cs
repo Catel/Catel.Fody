@@ -82,6 +82,11 @@ namespace Catel.Fody.Weaving.Logging
                         }
 
                         var getLoggerMethod = GetGetLoggerMethod(getCurrentClassLoggerMethod.DeclaringType);
+                        if (getLoggerMethod == null)
+                        {
+                            FodyEnvironment.LogWarning(string.Format("{0}.GetLogger(type) method does not exist, cannot change method call", getCurrentClassLoggerMethod.DeclaringType.FullName));
+                            return;
+                        }
 
                         var getTypeFromHandle = type.Module.GetMethodAndImport("GetTypeFromHandle");
 
@@ -105,7 +110,7 @@ namespace Catel.Fody.Weaving.Logging
 
             return (from method in typeDefinition.Methods
                     where method.IsStatic && string.Equals(method.Name, "GetLogger") && method.Parameters.Count == 1
-                    select method).Single();
+                    select method).FirstOrDefault();
         }
     }
 }
