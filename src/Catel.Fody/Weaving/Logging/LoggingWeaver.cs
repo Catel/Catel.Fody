@@ -80,7 +80,9 @@ namespace Catel.Fody.Weaving.Logging
                 {
                     if (instruction.Operand == logField)
                     {
-                        FodyEnvironment.LogInfo(string.Format("Weaving auto log to specific log for '{0}.{1}'", type.FullName, logField.Name));
+                        string logFieldName = string.Format("{0}.{1}", type.FullName, logField.Name);
+
+                        FodyEnvironment.LogInfo(string.Format("Weaving auto log to specific log for '{0}'", logFieldName));
 
                         var previousInstruction = instructions[i - 1];
                         var getCurrentClassLoggerMethod = (MethodReference)previousInstruction.Operand;
@@ -93,7 +95,7 @@ namespace Catel.Fody.Weaving.Logging
                         var getLoggerMethod = GetGetLoggerMethod(getCurrentClassLoggerMethod.DeclaringType);
                         if (getLoggerMethod == null)
                         {
-                            FodyEnvironment.LogWarningPoint(string.Format("{0}.GetLogger(type) method does not exist, cannot change method call", getCurrentClassLoggerMethod.DeclaringType.FullName), previousInstruction.SequencePoint);
+                            FodyEnvironment.LogWarningPoint(string.Format("Cannot change method call for log '{0}', the GetLogger(type) method does not exist on the calling type (try to use LogManager.GetCurrentClassLogger())", logFieldName), previousInstruction.SequencePoint);
                             return;
                         }
 
