@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.Weaving.Logging
 {
+    using System;
     using System.Linq;
     using Mono.Cecil;
     using Mono.Cecil.Cil;
@@ -40,7 +41,15 @@ namespace Catel.Fody.Weaving.Logging
 
             foreach (var loggingField in loggingFields)
             {
-                UpdateStaticLogDefinition(loggingField, body);
+                try
+                {
+                    UpdateStaticLogDefinition(loggingField, body);
+                }
+                catch (Exception ex)
+                {
+                    FodyEnvironment.LogWarning(string.Format("Failed to update static log definition '{0}.{1}', '{2}'",
+                        _type.FullName, loggingField.Name, ex.Message));
+                }
             }
 
 
@@ -84,7 +93,7 @@ namespace Catel.Fody.Weaving.Logging
                         var getLoggerMethod = GetGetLoggerMethod(getCurrentClassLoggerMethod.DeclaringType);
                         if (getLoggerMethod == null)
                         {
-                            FodyEnvironment.LogWarning(string.Format("{0}.GetLogger(type) method does not exist, cannot change method call", getCurrentClassLoggerMethod.DeclaringType.FullName));
+                            FodyEnvironment.LogWarningPoint(string.Format("{0}.GetLogger(type) method does not exist, cannot change method call", getCurrentClassLoggerMethod.DeclaringType.FullName), previousInstruction.SequencePoint);
                             return;
                         }
 
