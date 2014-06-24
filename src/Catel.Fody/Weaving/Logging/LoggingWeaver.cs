@@ -36,6 +36,12 @@ namespace Catel.Fody.Weaving.Logging
             }
 
             var staticConstructor = _type.GetStaticConstructor();
+            if (staticConstructor == null)
+            {
+                FodyEnvironment.LogInfo(string.Format("Cannot weave ILog fields without a static constructor, ignoring type '{0}'", _type.FullName));
+                return;
+            }
+
             var body = staticConstructor.Body;
             body.SimplifyMacros();
 
@@ -51,7 +57,6 @@ namespace Catel.Fody.Weaving.Logging
                         _type.FullName, loggingField.Name, ex.Message));
                 }
             }
-
 
             body.OptimizeMacros();
         }
@@ -80,7 +85,7 @@ namespace Catel.Fody.Weaving.Logging
                 {
                     if (instruction.Operand == logField)
                     {
-                        string logFieldName = string.Format("{0}.{1}", type.FullName, logField.Name);
+                        var logFieldName = string.Format("{0}.{1}", type.FullName, logField.Name);
 
                         FodyEnvironment.LogInfo(string.Format("Weaving auto log to specific log for '{0}'", logFieldName));
 

@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.Services
 {
+    using System;
     using System.Collections.Generic;
     using Mono.Cecil;
     using Weaving.Logging;
@@ -29,8 +30,16 @@ namespace Catel.Fody.Services
         {
             foreach (var type in _allTypes)
             {
-                var weaver = new LoggingWeaver(type);
-                weaver.Execute();
+                try
+                {
+                    var weaver = new LoggingWeaver(type);
+                    weaver.Execute();
+                }
+                catch (Exception ex)
+                {
+                    FodyEnvironment.LogError(string.Format("Failed to weave type '{0}', message is '{1}'", type.FullName, ex.Message));
+                    return;
+                }
             }
         }
         #endregion

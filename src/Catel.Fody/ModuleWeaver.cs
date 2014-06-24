@@ -127,7 +127,7 @@ namespace Catel.Fody
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving xml schemas properties is disabled");
+                    FodyEnvironment.LogInfo("Weaving xml schemas is disabled");
                 }
 
                 // Last step: clean up
