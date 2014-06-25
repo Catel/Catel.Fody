@@ -37,7 +37,7 @@ namespace Catel.Fody.Services
                 }
                 catch (Exception ex)
                 {
-                    FodyEnvironment.LogError(string.Format("Failed to weave type '{0}', message is '{1}'", type.FullName, ex.Message));
+                    FodyEnvironment.LogWarning(string.Format("Failed to weave type '{0}', message is '{1}'", type.FullName, ex.Message));
                     return;
                 }
             }
