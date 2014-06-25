@@ -25,7 +25,7 @@
 	
 	<dependencies>
 		<dependency id="Fody"/>
-		<dependency id="Catel.Core"/>
+		<!--<dependency id="Catel.Core"/>-->
 	</dependencies>	
   </metadata>
 </package>
