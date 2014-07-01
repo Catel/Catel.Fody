@@ -40,9 +40,9 @@ namespace Catel.Fody
         {
             try
             {
-//#if DEBUG
-//                Debugger.Launch();
-//#endif
+                //#if DEBUG
+                //                Debugger.Launch();
+                //#endif
 
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
                 CacheHelper.ClearAllCaches();
@@ -66,26 +66,68 @@ namespace Catel.Fody
                 codeGenTypeCleaner.Execute();
 
                 // 2nd step: Auto property weaving
-                var propertyWeaverService = new AutoPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
-                propertyWeaverService.Execute();
+                if (configuration.WeaveProperties)
+                {
+                    FodyEnvironment.LogInfo("Weaving properties");
+
+                    var propertyWeaverService = new AutoPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
+                    propertyWeaverService.Execute();
+                }
+                else
+                {
+                    FodyEnvironment.LogInfo("Weaving properties is disabled");
+                }
 
                 // 3rd step: Exposed properties weaving
-                var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
-                exposedPropertiesWeaverService.Execute();
+                if (configuration.WeaveExposedProperties)
+                {
+                    FodyEnvironment.LogInfo("Weaving exposed properties");
+
+                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
+                    exposedPropertiesWeaverService.Execute();
+                }
+                else
+                {
+                    FodyEnvironment.LogInfo("Weaving exposed properties is disabled");
+                }
 
                 // 4th step: Argument weaving
-                var argumentWeaverService = new ArgumentWeaverService(types);
-                argumentWeaverService.Execute();
+                if (configuration.WeaveArguments)
+                {
+                    FodyEnvironment.LogInfo("Weaving arguments");
 
-                // 5th step: Argument weaving
-                var loggingWeaver = new LoggingWeaverService(types);
-                loggingWeaver.Execute();
+                    var argumentWeaverService = new ArgumentWeaverService(types);
+                    argumentWeaverService.Execute();
+                }
+                else
+                {
+                    FodyEnvironment.LogInfo("Weaving arguments is disabled");
+                }
+
+                // 5th step: Logging weaving
+                if (configuration.WeaveLogging)
+                {
+                    FodyEnvironment.LogInfo("Weaving logging");
+
+                    var loggingWeaver = new LoggingWeaverService(types);
+                    loggingWeaver.Execute();
+                }
+                else
+                {
+                    FodyEnvironment.LogInfo("Weaving logging is disabled");
+                }
 
                 // 6th step: Xml schema weaving
                 if (configuration.GenerateXmlSchemas)
                 {
+                    FodyEnvironment.LogInfo("Weaving xml schemas");
+
                     var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);
                     xmlSchemasWeaverService.Execute();
+                }
+                else
+                {
+                    FodyEnvironment.LogInfo("Weaving xml schemas is disabled");
                 }
 
                 // Last step: clean up

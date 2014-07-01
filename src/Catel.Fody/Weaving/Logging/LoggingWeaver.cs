@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.Weaving.Logging
 {
+    using System;
     using System.Linq;
     using Mono.Cecil;
     using Mono.Cecil.Cil;
@@ -35,14 +36,27 @@ namespace Catel.Fody.Weaving.Logging
             }
 
             var staticConstructor = _type.GetStaticConstructor();
+            if (staticConstructor == null)
+            {
+                FodyEnvironment.LogInfo(string.Format("Cannot weave ILog fields without a static constructor, ignoring type '{0}'", _type.FullName));
+                return;
+            }
+
             var body = staticConstructor.Body;
             body.SimplifyMacros();
 
             foreach (var loggingField in loggingFields)
             {
-                UpdateStaticLogDefinition(loggingField, body);
+                try
+                {
+                    UpdateStaticLogDefinition(loggingField, body);
+                }
+                catch (Exception ex)
+                {
+                    FodyEnvironment.LogWarning(string.Format("Failed to update static log definition '{0}.{1}', '{2}'",
+                        _type.FullName, loggingField.Name, ex.Message));
+                }
             }
-
 
             body.OptimizeMacros();
         }
@@ -71,7 +85,9 @@ namespace Catel.Fody.Weaving.Logging
                 {
                     if (instruction.Operand == logField)
                     {
-                        FodyEnvironment.LogInfo(string.Format("Weaving auto log to specific log for '{0}.{1}'", type.FullName, logField.Name));
+                        var logFieldName = string.Format("{0}.{1}", type.FullName, logField.Name);
+
+                        FodyEnvironment.LogInfo(string.Format("Weaving auto log to specific log for '{0}'", logFieldName));
 
                         var previousInstruction = instructions[i - 1];
                         var getCurrentClassLoggerMethod = (MethodReference)previousInstruction.Operand;
@@ -82,6 +98,11 @@ namespace Catel.Fody.Weaving.Logging
                         }
 
                         var getLoggerMethod = GetGetLoggerMethod(getCurrentClassLoggerMethod.DeclaringType);
+                        if (getLoggerMethod == null)
+                        {
+                            FodyEnvironment.LogWarningPoint(string.Format("Cannot change method call for log '{0}', the GetLogger(type) method does not exist on the calling type (try to use LogManager.GetCurrentClassLogger())", logFieldName), previousInstruction.SequencePoint);
+                            return;
+                        }
 
                         var getTypeFromHandle = type.Module.GetMethodAndImport("GetTypeFromHandle");
 
@@ -105,7 +126,7 @@ namespace Catel.Fody.Weaving.Logging
 
             return (from method in typeDefinition.Methods
                     where method.IsStatic && string.Equals(method.Name, "GetLogger") && method.Parameters.Count == 1
-                    select method).Single();
+                    select method).FirstOrDefault();
         }
     }
 }
