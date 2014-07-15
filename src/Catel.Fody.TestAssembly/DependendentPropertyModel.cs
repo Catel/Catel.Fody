@@ -9,11 +9,21 @@
 
         public string LastName { get; set; }
 
+        public int Age { get; set; }
+
         public string FullName
         {
             get
             {
                 return string.Format("{0} {1}", this.FirstName, this.LastName).Trim();
+            }
+        }
+
+        public string Profile
+        {
+            get
+            {
+                return string.Format("Name:{0}, Age:{1}", this.FullName, this.Age).Trim();
             }
         }
         #endregion

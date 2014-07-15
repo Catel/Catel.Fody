@@ -258,7 +258,7 @@ namespace Catel.Fody
             var dependentPropertyDefinitions = (from dependentPropertyDefinition in this.TypeDefinition.Properties where dependentPropertyDefinition != property && this.ExistPropertyDependencyBetween(dependentPropertyDefinition, property) select dependentPropertyDefinition).ToList();
             for (int i = 0; i < dependentPropertyDefinitions.Count; i++)
             {
-                foreach (PropertyDefinition propertyDefinition in this.GetDependentPropertiesFrom(dependentPropertyDefinitions[i]))
+                foreach (PropertyDefinition propertyDefinition in GetDependentPropertiesFrom(dependentPropertyDefinitions[i]))
                 {
                     if (!dependentPropertyDefinitions.Contains(propertyDefinition))
                     {

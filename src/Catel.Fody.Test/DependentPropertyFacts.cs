@@ -41,6 +41,21 @@
             Assert.IsTrue(changedProperties.Contains("FullName"));
         }
 
+        [TestMethod]
+        public void NotifiesPropertyChangedOfDepedentProperties3()
+        {
+            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DependendentPropertyModel");
+            object instance = Activator.CreateInstance(type);
+
+            var changedProperties = new List<string>();
+            ((INotifyPropertyChanged)instance).PropertyChanged += (sender, args) => changedProperties.Add(args.PropertyName);
+
+            PropertyInfo propertyInfo = instance.GetType().GetProperty("FirstName");
+            propertyInfo.SetValue(instance, "Igr Alexander");
+
+            Assert.IsTrue(changedProperties.Contains("Profile"));
+        }
+
         #endregion
     }
 }
