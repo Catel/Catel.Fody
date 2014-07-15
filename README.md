@@ -17,10 +17,29 @@ will be weaved into
     public string FirstName
     {
         get { return GetValue<string>(FirstNameProperty); }
- 	    set { SetValue(FirstNameProperty, value); }
+	set { SetValue(FirstNameProperty, value); }
     }
 
     public static readonly PropertyData FirstNameProperty = RegisterProperty("FirstName", typeof(string));
+
+But if exists readonly computed properties like this one:
+
+    public string FullName
+    {
+        get { return string.Format("{0} {1}", FirstName, LastName).Trim(); }
+    }
+
+will be weaved into
+
+    public string FirstName
+    {
+        get { return GetValue<string>(FirstNameProperty); }
+	set 
+	{ 
+		SetValue(FirstNameProperty, value); 
+		RaisePropertyChanged("FullName");
+	}
+    }
 
 ## Documentation
 
