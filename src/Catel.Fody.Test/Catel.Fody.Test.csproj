@@ -77,6 +77,7 @@
     <Compile Include="AssemblyWeaver.cs" />
     <Compile Include="ConfigurationFacts.cs" />
     <Compile Include="DefaultValueFacts.cs" />
+    <Compile Include="DependentPropertyFacts.cs" />
     <Compile Include="ExposeFacts.cs" />
     <Compile Include="InheritanceFacts.cs" />
     <Compile Include="LoggingFacts.cs" />

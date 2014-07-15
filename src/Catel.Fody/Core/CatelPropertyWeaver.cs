@@ -11,6 +11,7 @@ namespace Catel.Fody
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+
     using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
@@ -494,11 +495,17 @@ namespace Catel.Fody
                 instructionsToAdd.Add(Instruction.Create(OpCodes.Box, ImportPropertyType(property)));
             }
 
-            instructionsToAdd.AddRange(new[]
+            instructionsToAdd.Add(Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker));
+
+
+            foreach (var propertyDefinition in _catelType.GetDependentPropertiesFrom(property))
             {
-                Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker),
-                Instruction.Create(OpCodes.Ret)
-            });
+                instructionsToAdd.Add(Instruction.Create(OpCodes.Ldarg_0));
+                instructionsToAdd.Add(Instruction.Create(OpCodes.Ldstr, propertyDefinition.Name));
+                instructionsToAdd.Add(Instruction.Create(OpCodes.Call, _catelType.RaisePropertyChangedInvoker));
+            }
+
+            instructionsToAdd.Add(Instruction.Create(OpCodes.Ret));
 
             var finalIndex = instructions.Insert(0, instructionsToAdd.ToArray());
 

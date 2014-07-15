@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentChecksClass.cs" />
+    <Compile Include="DependendentPropertyModel.cs" />
     <Compile Include="LoggingClass.cs" />
     <Compile Include="DefaultValueModel.cs" />
     <Compile Include="ExposingViewModel.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="ViewModelBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

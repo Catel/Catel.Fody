@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Configuration.cs" />
     <Compile Include="Core\Models\CatelTypeProperty.cs" />
+    <Compile Include="Extensions\TypeReferenceExtensions.cs" />
     <Compile Include="Extensions\CecilCatelExtensions.cs" />
     <Compile Include="Extensions\CecilExtensions.attributes.cs" />
     <Compile Include="Extensions\CecilExtensions.fields.cs" />
