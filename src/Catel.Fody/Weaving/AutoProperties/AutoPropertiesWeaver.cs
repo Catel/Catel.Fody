@@ -8,7 +8,6 @@ namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
 
     using Mono.Cecil;
     using Mono.Cecil.Rocks;

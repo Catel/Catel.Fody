@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentChecksClass.cs" />
-    <Compile Include="DependendentPropertyModel.cs" />
+    <Compile Include="DependentPropertyModel.cs" />
     <Compile Include="LoggingClass.cs" />
     <Compile Include="DefaultValueModel.cs" />
     <Compile Include="ExposingViewModel.cs" />

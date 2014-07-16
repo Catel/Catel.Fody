@@ -14,7 +14,7 @@
         [TestMethod]
         public void NotifiesPropertyChangedOfDepedentProperties1()
         {
-            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DependendentPropertyModel");
+            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DependentPropertyModel");
             object instance = Activator.CreateInstance(type);
 
             var changedProperties = new List<string>();
@@ -29,7 +29,7 @@
         [TestMethod]
         public void NotifiesPropertyChangedOfDepedentProperties2()
         {
-            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DependendentPropertyModel");
+            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DependentPropertyModel");
             object instance = Activator.CreateInstance(type);
 
             var changedProperties = new List<string>();
@@ -44,7 +44,7 @@
         [TestMethod]
         public void NotifiesPropertyChangedOfDepedentProperties3()
         {
-            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DetailedDependendentPropertyModel");
+            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DetailedDependentPropertyModel");
             object instance = Activator.CreateInstance(type);
 
             var changedProperties = new List<string>();

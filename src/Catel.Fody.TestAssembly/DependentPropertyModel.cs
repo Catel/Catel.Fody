@@ -2,7 +2,7 @@
 {
     using Catel.Data;
 
-    public class DependendentPropertyModel : ModelBase
+    public class DependentPropertyModel : ModelBase
     {
         #region Properties
         public string FirstName { get; set; }
@@ -21,7 +21,7 @@
         #endregion
     }
 
-    public class DetailedDependendentPropertyModel : DependendentPropertyModel
+    public class DetailedDependentPropertyModel : DependentPropertyModel
     {
         #region Properties
         public string Profile
