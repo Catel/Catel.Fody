@@ -35,15 +35,17 @@ namespace Catel.Fody.Weaving.AutoProperties
 
         private void AddOrUpdateOnPropertyChangedMethod(PropertyDefinition property)
         {
-            MethodDefinition onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
-            int idx = onPropertyChangedMethod.Body.Instructions.ToList().FindLastIndex(instruction => instruction.OpCode == OpCodes.Ret);
-            if (idx > -1)
-            {
-                MethodReference getMethodReference = _catelType.TypeDefinition.Module.Import(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
-                MethodReference stringEqualsMethodReference = _catelType.TypeDefinition.Module.Import(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
+            MethodReference getMethodReference = _catelType.TypeDefinition.Module.Import(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
+            MethodReference stringEqualsMethodReference = _catelType.TypeDefinition.Module.Import(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
 
-                List<PropertyDefinition> dependentProperties = _catelType.GetDependentPropertiesFrom(property).ToList();
-                if (dependentProperties.Count > 0)
+            List<PropertyDefinition> dependentProperties = _catelType.GetDependentPropertiesFrom(property).ToList();
+
+            if (dependentProperties.Count > 0)
+            {
+                MethodDefinition onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
+                int idx = onPropertyChangedMethod.Body.Instructions.ToList().FindLastIndex(instruction => instruction.OpCode == OpCodes.Ret);
+
+                if (idx > -1)
                 {
                     TypeReference booleanTypeReference = _catelType.TypeDefinition.Module.Import(_msCoreReferenceFinder.GetCoreTypeReference("Boolean"));
                     if (onPropertyChangedMethod.Body.Variables.ToList().FirstOrDefault(definition => definition.VariableType != booleanTypeReference) == null)
