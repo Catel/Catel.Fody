@@ -53,7 +53,7 @@
             PropertyInfo propertyInfo = instance.GetType().GetProperty("LastName");
             propertyInfo.SetValue(instance, "Fernández Saúco");
 
-            Assert.IsTrue(changedProperties.Contains("FullName"));
+            Assert.IsTrue(changedProperties.Contains("Profile"));
         }
 
         #endregion

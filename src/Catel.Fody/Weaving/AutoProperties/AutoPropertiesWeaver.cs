@@ -38,8 +38,11 @@ namespace Catel.Fody.Weaving.AutoProperties
                     continue;
                 }
 
-                var onPropertyChangedWeaver = new OnPropertyChangedWeaver(catelType, _msCoreReferenceFinder);
-                onPropertyChangedWeaver.Execute();
+                if (!catelType.TypeDefinition.HasGenericParameters)
+                {
+                    var onPropertyChangedWeaver = new OnPropertyChangedWeaver(catelType, _msCoreReferenceFinder);
+                    onPropertyChangedWeaver.Execute();
+                }
 
                 FodyEnvironment.LogInfo("\t" + catelType.TypeDefinition.FullName);
 
