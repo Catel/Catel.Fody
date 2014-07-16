@@ -44,16 +44,16 @@
         [TestMethod]
         public void NotifiesPropertyChangedOfDepedentProperties3()
         {
-            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DependendentPropertyModel");
+            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DetailedDependendentPropertyModel");
             object instance = Activator.CreateInstance(type);
 
             var changedProperties = new List<string>();
             ((INotifyPropertyChanged)instance).PropertyChanged += (sender, args) => changedProperties.Add(args.PropertyName);
 
-            PropertyInfo propertyInfo = instance.GetType().GetProperty("FirstName");
-            propertyInfo.SetValue(instance, "Igr Alexander");
+            PropertyInfo propertyInfo = instance.GetType().GetProperty("LastName");
+            propertyInfo.SetValue(instance, "Fernández Saúco");
 
-            Assert.IsTrue(changedProperties.Contains("Profile"));
+            Assert.IsTrue(changedProperties.Contains("FullName"));
         }
 
         #endregion

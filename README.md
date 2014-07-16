@@ -29,17 +29,21 @@ But if exists readonly computed properties like this one:
         get { return string.Format("{0} {1}", FirstName, LastName).Trim(); }
     }
 
-will be weaved into
+will be weaved the OnPropertyChanegd method into
 
-    public string FirstName
-    {
-        get { return GetValue<string>(FirstNameProperty); }
-	set 
-	{ 
-		SetValue(FirstNameProperty, value); 
-		RaisePropertyChanged("FullName");
+	protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
+	{
+		base.OnPropertyChanged(e);
+		if (e.PropertyName.Equals("FirstName"))
+		{
+			base.RaisePropertyChanged("FullName");
+		}
+		if (e.PropertyName.Equals("LastName"))
+		{
+			base.RaisePropertyChanged("FullName");
+		}
 	}
-    }
+
 
 ## Documentation
 

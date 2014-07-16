@@ -18,7 +18,12 @@
                 return string.Format("{0} {1}", this.FirstName, this.LastName).Trim();
             }
         }
+        #endregion
+    }
 
+    public class DetailedDependendentPropertyModel : DependendentPropertyModel
+    {
+        #region Properties
         public string Profile
         {
             get

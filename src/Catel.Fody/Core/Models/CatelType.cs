@@ -107,6 +107,27 @@ namespace Catel.Fody
             var module = TypeDefinition.Module;
 
             PropertyDataType = module.Import(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
+            AdvancedPropertyChangedEventArgsType = module.Import(TypeDefinition.Module.FindType("Catel.Core", "AdvancedPropertyChangedEventArgs"));
+        }
+
+        public TypeReference AdvancedPropertyChangedEventArgsType { get; private set; }
+
+        public MethodReference BaseOnPropertyChangedInvoker { get { return TypeDefinition.Module.Import(RecursiveFindMethod(TypeDefinition, "OnPropertyChanged")); } }
+
+        public IEnumerable<PropertyDefinition> AllProperties
+        {
+            get
+            {
+                TypeDefinition typeDefinition = this.TypeDefinition;
+                var propertyDefinitions = new List<PropertyDefinition>();
+                while (typeDefinition.BaseType.FullName != "System.Object")
+                {
+                    propertyDefinitions.AddRange(typeDefinition.Properties.ToList());
+                    typeDefinition = typeDefinition.BaseType.Resolve();
+                }
+
+                return propertyDefinitions;
+            }
         }
 
         private void DetermineMethods()
@@ -270,7 +291,7 @@ namespace Catel.Fody
             return dependentPropertyDefinitions;
         }
 
-        private bool ExistPropertyDependencyBetween(PropertyDefinition dependentPropertyDefinition, PropertyDefinition property)
+        public bool ExistPropertyDependencyBetween(PropertyDefinition dependentPropertyDefinition, PropertyDefinition property)
         {
             bool found = false;
             if (dependentPropertyDefinition != null)

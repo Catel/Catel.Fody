@@ -8,6 +8,8 @@ namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+
     using Mono.Cecil;
     using Mono.Cecil.Rocks;
 
@@ -36,6 +38,9 @@ namespace Catel.Fody.Weaving.AutoProperties
                     continue;
                 }
 
+                var onPropertyChangedWeaver = new OnPropertyChangedWeaver(catelType, _msCoreReferenceFinder);
+                onPropertyChangedWeaver.Execute();
+
                 FodyEnvironment.LogInfo("\t" + catelType.TypeDefinition.FullName);
 
                 foreach (var propertyData in catelType.Properties)
@@ -57,6 +62,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                     body.InitLocals = true;
                     body.OptimizeMacros();
                 }
+
             }
         }
 

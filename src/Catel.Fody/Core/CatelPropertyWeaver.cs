@@ -89,6 +89,7 @@ namespace Catel.Fody
             }
         }
 
+
         private string GetChangeNotificationHandlerFieldName(PropertyDefinition property)
         {
             string key = string.Format("{0}|{1}", property.DeclaringType.FullName, property.Name);
@@ -496,15 +497,6 @@ namespace Catel.Fody
             }
 
             instructionsToAdd.Add(Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker));
-
-
-            foreach (var propertyDefinition in _catelType.GetDependentPropertiesFrom(property))
-            {
-                instructionsToAdd.Add(Instruction.Create(OpCodes.Ldarg_0));
-                instructionsToAdd.Add(Instruction.Create(OpCodes.Ldstr, propertyDefinition.Name));
-                instructionsToAdd.Add(Instruction.Create(OpCodes.Call, _catelType.RaisePropertyChangedInvoker));
-            }
-
             instructionsToAdd.Add(Instruction.Create(OpCodes.Ret));
 
             var finalIndex = instructions.Insert(0, instructionsToAdd.ToArray());
