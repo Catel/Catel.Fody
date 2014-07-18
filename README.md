@@ -17,7 +17,7 @@ will be weaved into
     public string FirstName
     {
         get { return GetValue<string>(FirstNameProperty); }
-	set { SetValue(FirstNameProperty, value); }
+        set { SetValue(FirstNameProperty, value); }
     }
 
     public static readonly PropertyData FirstNameProperty = RegisterProperty("FirstName", typeof(string));
@@ -29,7 +29,7 @@ But if exists readonly computed properties like this one:
         get { return string.Format("{0} {1}", FirstName, LastName).Trim(); }
     }
 
-will be weaved the OnPropertyChanegd method into
+the OnPropertyChanged method will be also weaved into
 
 	protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
 	{
