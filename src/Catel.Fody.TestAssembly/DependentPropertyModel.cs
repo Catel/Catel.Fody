@@ -21,6 +21,7 @@
         #endregion
     }
 
+
     public class DetailedDependentPropertyModel : DependentPropertyModel
     {
         #region Properties
