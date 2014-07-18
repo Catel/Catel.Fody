@@ -22,7 +22,7 @@ will be weaved into
 
     public static readonly PropertyData FirstNameProperty = RegisterProperty("FirstName", typeof(string));
 
-But if exists readonly computed properties like this one:
+But if exist a readonly computed property like this one:
 
     public string FullName
     {
