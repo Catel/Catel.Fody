@@ -1,6 +1,13 @@
-﻿namespace Catel.Fody.TestAssembly
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DependentPropertyModel.cs" company="Catel development team">
+//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+
+namespace Catel.Fody.TestAssembly
 {
-    using Catel.Data;
+    using Data;
 
     public class DependentPropertyModel : ModelBase
     {
@@ -13,24 +20,17 @@
 
         public string FullName
         {
-            get
-            {
-                return string.Format("{0} {1}", this.FirstName, this.LastName).Trim();
-            }
+            get { return string.Format("{0} {1}", FirstName, LastName).Trim(); }
         }
         #endregion
     }
-
 
     public class DetailedDependentPropertyModel : DependentPropertyModel
     {
         #region Properties
         public string Profile
         {
-            get
-            {
-                return string.Format("Name:{0}, Age:{1}", this.FullName, this.Age).Trim();
-            }
+            get { return string.Format("Name:{0}, Age:{1}", FullName, Age).Trim(); }
         }
         #endregion
     }

@@ -8,13 +8,13 @@
 namespace Catel.Fody.Test
 {
     using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class ViewModelBaseFacts
     {
         #region Methods
-        [TestMethod]
+        [TestCase]
         public void StringsCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ViewModelBaseTest");
@@ -25,7 +25,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual("hi there", vm.Name);
         }
 
-        [TestMethod]
+        [TestCase]
         public void IgnoresICommandProperties()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ViewModelBaseTest");
@@ -34,7 +34,7 @@ namespace Catel.Fody.Test
             // TODO: Test command by setting it and check if property changed is invoked
         }
 
-        [TestMethod]
+        [TestCase]
         public void IgnoresPropertiesWithoutBackingField()
         {
             // tODO: test Title property

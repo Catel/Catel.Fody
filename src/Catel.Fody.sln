@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody", "Catel.Fody\Catel.Fody.csproj", "{D9600EEB-B52A-4861-AFA4-2A3E38A06196}"
 EndProject
@@ -18,20 +18,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{E30047EC-403
 		..\lib\readme.txt = ..\lib\readme.txt
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{5A3BCC29-8F38-4CCA-9B57-A06F5FD429CD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{05FFA8A6-88F3-48B7-AF0B-29C2A40CC716}"
 	ProjectSection(SolutionItems) = preProject
 		Catel.Fody.sln.DotSettings = Catel.Fody.sln.DotSettings
 		Catel.Fody.vsmdi = Catel.Fody.vsmdi
 		Local.testsettings = Local.testsettings
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pepita", "pepita", "{9294714F-D178-428C-9D48-EF1133D3C244}"
-	ProjectSection(SolutionItems) = preProject
-		..\tools\pepita\PepitaGet.dll = ..\tools\pepita\PepitaGet.dll
-		..\tools\pepita\PepitaPackage.dll = ..\tools\pepita\PepitaPackage.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody.TestAssembly", "Catel.Fody.TestAssembly\Catel.Fody.TestAssembly.csproj", "{76E6F225-0720-40F4-876D-F18FD426E10C}"
@@ -78,11 +70,10 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D9600EEB-B52A-4861-AFA4-2A3E38A06196} = {30F5D8D6-8019-4EBB-9641-276027A815D7}
-		{77E19AE6-B67C-421E-A49A-E61ED7CCC98D} = {30F5D8D6-8019-4EBB-9641-276027A815D7}
-		{A5694D95-F959-4A8F-9A1C-E4EDD733245E} = {30F5D8D6-8019-4EBB-9641-276027A815D7}
-		{9294714F-D178-428C-9D48-EF1133D3C244} = {5A3BCC29-8F38-4CCA-9B57-A06F5FD429CD}
 		{76E6F225-0720-40F4-876D-F18FD426E10C} = {77E19AE6-B67C-421E-A49A-E61ED7CCC98D}
+		{77E19AE6-B67C-421E-A49A-E61ED7CCC98D} = {30F5D8D6-8019-4EBB-9641-276027A815D7}
 		{2CB08E71-BE32-4DA1-A312-458CB50B8622} = {77E19AE6-B67C-421E-A49A-E61ED7CCC98D}
+		{A5694D95-F959-4A8F-9A1C-E4EDD733245E} = {30F5D8D6-8019-4EBB-9641-276027A815D7}
 		{B9B894EE-7946-4020-B254-3625993AE0D0} = {77E19AE6-B67C-421E-A49A-E61ED7CCC98D}
 		{5E735B00-1EDF-4ACD-A777-91BABA85B2C5} = {A5694D95-F959-4A8F-9A1C-E4EDD733245E}
 	EndGlobalSection

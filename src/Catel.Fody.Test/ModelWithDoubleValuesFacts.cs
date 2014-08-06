@@ -8,15 +8,15 @@
 namespace Catel.Fody.Test
 {
     using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     /// <summary>
     /// Required to reproduce https://catelproject.atlassian.net/browse/CTL-237.
     /// </summary>
-    [TestClass]
+    [TestFixture]
     public class ModelWithDoubleValuesFacts
     {
-        [TestMethod]
+        [TestCase]
         public void CorrectlyDefaultsToDefaultDoubleValues()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelWithDoubleValues");

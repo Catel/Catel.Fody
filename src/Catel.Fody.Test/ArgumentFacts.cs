@@ -8,13 +8,13 @@ namespace Catel.Fody.Test
 {
     using System;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class ArgumentFacts
     {
         #region Methods
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentNullExceptionForNullTypes()
         {
             // Note: do NOT instantiate the type, then you will get the "unweaved" types. You need to use this helper during unit tests
@@ -28,7 +28,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentNullExceptionForNotNullTypes()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -39,7 +39,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "some value" });
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNullString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -51,7 +51,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (string)null }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForEmptyString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -63,7 +63,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { string.Empty }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForNoNullOrEmptyString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -75,7 +75,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "some value" });
         }         
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNullArray()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -87,7 +87,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (object[])null }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForEmptyArray()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -99,7 +99,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object[] { } }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForNoNullOrEmptyArray()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -111,7 +111,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { new object[] { 1, "some value" } });
         } 
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNullString2()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -123,7 +123,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (string)null }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForWhitespaceString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -135,7 +135,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "   " }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForNoNullOrWhitespaceString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -147,7 +147,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "some value" });
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNotMatchString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -159,7 +159,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "abcd" }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForMatchString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -171,7 +171,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "12345" });
         }       
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForMatchString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -183,7 +183,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "12345" }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForNotMatchString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -196,7 +196,7 @@ namespace Catel.Fody.Test
         }
 
         /*
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalInt()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -209,7 +209,7 @@ namespace Catel.Fody.Test
         }
 
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMinimalInt()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -221,7 +221,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 3 });
         }     
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalDouble()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -234,7 +234,7 @@ namespace Catel.Fody.Test
         }
 
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMinimalDouble()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -246,7 +246,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 3.0d });
         }      
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalFloat()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -259,7 +259,7 @@ namespace Catel.Fody.Test
         }
 
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMinimalFloat()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -271,7 +271,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 3.0f });
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMaximalInt()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -284,7 +284,7 @@ namespace Catel.Fody.Test
         }
 
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMaximalInt()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -296,7 +296,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 0 });
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMaximalDouble()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -309,7 +309,7 @@ namespace Catel.Fody.Test
         }
 
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMaximalDouble()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -321,7 +321,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 0.0d });
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMaximalFloat()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -334,7 +334,7 @@ namespace Catel.Fody.Test
         }
 
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForMaximalFloat()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -346,7 +346,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 0.0f });
         }    
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeInt()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -359,7 +359,7 @@ namespace Catel.Fody.Test
         }
 
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeInt()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -371,7 +371,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 3 });
         }    
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeDouble()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -383,7 +383,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5.0d }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeDouble()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -395,7 +395,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 3.0d });
         }        
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeFloat()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -407,7 +407,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5.0f }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeFloat()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -420,7 +420,7 @@ namespace Catel.Fody.Test
         }        
         
         /*
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -432,7 +432,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { "z" }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentOutOfRangeExceptionExceptionForOutOfRangeString()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -445,7 +445,7 @@ namespace Catel.Fody.Test
         }
         */
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -457,7 +457,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new Exception() }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForInheritsFrom()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -469,7 +469,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { new ArgumentNullException() });
         }        
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom2()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -481,7 +481,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(Exception) }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForInheritsFrom2()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -494,7 +494,7 @@ namespace Catel.Fody.Test
         }   
 
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNotTypeOf()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -506,7 +506,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object() }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForTypeOf()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -518,7 +518,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 2 });
         }        
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNotTypeOf2()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -530,7 +530,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(object) }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForTypeOf2()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -542,7 +542,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { typeof(int) });
         }      
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNotInterfaceImplemented()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -554,7 +554,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new[] { new object() }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForNotInterfaceImplemented()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -566,7 +566,7 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { 2 });
         }        
         
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNotInterfaceImplemented2()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
@@ -578,7 +578,7 @@ namespace Catel.Fody.Test
             CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(object) }));
         }
       
-        [TestMethod]
+        [TestCase]
         public void CorrectlyThrowsNoArgumentExceptionForNotInterfaceImplemented2()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");

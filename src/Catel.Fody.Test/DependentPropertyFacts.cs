@@ -1,61 +1,37 @@
-﻿namespace Catel.Fody.Test
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DependentPropertyFacts.cs" company="Catel development team">
+//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+
+namespace Catel.Fody.Test
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Reflection;
+    using NUnit.Framework;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-    [TestClass]
+    [TestFixture]
     public class DependentPropertyFacts
     {
         #region Methods
-        [TestMethod]
-        public void NotifiesPropertyChangedOfDepedentProperties1()
+        [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "FirstName", "Igr Alexander", "FullName")]
+        [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "LastName", "Fernández Saúco", "FullName")]
+        [TestCase("Catel.Fody.TestAssembly.DetailedDependentPropertyModel", "LastName", "Fernández Saúco", "Profile")]
+        public void NotifiesPropertyChangedOfDepedentProperties(string modelType, string propertyName, string newValue, string expectedPropertyName)
         {
-            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DependentPropertyModel");
-            object instance = Activator.CreateInstance(type);
+            var type = AssemblyWeaver.Assembly.GetType(modelType);
+            var instance = Activator.CreateInstance(type);
 
             var changedProperties = new List<string>();
-            ((INotifyPropertyChanged)instance).PropertyChanged += (sender, args) => changedProperties.Add(args.PropertyName);
+            ((INotifyPropertyChanged) instance).PropertyChanged += (sender, args) => changedProperties.Add(args.PropertyName);
 
-            PropertyInfo propertyInfo = instance.GetType().GetProperty("FirstName");
-            propertyInfo.SetValue(instance, "Igr Alexander");
+            var propertyInfo = instance.GetType().GetProperty(propertyName);
+            propertyInfo.SetValue(instance, newValue);
 
-            Assert.IsTrue(changedProperties.Contains("FullName"));
+            Assert.IsTrue(changedProperties.Contains(expectedPropertyName));
         }
-
-        [TestMethod]
-        public void NotifiesPropertyChangedOfDepedentProperties2()
-        {
-            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DependentPropertyModel");
-            object instance = Activator.CreateInstance(type);
-
-            var changedProperties = new List<string>();
-            ((INotifyPropertyChanged)instance).PropertyChanged += (sender, args) => changedProperties.Add(args.PropertyName);
-
-            PropertyInfo propertyInfo = instance.GetType().GetProperty("LastName");
-            propertyInfo.SetValue(instance, "Fernández Saúco");
-
-            Assert.IsTrue(changedProperties.Contains("FullName"));
-        }
-
-        [TestMethod]
-        public void NotifiesPropertyChangedOfDepedentProperties3()
-        {
-            Type type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DetailedDependentPropertyModel");
-            object instance = Activator.CreateInstance(type);
-
-            var changedProperties = new List<string>();
-            ((INotifyPropertyChanged)instance).PropertyChanged += (sender, args) => changedProperties.Add(args.PropertyName);
-
-            PropertyInfo propertyInfo = instance.GetType().GetProperty("LastName");
-            propertyInfo.SetValue(instance, "Fernández Saúco");
-
-            Assert.IsTrue(changedProperties.Contains("Profile"));
-        }
-
         #endregion
     }
 }

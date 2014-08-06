@@ -8,12 +8,12 @@
 namespace Catel.Fody.Test
 {
     using Data;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class NoWeavingFacts
     {
-        [TestMethod]
+        [TestCase]
         public void IgnoresTypesWithNoWeavingAttribute()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.NoWeavingModelTest");
@@ -21,7 +21,7 @@ namespace Catel.Fody.Test
             Assert.IsFalse(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"));
         }
 
-        [TestMethod]
+        [TestCase]
         public void IgnoresPropertiesWithNoWeavingAttribute()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.NoPropertyWeavingModelTest");
