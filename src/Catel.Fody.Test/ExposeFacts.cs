@@ -8,9 +8,8 @@
 namespace Catel.Fody.Test
 {
     using System;
-    using Catel.Data;
-    using Catel.Fody.TestAssembly;
-    using Catel.Reflection;
+    using Data;
+    using Reflection;
     using NUnit.Framework;
 
     [TestFixture]

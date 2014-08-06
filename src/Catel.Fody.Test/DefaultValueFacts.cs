@@ -8,9 +8,8 @@
 namespace Catel.Fody.Test
 {
     using System;
-    using System.Runtime.Remoting;
-    using Catel.Data;
-    using Catel.Fody.TestAssembly;
+    using Data;
+    using TestAssembly;
     using NUnit.Framework;
 
     [TestFixture]

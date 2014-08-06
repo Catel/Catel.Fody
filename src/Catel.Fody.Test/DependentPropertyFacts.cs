@@ -18,6 +18,7 @@ namespace Catel.Fody.Test
         #region Methods
         [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "FirstName", "Igr Alexander", "FullName")]
         [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "LastName", "Fernández Saúco", "FullName")]
+        [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "MiddleName", "middleName", "FullName")]
         [TestCase("Catel.Fody.TestAssembly.DetailedDependentPropertyModel", "LastName", "Fernández Saúco", "Profile")]
         public void NotifiesPropertyChangedOfDepedentProperties(string modelType, string propertyName, string newValue, string expectedPropertyName)
         {

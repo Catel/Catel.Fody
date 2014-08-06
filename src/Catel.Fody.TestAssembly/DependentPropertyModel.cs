@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.TestAssembly
 {
+    using System.Collections.Generic;
     using Data;
 
     public class DependentPropertyModel : ModelBase
@@ -14,13 +15,42 @@ namespace Catel.Fody.TestAssembly
         #region Properties
         public string FirstName { get; set; }
 
+        // Using full property to check if these are supported as well
+        public string MiddleName
+        {
+            get { return GetValue<string>(MiddleNameProperty); }
+            set { SetValue(MiddleNameProperty, value); }
+        }
+
+        public static readonly PropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string), null);
+
         public string LastName { get; set; }
 
         public int Age { get; set; }
 
         public string FullName
         {
-            get { return string.Format("{0} {1}", FirstName, LastName).Trim(); }
+            get
+            {
+                var items = new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(FirstName))
+                {
+                    items.Add(FirstName);
+                }
+
+                if (!string.IsNullOrWhiteSpace(MiddleName))
+                {
+                    items.Add(MiddleName);
+                }
+
+                if (!string.IsNullOrWhiteSpace(LastName))
+                {
+                    items.Add(LastName);
+                }
+
+                return string.Join(" ", items);
+            }
         }
         #endregion
     }
