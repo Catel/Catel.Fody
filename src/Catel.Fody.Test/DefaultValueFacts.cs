@@ -8,15 +8,14 @@
 namespace Catel.Fody.Test
 {
     using System;
-    using System.Runtime.Remoting;
-    using Catel.Data;
-    using Catel.Fody.TestAssembly;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Data;
+    using TestAssembly;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class DefaultValueFacts
     {
-        [TestMethod]
+        [TestCase]
         public void SetsNullAsDefaultValueWhenNoAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -28,7 +27,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(null, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForStringWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -40,7 +39,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual("Geert", propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForBoolWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -52,7 +51,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(true, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForNullableBoolWhenNullAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -64,7 +63,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(null, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForNullableBoolWhenTrueAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -76,7 +75,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(true, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForNullableBoolWhenFalseAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -88,7 +87,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(false, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForIntWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -100,7 +99,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(42, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForLongWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -112,7 +111,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(42L, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForDoubleWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -124,7 +123,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(42d, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForFloatWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
@@ -136,7 +135,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(42f, propertyData.GetDefaultValue());
         }
 
-        [TestMethod]
+        [TestCase]
         public void SetsDefaultValueForEnumWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");

@@ -7,10 +7,17 @@
 namespace Catel.Fody
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq;
+    using System.Reflection;
+
+    using Catel.Fody.Extensions;
+
     using Mono.Cecil;
+    using Mono.Cecil.Cil;
 
     public enum CatelTypeType
     {
@@ -56,9 +63,11 @@ namespace Catel.Fody
         }
 
         public string Name { get; private set; }
+
         public bool Ignore { get; private set; }
 
         public TypeDefinition TypeDefinition { get; private set; }
+
         public CatelTypeType Type { get; private set; }
 
         public List<MemberMapping> Mappings { get; set; }
@@ -66,10 +75,15 @@ namespace Catel.Fody
         public TypeReference PropertyDataType { get; private set; }
 
         public MethodReference RegisterPropertyWithDefaultValueInvoker { get; private set; }
+
         public MethodReference RegisterPropertyWithoutDefaultValueInvoker { get; private set; }
+
         public MethodReference SetValueInvoker { get; private set; }
+
         public MethodReference GetValueInvoker { get; private set; }
 
+        public MethodReference RaisePropertyChangedInvoker { get; private set; }
+        
         public List<CatelTypeProperty> Properties { get; private set; }
 
         private void DetermineCatelType()
@@ -93,6 +107,27 @@ namespace Catel.Fody
             var module = TypeDefinition.Module;
 
             PropertyDataType = module.Import(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
+            AdvancedPropertyChangedEventArgsType = module.Import(TypeDefinition.Module.FindType("Catel.Core", "AdvancedPropertyChangedEventArgs"));
+        }
+
+        public TypeReference AdvancedPropertyChangedEventArgsType { get; private set; }
+
+        public MethodReference BaseOnPropertyChangedInvoker { get { return TypeDefinition.Module.Import(RecursiveFindMethod(TypeDefinition, "OnPropertyChanged")); } }
+
+        public IEnumerable<PropertyDefinition> AllProperties
+        {
+            get
+            {
+                TypeDefinition typeDefinition = this.TypeDefinition;
+                var propertyDefinitions = new List<PropertyDefinition>();
+                while (typeDefinition.BaseType.FullName != "System.Object")
+                {
+                    propertyDefinitions.AddRange(typeDefinition.Properties.ToList());
+                    typeDefinition = typeDefinition.BaseType.Resolve();
+                }
+
+                return propertyDefinitions;
+            }
         }
 
         private void DetermineMethods()
@@ -103,7 +138,9 @@ namespace Catel.Fody
             RegisterPropertyWithoutDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, false));
             GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true));
             SetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "SetValue", new[] { "property", "value" }));
+            RaisePropertyChangedInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "RaisePropertyChanged", new[] { "propertyName" }));
         }
+
 
         private List<CatelTypeProperty> DetermineProperties()
         {
@@ -158,22 +195,13 @@ namespace Catel.Fody
                 {
                     // Search for this method:         
                     // public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
-                    methods = (from method in currentTypeDefinition.Methods
-                               where method.Name == "RegisterProperty" && method.IsPublic && method.Parameters.Count == 7 &&
-                                     method.HasGenericParameters && method.GenericParameters.Count == 1 && 
-                                     method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
-                                     !method.Parameters[2].ParameterType.FullName.Contains("System.Func")
-                               select method).ToList();
+                    methods = (from method in currentTypeDefinition.Methods where method.Name == "RegisterProperty" && method.IsPublic && method.Parameters.Count == 7 && method.HasGenericParameters && method.GenericParameters.Count == 1 && method.Parameters[0].ParameterType.FullName.Contains("System.String") && !method.Parameters[2].ParameterType.FullName.Contains("System.Func") select method).ToList();
                 }
                 else
                 {
                     // Search for this method:         
                     // public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
-                    methods = (from method in currentTypeDefinition.Methods
-                               where method.Name == "RegisterProperty" && method.IsPublic &&
-                                     !method.HasGenericParameters &&
-                                     method.Parameters[0].ParameterType.FullName.Contains("System.String")
-                               select method).ToList();
+                    methods = (from method in currentTypeDefinition.Methods where method.Name == "RegisterProperty" && method.IsPublic && !method.HasGenericParameters && method.Parameters[0].ParameterType.FullName.Contains("System.String") select method).ToList();
                 }
 
                 if (methods.Count > 0)
@@ -189,7 +217,8 @@ namespace Catel.Fody
                 }
 
                 currentTypeDefinition = baseType.ResolveType();
-            } while (true);
+            }
+            while (true);
 
             return methodDefinition;
         }
@@ -216,7 +245,8 @@ namespace Catel.Fody
                 }
 
                 currentTypeDefinition = baseType.ResolveType();
-            } while (true);
+            }
+            while (true);
 
             return methodDefinition.GetMethodReference(typeDefinitions);
         }
@@ -227,16 +257,11 @@ namespace Catel.Fody
 
             if (!findGenericDefinition)
             {
-                methodDefinitions = type.Methods
-                    .Where(x => x.Name == methodName)
-                    .OrderBy(definition => definition.Parameters.Count).ToList();
+                methodDefinitions = type.Methods.Where(x => x.Name == methodName).OrderBy(definition => definition.Parameters.Count).ToList();
             }
             else
             {
-                methodDefinitions = (from method in type.Methods
-                                     where method.Name == methodName &&
-                                           method.HasGenericParameters
-                                     select method).ToList();
+                methodDefinitions = (from method in type.Methods where method.Name == methodName && method.HasGenericParameters select method).ToList();
             }
 
             if (parameterNames != null)
@@ -249,5 +274,52 @@ namespace Catel.Fody
             return methodDefinition != null;
         }
 
+        public IEnumerable<PropertyDefinition> GetDependentPropertiesFrom(PropertyDefinition property)
+        {
+            var dependentPropertyDefinitions = (from dependentPropertyDefinition in this.TypeDefinition.Properties where dependentPropertyDefinition != property && this.ExistPropertyDependencyBetween(dependentPropertyDefinition, property) select dependentPropertyDefinition).ToList();
+            for (int i = 0; i < dependentPropertyDefinitions.Count; i++)
+            {
+                foreach (PropertyDefinition propertyDefinition in GetDependentPropertiesFrom(dependentPropertyDefinitions[i]))
+                {
+                    if (!dependentPropertyDefinitions.Contains(propertyDefinition))
+                    {
+                        dependentPropertyDefinitions.Add(propertyDefinition);
+                    }
+                }
+            }
+
+            return dependentPropertyDefinitions;
+        }
+
+        public bool ExistPropertyDependencyBetween(PropertyDefinition dependentPropertyDefinition, PropertyDefinition property)
+        {
+            bool found = false;
+            if (dependentPropertyDefinition != null)
+            {
+                MethodDefinition definition = dependentPropertyDefinition.GetMethod;
+                if (definition.HasBody)
+                {
+                    ILProcessor processor = definition.Body.GetILProcessor();
+
+                    int idx = 0;
+                    while (!found && idx < processor.Body.Instructions.Count)
+                    {
+                        Instruction instruction = processor.Body.Instructions[idx];
+
+                        MethodDefinition methodDefinition;
+                        if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(this.TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
+                        {
+                            found = true;
+                        }
+                        else
+                        {
+                            idx++;
+                        }
+                    }
+                }
+            }
+
+            return found;
+        }
     }
 }

@@ -9,16 +9,15 @@ namespace Catel.Fody.Test
 {
     using System;
     using System.Collections.ObjectModel;
-    using Catel.Data;
-    using Catel.Fody.TestAssembly;
-    using Catel.Reflection;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Data;
+    using Reflection;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class ModelBaseFacts
     {
         #region Methods
-        [TestMethod]
+        [TestCase]
         public void StringsCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
@@ -27,7 +26,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual("hi there", obj.Name);
         }
 
-        [TestMethod]
+        [TestCase]
         public void BooleansCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
@@ -38,7 +37,7 @@ namespace Catel.Fody.Test
             Assert.IsTrue(obj.BoolValue);
         }
 
-        [TestMethod]
+        [TestCase]
         public void IntegersCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
@@ -49,7 +48,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(42, obj.IntValue);
         }
 
-        [TestMethod]
+        [TestCase]
         public void GuidsCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
@@ -60,7 +59,7 @@ namespace Catel.Fody.Test
             Assert.AreNotEqual(Guid.Empty, obj.GuidValue);
         }
 
-        [TestMethod]
+        [TestCase]
         public void CollectionsCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
@@ -72,7 +71,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(1, obj.CollectionProperty[0]);
         }
 
-        [TestMethod]
+        [TestCase]
         public void DoesNotWeaveExistingProperties()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
@@ -83,13 +82,13 @@ namespace Catel.Fody.Test
             Assert.AreEqual("hi there", obj.FullName);
         }
 
-        [TestMethod]
+        [TestCase]
         public void IgnoresPropertiesWithoutBackingField()
         {
             // TODO: test Title property
         }
 
-        [TestMethod]
+        [TestCase]
         public void HandlesChangeNotificationsMethodsCorrectly()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
@@ -108,7 +107,7 @@ namespace Catel.Fody.Test
             Assert.IsTrue(modelBase.OnLastNameChangedCalled);
         }
 
-        [TestMethod]
+        [TestCase]
         public void IgnoresChangeNotificationsWithoutRightSignature()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
@@ -119,7 +118,7 @@ namespace Catel.Fody.Test
             Assert.IsTrue(modelBase.OnLastNameChangedCalled);
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyWorksOnGenericClasses()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericModelBaseTest");
@@ -132,7 +131,7 @@ namespace Catel.Fody.Test
             Assert.IsTrue(model.HasChangedNotificationBeenCalled);
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyWorksOnClassesWithGenericModelsWithValueTypes()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsInt");
@@ -147,7 +146,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(42, PropertyHelper.GetPropertyValue<int>(model, propertyNameToCheck));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CorrectlyWorksOnClassesWithGenericModelsWithReferenceTypes()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsObject");

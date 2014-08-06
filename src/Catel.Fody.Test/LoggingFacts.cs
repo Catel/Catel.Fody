@@ -8,12 +8,12 @@
 namespace Catel.Fody.Test
 {
     using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class LoggingFacts
     {
-        [TestMethod]
+        [TestCase]
         public void InheritanceWorks()
         {
             // Instantiating is sufficient

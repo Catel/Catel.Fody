@@ -11,6 +11,7 @@ namespace Catel.Fody
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+
     using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
@@ -87,6 +88,7 @@ namespace Catel.Fody
 #endif
             }
         }
+
 
         private string GetChangeNotificationHandlerFieldName(PropertyDefinition property)
         {
@@ -494,11 +496,8 @@ namespace Catel.Fody
                 instructionsToAdd.Add(Instruction.Create(OpCodes.Box, ImportPropertyType(property)));
             }
 
-            instructionsToAdd.AddRange(new[]
-            {
-                Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker),
-                Instruction.Create(OpCodes.Ret)
-            });
+            instructionsToAdd.Add(Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker));
+            instructionsToAdd.Add(Instruction.Create(OpCodes.Ret));
 
             var finalIndex = instructions.Insert(0, instructionsToAdd.ToArray());
 
