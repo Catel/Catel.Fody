@@ -22,7 +22,7 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(MiddleNameProperty, value); }
         }
 
-        public static readonly PropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string), null);
+        public static readonly PropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string));
 
         public string LastName { get; set; }
 
@@ -52,6 +52,26 @@ namespace Catel.Fody.TestAssembly
                 return string.Join(" ", items);
             }
         }
+        #endregion
+    }
+
+    public class DependentPropertyModelWithExistingOnPropertyChanged : DependentPropertyModel
+    {
+        #region Properties
+        public string Profile
+        {
+            get { return string.Format("Name:{0}, Age:{1}", FullName, Age).Trim(); }
+        }
+
+        protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            IsPropertyChangedWorking = true;
+        }
+
+        [NoWeaving]
+        public bool IsPropertyChangedWorking { get; private set; }
         #endregion
     }
 

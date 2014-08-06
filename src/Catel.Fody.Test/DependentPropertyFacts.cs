@@ -17,9 +17,11 @@ namespace Catel.Fody.Test
     {
         #region Methods
         [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "FirstName", "Igr Alexander", "FullName")]
-        [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "LastName", "Fernández Saúco", "FullName")]
         [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "MiddleName", "middleName", "FullName")]
+        [TestCase("Catel.Fody.TestAssembly.DependentPropertyModel", "LastName", "Fernández Saúco", "FullName")]
+        [TestCase("Catel.Fody.TestAssembly.DetailedDependentPropertyModel", "MiddleName", "middleName", "Profile")]
         [TestCase("Catel.Fody.TestAssembly.DetailedDependentPropertyModel", "LastName", "Fernández Saúco", "Profile")]
+        [TestCase("Catel.Fody.TestAssembly.DependentPropertyModelWithExistingOnPropertyChanged", "LastName", "Fernández Saúco", "Profile")]
         public void NotifiesPropertyChangedOfDepedentProperties(string modelType, string propertyName, string newValue, string expectedPropertyName)
         {
             var type = AssemblyWeaver.Assembly.GetType(modelType);
@@ -31,7 +33,13 @@ namespace Catel.Fody.Test
             var propertyInfo = instance.GetType().GetProperty(propertyName);
             propertyInfo.SetValue(instance, newValue);
 
-            Assert.IsTrue(changedProperties.Contains(expectedPropertyName));
+            var isPropertyChangedWorkingPropertyInfo = instance.GetType().GetProperty("IsPropertyChangedWorking");
+            if (isPropertyChangedWorkingPropertyInfo != null)
+            {
+                Assert.IsTrue((bool)isPropertyChangedWorkingPropertyInfo.GetValue(instance));
+            }
+
+            Assert.Contains(expectedPropertyName, changedProperties);
         }
         #endregion
     }

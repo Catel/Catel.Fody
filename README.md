@@ -22,22 +22,24 @@ will be weaved into
 
     public static readonly PropertyData FirstNameProperty = RegisterProperty("FirstName", typeof(string));
 
-But if exist a readonly computed property like this one:
+but if a readonly computed property like this one exists:
 
     public string FullName
     {
         get { return string.Format("{0} {1}", FirstName, LastName).Trim(); }
     }
 
-the OnPropertyChanged method will be also weaved into
+the *OnPropertyChanged* method will be also weaved into
 
 	protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
 	{
 		base.OnPropertyChanged(e);
+
 		if (e.PropertyName.Equals("FirstName"))
 		{
 			base.RaisePropertyChanged("FullName");
 		}
+
 		if (e.PropertyName.Equals("LastName"))
 		{
 			base.RaisePropertyChanged("FullName");

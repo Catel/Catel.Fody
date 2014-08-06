@@ -83,7 +83,7 @@ namespace Catel.Fody
         public MethodReference GetValueInvoker { get; private set; }
 
         public MethodReference RaisePropertyChangedInvoker { get; private set; }
-        
+
         public List<CatelTypeProperty> Properties { get; private set; }
 
         private void DetermineCatelType()
@@ -112,7 +112,16 @@ namespace Catel.Fody
 
         public TypeReference AdvancedPropertyChangedEventArgsType { get; private set; }
 
-        public MethodReference BaseOnPropertyChangedInvoker { get { return TypeDefinition.Module.Import(RecursiveFindMethod(TypeDefinition, "OnPropertyChanged")); } }
+        public MethodReference BaseOnPropertyChangedInvoker
+        {
+            get
+            {
+                var typeDefinition = TypeDefinition;
+                var baseTypeDefinition = TypeDefinition.BaseType.Resolve();
+
+                return typeDefinition.Module.Import(RecursiveFindMethod(baseTypeDefinition, "OnPropertyChanged"));
+            }
+        }
 
         public IEnumerable<PropertyDefinition> AllProperties
         {
@@ -237,8 +246,8 @@ namespace Catel.Fody
                 {
                     break;
                 }
-                var baseType = currentTypeDefinition.BaseType;
 
+                var baseType = currentTypeDefinition.BaseType;
                 if (baseType == null || baseType.FullName == "System.Object")
                 {
                     return null;

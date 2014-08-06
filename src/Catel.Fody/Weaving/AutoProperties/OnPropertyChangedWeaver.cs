@@ -98,7 +98,21 @@ namespace Catel.Fody.Weaving.AutoProperties
         private MethodDefinition EnsureOnPropertyChangedMethod()
         {
             var type = _catelType.TypeDefinition;
-            var methodDefinition = type.Methods.FirstOrDefault(definition => definition.Name == "OnPropertyChanged" && definition.HasParameters && definition.Parameters[0].ParameterType == _catelType.AdvancedPropertyChangedEventArgsType);
+
+            MethodDefinition methodDefinition = null;
+            var possibleMethods = type.Methods.Where(definition => definition.Name == "OnPropertyChanged" && definition.HasParameters).ToList();
+
+            foreach (var possibleMethod in possibleMethods)
+            {
+                if (string.Equals(possibleMethod.Parameters[0].ParameterType.FullName, _catelType.AdvancedPropertyChangedEventArgsType.FullName))
+                {
+                    methodDefinition = possibleMethod;
+                    break;
+                }
+            }
+
+            var baseOnPropertyChangedInvoker = _catelType.BaseOnPropertyChangedInvoker;
+
             if (methodDefinition == null)
             {
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
@@ -113,13 +127,34 @@ namespace Catel.Fody.Weaving.AutoProperties
                 body.Instructions.Add(Instruction.Create(OpCodes.Nop));
                 body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
                 body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
-                body.Instructions.Add(Instruction.Create(OpCodes.Call, _catelType.BaseOnPropertyChangedInvoker));
+                body.Instructions.Add(Instruction.Create(OpCodes.Call, baseOnPropertyChangedInvoker));
                 body.Instructions.Add(Instruction.Create(OpCodes.Nop));
                 body.Instructions.Add(Instruction.Create(OpCodes.Ret));
 
                 body.OptimizeMacros();
 
                 type.Methods.Add(methodDefinition);
+            }
+            else
+            {
+                // Note: need to replace call to base, otherwise it might skip a call to a just generated base member
+                var body = methodDefinition.Body;
+
+                body.SimplifyMacros();
+
+                foreach (var instruction in body.Instructions)
+                {
+                    if (instruction.OpCode == OpCodes.Call)
+                    {
+                        var methodReference = instruction.Operand as MethodReference;
+                        if ((methodReference != null) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
+                        {
+                            instruction.Operand = baseOnPropertyChangedInvoker;
+                        }
+                    }
+                }
+
+                body.OptimizeMacros();
             }
 
             return methodDefinition;
