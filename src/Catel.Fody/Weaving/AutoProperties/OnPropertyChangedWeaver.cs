@@ -1,8 +1,13 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="OnPropertyChangedWeaver.cs" company="Catel development team">
+//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+
 namespace Catel.Fody.Weaving.AutoProperties
 {
-    using System.Collections.Generic;
     using System.Linq;
-
     using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
@@ -13,7 +18,6 @@ namespace Catel.Fody.Weaving.AutoProperties
         private readonly CatelType _catelType;
 
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
-
         #endregion
 
         #region Constructors
@@ -35,26 +39,26 @@ namespace Catel.Fody.Weaving.AutoProperties
 
         private void AddOrUpdateOnPropertyChangedMethod(PropertyDefinition property)
         {
-            MethodReference getMethodReference = _catelType.TypeDefinition.Module.Import(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
-            MethodReference stringEqualsMethodReference = _catelType.TypeDefinition.Module.Import(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
+            var getMethodReference = _catelType.TypeDefinition.Module.Import(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
+            var stringEqualsMethodReference = _catelType.TypeDefinition.Module.Import(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
 
-            List<PropertyDefinition> dependentProperties = _catelType.GetDependentPropertiesFrom(property).ToList();
+            var dependentProperties = _catelType.GetDependentPropertiesFrom(property).ToList();
 
             if (dependentProperties.Count > 0)
             {
-                MethodDefinition onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
-                int idx = onPropertyChangedMethod.Body.Instructions.ToList().FindLastIndex(instruction => instruction.OpCode == OpCodes.Ret);
+                var onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
+                var idx = onPropertyChangedMethod.Body.Instructions.ToList().FindLastIndex(instruction => instruction.OpCode == OpCodes.Ret);
 
                 if (idx > -1)
                 {
-                    TypeReference booleanTypeReference = _catelType.TypeDefinition.Module.Import(_msCoreReferenceFinder.GetCoreTypeReference("Boolean"));
+                    var booleanTypeReference = _catelType.TypeDefinition.Module.Import(_msCoreReferenceFinder.GetCoreTypeReference("Boolean"));
                     if (onPropertyChangedMethod.Body.Variables.ToList().FirstOrDefault(definition => definition.VariableType != booleanTypeReference) == null)
                     {
                         onPropertyChangedMethod.Body.Variables.Add(new VariableDefinition(booleanTypeReference));
                         onPropertyChangedMethod.Body.InitLocals = true;
                     }
 
-                    foreach (PropertyDefinition propertyDefinition in dependentProperties)
+                    foreach (var propertyDefinition in dependentProperties)
                     {
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Ldarg_1));
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Callvirt, getMethodReference));
@@ -65,7 +69,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Stloc_0));
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Ldloc_0));
 
-                        int jmpIdx = idx++;
+                        var jmpIdx = idx++;
                         onPropertyChangedMethod.Body.Instructions.Insert(jmpIdx, Instruction.Create(OpCodes.Nop));
 
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Nop));
@@ -83,27 +87,26 @@ namespace Catel.Fody.Weaving.AutoProperties
 
         private static MethodReference GetSystemObjectEqualsMethodReference(ModuleDefinition moduleDefinition)
         {
-            TypeReference typeReference = moduleDefinition.GetTypeReferences().Single(t => t.FullName == "System.String");
+            var typeReference = moduleDefinition.GetTypeReferences().Single(t => t.FullName == "System.String");
+            var typeDefinition = typeReference.Resolve();
 
-            TypeDefinition typeDefinition = typeReference.Resolve();
-
-            MethodDefinition methodDefinition = typeDefinition.Methods.Single(m => m.Name == "Equals" && m.Parameters.Count == 1 && m.Parameters[0].ParameterType.Name == "String");
+            var methodDefinition = typeDefinition.Methods.Single(m => m.Name == "Equals" && m.Parameters.Count == 1 && m.Parameters[0].ParameterType.Name == "String");
 
             return methodDefinition;
         }
 
         private MethodDefinition EnsureOnPropertyChangedMethod()
         {
-            TypeDefinition type = _catelType.TypeDefinition;
-            MethodDefinition methodDefinition = type.Methods.FirstOrDefault(definition => definition.Name == "OnPropertyChanged" && definition.HasParameters && definition.Parameters[0].ParameterType == _catelType.AdvancedPropertyChangedEventArgsType);
+            var type = _catelType.TypeDefinition;
+            var methodDefinition = type.Methods.FirstOrDefault(definition => definition.Name == "OnPropertyChanged" && definition.HasParameters && definition.Parameters[0].ParameterType == _catelType.AdvancedPropertyChangedEventArgsType);
             if (methodDefinition == null)
             {
-                TypeReference voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
+                var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
                 methodDefinition = new MethodDefinition("OnPropertyChanged", MethodAttributes.Family | MethodAttributes.HideBySig | MethodAttributes.Virtual, type.Module.Import(voidType));
                 methodDefinition.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, _catelType.AdvancedPropertyChangedEventArgsType));
 
-                MethodBody body = methodDefinition.Body;
+                var body = methodDefinition.Body;
 
                 body.SimplifyMacros();
 
