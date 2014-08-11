@@ -85,9 +85,9 @@ namespace Catel.Fody.Weaving.AutoProperties
             }
         }
 
-        private static MethodReference GetSystemObjectEqualsMethodReference(ModuleDefinition moduleDefinition)
+        private MethodReference GetSystemObjectEqualsMethodReference(ModuleDefinition moduleDefinition)
         {
-            var typeReference = moduleDefinition.GetTypeReferences().Single(t => t.FullName == "System.String");
+            var typeReference = _msCoreReferenceFinder.GetCoreTypeReference("System.String");
             var typeDefinition = typeReference.Resolve();
 
             var methodDefinition = typeDefinition.Methods.Single(m => m.Name == "Equals" && m.Parameters.Count == 1 && m.Parameters[0].ParameterType.Name == "String");

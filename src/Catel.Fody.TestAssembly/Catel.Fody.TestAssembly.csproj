@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentChecksClass.cs" />
+    <Compile Include="CTL504.cs" />
     <Compile Include="DependentPropertyModel.cs" />
     <Compile Include="LoggingClass.cs" />
     <Compile Include="DefaultValueModel.cs" />
