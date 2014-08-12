@@ -41,7 +41,10 @@ namespace Catel.Fody
             try
             {
 #if DEBUG
-                //Debugger.Launch();
+                //if (!Debugger.IsAttached)
+                //{
+                //    Debugger.Launch();
+                //}
 #endif
 
                 // Clear cache because static members will be re-used over multiple builds over multiple systems

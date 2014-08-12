@@ -127,7 +127,7 @@ namespace Catel.Fody
         {
             get
             {
-                TypeDefinition typeDefinition = this.TypeDefinition;
+                TypeDefinition typeDefinition = TypeDefinition;
                 var propertyDefinitions = new List<PropertyDefinition>();
                 while (typeDefinition.BaseType.FullName != "System.Object")
                 {
@@ -288,7 +288,7 @@ namespace Catel.Fody
             var dependentPropertyDefinitions = (from dependentPropertyDefinition in this.TypeDefinition.Properties where dependentPropertyDefinition != property && this.ExistPropertyDependencyBetween(dependentPropertyDefinition, property) select dependentPropertyDefinition).ToList();
             for (int i = 0; i < dependentPropertyDefinitions.Count; i++)
             {
-                foreach (PropertyDefinition propertyDefinition in GetDependentPropertiesFrom(dependentPropertyDefinitions[i]))
+                foreach (var propertyDefinition in GetDependentPropertiesFrom(dependentPropertyDefinitions[i]))
                 {
                     if (!dependentPropertyDefinitions.Contains(propertyDefinition))
                     {
@@ -305,18 +305,18 @@ namespace Catel.Fody
             bool found = false;
             if (dependentPropertyDefinition != null)
             {
-                MethodDefinition definition = dependentPropertyDefinition.GetMethod;
-                if (definition.HasBody)
+                var getMethodDefinition = dependentPropertyDefinition.GetMethod;
+                if ((getMethodDefinition != null) && getMethodDefinition.HasBody)
                 {
-                    ILProcessor processor = definition.Body.GetILProcessor();
+                    var processor = getMethodDefinition.Body.GetILProcessor();
 
                     int idx = 0;
                     while (!found && idx < processor.Body.Instructions.Count)
                     {
-                        Instruction instruction = processor.Body.Instructions[idx];
+                        var instruction = processor.Body.Instructions[idx];
 
                         MethodDefinition methodDefinition;
-                        if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(this.TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
+                        if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
                         {
                             found = true;
                         }
