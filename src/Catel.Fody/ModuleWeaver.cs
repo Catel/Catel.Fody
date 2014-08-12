@@ -142,7 +142,10 @@ namespace Catel.Fody
                 LogError(ex.Message);
 
 #if DEBUG
-                Debugger.Launch();
+                if (!Debugger.IsAttached)
+                {
+                    Debugger.Launch();
+                }
 #endif
             }
         }
