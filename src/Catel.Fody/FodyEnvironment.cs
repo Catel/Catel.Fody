@@ -19,6 +19,7 @@ namespace Catel.Fody
 
         public static XElement Config { get; set; }
 
+        public static Action<string> LogDebug { get; set; }
         public static Action<string> LogInfo { get; set; }
         public static Action<string> LogWarning { get; set; }
         public static Action<string, SequencePoint> LogWarningPoint { get; set; }

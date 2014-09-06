@@ -66,8 +66,9 @@ namespace Catel.Fody.Weaving.Argument
 
         private void ProcessMethod(MethodDefinition method)
         {
-            method.Body.SimplifyMacros();
-            var instructions = method.Body.Instructions;
+            Collection<Instruction> instructions = null;
+
+            FodyEnvironment.LogDebug(string.Format("Processing method '{0}'", method.GetFullName()));
 
             // Step 1) Convert attributes
             for (var i = method.Parameters.Count - 1; i >= 0; i--)
@@ -79,6 +80,12 @@ namespace Catel.Fody.Weaving.Argument
                     var attributeFullName = customAttribute.AttributeType.FullName;
                     if (ArgumentMethodCallWeaverBase.WellKnownWeavers.ContainsKey(attributeFullName))
                     {
+                        if (instructions == null)
+                        {
+                            method.Body.SimplifyMacros();
+                            instructions = method.Body.Instructions;                            
+                        }
+
                         ArgumentMethodCallWeaverBase.WellKnownWeavers[attributeFullName].Execute(_typeDefinition, method, parameter, customAttribute);
                         parameter.RemoveAttribute(attributeFullName);
                     }
@@ -89,40 +96,69 @@ namespace Catel.Fody.Weaving.Argument
             var displayClasses = new List<TypeDefinition>();
 
             // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginnen of the ctor
-            for (var i = instructions.Count - 1; i >=0; i--)
+            if (instructions != null || ContainsArgumentChecks(method))
             {
-                var instruction = instructions[i];
-                if (IsSupportedExpressionArgumentCheck(instruction))
+                if (instructions == null)
                 {
-                    var fullKey = ((MethodReference)instruction.Operand).GetFullName();
-                    var parameter = GetParameterForExpressionArgumentCheck(method, instructions, instruction);
-                    var customAttribute = CreateAttributeForExpressionArgumentCheck(method, instructions, instruction);
+                    method.Body.SimplifyMacros();
+                    instructions = method.Body.Instructions;
+                }
 
-                    var displayClass = RemoveArgumentWeavingCall(method, instructions, instruction);
-                    if (displayClass != null)
+                for (var i = instructions.Count - 1; i >= 0; i--)
+                {
+                    var instruction = instructions[i];
+                    if (IsSupportedExpressionArgumentCheck(instruction))
                     {
-                        displayClasses.Add(displayClass);
+                        var fullKey = ((MethodReference) instruction.Operand).GetFullName();
+                        var parameter = GetParameterForExpressionArgumentCheck(method, instructions, instruction);
+                        var customAttribute = CreateAttributeForExpressionArgumentCheck(method, instructions, instruction);
 
-                        ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameter, customAttribute);
+                        var displayClass = RemoveArgumentWeavingCall(method, instructions, instruction);
+                        if (displayClass != null)
+                        {
+                            displayClasses.Add(displayClass);
 
-                        // Reset counter, start from the beginning
-                        i = instructions.Count - 1;
+                            ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameter, customAttribute);
+
+                            // Reset counter, start from the beginning
+                            i = instructions.Count - 1;
+                        }
+                    }
+                }
+
+                // Step 3) Clean up unnecessary code
+                if (displayClasses.Count > 0)
+                {
+                    instructions.RemoveSubsequentNops();
+
+                    foreach (var displayClass in displayClasses)
+                    {
+                        RemoveObsoleteCodeForArgumentExpression(method, instructions, displayClass);
                     }
                 }
             }
 
-            // Step 3) Clean up unnecessary code
-            if (displayClasses.Count > 0)
+            if (instructions != null)
             {
-                instructions.RemoveSubsequentNops();
+                method.Body.OptimizeMacros();
+            }
+        }
 
-                foreach (var displayClass in displayClasses)
+        private bool ContainsArgumentChecks(MethodDefinition method)
+        {
+            foreach (var instruction in method.Body.Instructions)
+            {
+                var methodReference = instruction.Operand as MethodReference;
+                if (methodReference != null)
                 {
-                    RemoveObsoleteCodeForArgumentExpression(method, instructions, displayClass);
+                    if (methodReference.GetFullName().Contains("Catel.Argument"))
+                    {
+                        return true;
+                    }
                 }
             }
 
-            method.Body.OptimizeMacros();
+            return false;
         }
         #endregion
     }

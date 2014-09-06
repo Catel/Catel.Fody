@@ -156,6 +156,7 @@ namespace Catel.Fody
             FodyEnvironment.AssemblyResolver = AssemblyResolver;
 
             FodyEnvironment.Config = Config;
+            FodyEnvironment.LogDebug = s => { };
             FodyEnvironment.LogInfo = LogInfo;
             FodyEnvironment.LogWarning = LogWarning;
             FodyEnvironment.LogWarningPoint = LogWarningPoint;
