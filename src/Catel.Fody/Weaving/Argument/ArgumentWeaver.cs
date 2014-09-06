@@ -112,12 +112,15 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             // Step 3) Clean up unnecessary code
-            foreach (var displayClass in displayClasses)
+            if (displayClasses.Count > 0)
             {
-                RemoveObsoleteCodeForArgumentExpression(method, instructions, displayClass);
-            }
+                instructions.RemoveSubsequentNops();
 
-            instructions.RemoveSubsequentNops();
+                foreach (var displayClass in displayClasses)
+                {
+                    RemoveObsoleteCodeForArgumentExpression(method, instructions, displayClass);
+                }
+            }
 
             method.Body.OptimizeMacros();
         }

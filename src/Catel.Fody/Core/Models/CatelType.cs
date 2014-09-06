@@ -286,7 +286,7 @@ namespace Catel.Fody
         public IEnumerable<PropertyDefinition> GetDependentPropertiesFrom(PropertyDefinition property)
         {
             var dependentPropertyDefinitions = (from dependentPropertyDefinition in this.TypeDefinition.Properties where dependentPropertyDefinition != property && this.ExistPropertyDependencyBetween(dependentPropertyDefinition, property) select dependentPropertyDefinition).ToList();
-            for (int i = 0; i < dependentPropertyDefinitions.Count; i++)
+            for (var i = 0; i < dependentPropertyDefinitions.Count; i++)
             {
                 foreach (var propertyDefinition in GetDependentPropertiesFrom(dependentPropertyDefinitions[i]))
                 {
@@ -310,7 +310,7 @@ namespace Catel.Fody
                 {
                     var processor = getMethodDefinition.Body.GetILProcessor();
 
-                    int idx = 0;
+                    var idx = 0;
                     while (!found && idx < processor.Body.Instructions.Count)
                     {
                         var instruction = processor.Body.Instructions[idx];
