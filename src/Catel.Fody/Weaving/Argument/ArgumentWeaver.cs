@@ -66,6 +66,8 @@ namespace Catel.Fody.Weaving.Argument
 
         private void ProcessMethod(MethodDefinition method)
         {
+            // Note: very important to only simplify/optimize methods that we actually change, otherwise some Mono.Cecil bugs
+            // will appear on the surface
             Collection<Instruction> instructions = null;
 
             FodyEnvironment.LogDebug(string.Format("Processing method '{0}'", method.GetFullName()));
