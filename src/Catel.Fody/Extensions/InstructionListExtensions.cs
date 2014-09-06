@@ -53,5 +53,29 @@ namespace Catel.Fody
             }
             return index + instructions.Length;
         }
+
+        public static void RemoveSubsequentNops(this Collection<Instruction> collection)
+        {
+            var previousWasNop = false;
+            for (var i = 0; i < collection.Count; i++)
+            {
+                var instruction = collection[i];
+                if (instruction.OpCode == OpCodes.Nop)
+                {
+                    if (!previousWasNop)
+                    {
+                        previousWasNop = true;
+                    }
+                    else
+                    {
+                        collection.RemoveAt(i--);
+                    }
+                }
+                else
+                {
+                    previousWasNop = false;
+                }
+            }
+        }
     }
 }

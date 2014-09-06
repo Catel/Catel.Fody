@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentChecksAsExpressionsClass.cs" />
     <Compile Include="ArgumentChecksClass.cs" />
     <Compile Include="CTL504.cs" />
     <Compile Include="DependentPropertyModel.cs" />

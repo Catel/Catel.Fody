@@ -16,6 +16,34 @@ namespace Catel.Fody
     {
         private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
 
+        public static MethodReference FindConstructor(this TypeDefinition typeReference, List<TypeDefinition> types)
+        {
+            foreach (var ctor in typeReference.GetConstructors())
+            {
+                if (ctor.Parameters.Count == types.Count)
+                {
+                    var isValid = true;
+
+                    for (var i = 0; i < ctor.Parameters.Count; i++)
+                    {
+                        var parameter = ctor.Parameters[i];
+                        if (!string.Equals(parameter.ParameterType.FullName, types[i].FullName))
+                        {
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    if (isValid)
+                    {
+                        return ctor;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public static TypeReference MakeGenericIfRequired(this TypeReference typeReference)
         {
             if (typeReference.HasGenericParameters)

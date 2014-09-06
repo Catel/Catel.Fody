@@ -99,7 +99,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.LogInfo("Weaving arguments");
 
-                    var argumentWeaverService = new ArgumentWeaverService(types);
+                    var argumentWeaverService = new ArgumentWeaverService(types, msCoreReferenceFinder);
                     argumentWeaverService.Execute();
                 }
                 else

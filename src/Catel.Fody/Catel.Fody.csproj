@@ -77,10 +77,10 @@
     <Compile Include="Services\ArgumentWeaverService.cs" />
     <Compile Include="Services\ExposedPropertiesWeaverService.cs" />
     <Compile Include="Services\LoggingWeaverService.cs" />
-    <Compile Include="Weaving\Argument\ArgumentExpressionToFastCallConverter.cs" />
     <Compile Include="Weaving\Argument\ArgumentInstructionSequenceBuilder.cs" />
     <Compile Include="Weaving\Argument\ArgumentWeaver.cs" />
     <Compile Include="Weaving\Argument\ArgumentMethodCallWeaverBase.cs" />
+    <Compile Include="Weaving\Argument\ArgumentWeaver.expressions.cs" />
     <Compile Include="Weaving\Argument\BoundariesCheckRelatedArgumentMethodCallWeaverBase.cs" />
     <Compile Include="Weaving\Argument\Implementations\IsMaximumMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\Implementations\IsMinimalMethodCallWeaver.cs" />
