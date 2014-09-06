@@ -52,15 +52,15 @@ namespace Catel.Fody.Weaving.Argument
 
         private void ProcessMethod(MethodDefinition method)
         {
-            bool hasSimplifiedMethod = false;
+            var hasSimplifiedMethod = false;
 
-            for (int i = method.Parameters.Count - 1; i >= 0; i--)
+            for (var i = method.Parameters.Count - 1; i >= 0; i--)
             {
                 var parameter = method.Parameters[i];
-                for (int j = parameter.CustomAttributes.Count - 1; j >= 0; j--)
+                for (var j = parameter.CustomAttributes.Count - 1; j >= 0; j--)
                 {
                     var customAttribute = parameter.CustomAttributes[j];
-                    string attributeFullName = customAttribute.AttributeType.FullName;
+                    var attributeFullName = customAttribute.AttributeType.FullName;
                     if (ArgumentMethodCallWeaverBase.WellKnownWeavers.ContainsKey(attributeFullName))
                     {
                         if (!hasSimplifiedMethod)
