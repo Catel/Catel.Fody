@@ -456,54 +456,53 @@ namespace Catel.Fody.Test
             }
             */
 
-            [TestCase]
-            public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom()
-            {
-                var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+            //[TestCase]
+            //public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom()
+            //{
+            //    var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
 
-                var instance = Activator.CreateInstance(type);
+            //    var instance = Activator.CreateInstance(type);
 
-                var method = type.GetMethod("CheckForInheritsFrom");
+            //    var method = type.GetMethod("CheckForInheritsFrom");
 
-                CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new Exception() }));
-            }
+            //    CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new Exception() }));
+            //}
 
-            [TestCase]
-            public void CorrectlyThrowsNoArgumentExceptionForInheritsFrom()
-            {
-                var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+            //[TestCase]
+            //public void CorrectlyThrowsNoArgumentExceptionForInheritsFrom()
+            //{
+            //    var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
 
-                var instance = Activator.CreateInstance(type);
+            //    var instance = Activator.CreateInstance(type);
 
-                var method = type.GetMethod("CheckForInheritsFrom");
+            //    var method = type.GetMethod("CheckForInheritsFrom");
 
-                method.Invoke(instance, new object[] { new ArgumentNullException() });
-            }
+            //    method.Invoke(instance, new object[] { new ArgumentNullException() });
+            //}
 
-            [TestCase]
-            public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom2()
-            {
-                var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+            //[TestCase]
+            //public void CorrectlyThrowsArgumentExceptionForNotInheritsFrom2()
+            //{
+            //    var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
 
-                var instance = Activator.CreateInstance(type);
+            //    var instance = Activator.CreateInstance(type);
 
-                var method = type.GetMethod("CheckForInheritsFrom2");
+            //    var method = type.GetMethod("CheckForInheritsFrom2");
 
-                CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(Exception) }));
-            }
+            //    CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(Exception) }));
+            //}
 
-            [TestCase]
-            public void CorrectlyThrowsNoArgumentExceptionForInheritsFrom2()
-            {
-                var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+            //[TestCase]
+            //public void CorrectlyThrowsNoArgumentExceptionForInheritsFrom2()
+            //{
+            //    var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
 
-                var instance = Activator.CreateInstance(type);
+            //    var instance = Activator.CreateInstance(type);
 
-                var method = type.GetMethod("CheckForInheritsFrom2");
+            //    var method = type.GetMethod("CheckForInheritsFrom2");
 
-                method.Invoke(instance, new object[] { typeof(ArgumentNullException) });
-            }
-
+            //    method.Invoke(instance, new object[] { typeof(ArgumentNullException) });
+            //}
 
             [TestCase]
             public void CorrectlyThrowsArgumentExceptionForNotTypeOf()
