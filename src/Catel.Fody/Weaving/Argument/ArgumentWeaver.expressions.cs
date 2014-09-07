@@ -45,6 +45,8 @@ namespace Catel.Fody.Weaving.Argument
 
         private void RemoveObsoleteCodeForArgumentExpression(MethodDefinition method, Collection<Instruction> instructions, TypeDefinition displayClassType)
         {
+            return;
+
             if (method.DeclaringType.NestedTypes.Contains(displayClassType))
             {
                 method.DeclaringType.NestedTypes.Remove(displayClassType);
@@ -69,13 +71,17 @@ namespace Catel.Fody.Weaving.Argument
                 var innerInstruction = instructions[i];
                 if (innerInstruction.OpCode == OpCodes.Newobj)
                 {
-                    if (string.Equals(((MethodDefinition) innerInstruction.Operand).DeclaringType.Name, displayClassType.Name))
+                    var methodDefinition = innerInstruction.Operand as MethodDefinition;
+                    if (methodDefinition != null)
                     {
-                        // Delete 2 instructions, same location since remove will move everything 1 place up
-                        instructions.RemoveAt(i);
-                        instructions.RemoveAt(i);
+                        if (string.Equals(methodDefinition.DeclaringType.Name, displayClassType.Name))
+                        {
+                            // Delete 2 instructions, same location since remove will move everything 1 place up
+                            instructions.RemoveAt(i);
+                            instructions.RemoveAt(i);
 
-                        break;
+                            break;
+                        }
                     }
                 }
             }
@@ -91,7 +97,7 @@ namespace Catel.Fody.Weaving.Argument
 
                 if (innerInstruction.OpCode == OpCodes.Stfld)
                 {
-                    if (string.Equals(((FieldDefinition) innerInstruction.Operand).DeclaringType.Name, displayClassType.Name))
+                    if (string.Equals(((FieldDefinition)innerInstruction.Operand).DeclaringType.Name, displayClassType.Name))
                     {
                         // Remove the previous 3 operations
                         instructions.RemoveAt(i);
@@ -121,7 +127,7 @@ namespace Catel.Fody.Weaving.Argument
                     if (displayClassType == null)
                     {
                         // First call to ldtoken with FieldDefinition contains the display class type
-                        var fieldDefinition = innerInstruction.Operand as FieldDefinition;
+                        var fieldDefinition = GetFieldDefinition(innerInstruction);
                         if (fieldDefinition != null)
                         {
                             displayClassType = fieldDefinition.DeclaringType;
@@ -129,8 +135,7 @@ namespace Catel.Fody.Weaving.Argument
                     }
                 }
 
-                if ((innerInstruction.OpCode == OpCodes.Ldloc_0) ||
-                    ((innerInstruction.OpCode == OpCodes.Ldloc) && (innerInstruction.Operand.ToString() == "V_0")))
+                if ((innerInstruction.OpCode == OpCodes.Ldloc_0) || (innerInstruction.OpCode == OpCodes.Ldloc))
                 {
                     break;
                 }
@@ -160,24 +165,51 @@ namespace Catel.Fody.Weaving.Argument
                     if (displayClassType == null)
                     {
                         // First call to ldtoken with FieldDefinition contains the display class type
-                        var fieldDefinition = innerInstruction.Operand as FieldDefinition;
-                        if (fieldDefinition != null)
+                        parameterFieldDefinition = GetFieldDefinition(innerInstruction);
+                        if (parameterFieldDefinition != null)
                         {
-                            parameterFieldDefinition = fieldDefinition;
-                            displayClassType = fieldDefinition.DeclaringType;
+                            displayClassType = parameterFieldDefinition.DeclaringType;
                         }
                     }
                 }
 
                 if (innerInstruction.OpCode == OpCodes.Stfld)
                 {
-                    if (innerInstruction.Operand == parameterFieldDefinition)
+                    var fieldDefinition = innerInstruction.Operand as FieldDefinition;
+                    if (fieldDefinition == null)
+                    {
+                        var fieldReference = innerInstruction.Operand as FieldReference;
+                        if (fieldReference != null)
+                        {
+                            fieldDefinition = fieldReference.Resolve();
+                        }
+                    }
+
+                    if (fieldDefinition == parameterFieldDefinition)
                     {
                         // We found it, now check 1 instruction back for the actual parameter
                         var finalInstruction = instructions[i - 1];
                         return (ParameterDefinition)finalInstruction.Operand;
                     }
                 }
+            }
+
+            return null;
+        }
+
+        private FieldDefinition GetFieldDefinition(Instruction instruction)
+        {
+            // First call to ldtoken with FieldDefinition contains the display class type
+            var fieldDefinition = instruction.Operand as FieldDefinition;
+            if (fieldDefinition != null)
+            {
+                return fieldDefinition;
+            }
+
+            var fieldReference = instruction.Operand as FieldReference;
+            if (fieldReference != null)
+            {
+                return fieldReference.Resolve();
             }
 
             return null;

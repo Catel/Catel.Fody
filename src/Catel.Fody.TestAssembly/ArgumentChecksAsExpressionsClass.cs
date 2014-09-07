@@ -8,9 +8,17 @@
 namespace Catel.Fody.TestAssembly
 {
     using System;
+    using System.Collections;
+    using Collections;
+    using Reflection;
 
     public class ArgumentChecksAsExpressionsClass
     {
+        public class CustomType
+        {
+            
+        }
+
         public void CheckForMinimalInt(int myValue)
         {
             Argument.IsMinimal(() => myValue, 1);
@@ -121,11 +129,53 @@ namespace Catel.Fody.TestAssembly
             Argument.IsNotMatch(() => myString, "\\d+");
         }
 
-        public void CheckForNullWithMultipleParameters(object myObject1, object myObject2, object myObject3)
+        public void CheckForNullWithMultipleParameters(CustomType customType, IEnumerable rawCollection, IList filteredCollection)
         {
-            Argument.IsNotNull(() => myObject1);
-            Argument.IsNotNull(() => myObject2);
-            Argument.IsNotNull(() => myObject3);
+            Argument.IsNotNull(() => customType);
+            Argument.IsNotNull(() => rawCollection);
+            Argument.IsNotNull(() => filteredCollection);
+
+            IDisposable suspendToken = null;
+            var filteredCollectionType = filteredCollection.GetType();
+            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof(FastObservableCollection<>))
+            {
+                suspendToken = (IDisposable)filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
+            }
+
+            filteredCollection.Clear();
+
+            // Removed external code for simplicity of test
+
+            if (suspendToken != null)
+            {
+                suspendToken.Dispose();
+            }
+        }
+
+        public void CheckForNullWithMultipleParametersWithoutContent(CustomType customType, IEnumerable rawCollection, IList filteredCollection)
+        {
+            Argument.IsNotNull(() => customType);
+            Argument.IsNotNull(() => rawCollection);
+            Argument.IsNotNull(() => filteredCollection);
+        }
+
+        public void CheckForNullWithMultipleParametersContentOnly(CustomType customType, IEnumerable rawCollection, IList filteredCollection)
+        {
+            IDisposable suspendToken = null;
+            var filteredCollectionType = filteredCollection.GetType();
+            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof(FastObservableCollection<>))
+            {
+                suspendToken = (IDisposable)filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
+            }
+
+            filteredCollection.Clear();
+
+            // Removed external code for simplicity of test
+
+            if (suspendToken != null)
+            {
+                suspendToken.Dispose();
+            }
         }
     }
 }

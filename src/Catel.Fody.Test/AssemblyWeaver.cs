@@ -53,6 +53,10 @@ public static class AssemblyWeaver
         weavingTask.Execute();
         moduleDefinition.Write(AfterAssemblyPath);
 
+#if DEBUG
+        File.Copy(AfterAssemblyPath, @"C:\Source\Catel.Fody\output\debug\Test\Catel.Fody.TestAssembly2.dll", true);
+#endif
+
         Assembly = Assembly.LoadFile(AfterAssemblyPath);
     }
     #endregion

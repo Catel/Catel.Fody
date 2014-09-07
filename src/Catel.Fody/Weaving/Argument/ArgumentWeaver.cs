@@ -33,7 +33,7 @@ namespace Catel.Fody.Weaving.Argument
             ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrEmpty"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
 
             ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrWhitespaceAttribute"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.NotNullOrWhitespace"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
+            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrWhitespace"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
 
             // TODO: Support the argument checks below in expression checks
             ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyArrayAttribute"] = new IsNotNullOrEmptyArrayArgumentMethodCallWeaver();
@@ -75,7 +75,8 @@ namespace Catel.Fody.Weaving.Argument
             // will appear on the surface
             Collection<Instruction> instructions = null;
 
-            FodyEnvironment.LogDebug(string.Format("Processing method '{0}'", method.GetFullName()));
+            var methodFullName = method.GetFullName();
+            FodyEnvironment.LogDebug(string.Format("Processing method '{0}'", methodFullName));
 
             // Step 1) Convert attributes
             for (var i = method.Parameters.Count - 1; i >= 0; i--)
@@ -99,51 +100,56 @@ namespace Catel.Fody.Weaving.Argument
                 }
             }
 
-            //// Step 2) Convert expressions to normal calls
-            //var displayClasses = new List<TypeDefinition>();
+            // Step 2) Convert expressions to normal calls
+            var displayClasses = new List<TypeDefinition>();
 
-            //// Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginnen of the ctor
-            //if (instructions != null || ContainsArgumentChecks(method))
-            //{
-            //    if (instructions == null)
-            //    {
-            //        method.Body.SimplifyMacros();
-            //        instructions = method.Body.Instructions;
-            //    }
+            // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginnen of the ctor
+            if (instructions != null || ContainsArgumentChecks(method))
+            {
+                if (instructions == null)
+                {
+                    method.Body.SimplifyMacros();
+                    instructions = method.Body.Instructions;
+                }
 
-            //    for (var i = instructions.Count - 1; i >= 0; i--)
-            //    {
-            //        var instruction = instructions[i];
-            //        if (IsSupportedExpressionArgumentCheck(instruction))
-            //        {
-            //            var fullKey = ((MethodReference) instruction.Operand).GetFullName();
-            //            var parameter = GetParameterForExpressionArgumentCheck(method, instructions, instruction);
-            //            var customAttribute = CreateAttributeForExpressionArgumentCheck(method, instructions, instruction);
+                for (var i = instructions.Count - 1; i >= 0; i--)
+                {
+                    var instruction = instructions[i];
+                    if (IsSupportedExpressionArgumentCheck(instruction))
+                    {
+                        var fullKey = ((MethodReference) instruction.Operand).GetFullName();
+                        var parameter = GetParameterForExpressionArgumentCheck(method, instructions, instruction);
+                        var customAttribute = CreateAttributeForExpressionArgumentCheck(method, instructions, instruction);
 
-            //            var displayClass = RemoveArgumentWeavingCall(method, instructions, instruction);
-            //            if (displayClass != null)
-            //            {
-            //                displayClasses.Add(displayClass);
+                        var displayClass = RemoveArgumentWeavingCall(method, instructions, instruction);
+                        if (displayClass != null)
+                        {
+                            if (!displayClasses.Contains(displayClass))
+                            {
+                                displayClasses.Add(displayClass);
+                            }
 
-            //                ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameter, customAttribute);
+                            ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameter, customAttribute);
 
-            //                // Reset counter, start from the beginning
-            //                i = instructions.Count - 1;
-            //            }
-            //        }
-            //    }
+                            // Reset counter, start from the beginning
+                            i = instructions.Count - 1;
+                        }
+                    }
+                }
 
-            //    // Step 3) Clean up unnecessary code
-            //    if (displayClasses.Count > 0)
-            //    {
-            //        instructions.RemoveSubsequentNops();
+                // Step 3) Clean up unnecessary code
+                if (displayClasses.Count > 0)
+                {
+                    //instructions.RemoveSubsequentNops();
 
-            //        foreach (var displayClass in displayClasses)
-            //        {
-            //            RemoveObsoleteCodeForArgumentExpression(method, instructions, displayClass);
-            //        }
-            //    }
-            //}
+                    foreach (var displayClass in displayClasses)
+                    {
+                        RemoveObsoleteCodeForArgumentExpression(method, instructions, displayClass);
+                    }
+
+                    //instructions.FixWrongBranchOutOfMethods();
+                }
+            }
 
             if (instructions != null)
             {
