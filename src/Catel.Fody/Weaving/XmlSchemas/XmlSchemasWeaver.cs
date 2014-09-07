@@ -41,7 +41,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
                 return;
             }
 
-            FodyEnvironment.LogInfo("\t\t Adding xml schema for type " + catelType.TypeDefinition.FullName);
+            FodyEnvironment.LogDebug("\t\t Adding xml schema for type " + catelType.TypeDefinition.FullName);
 
             if (AddXmlSchemaProviderAttribute(catelType))
             {

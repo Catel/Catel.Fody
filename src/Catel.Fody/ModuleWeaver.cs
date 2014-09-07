@@ -20,6 +20,7 @@ namespace Catel.Fody
         public ModuleWeaver()
         {
             // Init logging delegates to make testing easier
+            LogDebug = s => { };
             LogInfo = s => { };
             LogWarning = s => { };
             LogError = s => { };
@@ -27,6 +28,7 @@ namespace Catel.Fody
 
         public XElement Config { get; set; }
 
+        public Action<string> LogDebug { get; set; }
         public Action<string> LogInfo { get; set; }
         public Action<string> LogWarning { get; set; }
         public Action<string, SequencePoint> LogWarningPoint { get; set; }
@@ -41,10 +43,10 @@ namespace Catel.Fody
             try
             {
 #if DEBUG
-                //if (!Debugger.IsAttached)
-                //{
-                //    Debugger.Launch();
-                //}
+                if (!Debugger.IsAttached)
+                {
+                    Debugger.Launch();
+                }
 #endif
 
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
@@ -156,7 +158,7 @@ namespace Catel.Fody
             FodyEnvironment.AssemblyResolver = AssemblyResolver;
 
             FodyEnvironment.Config = Config;
-            FodyEnvironment.LogDebug = s => { };
+            FodyEnvironment.LogDebug = LogDebug;
             FodyEnvironment.LogInfo = LogInfo;
             FodyEnvironment.LogWarning = LogWarning;
             FodyEnvironment.LogWarningPoint = LogWarningPoint;
@@ -171,7 +173,7 @@ namespace Catel.Fody
             }
             catch (Exception)
             {
-                LogError("Catel.Core is not references, cannot weave without a Catel.Core reference");
+                LogError("Catel.Core is not referenced, cannot weave without a Catel.Core reference");
             }
 
             try

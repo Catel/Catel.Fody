@@ -38,7 +38,7 @@ namespace Catel.Fody.Weaving.Logging
             var staticConstructor = _type.GetStaticConstructor();
             if (staticConstructor == null)
             {
-                FodyEnvironment.LogInfo(string.Format("Cannot weave ILog fields without a static constructor, ignoring type '{0}'", _type.FullName));
+                FodyEnvironment.LogDebug(string.Format("Cannot weave ILog fields without a static constructor, ignoring type '{0}'", _type.FullName));
                 return;
             }
 
@@ -82,7 +82,7 @@ namespace Catel.Fody.Weaving.Logging
                 var methodReference = instruction.Operand as MethodReference;
                 if (methodReference != null)
                 {
-                    FodyEnvironment.LogInfo(string.Format("Weaving auto log to specific log for '{0}'", type.FullName));
+                    FodyEnvironment.LogDebug(string.Format("Weaving auto log to specific log for '{0}'", type.FullName));
 
                     if (string.Equals(methodReference.Name, "GetCurrentClassLogger"))
                     {
