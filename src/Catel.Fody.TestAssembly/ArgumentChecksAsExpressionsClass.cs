@@ -9,14 +9,34 @@ namespace Catel.Fody.TestAssembly
 {
     using System;
     using System.Collections;
+    using System.Windows.Media;
     using Collections;
     using Reflection;
 
     public class ArgumentChecksAsExpressionsClass
     {
-        public class CustomType
+        public class CustomClassType
         {
             
+        }
+
+        public struct CustomStructType
+        {
+            public static CustomStructType FromArgb(byte a, byte r, byte g, byte b)
+            {
+                return new CustomStructType
+                {
+                    A = a,
+                    R = r,
+                    G = g,
+                    B = b
+                };
+            }
+
+            public byte A { get; private set; }
+            public byte R { get; private set; }
+            public byte G { get; private set; }
+            public byte B { get; private set; }
         }
 
         public void CheckForMinimalInt(int myValue)
@@ -129,11 +149,14 @@ namespace Catel.Fody.TestAssembly
             Argument.IsNotMatch(() => myString, "\\d+");
         }
 
-        public void CheckForNullWithMultipleParameters(CustomType customType, IEnumerable rawCollection, IList filteredCollection)
+        public void CheckForNullWithMultipleParameters(CustomClassType customClassType, Color colorStruct, IEnumerable rawCollection, IList filteredCollection)
         {
-            Argument.IsNotNull(() => customType);
+            Argument.IsNotNull(() => customClassType);
+            Argument.IsNotNull(() => colorStruct);
             Argument.IsNotNull(() => rawCollection);
             Argument.IsNotNull(() => filteredCollection);
+
+            var finalStruct = CustomStructType.FromArgb(colorStruct.A, colorStruct.R, colorStruct.G, colorStruct.B);
 
             IDisposable suspendToken = null;
             var filteredCollectionType = filteredCollection.GetType();
@@ -152,14 +175,15 @@ namespace Catel.Fody.TestAssembly
             }
         }
 
-        public void CheckForNullWithMultipleParametersWithoutContent(CustomType customType, IEnumerable rawCollection, IList filteredCollection)
+        public void CheckForNullWithMultipleParametersWithoutContent(CustomClassType customClassType, Color colorStruct, IEnumerable rawCollection, IList filteredCollection)
         {
-            Argument.IsNotNull(() => customType);
+            Argument.IsNotNull(() => customClassType);
+            Argument.IsNotNull(() => colorStruct);
             Argument.IsNotNull(() => rawCollection);
             Argument.IsNotNull(() => filteredCollection);
         }
 
-        public void CheckForNullWithMultipleParametersContentOnly(CustomType customType, IEnumerable rawCollection, IList filteredCollection)
+        public void CheckForNullWithMultipleParametersContentOnly(CustomClassType customClassType, IEnumerable rawCollection, IList filteredCollection)
         {
             IDisposable suspendToken = null;
             var filteredCollectionType = filteredCollection.GetType();

@@ -16,6 +16,32 @@ namespace Catel.Fody
     {
         private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
 
+        public static bool IsBoxingRequired(this TypeReference typeReference)
+        {
+            if (typeReference.IsValueType || typeReference.IsGenericParameter)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static TypeReference Import(this TypeReference typeReference, bool checkForNullableValueTypes = false)
+        {
+            var module = FodyEnvironment.ModuleDefinition;
+
+            if (checkForNullableValueTypes)
+            {
+                var nullableValueType = typeReference.GetNullableValueType();
+                if (nullableValueType != null)
+                {
+                    return module.Import(nullableValueType);
+                }
+            }
+
+            return module.Import(typeReference);
+        }
+
         public static MethodReference FindConstructor(this TypeDefinition typeReference, List<TypeDefinition> types)
         {
             foreach (var ctor in typeReference.GetConstructors())

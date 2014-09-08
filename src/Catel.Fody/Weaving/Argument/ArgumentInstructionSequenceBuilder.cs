@@ -33,6 +33,11 @@ namespace Catel.Fody.Weaving.Argument
         {
             yield return Instruction.Create(OpCodes.Ldstr, parameter.Name);
             yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
+
+            if (parameter.ParameterType.IsBoxingRequired())
+            {
+                yield return Instruction.Create(OpCodes.Box, parameter.ParameterType.Import());
+            }
         }
 
         public static IEnumerable<Instruction> BuildTypeCheckRelatedInstructions(ModuleDefinition module, ParameterDefinition parameter, CustomAttribute attribute)

@@ -268,7 +268,7 @@ namespace Catel.Fody
             instructionsToInsert.AddRange(new[]
             {
                 Instruction.Create(OpCodes.Ldstr, property.Name),
-                Instruction.Create(OpCodes.Ldtoken, ImportPropertyType(property)),
+                Instruction.Create(OpCodes.Ldtoken, property.PropertyType.Import()),
                 Instruction.Create(OpCodes.Call, getTypeFromHandle),
             });
 
@@ -385,7 +385,7 @@ namespace Catel.Fody
                         genericRegisterProperty.GenericParameters.Add(genericParameter);
                     }
 
-                    genericRegisterProperty.GenericArguments.Add(ImportPropertyType(property, true));
+                    genericRegisterProperty.GenericArguments.Add(property.PropertyType.Import(true));
                 }
 
                 finalRegisterPropertyMethod = genericRegisterProperty;
@@ -415,11 +415,11 @@ namespace Catel.Fody
                 genericGetValue.GenericParameters.Add(genericParameter);
             }
 
-            genericGetValue.GenericArguments.Add(ImportPropertyType(property));
+            genericGetValue.GenericArguments.Add(property.PropertyType.Import());
 
             if (property.GetMethod == null)
             {
-                var getMethod = new MethodDefinition(string.Format("get_{0}", property.Name), MethodAttributes.Public, ImportPropertyType(property));
+                var getMethod = new MethodDefinition(string.Format("get_{0}", property.Name), MethodAttributes.Public, property.PropertyType.Import());
 
                 property.DeclaringType.Methods.Add(getMethod);
 
@@ -461,7 +461,7 @@ namespace Catel.Fody
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
                 var setMethod = new MethodDefinition(string.Format("set_{0}", property.Name), MethodAttributes.Public, property.DeclaringType.Module.Import(voidType));
-                setMethod.Parameters.Add(new ParameterDefinition(ImportPropertyType(property)));
+                setMethod.Parameters.Add(new ParameterDefinition(property.PropertyType.Import()));
 
                 property.DeclaringType.Methods.Add(setMethod);
 
@@ -491,9 +491,9 @@ namespace Catel.Fody
                 Instruction.Create(OpCodes.Ldarg_1)
             });
 
-            if (property.PropertyType.IsValueType || property.PropertyType.IsGenericParameter)
+            if (property.PropertyType.IsBoxingRequired())
             {
-                instructionsToAdd.Add(Instruction.Create(OpCodes.Box, ImportPropertyType(property)));
+                instructionsToAdd.Add(Instruction.Create(OpCodes.Box, property.PropertyType.Import()));
             }
 
             instructionsToAdd.Add(Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker));
@@ -573,22 +573,6 @@ namespace Catel.Fody
             {
                 property.DeclaringType.Fields.Remove(field);
             }
-        }
-
-        private static TypeReference ImportPropertyType(PropertyDefinition propertyDefinition, bool checkForNullableValueTypes = false)
-        {
-            var module = propertyDefinition.DeclaringType.Module;
-
-            if (checkForNullableValueTypes)
-            {
-                var nullableValueType = propertyDefinition.PropertyType.GetNullableValueType();
-                if (nullableValueType != null)
-                {
-                    return module.Import(nullableValueType);
-                }
-            }
-
-            return module.Import(propertyDefinition.PropertyType);
         }
 
         private static FieldDefinition GetFieldDefinition(TypeDefinition declaringType, string fieldName, bool allowGenericResolving)

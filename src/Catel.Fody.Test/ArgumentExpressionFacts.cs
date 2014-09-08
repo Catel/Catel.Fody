@@ -39,7 +39,7 @@ namespace Catel.Fody.Test
 
                 var method = type.GetMethod("CheckForNullWithMultipleParameters");
 
-                CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null }));
+                CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null, null }));
             }
 
             [TestCase]
@@ -602,9 +602,6 @@ namespace Catel.Fody.Test
         }
 
         #region Methods
-
-
-
 
         private static void CallMethodAndExpectException<TException>(Action action)
         {
