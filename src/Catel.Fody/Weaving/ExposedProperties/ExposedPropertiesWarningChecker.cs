@@ -27,7 +27,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
             //        var warning = CheckForWarning(propertyData);
             //        if (warning != null)
             //        {
-            //            FodyEnvironment.LogInfo(string.Format("\t{0} {1} property will be ignored.", propertyData.PropertyDefinition.GetName(), warning));
+            //            FodyEnvironment.LogDebug(string.Format("\t{0} {1} property will be ignored.", propertyData.PropertyDefinition.GetName(), warning));
             //            catelType.Properties.Remove(propertyData);
             //        }
             //    }

@@ -53,5 +53,47 @@ namespace Catel.Fody
             }
             return index + instructions.Length;
         }
+
+        //public static void RemoveSubsequentNops(this Collection<Instruction> collection)
+        //{
+        //    var previousWasNop = false;
+        //    for (var i = 0; i < collection.Count; i++)
+        //    {
+        //        var instruction = collection[i];
+        //        if (instruction.OpCode == OpCodes.Nop)
+        //        {
+        //            if (!previousWasNop)
+        //            {
+        //                previousWasNop = true;
+        //            }
+        //            else
+        //            {
+        //                collection.RemoveAt(i--);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            previousWasNop = false;
+        //        }
+        //    }
+        //}
+
+        //public static void FixWrongBranchOutOfMethods(this Collection<Instruction> instructions)
+        //{
+        //    var lastReturn = instructions.Last(x => x.OpCode == OpCodes.Ret);
+
+        //    foreach (var instruction in instructions)
+        //    {
+        //        if (instruction.OpCode == OpCodes.Brtrue_S || instruction.OpCode == OpCodes.Brtrue ||
+        //            instruction.OpCode == OpCodes.Brfalse || instruction.OpCode == OpCodes.Brfalse_S)
+        //        {
+        //            var targetInstruction = instruction.Operand as Instruction;
+        //            if (!instructions.Contains(targetInstruction))
+        //            {
+        //                instruction.Operand = lastReturn;
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

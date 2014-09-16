@@ -21,7 +21,7 @@ namespace Catel.Fody
             var catelFodyAttributesReference = _moduleWeaver.ModuleDefinition.AssemblyReferences.FirstOrDefault(x => string.Equals(x.Name, "Catel.Fody.Attributes"));
             if (catelFodyAttributesReference != null)
             {
-                _moduleWeaver.LogInfo("\tRemoving reference to 'Catel.Fody.Attributes'.");
+                _moduleWeaver.LogInfo("\tRemoving reference to 'Catel.Fody.Attributes', it is no longer required.");
                 _moduleWeaver.ModuleDefinition.AssemblyReferences.Remove(catelFodyAttributesReference);
             }
         }

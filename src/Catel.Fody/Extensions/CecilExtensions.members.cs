@@ -11,6 +11,11 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
+        public static string GetFullName(this MemberReference member)
+        {
+            return string.Format("{0}.{1}", member.DeclaringType.FullName, member.Name);
+        }
+
         public static void MarkAsCompilerGenerated(this MemberReference member, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             var module = member.Module;

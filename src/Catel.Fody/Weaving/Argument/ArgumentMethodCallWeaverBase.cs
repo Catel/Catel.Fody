@@ -16,7 +16,7 @@ namespace Catel.Fody.Weaving.Argument
         #region Constants
         public static readonly Dictionary<string, ArgumentMethodCallWeaverBase> WellKnownWeavers = CacheHelper.GetCache<Dictionary<string, ArgumentMethodCallWeaverBase>>("ArgumentMethodCallWeaverBase");
 
-        private readonly TypeDefinition ArgumentTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.Core", "Catel.Argument");
+        private readonly TypeDefinition _argumentTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.Core", "Catel.Argument");
         #endregion
 
         #region Methods
@@ -24,10 +24,10 @@ namespace Catel.Fody.Weaving.Argument
         {
             MethodDefinition selectedMethod;
 
-            SelectMethod(ArgumentTypeDefinition, parameter, out selectedMethod);
+            SelectMethod(_argumentTypeDefinition, parameter, out selectedMethod);
             if (selectedMethod != null)
             {
-                ModuleDefinition moduleDefinition = type.Module;
+                var moduleDefinition = type.Module;
                 var importedMethod = moduleDefinition.Import(selectedMethod);
 
                 var instructions = new List<Instruction>();

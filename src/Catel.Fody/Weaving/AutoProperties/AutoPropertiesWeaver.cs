@@ -8,6 +8,7 @@ namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
     using System.Linq;
+
     using Mono.Cecil;
     using Mono.Cecil.Rocks;
 
@@ -36,14 +37,17 @@ namespace Catel.Fody.Weaving.AutoProperties
                     continue;
                 }
 
-                FodyEnvironment.LogInfo("\t" + catelType.TypeDefinition.FullName);
+                var onPropertyChangedWeaver = new OnPropertyChangedWeaver(catelType, _msCoreReferenceFinder);
+                onPropertyChangedWeaver.Execute();
+
+                FodyEnvironment.LogDebug("\t" + catelType.TypeDefinition.FullName);
 
                 foreach (var propertyData in catelType.Properties)
                 {
                     if (AlreadyContainsCallToMember(propertyData.PropertyDefinition, catelType.GetValueInvoker.Name) ||
                         AlreadyContainsCallToMember(propertyData.PropertyDefinition, catelType.SetValueInvoker.Name))
                     {
-                        FodyEnvironment.LogInfo(string.Format("\t{0} already has GetValue and/or SetValue functionality. Property will be ignored.", propertyData.PropertyDefinition.GetName()));
+                        FodyEnvironment.LogDebug(string.Format("\t{0} already has GetValue and/or SetValue functionality. Property will be ignored.", propertyData.PropertyDefinition.GetName()));
                         continue;
                     }
 

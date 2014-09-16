@@ -8,13 +8,13 @@
 namespace Catel.Fody.Test
 {
     using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class Inheritance
     {
         #region Methods
-        [TestMethod]
+        [TestCase]
         public void InheritanceWorks()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.InheritedClass");

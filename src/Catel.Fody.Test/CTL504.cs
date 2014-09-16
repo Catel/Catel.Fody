@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="LoggingFacts.cs" company="Catel development team">
+// <copyright file="CTL504.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -11,14 +11,14 @@ namespace Catel.Fody.Test
     using NUnit.Framework;
 
     [TestFixture]
-    public class LoggingFacts
+    public class CTL504
     {
         [TestCase]
-        public void InheritanceWorks()
+        public void PropertyWeavingDoesNotThrowException()
         {
-            // Instantiating is sufficient
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.LoggingClass");
-            var obj = (dynamic)Activator.CreateInstance(type);
+            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.CTL504_Model");
+
+            var model = Activator.CreateInstance(type);
         }
     }
 }

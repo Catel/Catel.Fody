@@ -23,7 +23,14 @@ namespace Catel.Fody.TestAssembly
         private static readonly ILog AutoLog = LogManager.GetCurrentClassLogger();
         private static readonly ILog ManualLog = LogManager.GetLogger(typeof (LoggingClass));
         private static readonly ILog CustomLog = MyCustomLogManager.GetCurrentClassLogger();
+        private static readonly ILog ObfuscatedLog;
         #endregion
+
+        static LoggingClass()
+        {
+            var currentClassLogger = LogManager.GetCurrentClassLogger();
+            ObfuscatedLog = currentClassLogger;
+        }
 
         public LoggingClass()
         {

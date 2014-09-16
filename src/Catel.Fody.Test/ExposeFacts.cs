@@ -8,16 +8,15 @@
 namespace Catel.Fody.Test
 {
     using System;
-    using Catel.Data;
-    using Catel.Fody.TestAssembly;
-    using Catel.Reflection;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Data;
+    using Reflection;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class ExposeFacts
     {
         #region Methods
-        [TestMethod]
+        [TestCase]
         public void CreatesExposedProperties()
         {
             var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingDerivedModel");
@@ -36,7 +35,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual("van Horrik", PropertyHelper.GetPropertyValue<string>(viewModel, "MappedLastName"));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CreatesExposedPropertiesFromExternalTypes()
         {
             var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingDerivedModel");
@@ -51,7 +50,7 @@ namespace Catel.Fody.Test
             Assert.AreEqual(null, PropertyHelper.GetPropertyValue<bool?>(viewModel, "IsOk"));
         }
 
-        [TestMethod]
+        [TestCase]
         public void CanCreateReadOnlyExposedProperties()
         {
             var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
