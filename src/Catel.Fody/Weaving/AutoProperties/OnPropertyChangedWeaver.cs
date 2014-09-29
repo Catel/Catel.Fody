@@ -33,22 +33,29 @@ namespace Catel.Fody.Weaving.AutoProperties
         {
             foreach (var propertyDefinition in _catelType.AllProperties)
             {
-                AddOrUpdateOnPropertyChangedMethod(propertyDefinition);
+                if (!AddOrUpdateOnPropertyChangedMethod(propertyDefinition))
+                {
+                    break;
+                }
             }
         }
 
-        private void AddOrUpdateOnPropertyChangedMethod(PropertyDefinition property)
+        private bool AddOrUpdateOnPropertyChangedMethod(PropertyDefinition property)
         {
             var getMethodReference = _catelType.TypeDefinition.Module.Import(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
             var stringEqualsMethodReference = _catelType.TypeDefinition.Module.Import(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
 
             var dependentProperties = _catelType.GetDependentPropertiesFrom(property).ToList();
-
             if (dependentProperties.Count > 0)
             {
                 var onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
-                var idx = onPropertyChangedMethod.Body.Instructions.ToList().FindLastIndex(instruction => instruction.OpCode == OpCodes.Ret);
+                if (onPropertyChangedMethod == null)
+                {
+                    FodyEnvironment.LogWarning(string.Format("No call to base.OnPropertyChanged(e) in '{0}', cannot weave this method to automatically raise on dependent property change notifications", property.DeclaringType.Name));
+                    return false;
+                }
 
+                var idx = onPropertyChangedMethod.Body.Instructions.ToList().FindLastIndex(instruction => instruction.OpCode == OpCodes.Ret);
                 if (idx > -1)
                 {
                     var booleanTypeReference = _catelType.TypeDefinition.Module.Import(_msCoreReferenceFinder.GetCoreTypeReference("Boolean"));
@@ -83,6 +90,8 @@ namespace Catel.Fody.Weaving.AutoProperties
                     }
                 }
             }
+
+            return true;
         }
 
         private MethodReference GetSystemObjectEqualsMethodReference(ModuleDefinition moduleDefinition)
@@ -139,6 +148,7 @@ namespace Catel.Fody.Weaving.AutoProperties
             {
                 // Note: need to replace call to base, otherwise it might skip a call to a just generated base member
                 var body = methodDefinition.Body;
+                var hasReplaced = false;
 
                 body.SimplifyMacros();
 
@@ -150,11 +160,17 @@ namespace Catel.Fody.Weaving.AutoProperties
                         if ((methodReference != null) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
                         {
                             instruction.Operand = baseOnPropertyChangedInvoker;
+                            hasReplaced = true;
                         }
                     }
                 }
 
                 body.OptimizeMacros();
+
+                if (!hasReplaced)
+                {
+                    return null;
+                }
             }
 
             return methodDefinition;
