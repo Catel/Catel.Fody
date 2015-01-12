@@ -7,6 +7,7 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
@@ -110,11 +111,11 @@ namespace Catel.Fody.Weaving.Argument
             }
         }
 
-        private TypeDefinition RemoveArgumentWeavingCall(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
+        private Tuple<TypeDefinition, int> RemoveArgumentWeavingCall(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
         {
             TypeReference displayClassType = null;
-
             var index = instructions.IndexOf(instruction);
+
             for (var i = index; i >= 0; i--)
             {
                 // Remove everything until the first ldloc.0 call
@@ -135,16 +136,25 @@ namespace Catel.Fody.Weaving.Argument
                     }
                 }
 
+                // Regular code
                 if ((innerInstruction.OpCode == OpCodes.Ldloc_0) || (innerInstruction.OpCode == OpCodes.Ldloc))
                 {
                     break;
                 }
+
+                // Async/await code
+                if ((innerInstruction.OpCode == OpCodes.Ldarg) || (innerInstruction.OpCode == OpCodes.Ldarg_0))
+                {
+                    break;
+                }
+
+                index = i;
             }
 
-            return displayClassType.Resolve();
+            return new Tuple<TypeDefinition, int>(displayClassType.Resolve(), index - 1);
         }
 
-        private ParameterDefinition GetParameterForExpressionArgumentCheck(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
+        private object GetParameterOrFieldForExpressionArgumentCheck(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
         {
             TypeReference displayClassType = null;
             FieldDefinition parameterFieldDefinition = null;
@@ -189,7 +199,18 @@ namespace Catel.Fody.Weaving.Argument
                     {
                         // We found it, now check 1 instruction back for the actual parameter
                         var finalInstruction = instructions[i - 1];
-                        return (ParameterDefinition)finalInstruction.Operand;
+
+                        var finalFieldDefinition = finalInstruction.Operand as FieldDefinition;
+                        if (finalFieldDefinition != null)
+                        {
+                            return finalFieldDefinition;
+                        }
+
+                        var parameterDefinition = finalInstruction.Operand as ParameterDefinition;
+                        if (parameterDefinition != null)
+                        {
+                            return parameterDefinition;
+                        }
                     }
                 }
             }
