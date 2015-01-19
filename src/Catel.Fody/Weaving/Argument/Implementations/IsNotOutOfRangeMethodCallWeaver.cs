@@ -14,7 +14,7 @@ namespace Catel.Fody.Weaving.Argument
     {
         #region Methods
 
-        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod)
+        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, TypeReference typeToCheck, out MethodDefinition selectedMethod)
         {
             selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotOutOfRange" && definition.HasGenericParameters && definition.Parameters.Count == 4 && definition.Parameters[0].ParameterType.FullName == "System.String");
         }

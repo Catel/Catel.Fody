@@ -79,6 +79,7 @@ namespace Catel.Fody.Weaving.Argument
             FodyEnvironment.LogDebug(string.Format("Processing method '{0}'", methodFullName));
 
             // Step 1) Convert attributes
+            // TODO: how to handle async/await here?
             for (var i = method.Parameters.Count - 1; i >= 0; i--)
             {
                 var parameter = method.Parameters[i];
@@ -91,10 +92,10 @@ namespace Catel.Fody.Weaving.Argument
                         if (instructions == null)
                         {
                             method.Body.SimplifyMacros();
-                            instructions = method.Body.Instructions;                            
+                            instructions = method.Body.Instructions;
                         }
 
-                        ArgumentMethodCallWeaverBase.WellKnownWeavers[attributeFullName].Execute(_typeDefinition, method, parameter, customAttribute);
+                        ArgumentMethodCallWeaverBase.WellKnownWeavers[attributeFullName].Execute(_typeDefinition, method, parameter, customAttribute, 0);
                         parameter.RemoveAttribute(attributeFullName);
                     }
                 }
@@ -117,37 +118,37 @@ namespace Catel.Fody.Weaving.Argument
                     var instruction = instructions[i];
                     if (IsSupportedExpressionArgumentCheck(instruction))
                     {
-                        var fullKey = ((MethodReference) instruction.Operand).GetFullName();
-                        var parameter = GetParameterForExpressionArgumentCheck(method, instructions, instruction);
+                        var fullKey = ((MethodReference)instruction.Operand).GetFullName();
+                        var parameterOrField = GetParameterOrFieldForExpressionArgumentCheck(method, instructions, instruction);
+                        if (parameterOrField == null)
+                        {
+                            FodyEnvironment.LogWarning(string.Format("Cannot weave at least one argument of method '{0}'", method.GetFullName()));
+                            continue;
+                        }
+
                         var customAttribute = CreateAttributeForExpressionArgumentCheck(method, instructions, instruction);
 
-                        var displayClass = RemoveArgumentWeavingCall(method, instructions, instruction);
-                        if (displayClass != null)
+                        var removedInfo = RemoveArgumentWeavingCall(method, instructions, instruction);
+                        if (!displayClasses.Contains(removedInfo.Item1))
                         {
-                            if (!displayClasses.Contains(displayClass))
-                            {
-                                displayClasses.Add(displayClass);
-                            }
-
-                            ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameter, customAttribute);
-
-                            // Reset counter, start from the beginning
-                            i = instructions.Count - 1;
+                            displayClasses.Add(removedInfo.Item1);
                         }
+
+                        ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameterOrField, 
+                            customAttribute, removedInfo.Item2);
+
+                        // Reset counter, start from the beginning
+                        i = instructions.Count - 1;
                     }
                 }
 
                 // Step 3) Clean up unnecessary code
                 if (displayClasses.Count > 0)
                 {
-                    //instructions.RemoveSubsequentNops();
-
                     foreach (var displayClass in displayClasses)
                     {
                         RemoveObsoleteCodeForArgumentExpression(method, instructions, displayClass);
                     }
-
-                    //instructions.FixWrongBranchOutOfMethods();
                 }
             }
 

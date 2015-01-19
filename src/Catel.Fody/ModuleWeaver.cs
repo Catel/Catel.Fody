@@ -20,10 +20,10 @@ namespace Catel.Fody
         public ModuleWeaver()
         {
             // Init logging delegates to make testing easier
-            LogDebug = s => { };
-            LogInfo = s => { };
-            LogWarning = s => { };
-            LogError = s => { };
+            LogDebug = s => { Debug.WriteLine(s); };
+            LogInfo = s => { Debug.WriteLine(s); };
+            LogWarning = s => { Debug.WriteLine(s); };
+            LogError = s => { Debug.WriteLine(s); };
         }
 
         public XElement Config { get; set; }

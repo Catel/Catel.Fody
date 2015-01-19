@@ -12,6 +12,7 @@ namespace Catel.Fody.TestAssembly
     using System.Windows.Media;
     using Collections;
     using Reflection;
+    using System.Threading.Tasks;
 
     public class ArgumentChecksAsExpressionsClass
     {
@@ -109,6 +110,11 @@ namespace Catel.Fody.TestAssembly
 
         /// <exception cref="System.ArgumentNullException">The <paramref name="myObject"/> is <c>null</c>.</exception>
         public void CheckForNull(object myObject)
+        {
+            Argument.IsNotNull(() => myObject);
+        }
+
+        public async Task CheckForNullAsync(object myObject)
         {
             Argument.IsNotNull(() => myObject);
         }

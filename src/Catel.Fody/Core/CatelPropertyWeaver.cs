@@ -491,7 +491,7 @@ namespace Catel.Fody
                 Instruction.Create(OpCodes.Ldarg_1)
             });
 
-            if (property.PropertyType.IsBoxingRequired())
+            if (property.PropertyType.IsBoxingRequired(_catelType.SetValueInvoker.Parameters[1].ParameterType))
             {
                 instructionsToAdd.Add(Instruction.Create(OpCodes.Box, property.PropertyType.Import()));
             }

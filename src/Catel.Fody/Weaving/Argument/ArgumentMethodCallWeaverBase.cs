@@ -20,22 +20,50 @@ namespace Catel.Fody.Weaving.Argument
         #endregion
 
         #region Methods
-        public void Execute(TypeDefinition type, MethodDefinition methodDefinition, ParameterDefinition parameter, CustomAttribute attribute)
+        public void Execute(TypeDefinition type, MethodDefinition methodDefinition, object parameterDefinitionOrFieldDefinition, CustomAttribute attribute,
+            int instructionIndex)
         {
-            MethodDefinition selectedMethod;
+            TypeReference targetType = null;
+            MethodDefinition selectedMethod = null;
 
-            SelectMethod(_argumentTypeDefinition, parameter, out selectedMethod);
+            var parameterDefinition = parameterDefinitionOrFieldDefinition as ParameterDefinition;
+            if (parameterDefinition != null)
+            {
+                targetType = parameterDefinition.ParameterType;
+            }
+
+            var fieldDefinition = parameterDefinitionOrFieldDefinition as FieldDefinition;
+            if (fieldDefinition != null)
+            {
+                targetType = fieldDefinition.FieldType;
+            }
+
+            if (targetType != null)
+            {
+                SelectMethod(_argumentTypeDefinition, targetType, out selectedMethod);
+            }
+
             if (selectedMethod != null)
             {
                 var moduleDefinition = type.Module;
                 var importedMethod = moduleDefinition.Import(selectedMethod);
 
                 var instructions = new List<Instruction>();
-                BuildInstructions(moduleDefinition, type, methodDefinition, parameter, attribute, instructions);
+
+                if (parameterDefinition != null)
+                {
+                    BuildInstructions(moduleDefinition, type, methodDefinition, parameterDefinition, attribute, instructions);
+                }
+
+                if (fieldDefinition != null)
+                {
+                    BuildInstructions(moduleDefinition, type, methodDefinition, fieldDefinition, attribute, instructions);
+                }
+
                 if (importedMethod.HasGenericParameters)
                 {
                     var genericInstanceMethod = new GenericInstanceMethod(importedMethod);
-                    genericInstanceMethod.GenericArguments.Add(parameter.ParameterType);
+                    genericInstanceMethod.GenericArguments.Add(targetType);
                     instructions.Add(Instruction.Create(OpCodes.Call, genericInstanceMethod));
                 }
                 else
@@ -43,13 +71,15 @@ namespace Catel.Fody.Weaving.Argument
                     instructions.Add(Instruction.Create(OpCodes.Call, importedMethod));
                 }
 
-                methodDefinition.Body.Instructions.Insert(0, instructions);        
+                methodDefinition.Body.Instructions.Insert(instructionIndex, instructions);
             }
         }
 
         protected abstract void BuildInstructions(ModuleDefinition module, TypeDefinition type, MethodDefinition method, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions);
 
-        protected abstract void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod);
+        protected abstract void BuildInstructions(ModuleDefinition module, TypeDefinition type, MethodDefinition method, FieldDefinition field, CustomAttribute attribute, List<Instruction> instructions);
+
+        protected abstract void SelectMethod(TypeDefinition argumentTypeDefinition, TypeReference typeToCheck, out MethodDefinition selectedMethod);
         #endregion
     }
 }

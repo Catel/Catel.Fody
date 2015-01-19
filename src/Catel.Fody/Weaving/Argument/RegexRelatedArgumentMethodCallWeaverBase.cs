@@ -18,6 +18,11 @@ namespace Catel.Fody.Weaving.Argument
         {
             instructions.AddRange(ArgumentInstructionSequenceBuilder.BuildRegexRelatedInstructions(parameter, attribute));
         }
+
+        protected override sealed void BuildInstructions(ModuleDefinition module, TypeDefinition type, MethodDefinition method, FieldDefinition field, CustomAttribute attribute, List<Instruction> instructions)
+        {
+            instructions.AddRange(ArgumentInstructionSequenceBuilder.BuildRegexRelatedInstructions(field, attribute));
+        }
         #endregion
     }
 }

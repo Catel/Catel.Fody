@@ -16,8 +16,14 @@ namespace Catel.Fody
     {
         private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
 
-        public static bool IsBoxingRequired(this TypeReference typeReference)
+        public static bool IsBoxingRequired(this TypeReference typeReference, TypeReference expectedType)
         {
+            if (expectedType.IsValueType && string.Equals(typeReference.FullName, expectedType.FullName))
+            {
+                // Boxing is never required if type is expected
+                return false;
+            }
+
             if (typeReference.IsValueType || typeReference.IsGenericParameter)
             {
                 return true;

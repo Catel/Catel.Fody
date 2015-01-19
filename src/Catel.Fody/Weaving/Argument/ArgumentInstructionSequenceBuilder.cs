@@ -17,10 +17,20 @@ namespace Catel.Fody.Weaving.Argument
         #region Methods
         public static IEnumerable<Instruction> BuildRegexRelatedInstructions(ParameterDefinition parameter, CustomAttribute attribute)
         {
+            return BuildRegexRelatedInstructionsInternal(parameter, attribute);
+        }
+
+        public static IEnumerable<Instruction> BuildRegexRelatedInstructions(FieldDefinition field, CustomAttribute attribute)
+        {
+            return BuildRegexRelatedInstructionsInternal(field, attribute);
+        }
+
+        private static IEnumerable<Instruction> BuildRegexRelatedInstructionsInternal(object parameterDefinitionOrFieldDefinition, CustomAttribute attribute)
+        {
             var pattern = (string)attribute.ConstructorArguments[0].Value;
             var regexOptions = (RegexOptions)attribute.ConstructorArguments[1].Value;
 
-            foreach (var instruction in BuildDefaultInstructions(parameter))
+            foreach (var instruction in BuildDefaultInstructionsInternal(parameterDefinitionOrFieldDefinition))
             {
                 yield return instruction;
             }
@@ -34,16 +44,45 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Ldstr, parameter.Name);
             yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
 
-            if (parameter.ParameterType.IsBoxingRequired())
+            if (parameter.ParameterType.IsBoxingRequired(parameter.ParameterType))
             {
                 yield return Instruction.Create(OpCodes.Box, parameter.ParameterType.Import());
             }
         }
 
-        public static IEnumerable<Instruction> BuildTypeCheckRelatedInstructions(ModuleDefinition module, ParameterDefinition parameter, CustomAttribute attribute)
+        public static IEnumerable<Instruction> BuildDefaultInstructions(FieldDefinition field)
+        {
+            yield return Instruction.Create(OpCodes.Ldstr, field.Name);
+            yield return Instruction.Create(OpCodes.Ldarg_0);
+            yield return Instruction.Create(OpCodes.Ldfld, field);
+
+            if (field.FieldType.IsBoxingRequired(field.FieldType))
+            {
+                yield return Instruction.Create(OpCodes.Box, field.FieldType.Import());
+            }
+        }
+
+        private static IEnumerable<Instruction> BuildDefaultInstructionsInternal(object parameterDefinitionOrFieldDefinition)
+        {
+            var fieldDefinition = parameterDefinitionOrFieldDefinition as FieldDefinition;
+            if (fieldDefinition != null)
+            {
+                return BuildDefaultInstructions(fieldDefinition);
+            }
+
+            var parameterDefinition = parameterDefinitionOrFieldDefinition as ParameterDefinition;
+            if (parameterDefinitionOrFieldDefinition != null)
+            {
+                return BuildDefaultInstructions(parameterDefinition);
+            }
+
+            return null;
+        }
+
+        public static IEnumerable<Instruction> BuildTypeCheckRelatedInstructions(ModuleDefinition module, object parameterDefinitionOrFieldDefinition, CustomAttribute attribute)
         {
             var typeReference = (TypeReference)attribute.ConstructorArguments[0].Value;
-            foreach (var instruction in BuildDefaultInstructions(parameter))
+            foreach (var instruction in BuildDefaultInstructionsInternal(parameterDefinitionOrFieldDefinition))
             {
                 yield return instruction;
             }
@@ -54,9 +93,9 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Call, importedGetTypeFromHandle);
         }
 
-        public static IEnumerable<Instruction> BuildBoundariesCheckInstructions(ParameterDefinition parameter, CustomAttribute attribute)
+        public static IEnumerable<Instruction> BuildBoundariesCheckInstructions(object parameterDefinitionOrFieldDefinition, CustomAttribute attribute)
         {
-            foreach (var instruction in BuildDefaultInstructions(parameter))
+            foreach (var instruction in BuildDefaultInstructionsInternal(parameterDefinitionOrFieldDefinition))
             {
                 yield return instruction;
             }

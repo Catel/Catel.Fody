@@ -13,7 +13,7 @@ namespace Catel.Fody.Weaving.Argument
     public class IsMinimalMethodCallWeaver : BoundariesCheckRelatedArgumentMethodCallWeaverBase
     {
         #region Methods
-        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, ParameterDefinition parameter, out MethodDefinition selectedMethod)
+        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, TypeReference typeToCheck, out MethodDefinition selectedMethod)
         {
             selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsMinimal" && definition.HasGenericParameters && definition.Parameters.Count == 3 && definition.Parameters[0].ParameterType.FullName == "System.String");
         }
