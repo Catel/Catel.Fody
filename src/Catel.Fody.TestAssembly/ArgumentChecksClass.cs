@@ -78,6 +78,7 @@ namespace Catel.Fody.TestAssembly
 
         public void CheckForNullOrEmptyGuid([NotNullOrEmpty] Guid myGuid)
         {
+            Argument.IsNotNullOrEmpty("myGuid", myGuid);
             // Argument.IsNotNullOrEmpty(() => myGuid);
         }
 

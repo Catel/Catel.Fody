@@ -28,9 +28,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{05FFA8A6-8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody.TestAssembly", "Catel.Fody.TestAssembly\Catel.Fody.TestAssembly.csproj", "{76E6F225-0720-40F4-876D-F18FD426E10C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{77E19AE6-B67C-421E-A49A-E61ED7CCC98D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{77E19AE6-B67C-421E-A49A-E61ED7CCC98D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody.Test", "Catel.Fody.Test\Catel.Fody.Test.csproj", "{2CB08E71-BE32-4DA1-A312-458CB50B8622}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody.Tests", "Catel.Fody.Tests\Catel.Fody.Tests.csproj", "{2CB08E71-BE32-4DA1-A312-458CB50B8622}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AttributesAssembly", "AttributesAssembly", "{A5694D95-F959-4A8F-9A1C-E4EDD733245E}"
 EndProject

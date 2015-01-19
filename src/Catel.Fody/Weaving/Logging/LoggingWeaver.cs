@@ -38,7 +38,7 @@ namespace Catel.Fody.Weaving.Logging
             var staticConstructor = _type.GetStaticConstructor();
             if (staticConstructor == null)
             {
-                FodyEnvironment.LogDebug(string.Format("Cannot weave ILog fields without a static constructor, ignoring type '{0}'", _type.FullName));
+                FodyEnvironment.LogWarning(string.Format("Cannot weave ILog fields without a static constructor, ignoring type '{0}'", _type.FullName));
                 return;
             }
 
@@ -75,7 +75,7 @@ namespace Catel.Fody.Weaving.Logging
             var type = ctorBody.Method.DeclaringType;
             var instructions = ctorBody.Instructions;
 
-            for (int i = 0; i < instructions.Count; i++)
+            for (var i = 0; i < instructions.Count; i++)
             {
                 var instruction = instructions[i];
 
@@ -109,12 +109,10 @@ namespace Catel.Fody.Weaving.Logging
 
                         instructions.RemoveAt(i);
 
-                        instructions.Insert(i, new[]
-                        {
-                            Instruction.Create(OpCodes.Ldtoken, type),
-                            Instruction.Create(OpCodes.Call, getTypeFromHandle),
-                            Instruction.Create(OpCodes.Call, type.Module.Import(getLoggerMethod))
-                        });
+                        instructions.Insert(i, 
+                            Instruction.Create(OpCodes.Ldtoken, type), 
+                            Instruction.Create(OpCodes.Call, getTypeFromHandle), 
+                            Instruction.Create(OpCodes.Call, type.Module.Import(getLoggerMethod)));
                     }
                 }
             }
