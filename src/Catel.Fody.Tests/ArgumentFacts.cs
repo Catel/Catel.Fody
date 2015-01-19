@@ -75,7 +75,6 @@ namespace Catel.Fody.Test
             method.Invoke(instance, new object[] { "some value" });
         }
 
-
         [TestCase]
         public void CorrectlyThrowsArgumentExceptionForEmptyGuid()
         {

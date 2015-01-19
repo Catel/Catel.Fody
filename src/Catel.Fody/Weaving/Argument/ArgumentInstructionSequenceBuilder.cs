@@ -44,7 +44,7 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Ldstr, parameter.Name);
             yield return Instruction.Create(OpCodes.Ldarg_S, parameter);
 
-            if (parameter.ParameterType.IsBoxingRequired())
+            if (parameter.ParameterType.IsBoxingRequired(parameter.ParameterType))
             {
                 yield return Instruction.Create(OpCodes.Box, parameter.ParameterType.Import());
             }
@@ -56,7 +56,7 @@ namespace Catel.Fody.Weaving.Argument
             yield return Instruction.Create(OpCodes.Ldarg_0);
             yield return Instruction.Create(OpCodes.Ldfld, field);
 
-            if (field.FieldType.IsBoxingRequired())
+            if (field.FieldType.IsBoxingRequired(field.FieldType))
             {
                 yield return Instruction.Create(OpCodes.Box, field.FieldType.Import());
             }
