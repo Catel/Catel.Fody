@@ -75,7 +75,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.LogInfo("Weaving properties");
 
-                    var propertyWeaverService = new AutoPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
+                    var propertyWeaverService = new AutoPropertiesWeaverService(configuration, typeNodeBuilder, msCoreReferenceFinder);
                     propertyWeaverService.Execute();
                 }
                 else

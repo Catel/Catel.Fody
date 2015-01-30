@@ -14,11 +14,13 @@ namespace Catel.Fody.Weaving.AutoProperties
 
     public class AutoPropertiesWeaver
     {
+        private readonly Configuration _configuration;
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-        public AutoPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
+        public AutoPropertiesWeaver(Configuration configuration, CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
         {
+            _configuration = configuration;
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
@@ -37,8 +39,11 @@ namespace Catel.Fody.Weaving.AutoProperties
                     continue;
                 }
 
-                var onPropertyChangedWeaver = new OnPropertyChangedWeaver(catelType, _msCoreReferenceFinder);
-                onPropertyChangedWeaver.Execute();
+                if (_configuration.WeaveCalculatedProperties)
+                {
+                    var onPropertyChangedWeaver = new OnPropertyChangedWeaver(catelType, _msCoreReferenceFinder);
+                    onPropertyChangedWeaver.Execute();
+                }
 
                 FodyEnvironment.LogDebug("\t" + catelType.TypeDefinition.FullName);
 
