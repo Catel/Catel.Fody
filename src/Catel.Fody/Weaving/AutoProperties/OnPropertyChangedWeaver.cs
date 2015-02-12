@@ -51,7 +51,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 var onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
                 if (onPropertyChangedMethod == null)
                 {
-                    FodyEnvironment.LogWarning(string.Format("No call to base.OnPropertyChanged(e) in '{0}', cannot weave this method to automatically raise on dependent property change notifications", property.DeclaringType.Name));
+                    FodyEnvironment.LogWarning(string.Format("No call to base.OnPropertyChanged(e) or a custom implementation in '{0}', cannot weave this method to automatically raise on dependent property change notifications", property.DeclaringType.Name));
                     return false;
                 }
 
@@ -143,6 +143,8 @@ namespace Catel.Fody.Weaving.AutoProperties
                 body.OptimizeMacros();
 
                 type.Methods.Add(methodDefinition);
+
+                methodDefinition.MarkAsCompilerGenerated(_msCoreReferenceFinder);
             }
             else
             {
@@ -167,8 +169,9 @@ namespace Catel.Fody.Weaving.AutoProperties
 
                 body.OptimizeMacros();
 
-                if (!hasReplaced)
+                if (!methodDefinition.IsMarkedAsCompilerGenerated())
                 {
+                    // Don't support this, see CTL-569
                     return null;
                 }
             }

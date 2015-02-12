@@ -7,14 +7,66 @@
 
 namespace Catel.Fody
 {
+    using System.Linq;
     using Mono.Cecil;
-    using Mono.Cecil.Cil;
+    using Mono.Collections.Generic;
 
     public static partial class CecilExtensions
     {
+        private const string CompilerGeneratedAttributeTypeName = "System.Runtime.CompilerServices.CompilerGeneratedAttribute";
+
         public static string GetFullName(this MemberReference member)
         {
             return string.Format("{0}.{1}", member.DeclaringType.FullName, member.Name);
+        }
+
+        public static bool IsMarkedAsCompilerGenerated(this TypeReference type)
+        {
+            return IsMarkedAsCompilerGeneratedInternal(type);
+        }
+
+        public static bool IsMarkedAsCompilerGenerated(this MemberReference member)
+        {
+            return IsMarkedAsCompilerGeneratedInternal(member);
+        }
+
+        private static bool IsMarkedAsCompilerGeneratedInternal(object obj)
+        {
+            var fieldDefinition = obj as FieldDefinition;
+            if (fieldDefinition != null)
+            {
+                return ContainsAttribute(fieldDefinition.CustomAttributes, CompilerGeneratedAttributeTypeName);
+            }
+
+            var propertyDefinition = obj as PropertyDefinition;
+            if (propertyDefinition != null)
+            {
+                return ContainsAttribute(propertyDefinition.CustomAttributes, CompilerGeneratedAttributeTypeName);
+            }
+
+            var methodDefinition = obj as MethodDefinition;
+            if (methodDefinition != null)
+            {
+                return ContainsAttribute(methodDefinition.CustomAttributes, CompilerGeneratedAttributeTypeName);
+            }
+
+            var typeDefinition = obj as TypeDefinition;
+            if (typeDefinition != null)
+            {
+                return ContainsAttribute(typeDefinition.CustomAttributes, CompilerGeneratedAttributeTypeName);
+            }
+
+            return false;
+        }
+
+        private static bool ContainsAttribute(Collection<CustomAttribute> customAttributes, string attributeTypeName)
+        {
+            if (customAttributes == null)
+            {
+                return false;
+            }
+
+            return customAttributes.Any(x => x.AttributeType.FullName.Contains(attributeTypeName));
         }
 
         public static void MarkAsCompilerGenerated(this TypeReference type, MsCoreReferenceFinder msCoreReferenceFinder)
@@ -29,7 +81,7 @@ namespace Catel.Fody
 
         private static void MarkAsCompilerGeneratedInternal(object obj, MsCoreReferenceFinder msCoreReferenceFinder)
         {
-            var compilerGeneratedAttribute = (TypeDefinition)msCoreReferenceFinder.GetCoreTypeReference("System.Runtime.CompilerServices.CompilerGeneratedAttribute");
+            var compilerGeneratedAttribute = (TypeDefinition)msCoreReferenceFinder.GetCoreTypeReference(CompilerGeneratedAttributeTypeName);
             if (compilerGeneratedAttribute != null)
             {
                 var fieldDefinition = obj as FieldDefinition;
