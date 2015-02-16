@@ -1,6 +1,8 @@
 Catel.Fody
 ==========
 
+[![Join the chat at https://gitter.im/Catel/Catel.Fody](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Catel/Catel.Fody?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Catel.Fody is an addin for Fody (see https://github.com/Fody/Fody), which
 is an extensible tool for weaving .net assemblies. 
 
