@@ -7,8 +7,10 @@
 
 namespace Catel.Fody.TestAssembly
 {
+    using System;
     using System.Collections.Generic;
     using Data;
+    using MVVM;
 
     public class DependentPropertyModel : ModelBase
     {
@@ -63,15 +65,6 @@ namespace Catel.Fody.TestAssembly
             get { return string.Format("Name:{0}, Age:{1}", FullName, Age).Trim(); }
         }
 
-        protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-
-            IsPropertyChangedWorking = true;
-        }
-
-        [NoWeaving]
-        public bool IsPropertyChangedWorking { get; private set; }
         #endregion
     }
 

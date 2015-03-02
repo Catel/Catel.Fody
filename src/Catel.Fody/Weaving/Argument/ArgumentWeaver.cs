@@ -104,7 +104,7 @@ namespace Catel.Fody.Weaving.Argument
             // Step 2) Convert expressions to normal calls
             var displayClasses = new List<TypeDefinition>();
 
-            // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginnen of the ctor
+            // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginnen of the ctor)
             if (instructions != null || ContainsArgumentChecks(method))
             {
                 if (instructions == null)
@@ -134,8 +134,12 @@ namespace Catel.Fody.Weaving.Argument
                             displayClasses.Add(removedInfo.Item1);
                         }
 
-                        ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameterOrField, 
-                            customAttribute, removedInfo.Item2);
+                        if (!ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameterOrField,
+                            customAttribute, removedInfo.Item2))
+                        {
+                            // We failed, the build should fail now
+                            return;
+                        }
 
                         // Reset counter, start from the beginning
                         i = instructions.Count - 1;

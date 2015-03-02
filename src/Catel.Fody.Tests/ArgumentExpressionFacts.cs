@@ -7,6 +7,8 @@
 namespace Catel.Fody.Test
 {
     using System;
+    using System.Runtime.Serialization;
+    using System.Windows.Media;
     using NUnit.Framework;
 
     public class ArgumentExpressionFacts
@@ -39,7 +41,7 @@ namespace Catel.Fody.Test
 
                 var method = type.GetMethod("CheckForNullWithMultipleParameters");
 
-                CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null, null }));
+                CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null }));
             }
 
             [TestCase]

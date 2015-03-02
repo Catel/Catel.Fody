@@ -15,6 +15,7 @@ namespace Catel.Fody
         {
             WeaveProperties = true;
             WeaveExposedProperties = true;
+            WeaveCalculatedProperties = true;
             WeaveArguments = true;
             WeaveLogging = true;
             GenerateXmlSchemas = false;
@@ -26,6 +27,7 @@ namespace Catel.Fody
 
             config.ReadBool("WeaveProperties", value => WeaveProperties = value);
             config.ReadBool("WeaveExposedProperties", value => WeaveExposedProperties = value);
+            config.ReadBool("WeaveCalculatedProperties", value => WeaveCalculatedProperties = value);
             config.ReadBool("WeaveArguments", value => WeaveArguments = value);
             config.ReadBool("WeaveLogging", value => WeaveLogging = value);
             config.ReadBool("GenerateXmlSchemas", value => GenerateXmlSchemas = value);
@@ -34,6 +36,8 @@ namespace Catel.Fody
         public bool WeaveProperties { get; private set; }
 
         public bool WeaveExposedProperties { get; private set; }
+
+        public bool WeaveCalculatedProperties { get; private set; }
 
         public bool WeaveArguments { get; private set; }
 

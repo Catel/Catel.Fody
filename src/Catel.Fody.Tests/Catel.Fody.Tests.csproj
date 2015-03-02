@@ -82,6 +82,7 @@
     <Compile Include="AssemblyWeaver.cs" />
     <Compile Include="ConfigurationFacts.cs" />
     <Compile Include="CTL504.cs" />
+    <Compile Include="CTL569.cs" />
     <Compile Include="DefaultValueFacts.cs" />
     <Compile Include="DependentPropertyFacts.cs" />
     <Compile Include="ExposeFacts.cs" />
