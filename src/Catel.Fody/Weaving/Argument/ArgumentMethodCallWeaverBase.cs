@@ -6,6 +6,7 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
+    using System;
     using System.Collections.Generic;
 
     using Mono.Cecil;
@@ -20,7 +21,7 @@ namespace Catel.Fody.Weaving.Argument
         #endregion
 
         #region Methods
-        public void Execute(TypeDefinition type, MethodDefinition methodDefinition, object parameterDefinitionOrFieldDefinition, CustomAttribute attribute,
+        public bool Execute(TypeDefinition type, MethodDefinition methodDefinition, object parameterDefinitionOrFieldDefinition, CustomAttribute attribute,
             int instructionIndex)
         {
             TypeReference targetType = null;
@@ -40,39 +41,62 @@ namespace Catel.Fody.Weaving.Argument
 
             if (targetType != null)
             {
-                SelectMethod(_argumentTypeDefinition, targetType, out selectedMethod);
+                try
+                {
+                    SelectMethod(_argumentTypeDefinition, targetType, out selectedMethod);
+                }
+                catch (Exception ex)
+                {
+                    var error = string.Format("[{0}.{1}] {2}", type.FullName, methodDefinition.Name, ex.Message);
+
+                    var sequencePoint = methodDefinition.Body.Instructions[instructionIndex].SequencePoint;
+                    if (sequencePoint != null)
+                    {
+                        FodyEnvironment.LogErrorPoint(error, sequencePoint);
+                    }
+                    else
+                    {
+                        FodyEnvironment.LogError(error);
+                    }
+
+                    return false;
+                }
             }
 
-            if (selectedMethod != null)
+            if (selectedMethod == null)
             {
-                var moduleDefinition = type.Module;
-                var importedMethod = moduleDefinition.Import(selectedMethod);
-
-                var instructions = new List<Instruction>();
-
-                if (parameterDefinition != null)
-                {
-                    BuildInstructions(moduleDefinition, type, methodDefinition, parameterDefinition, attribute, instructions);
-                }
-
-                if (fieldDefinition != null)
-                {
-                    BuildInstructions(moduleDefinition, type, methodDefinition, fieldDefinition, attribute, instructions);
-                }
-
-                if (importedMethod.HasGenericParameters)
-                {
-                    var genericInstanceMethod = new GenericInstanceMethod(importedMethod);
-                    genericInstanceMethod.GenericArguments.Add(targetType);
-                    instructions.Add(Instruction.Create(OpCodes.Call, genericInstanceMethod));
-                }
-                else
-                {
-                    instructions.Add(Instruction.Create(OpCodes.Call, importedMethod));
-                }
-
-                methodDefinition.Body.Instructions.Insert(instructionIndex, instructions);
+                return false;
             }
+
+            var moduleDefinition = type.Module;
+            var importedMethod = moduleDefinition.Import(selectedMethod);
+
+            var instructions = new List<Instruction>();
+
+            if (parameterDefinition != null)
+            {
+                BuildInstructions(moduleDefinition, type, methodDefinition, parameterDefinition, attribute, instructions);
+            }
+
+            if (fieldDefinition != null)
+            {
+                BuildInstructions(moduleDefinition, type, methodDefinition, fieldDefinition, attribute, instructions);
+            }
+
+            if (importedMethod.HasGenericParameters)
+            {
+                var genericInstanceMethod = new GenericInstanceMethod(importedMethod);
+                genericInstanceMethod.GenericArguments.Add(targetType);
+                instructions.Add(Instruction.Create(OpCodes.Call, genericInstanceMethod));
+            }
+            else
+            {
+                instructions.Add(Instruction.Create(OpCodes.Call, importedMethod));
+            }
+
+            methodDefinition.Body.Instructions.Insert(instructionIndex, instructions);
+
+            return true;
         }
 
         protected abstract void BuildInstructions(ModuleDefinition module, TypeDefinition type, MethodDefinition method, ParameterDefinition parameter, CustomAttribute attribute, List<Instruction> instructions);
