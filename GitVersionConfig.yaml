@@ -1,2 +1,2 @@
-assembly-versioning-scheme: MajorMinorPatch 
+assembly-versioning-scheme: MajorMinorPatchMetadata 
 #next-version: 1.0.0
