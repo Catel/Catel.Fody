@@ -24,32 +24,10 @@ namespace Catel.Fody.Weaving.Argument
         #endregion
 
         #region Constructors
-        static ArgumentWeaver()
-        {
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullAttribute"] = new IsNotNullArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNull"] = new IsNotNullArgumentMethodCallWeaver();
-
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyAttribute"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrEmpty"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
-
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrWhitespaceAttribute"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrWhitespace"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
-
-            // TODO: Support the argument checks below in expression checks
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyArrayAttribute"] = new IsNotNullOrEmptyArrayArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MatchAttribute"] = new IsMatchArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotMatchAttribute"] = new IsNotMatchArgumentMethodCallWeaver();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.OfTypeAttribute"] = new IsOfTypeArgumentMethodCallWeave();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.ImplementsInterfaceAttribute"] = new ImplementsInterfaceArgumentMethodCallWeave();
-            ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.InheritsFromAttribute"] = new InheritsFromArgumentMethodCallWeaver();
-
-            //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotOutOfRangeAttribute"] = new IsNotOutOfRangeMethodCallWeaver();
-            //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MinimalAttribute"] = new IsMinimalMethodCallWeaver();
-            //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MaximumAttribute"] = new IsMaximumMethodCallWeaver();
-        }
-
         public ArgumentWeaver(TypeDefinition typeDefinition, MsCoreReferenceFinder msCoreReferenceFinder)
         {
+            EnsureCache();
+
             _typeDefinition = typeDefinition;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
@@ -177,6 +155,38 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             return false;
+        }
+
+        private void EnsureCache()
+        {
+            lock (ArgumentMethodCallWeaverBase.WellKnownWeavers)
+            {
+                if (ArgumentMethodCallWeaverBase.WellKnownWeavers.Count > 0)
+                {
+                    return;
+                }
+
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullAttribute"] = new IsNotNullArgumentMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNull"] = new IsNotNullArgumentMethodCallWeaver();
+
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyAttribute"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrEmpty"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
+
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrWhitespaceAttribute"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrWhitespace"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
+
+                // TODO: Support the argument checks below in expression checks
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyArrayAttribute"] = new IsNotNullOrEmptyArrayArgumentMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MatchAttribute"] = new IsMatchArgumentMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotMatchAttribute"] = new IsNotMatchArgumentMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.OfTypeAttribute"] = new IsOfTypeArgumentMethodCallWeave();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.ImplementsInterfaceAttribute"] = new ImplementsInterfaceArgumentMethodCallWeave();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.InheritsFromAttribute"] = new InheritsFromArgumentMethodCallWeaver();
+
+                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotOutOfRangeAttribute"] = new IsNotOutOfRangeMethodCallWeaver();
+                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MinimalAttribute"] = new IsMinimalMethodCallWeaver();
+                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MaximumAttribute"] = new IsMaximumMethodCallWeaver();
+            }
         }
         #endregion
     }
