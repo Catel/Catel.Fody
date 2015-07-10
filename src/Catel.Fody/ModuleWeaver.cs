@@ -60,8 +60,16 @@ namespace Catel.Fody
                 var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
                 msCoreReferenceFinder.Execute();
 
+                // Validate if Catel.Core is referenced
+                var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
+                if (catelCoreReference == null)
+                {
+                    LogWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
+                    return;
+                }
+    
                 // Note: nested types not supported because we only list actual types (thus not nested)
-                var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
+                    var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
 
                 var typeNodeBuilder = new CatelTypeNodeBuilder(types);
                 typeNodeBuilder.Execute();
