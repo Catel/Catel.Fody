@@ -76,30 +76,6 @@ namespace Catel.Fody.Test
         }
 
         [TestCase]
-        public void CorrectlyThrowsArgumentExceptionForEmptyGuid()
-        {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
-
-            var instance = Activator.CreateInstance(type);
-
-            var method = type.GetMethod("CheckForNullOrEmptyGuid");
-
-            CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { Guid.Empty }));
-        }
-
-        [TestCase]
-        public void CorrectlyThrowsNoArgumentExceptionForNotNullOrEmptyGuid()
-        {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
-
-            var instance = Activator.CreateInstance(type);
-
-            var method = type.GetMethod("CheckForNullOrEmptyGuid");
-
-            method.Invoke(instance, new object[] { Guid.NewGuid() });
-        } 
-        
-        [TestCase]
         public void CorrectlyThrowsArgumentExceptionForNullArray()
         {
             var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
