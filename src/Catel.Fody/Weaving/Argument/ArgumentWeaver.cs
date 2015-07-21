@@ -76,6 +76,11 @@ namespace Catel.Fody.Weaving.Argument
                         ArgumentMethodCallWeaverBase.WellKnownWeavers[attributeFullName].Execute(_typeDefinition, method, parameter, customAttribute, 0);
                         parameter.RemoveAttribute(attributeFullName);
                     }
+                    else if (attributeFullName.StartsWith("Catel.Fody"))
+                    {
+                        FodyEnvironment.LogError(string.Format("Weaving of parameter '{0}' of methods '{1}' with attribute '{2}' is not (yet) supported, please use a different method",
+                            method.GetFullName(), parameter.Name, attributeFullName));
+                    }
                 }
             }
 
@@ -183,9 +188,9 @@ namespace Catel.Fody.Weaving.Argument
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.ImplementsInterfaceAttribute"] = new ImplementsInterfaceArgumentMethodCallWeave();
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.InheritsFromAttribute"] = new InheritsFromArgumentMethodCallWeaver();
 
-                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotOutOfRangeAttribute"] = new IsNotOutOfRangeMethodCallWeaver();
-                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MinimalAttribute"] = new IsMinimalMethodCallWeaver();
-                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MaximumAttribute"] = new IsMaximumMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotOutOfRangeAttribute"] = new IsNotOutOfRangeMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MinimalAttribute"] = new IsMinimalMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MaximumAttribute"] = new IsMaximumMethodCallWeaver();
             }
         }
         #endregion
