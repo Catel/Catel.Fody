@@ -203,22 +203,44 @@ namespace Catel.Fody.Weaving.Argument
 
                 // TODO: Add more
 
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsNotOutOfRange"] = (m, ix, i) =>
+                {
+                    // Previous operation is Ldc_[Something]
+                    var previousInstruction2 = ix.GetPreviousInstruction(i);
+                    var previousInstruction1 = ix.GetPreviousInstruction(previousInstruction2);
+
+                    if (!IsOperandSupportedForArgumentChecks(previousInstruction1.Operand))
+                    {
+                        return null;
+                    }
+
+                    return CreateCustomAttribute("Catel.Fody.NotOutOfRangeAttribute", previousInstruction1.Operand, previousInstruction2.Operand);
+                };
+
                 //ExpressionChecksToAttributeMappings["Catel.Argument.IsNotOutOfRange"] = "Catel.Fody.NotOutOfRangeAttribute";
 
                 ExpressionChecksToAttributeMappings["Catel.Argument.IsMinimal"] = (m, ix, i) =>
                 {
                     // Previous operation is Ldc_[Something]
-                    var previousInstruction = ix.GetPreviousInstruction(i);
+                    var operand = ix.GetPreviousInstruction(i).Operand;
+                    if (!IsOperandSupportedForArgumentChecks(operand))
+                    {
+                        return null;
+                    }
 
-                    return CreateCustomAttribute("Catel.Fody.MinimalAttribute", previousInstruction.Operand);
+                    return CreateCustomAttribute("Catel.Fody.MinimalAttribute", operand);
                 };
 
                 ExpressionChecksToAttributeMappings["Catel.Argument.IsMaximum"] = (m, ix, i) =>
                 {
                     // Previous operation is Ldc_[Something]
-                    var previousInstruction = ix.GetPreviousInstruction(i);
+                    var operand = ix.GetPreviousInstruction(i).Operand;
+                    if (!IsOperandSupportedForArgumentChecks(operand))
+                    {
+                        return null;
+                    }
 
-                    return CreateCustomAttribute("Catel.Fody.MaximumAttribute", previousInstruction.Operand);
+                    return CreateCustomAttribute("Catel.Fody.MaximumAttribute", operand);
                 };
             }
 
@@ -244,6 +266,22 @@ namespace Catel.Fody.Weaving.Argument
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MinimalAttribute"] = new IsMinimalMethodCallWeaver();
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MaximumAttribute"] = new IsMaximumMethodCallWeaver();
             }
+        }
+
+        private bool IsOperandSupportedForArgumentChecks(object operand)
+        {
+            if (operand == null)
+            {
+                return false;
+            }
+
+            // Ignore strings
+            if (operand.GetType().FullName.Contains("System.String"))
+            {
+                return false;
+            }
+
+            return true;
         }
         #endregion
     }
