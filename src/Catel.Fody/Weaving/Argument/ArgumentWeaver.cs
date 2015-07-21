@@ -18,6 +18,8 @@ namespace Catel.Fody.Weaving.Argument
     {
         #region Constants
         private delegate CustomAttribute ExpressionToAttributeFunc(MethodReference method, IList<Instruction> instructions, Instruction instruction);
+
+        private static readonly object CacheLock = new object();
         #endregion
 
         #region Fields
@@ -179,7 +181,16 @@ namespace Catel.Fody.Weaving.Argument
 
         private void EnsureCache()
         {
-            lock (ExpressionChecksToAttributeMappings)
+            lock (CacheLock)
+            {
+                EnsureExpressionChecksCache();
+                EnsureWeaversCache();
+            }
+        }
+
+        private void EnsureExpressionChecksCache()
+        {
+            lock (CacheLock)
             {
                 if (ExpressionChecksToAttributeMappings.Count > 0)
                 {
@@ -241,8 +252,11 @@ namespace Catel.Fody.Weaving.Argument
                     return CreateCustomAttribute("Catel.Fody.MaximumAttribute", operand);
                 };
             }
+        }
 
-            lock (ArgumentMethodCallWeaverBase.WellKnownWeavers)
+        private void EnsureWeaversCache()
+        {
+            lock (CacheLock)
             {
                 if (ArgumentMethodCallWeaverBase.WellKnownWeavers.Count > 0)
                 {
