@@ -49,6 +49,8 @@ namespace Catel.Fody.Weaving.Argument
 
         private void RemoveObsoleteCodeForArgumentExpression(MethodDefinition method, Collection<Instruction> instructions, TypeDefinition displayClassType)
         {
+            return;
+
             if (instructions.UsesDisplayClass(displayClassType))
             {
                 return;

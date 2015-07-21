@@ -205,7 +205,7 @@ namespace Catel.Fody.Weaving.Argument
 
                 ExpressionChecksToAttributeMappings["Catel.Argument.IsNotOutOfRange"] = (m, ix, i) =>
                 {
-                    // Previous operation is Ldc_[Something]
+                    // Previous operations are Ldc_[Something]
                     var previousInstruction2 = ix.GetPreviousInstruction(i);
                     var previousInstruction1 = ix.GetPreviousInstruction(previousInstruction2);
 
@@ -216,8 +216,6 @@ namespace Catel.Fody.Weaving.Argument
 
                     return CreateCustomAttribute("Catel.Fody.NotOutOfRangeAttribute", previousInstruction1.Operand, previousInstruction2.Operand);
                 };
-
-                //ExpressionChecksToAttributeMappings["Catel.Argument.IsNotOutOfRange"] = "Catel.Fody.NotOutOfRangeAttribute";
 
                 ExpressionChecksToAttributeMappings["Catel.Argument.IsMinimal"] = (m, ix, i) =>
                 {
