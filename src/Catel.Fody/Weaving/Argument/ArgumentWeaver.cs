@@ -6,6 +6,7 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
@@ -16,9 +17,12 @@ namespace Catel.Fody.Weaving.Argument
     public partial class ArgumentWeaver
     {
         #region Constants
+        private delegate CustomAttribute ExpressionToAttributeFunc(MethodReference method, IList<Instruction> instructions, Instruction instruction);
         #endregion
 
         #region Fields
+        private static readonly Dictionary<string, ExpressionToAttributeFunc> ExpressionChecksToAttributeMappings = new Dictionary<string, ExpressionToAttributeFunc>();
+
         private readonly TypeDefinition _typeDefinition;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         #endregion
@@ -109,7 +113,18 @@ namespace Catel.Fody.Weaving.Argument
                             continue;
                         }
 
-                        var customAttribute = CreateAttributeForExpressionArgumentCheck(method, instructions, instruction);
+                        if (!ExpressionChecksToAttributeMappings.ContainsKey(fullKey))
+                        {
+                            return;
+                        }
+
+                        var customAttribute = ExpressionChecksToAttributeMappings[fullKey](method, instructions, instruction);
+                        if (customAttribute == null)
+                        {
+                            FodyEnvironment.LogWarning(string.Format("Can't find attribute for expression argument for method '{0}'",
+                                method.GetFullName()));
+                            continue;
+                        }
 
                         var removedInfo = RemoveArgumentWeavingCall(method, instructions, instruction);
                         if (!displayClasses.Contains(removedInfo.Item1))
@@ -117,8 +132,8 @@ namespace Catel.Fody.Weaving.Argument
                             displayClasses.Add(removedInfo.Item1);
                         }
 
-                        if (!ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameterOrField,
-                            customAttribute, removedInfo.Item2))
+                        var weaver = ArgumentMethodCallWeaverBase.WellKnownWeavers[customAttribute.AttributeType.FullName];
+                        if (!weaver.Execute(_typeDefinition, method, parameterOrField, customAttribute, removedInfo.Item2))
                         {
                             // We failed, the build should fail now
                             return;
@@ -164,6 +179,49 @@ namespace Catel.Fody.Weaving.Argument
 
         private void EnsureCache()
         {
+            lock (ExpressionChecksToAttributeMappings)
+            {
+                if (ExpressionChecksToAttributeMappings.Count > 0)
+                {
+                    return;
+                }
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsNotNull"] = (m, ix, i) =>
+                {
+                    return CreateCustomAttribute("Catel.Fody.NotNullAttribute");
+                };
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsNotNullOrEmpty"] = (m, ix, i) =>
+                {
+                    return CreateCustomAttribute("Catel.Fody.NotNullOrEmptyAttribute");
+                };
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsNotNullOrWhitespace"] = (m, ix, i) =>
+                {
+                    return CreateCustomAttribute("Catel.Fody.NotNullOrWhitespaceAttribute");
+                };
+
+                // TODO: Add more
+
+                //ExpressionChecksToAttributeMappings["Catel.Argument.IsNotOutOfRange"] = "Catel.Fody.NotOutOfRangeAttribute";
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsMinimal"] = (m, ix, i) =>
+                {
+                    // Previous operation is Ldc_[Something]
+                    var previousInstruction = ix.GetPreviousInstruction(i);
+
+                    return CreateCustomAttribute("Catel.Fody.MinimalAttribute", previousInstruction.Operand);
+                };
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsMaximum"] = (m, ix, i) =>
+                {
+                    // Previous operation is Ldc_[Something]
+                    var previousInstruction = ix.GetPreviousInstruction(i);
+
+                    return CreateCustomAttribute("Catel.Fody.MaximumAttribute", previousInstruction.Operand);
+                };
+            }
+
             lock (ArgumentMethodCallWeaverBase.WellKnownWeavers)
             {
                 if (ArgumentMethodCallWeaverBase.WellKnownWeavers.Count > 0)
@@ -172,15 +230,9 @@ namespace Catel.Fody.Weaving.Argument
                 }
 
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullAttribute"] = new IsNotNullArgumentMethodCallWeaver();
-                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNull"] = new IsNotNullArgumentMethodCallWeaver();
-
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyAttribute"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
-                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrEmpty"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
-
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrWhitespaceAttribute"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
-                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrWhitespace"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
 
-                // TODO: Support the argument checks below in expression checks
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyArrayAttribute"] = new IsNotNullOrEmptyArrayArgumentMethodCallWeaver();
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MatchAttribute"] = new IsMatchArgumentMethodCallWeaver();
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotMatchAttribute"] = new IsNotMatchArgumentMethodCallWeaver();

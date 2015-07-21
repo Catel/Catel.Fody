@@ -25,8 +25,11 @@ namespace Catel.Fody.Weaving.Argument
                 if (methodBeingCalled.DeclaringType.FullName.Contains("Catel.Argument"))
                 {
                     var finalKey = methodBeingCalled.GetFullName();
-                    if (!ArgumentMethodCallWeaverBase.WellKnownWeavers.ContainsKey(finalKey))
+                    if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
                     {
+                        FodyEnvironment.LogWarning(string.Format("Found argument method call '{0}', but cannot weave it since it's not (yet) supported",
+                            methodBeingCalled.GetFullName()));
+
                         return false;
                     }
 
@@ -51,7 +54,7 @@ namespace Catel.Fody.Weaving.Argument
                 return;
             }
 
-            FodyEnvironment.LogDebug(string.Format("Method '{0}' not longer uses display class '{1}', removing the display class from the method", method.GetFullName(),
+            FodyEnvironment.LogDebug(string.Format("Method '{0}' no longer uses display class '{1}', removing the display class from the method", method.GetFullName(),
                 displayClassType.GetFullName()));
 
             // Remote display class from container
@@ -268,25 +271,6 @@ namespace Catel.Fody.Weaving.Argument
             if (fieldReference != null)
             {
                 return fieldReference.Resolve();
-            }
-
-            return null;
-        }
-
-        private CustomAttribute CreateAttributeForExpressionArgumentCheck(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
-        {
-            var fullMethodName = ((MethodReference)instruction.Operand).GetFullName();
-
-            switch (fullMethodName)
-            {
-                case "Catel.Argument.IsNotNull":
-                    return CreateCustomAttribute("Catel.Fody.NotNullAttribute");
-
-                case "Catel.Argument.IsNotNullOrEmpty":
-                    return CreateCustomAttribute("Catel.Fody.NotNullOrEmptyAttribute");
-
-                case "Catel.Argument.IsNotNullOrWhitespace":
-                    return CreateCustomAttribute("Catel.Fody.NotNullOrWhitespaceAttribute");
             }
 
             return null;

@@ -14,6 +14,17 @@ namespace Catel.Fody
 
     public static class InstructionListExtensions
     {
+        public static Instruction GetPreviousInstruction(this IList<Instruction> instructions, Instruction instruction)
+        {
+            var currentIndex = instructions.IndexOf(instruction);
+            if (currentIndex <= 0)
+            {
+                return null;
+            }
+
+            return instructions[currentIndex - 1];
+        }
+
         public static bool UsesDisplayClass(this IList<Instruction> instructions, TypeDefinition displayClassType)
         {
             for (var index = 0; index < instructions.Count; index++)
