@@ -64,7 +64,7 @@ namespace Catel.Fody
                 var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
                 if (catelCoreReference == null)
                 {
-                    if (!string.Equals(ModuleDefinition.Name, "Catel.Core"))
+                    if (!ModuleDefinition.Name.StartsWith("Catel.Core"))
                     {
                         LogWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
                         return;
