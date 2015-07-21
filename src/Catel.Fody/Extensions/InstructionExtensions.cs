@@ -12,6 +12,19 @@ namespace Catel.Fody
 
     public static class InstructionExtensions
     {
+        public static bool IsOpCode(this Instruction instruction, params OpCode[] opCodes)
+        {
+            foreach (var opCode in opCodes)
+            {
+                if (instruction.OpCode == opCode)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static SequencePoint GetSequencePoint(this IEnumerable<Instruction> instructions)
         {
             return instructions.Select(x => x.SequencePoint).FirstOrDefault(y => y != null);
