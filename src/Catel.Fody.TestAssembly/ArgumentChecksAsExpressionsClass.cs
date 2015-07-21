@@ -15,7 +15,6 @@ namespace Catel.Fody.TestAssembly
 
     public class CustomClassType
     {
-
     }
 
     public class ArgumentChecksAsExpressionsClass

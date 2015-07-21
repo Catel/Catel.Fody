@@ -615,8 +615,7 @@ namespace Catel.Fody.Test
             }
             catch (Exception ex)
             {
-                Type exceptionType = ex.GetType();
-
+                var exceptionType = ex.GetType();
                 if (exceptionType == typeof(TException))
                 {
                     return;
