@@ -132,11 +132,11 @@ namespace Catel.Fody
         public static MethodReference MakeHostInstanceGeneric(this MethodReference self, params TypeReference[] arguments)
         {
             var reference = new MethodReference(self.Name, self.ReturnType, self.DeclaringType.MakeGenericInstanceType(arguments))
-                                {
-                                    HasThis = self.HasThis,
-                                    ExplicitThis = self.ExplicitThis,
-                                    CallingConvention = self.CallingConvention
-                                };
+            {
+                HasThis = self.HasThis,
+                ExplicitThis = self.ExplicitThis,
+                CallingConvention = self.CallingConvention
+            };
 
             foreach (var parameter in self.Parameters)
             {
@@ -151,6 +151,19 @@ namespace Catel.Fody
             return reference;
         }
 
+        public static AssemblyDefinition ResolveAssembly(this ModuleDefinition moduleDefinition, string assemblyName)
+        {
+            var assemblyWithoutExtension = moduleDefinition.Name.Substring(0, moduleDefinition.Name.LastIndexOf("."));
+            if (string.Equals(assemblyWithoutExtension, assemblyName))
+            {
+                return moduleDefinition.Assembly;
+            }
+
+            var assemblyResolver = moduleDefinition.AssemblyResolver;
+            var resolvedAssembly = assemblyResolver.Resolve(assemblyName);
+            return resolvedAssembly;
+        }
+
         public static TypeDefinition FindType(this ModuleDefinition moduleDefinition, string assemblyName, string typeName)
         {
             var cacheKey = string.Format("{0}, {1}|{2}", typeName, assemblyName, moduleDefinition.Name);
@@ -159,9 +172,13 @@ namespace Catel.Fody
                 return _cachedTypeDefinitions[cacheKey];
             }
 
-            var assemblyResolver = moduleDefinition.AssemblyResolver;
+            var resolvedAssembly = moduleDefinition.ResolveAssembly(assemblyName);
+            if (resolvedAssembly == null)
+            {
+                return null;
+            }
 
-            foreach (var module in assemblyResolver.Resolve(assemblyName).Modules)
+            foreach (var module in resolvedAssembly.Modules)
             {
                 var allTypes = module.GetAllTypeDefinitions().OrderBy(x => x.FullName);
 
