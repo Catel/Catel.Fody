@@ -105,7 +105,27 @@ namespace Catel.Fody.Weaving.Argument
 
                 if (innerInstruction.OpCode == OpCodes.Stfld)
                 {
-                    if (string.Equals(((FieldDefinition)innerInstruction.Operand).DeclaringType.Name, displayClassType.Name))
+                    var removeInstructions = false;
+
+                    var fieldDefinition = innerInstruction.Operand as FieldDefinition;
+                    if (fieldDefinition != null)
+                    {
+                        if (string.Equals(fieldDefinition.DeclaringType.Name, displayClassType.Name))
+                        {
+                            removeInstructions = true;
+                        }
+                    }
+
+                    var fieldReference = innerInstruction.Operand as FieldReference;
+                    if (fieldReference != null)
+                    {
+                        if (string.Equals(fieldReference.DeclaringType.Name, displayClassType.Name))
+                        {
+                            removeInstructions = true;
+                        }
+                    }
+
+                    if (removeInstructions)
                     {
                         // Remove the previous 3 operations
                         instructions.RemoveAt(i);
