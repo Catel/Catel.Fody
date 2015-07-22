@@ -5,9 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Catel.Fody
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
     using Mono.Cecil.Cil;
 
     public static class InstructionExtensions
@@ -23,11 +20,6 @@ namespace Catel.Fody
             }
 
             return false;
-        }
-
-        public static SequencePoint GetSequencePoint(this IEnumerable<Instruction> instructions)
-        {
-            return instructions.Select(x => x.SequencePoint).FirstOrDefault(y => y != null);
         }
     }
 }

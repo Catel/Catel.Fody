@@ -84,8 +84,8 @@ namespace Catel.Fody.Weaving.Argument
                     }
                     else if (attributeFullName.StartsWith("Catel.Fody"))
                     {
-                        FodyEnvironment.LogError(string.Format("Weaving of parameter '{0}' of methods '{1}' with attribute '{2}' is not (yet) supported, please use a different method",
-                            method.GetFullName(), parameter.Name, attributeFullName));
+                        FodyEnvironment.LogErrorPoint(string.Format("Weaving of parameter '{0}' of methods '{1}' with attribute '{2}' is not (yet) supported, please use a different method",
+                            method.GetFullName(), parameter.Name, attributeFullName), method.GetFirstSequencePoint());
                     }
                 }
             }
@@ -105,7 +105,7 @@ namespace Catel.Fody.Weaving.Argument
                 for (var i = instructions.Count - 1; i >= 0; i--)
                 {
                     var instruction = instructions[i];
-                    if (IsSupportedExpressionArgumentCheck(instruction))
+                    if (IsSupportedExpressionArgumentCheck(method, instruction))
                     {
                         var fullKey = ((MethodReference)instruction.Operand).GetFullName();
                         var parameterOrField = GetParameterOrFieldForExpressionArgumentCheck(method, instructions, instruction);

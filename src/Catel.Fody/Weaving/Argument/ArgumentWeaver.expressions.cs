@@ -17,29 +17,29 @@ namespace Catel.Fody.Weaving.Argument
 
     public partial class ArgumentWeaver
     {
-        private bool IsSupportedExpressionArgumentCheck(Instruction instruction)
+        private bool IsSupportedExpressionArgumentCheck(MethodDefinition method, Instruction instruction)
         {
             var methodBeingCalled = instruction.Operand as MethodReference;
             if (methodBeingCalled != null)
             {
                 if (methodBeingCalled.DeclaringType.FullName.Contains("Catel.Argument"))
                 {
-                    var finalKey = methodBeingCalled.GetFullName();
-                    if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
-                    {
-                        FodyEnvironment.LogWarning(string.Format("Found argument method call '{0}', but cannot weave it since it's not (yet) supported",
-                            methodBeingCalled.GetFullName()));
-
-                        return false;
-                    }
-
                     var firstParameter = methodBeingCalled.Parameters.FirstOrDefault();
                     if (firstParameter != null)
                     {
-                        if (firstParameter.ParameterType.FullName.Contains("System.Linq.Expressions."))
+                        if (!firstParameter.ParameterType.FullName.Contains("System.Linq.Expressions."))
                         {
-                            return true;
+                            return false;
                         }
+                    }
+
+                    var finalKey = methodBeingCalled.GetFullName();
+                    if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
+                    {
+                        FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
+                             method.GetFullName(), methodBeingCalled.GetFullName()), method.Body.Instructions.GetSequencePoint(instruction));
+
+                        return false;
                     }
                 }
             }
