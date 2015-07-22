@@ -37,6 +37,24 @@ namespace Catel.Fody
                         return true;
                     }
                 }
+
+                var methodDefinition = instruction.Operand as MethodDefinition;
+                if (methodDefinition != null)
+                {
+                    if (string.Equals(methodDefinition.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+
+                var methodReference = instruction.Operand as MethodReference;
+                if (methodReference != null)
+                {
+                    if (string.Equals(methodReference.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
             }
 
             return false;

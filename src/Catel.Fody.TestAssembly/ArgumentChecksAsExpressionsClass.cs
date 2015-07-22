@@ -9,6 +9,7 @@ namespace Catel.Fody.TestAssembly
 {
     using System;
     using System.Collections;
+    using System.Linq;
     using Collections;
     using Reflection;
     using System.Threading.Tasks;
@@ -122,6 +123,15 @@ namespace Catel.Fody.TestAssembly
         public void CheckForNotMatch(string myString)
         {
             Argument.IsNotMatch(() => myString, "\\d+");
+        }
+
+        private static readonly object[] Objects = new object[] { null, null, null };
+
+        public void CheckForNullWithInnerExpression(object obj)
+        {
+            Argument.IsNotNull(() => obj);
+
+            var filteredObjects = Objects.Select(x => x == obj);
         }
 
         public void CheckForNullWithMultipleParameters(CustomClassType customClassType, IEnumerable rawCollection, IList filteredCollection)
