@@ -11,6 +11,11 @@ namespace Catel.Fody
     {
         public static bool IsOpCode(this Instruction instruction, params OpCode[] opCodes)
         {
+            if (opCodes.Length == 0)
+            {
+                return true;
+            }
+
             foreach (var opCode in opCodes)
             {
                 if (instruction.OpCode == opCode)

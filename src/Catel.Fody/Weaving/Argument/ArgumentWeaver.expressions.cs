@@ -20,38 +20,43 @@ namespace Catel.Fody.Weaving.Argument
         private bool IsSupportedExpressionArgumentCheck(MethodDefinition method, Instruction instruction)
         {
             var methodBeingCalled = instruction.Operand as MethodReference;
-            if (methodBeingCalled != null)
+            if (methodBeingCalled == null)
             {
-                if (methodBeingCalled.DeclaringType.FullName.Contains("Catel.Argument"))
-                {
-                    var firstParameter = methodBeingCalled.Parameters.FirstOrDefault();
-                    if (firstParameter != null)
-                    {
-                        if (!firstParameter.ParameterType.FullName.Contains("System.Linq.Expressions."))
-                        {
-                            return false;
-                        }
-                    }
-
-                    var finalKey = methodBeingCalled.GetFullName();
-                    if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
-                    {
-                        FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
-                             method.GetFullName(), methodBeingCalled.GetFullName()), method.Body.Instructions.GetSequencePoint(instruction));
-
-                        return false;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (!methodBeingCalled.DeclaringType.FullName.Contains("Catel.Argument"))
+            {
+                return false;
+            }
+
+            var firstParameter = methodBeingCalled.Parameters.FirstOrDefault();
+            if (firstParameter == null)
+            {
+                return false;
+            }
+
+            if (!firstParameter.ParameterType.FullName.Contains("System.Linq.Expressions."))
+            {
+                return false;
+            }
+
+            var finalKey = methodBeingCalled.GetFullName();
+            if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
+            {
+                FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
+                     method.GetFullName(), methodBeingCalled.GetFullName()), method.Body.Instructions.GetSequencePoint(instruction));
+
+                return false;
+            }
+
+            return true;
         }
 
         private void RemoveObsoleteCodeForArgumentExpression(MethodDefinition method, Collection<Instruction> instructions, TypeDefinition displayClassType)
         {
-            return;
-
-            if (instructions.UsesDisplayClass(displayClassType))
+            // Display class is used when there are still calls to load a field from the display class
+            if (instructions.UsesDisplayClass(displayClassType, OpCodes.Ldfld))
             {
                 return;
             }
@@ -107,38 +112,14 @@ namespace Catel.Fody.Weaving.Argument
             for (var i = 0; i < instructions.Count; i++)
             {
                 var innerInstruction = instructions[i];
-
-                if (innerInstruction.OpCode == OpCodes.Stfld)
+                if (innerInstruction.UsesDisplayClass(displayClassType, OpCodes.Stfld))
                 {
-                    var removeInstructions = false;
+                    // Remove the stfld + 2 previous operations
+                    instructions.RemoveAt(i);
+                    instructions.RemoveAt(i - 1);
+                    instructions.RemoveAt(i - 2);
 
-                    var fieldDefinition = innerInstruction.Operand as FieldDefinition;
-                    if (fieldDefinition != null)
-                    {
-                        if (string.Equals(fieldDefinition.DeclaringType.Name, displayClassType.Name))
-                        {
-                            removeInstructions = true;
-                        }
-                    }
-
-                    var fieldReference = innerInstruction.Operand as FieldReference;
-                    if (fieldReference != null)
-                    {
-                        if (string.Equals(fieldReference.DeclaringType.Name, displayClassType.Name))
-                        {
-                            removeInstructions = true;
-                        }
-                    }
-
-                    if (removeInstructions)
-                    {
-                        // Remove the previous 3 operations
-                        instructions.RemoveAt(i);
-                        instructions.RemoveAt(i - 1);
-                        instructions.RemoveAt(i - 2);
-
-                        break;
-                    }
+                    i -= 3;
                 }
             }
 

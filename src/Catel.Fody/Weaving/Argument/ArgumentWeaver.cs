@@ -123,8 +123,9 @@ namespace Catel.Fody.Weaving.Argument
                         var customAttribute = ExpressionChecksToAttributeMappings[fullKey](method, instructions, instruction);
                         if (customAttribute == null)
                         {
-                            FodyEnvironment.LogWarning(string.Format("Can't find attribute for expression argument for method '{0}'",
-                                method.GetFullName()));
+                            FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
+                                method.GetFullName(), fullKey), method.Body.Instructions.GetSequencePoint(instruction));
+
                             continue;
                         }
 

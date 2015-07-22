@@ -16,6 +16,32 @@ namespace Catel.Fody
     {
         private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
 
+        public static bool UsesDisplayClass(this Instruction instruction, TypeDefinition typeDefinition, params OpCode[] opCodes)
+        {
+            if (instruction.IsOpCode(opCodes))
+            {
+                var fieldDefinition = instruction.Operand as FieldDefinition;
+                if (fieldDefinition != null)
+                {
+                    if (string.Equals(fieldDefinition.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+
+                var fieldReference = instruction.Operand as FieldReference;
+                if (fieldReference != null)
+                {
+                    if (string.Equals(fieldReference.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public static bool IsBoxingRequired(this TypeReference typeReference, TypeReference expectedType)
         {
             if (expectedType.IsValueType && string.Equals(typeReference.FullName, expectedType.FullName))

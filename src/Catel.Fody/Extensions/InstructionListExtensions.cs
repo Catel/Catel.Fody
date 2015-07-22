@@ -50,24 +50,14 @@ namespace Catel.Fody
             return instructions[currentIndex - 1];
         }
 
-        public static bool UsesDisplayClass(this IList<Instruction> instructions, TypeDefinition displayClassType)
+        public static bool UsesDisplayClass(this IList<Instruction> instructions, TypeDefinition displayClassType, params OpCode[] opCodes)
         {
             for (var index = 0; index < instructions.Count; index++)
             {
                 var instruction = instructions[index];
-
-                // There might be a lot of usages of a display class, but most important is that we find a call to ldtoken
-                if (instruction.IsOpCode(OpCodes.Ldtoken))
+                if (instruction.UsesDisplayClass(displayClassType, opCodes))
                 {
-                    var operand = instruction.Operand as FieldDefinition;
-                    if (operand != null)
-                    {
-                        if (string.Equals(operand.DeclaringType.FullName, displayClassType.FullName))
-                        {
-                            // Still being used
-                            return true;
-                        }
-                    }
+                    return true;
                 }
             }
 

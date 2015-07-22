@@ -23,7 +23,9 @@ namespace Catel.Fody
             LogDebug = s => { Debug.WriteLine(s); };
             LogInfo = s => { Debug.WriteLine(s); };
             LogWarning = s => { Debug.WriteLine(s); };
+            LogWarningPoint = (s, p) => { Debug.WriteLine(s); };
             LogError = s => { Debug.WriteLine(s); };
+            LogErrorPoint = (s, p) => { Debug.WriteLine(s); };
         }
 
         public XElement Config { get; set; }
