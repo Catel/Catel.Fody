@@ -23,7 +23,9 @@ namespace Catel.Fody
             LogDebug = s => { Debug.WriteLine(s); };
             LogInfo = s => { Debug.WriteLine(s); };
             LogWarning = s => { Debug.WriteLine(s); };
+            LogWarningPoint = (s, p) => { Debug.WriteLine(s); };
             LogError = s => { Debug.WriteLine(s); };
+            LogErrorPoint = (s, p) => { Debug.WriteLine(s); };
         }
 
         public XElement Config { get; set; }
@@ -64,12 +66,17 @@ namespace Catel.Fody
                 var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
                 if (catelCoreReference == null)
                 {
+                    //if (!ModuleDefinition.Name.StartsWith("Catel.Core"))
+                    //{
                     LogWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
                     return;
+                    //}
+
+                    //LogInfo("No reference to Catel.Core found, but continuing because this is running against Catel.Core itself");
                 }
-    
+
                 // Note: nested types not supported because we only list actual types (thus not nested)
-                    var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
+                var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
 
                 var typeNodeBuilder = new CatelTypeNodeBuilder(types);
                 typeNodeBuilder.Execute();

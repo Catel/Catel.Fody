@@ -5,16 +5,26 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Catel.Fody
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
     using Mono.Cecil.Cil;
 
     public static class InstructionExtensions
     {
-        public static SequencePoint GetSequencePoint(this IEnumerable<Instruction> instructions)
+        public static bool IsOpCode(this Instruction instruction, params OpCode[] opCodes)
         {
-            return instructions.Select(x => x.SequencePoint).FirstOrDefault(y => y != null);
+            if (opCodes.Length == 0)
+            {
+                return true;
+            }
+
+            foreach (var opCode in opCodes)
+            {
+                if (instruction.OpCode == opCode)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

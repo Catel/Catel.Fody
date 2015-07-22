@@ -8,11 +8,62 @@ namespace Catel.Fody
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Collections.Generic;
 
     public static class InstructionListExtensions
     {
+        public static SequencePoint GetFirstSequencePoint(this IEnumerable<Instruction> instructions)
+        {
+            return instructions.Select(x => x.SequencePoint).FirstOrDefault(y => y != null);
+        }
+
+        public static SequencePoint GetSequencePoint(this IList<Instruction> instructions, Instruction instruction)
+        {
+            var index = instructions.IndexOf(instruction);
+            if (index < 0)
+            {
+                return null;
+            }
+
+            for (int i = index; i >= 0; i--)
+            {
+                var ix = instructions[i];
+                if (ix.SequencePoint != null)
+                {
+                    return ix.SequencePoint;
+                }
+            }
+
+            return null;
+        }
+
+        public static Instruction GetPreviousInstruction(this IList<Instruction> instructions, Instruction instruction)
+        {
+            var currentIndex = instructions.IndexOf(instruction);
+            if (currentIndex <= 0)
+            {
+                return null;
+            }
+
+            return instructions[currentIndex - 1];
+        }
+
+        public static bool UsesDisplayClass(this IList<Instruction> instructions, TypeDefinition displayClassType, params OpCode[] opCodes)
+        {
+            for (var index = 0; index < instructions.Count; index++)
+            {
+                var instruction = instructions[index];
+                if (instruction.UsesDisplayClass(displayClassType, opCodes))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static void Prepend(this Collection<Instruction> collection, params Instruction[] instructions)
         {
             for (var index = 0; index < instructions.Length; index++)

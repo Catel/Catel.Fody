@@ -16,6 +16,50 @@ namespace Catel.Fody
     {
         private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
 
+        public static bool UsesDisplayClass(this Instruction instruction, TypeDefinition typeDefinition, params OpCode[] opCodes)
+        {
+            if (instruction.IsOpCode(opCodes))
+            {
+                var fieldDefinition = instruction.Operand as FieldDefinition;
+                if (fieldDefinition != null)
+                {
+                    if (string.Equals(fieldDefinition.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+
+                var fieldReference = instruction.Operand as FieldReference;
+                if (fieldReference != null)
+                {
+                    if (string.Equals(fieldReference.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+
+                var methodDefinition = instruction.Operand as MethodDefinition;
+                if (methodDefinition != null)
+                {
+                    if (string.Equals(methodDefinition.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+
+                var methodReference = instruction.Operand as MethodReference;
+                if (methodReference != null)
+                {
+                    if (string.Equals(methodReference.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public static bool IsBoxingRequired(this TypeReference typeReference, TypeReference expectedType)
         {
             if (expectedType.IsValueType && string.Equals(typeReference.FullName, expectedType.FullName))
@@ -132,11 +176,11 @@ namespace Catel.Fody
         public static MethodReference MakeHostInstanceGeneric(this MethodReference self, params TypeReference[] arguments)
         {
             var reference = new MethodReference(self.Name, self.ReturnType, self.DeclaringType.MakeGenericInstanceType(arguments))
-                                {
-                                    HasThis = self.HasThis,
-                                    ExplicitThis = self.ExplicitThis,
-                                    CallingConvention = self.CallingConvention
-                                };
+            {
+                HasThis = self.HasThis,
+                ExplicitThis = self.ExplicitThis,
+                CallingConvention = self.CallingConvention
+            };
 
             foreach (var parameter in self.Parameters)
             {
@@ -151,6 +195,19 @@ namespace Catel.Fody
             return reference;
         }
 
+        public static AssemblyDefinition ResolveAssembly(this ModuleDefinition moduleDefinition, string assemblyName)
+        {
+            var assemblyWithoutExtension = moduleDefinition.Name.Substring(0, moduleDefinition.Name.LastIndexOf("."));
+            if (string.Equals(assemblyWithoutExtension, assemblyName))
+            {
+                return moduleDefinition.Assembly;
+            }
+
+            var assemblyResolver = moduleDefinition.AssemblyResolver;
+            var resolvedAssembly = assemblyResolver.Resolve(assemblyName);
+            return resolvedAssembly;
+        }
+
         public static TypeDefinition FindType(this ModuleDefinition moduleDefinition, string assemblyName, string typeName)
         {
             var cacheKey = string.Format("{0}, {1}|{2}", typeName, assemblyName, moduleDefinition.Name);
@@ -159,9 +216,13 @@ namespace Catel.Fody
                 return _cachedTypeDefinitions[cacheKey];
             }
 
-            var assemblyResolver = moduleDefinition.AssemblyResolver;
+            var resolvedAssembly = moduleDefinition.ResolveAssembly(assemblyName);
+            if (resolvedAssembly == null)
+            {
+                return null;
+            }
 
-            foreach (var module in assemblyResolver.Resolve(assemblyName).Modules)
+            foreach (var module in resolvedAssembly.Modules)
             {
                 var allTypes = module.GetAllTypeDefinitions().OrderBy(x => x.FullName);
 

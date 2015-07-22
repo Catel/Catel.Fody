@@ -6,6 +6,7 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
@@ -16,9 +17,14 @@ namespace Catel.Fody.Weaving.Argument
     public partial class ArgumentWeaver
     {
         #region Constants
+        private delegate CustomAttribute ExpressionToAttributeFunc(MethodReference method, IList<Instruction> instructions, Instruction instruction);
+
+        private static readonly object CacheLock = new object();
         #endregion
 
         #region Fields
+        private static readonly Dictionary<string, ExpressionToAttributeFunc> ExpressionChecksToAttributeMappings = new Dictionary<string, ExpressionToAttributeFunc>();
+
         private readonly TypeDefinition _typeDefinition;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         #endregion
@@ -76,6 +82,11 @@ namespace Catel.Fody.Weaving.Argument
                         ArgumentMethodCallWeaverBase.WellKnownWeavers[attributeFullName].Execute(_typeDefinition, method, parameter, customAttribute, 0);
                         parameter.RemoveAttribute(attributeFullName);
                     }
+                    else if (attributeFullName.StartsWith("Catel.Fody"))
+                    {
+                        FodyEnvironment.LogErrorPoint(string.Format("Weaving of parameter '{0}' of methods '{1}' with attribute '{2}' is not (yet) supported, please use a different method",
+                            method.GetFullName(), parameter.Name, attributeFullName), method.GetFirstSequencePoint());
+                    }
                 }
             }
 
@@ -94,7 +105,7 @@ namespace Catel.Fody.Weaving.Argument
                 for (var i = instructions.Count - 1; i >= 0; i--)
                 {
                     var instruction = instructions[i];
-                    if (IsSupportedExpressionArgumentCheck(instruction))
+                    if (IsSupportedExpressionArgumentCheck(method, instruction))
                     {
                         var fullKey = ((MethodReference)instruction.Operand).GetFullName();
                         var parameterOrField = GetParameterOrFieldForExpressionArgumentCheck(method, instructions, instruction);
@@ -104,7 +115,19 @@ namespace Catel.Fody.Weaving.Argument
                             continue;
                         }
 
-                        var customAttribute = CreateAttributeForExpressionArgumentCheck(method, instructions, instruction);
+                        if (!ExpressionChecksToAttributeMappings.ContainsKey(fullKey))
+                        {
+                            return;
+                        }
+
+                        var customAttribute = ExpressionChecksToAttributeMappings[fullKey](method, instructions, instruction);
+                        if (customAttribute == null)
+                        {
+                            FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
+                                method.GetFullName(), fullKey), method.Body.Instructions.GetSequencePoint(instruction));
+
+                            continue;
+                        }
 
                         var removedInfo = RemoveArgumentWeavingCall(method, instructions, instruction);
                         if (!displayClasses.Contains(removedInfo.Item1))
@@ -112,8 +135,8 @@ namespace Catel.Fody.Weaving.Argument
                             displayClasses.Add(removedInfo.Item1);
                         }
 
-                        if (!ArgumentMethodCallWeaverBase.WellKnownWeavers[fullKey].Execute(_typeDefinition, method, parameterOrField,
-                            customAttribute, removedInfo.Item2))
+                        var weaver = ArgumentMethodCallWeaverBase.WellKnownWeavers[customAttribute.AttributeType.FullName];
+                        if (!weaver.Execute(_typeDefinition, method, parameterOrField, customAttribute, removedInfo.Item2))
                         {
                             // We failed, the build should fail now
                             return;
@@ -159,7 +182,82 @@ namespace Catel.Fody.Weaving.Argument
 
         private void EnsureCache()
         {
-            lock (ArgumentMethodCallWeaverBase.WellKnownWeavers)
+            lock (CacheLock)
+            {
+                EnsureExpressionChecksCache();
+                EnsureWeaversCache();
+            }
+        }
+
+        private void EnsureExpressionChecksCache()
+        {
+            lock (CacheLock)
+            {
+                if (ExpressionChecksToAttributeMappings.Count > 0)
+                {
+                    return;
+                }
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsNotNull"] = (m, ix, i) =>
+                {
+                    return CreateCustomAttribute("Catel.Fody.NotNullAttribute");
+                };
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsNotNullOrEmpty"] = (m, ix, i) =>
+                {
+                    return CreateCustomAttribute("Catel.Fody.NotNullOrEmptyAttribute");
+                };
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsNotNullOrWhitespace"] = (m, ix, i) =>
+                {
+                    return CreateCustomAttribute("Catel.Fody.NotNullOrWhitespaceAttribute");
+                };
+
+                // TODO: Add more
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsNotOutOfRange"] = (m, ix, i) =>
+                {
+                    // Previous operations are Ldc_[Something]
+                    var previousInstruction2 = ix.GetPreviousInstruction(i);
+                    var previousInstruction1 = ix.GetPreviousInstruction(previousInstruction2);
+
+                    if (!IsOperandSupportedForArgumentChecks(previousInstruction1.Operand))
+                    {
+                        return null;
+                    }
+
+                    return CreateCustomAttribute("Catel.Fody.NotOutOfRangeAttribute", previousInstruction1.Operand, previousInstruction2.Operand);
+                };
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsMinimal"] = (m, ix, i) =>
+                {
+                    // Previous operation is Ldc_[Something]
+                    var operand = ix.GetPreviousInstruction(i).Operand;
+                    if (!IsOperandSupportedForArgumentChecks(operand))
+                    {
+                        return null;
+                    }
+
+                    return CreateCustomAttribute("Catel.Fody.MinimalAttribute", operand);
+                };
+
+                ExpressionChecksToAttributeMappings["Catel.Argument.IsMaximum"] = (m, ix, i) =>
+                {
+                    // Previous operation is Ldc_[Something]
+                    var operand = ix.GetPreviousInstruction(i).Operand;
+                    if (!IsOperandSupportedForArgumentChecks(operand))
+                    {
+                        return null;
+                    }
+
+                    return CreateCustomAttribute("Catel.Fody.MaximumAttribute", operand);
+                };
+            }
+        }
+
+        private void EnsureWeaversCache()
+        {
+            lock (CacheLock)
             {
                 if (ArgumentMethodCallWeaverBase.WellKnownWeavers.Count > 0)
                 {
@@ -167,15 +265,9 @@ namespace Catel.Fody.Weaving.Argument
                 }
 
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullAttribute"] = new IsNotNullArgumentMethodCallWeaver();
-                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNull"] = new IsNotNullArgumentMethodCallWeaver();
-
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyAttribute"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
-                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrEmpty"] = new IsNotNullOrEmptyArgumentMethodCallWeaver();
-
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrWhitespaceAttribute"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
-                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Argument.IsNotNullOrWhitespace"] = new IsNotNullOrWhitespaceArgumentMethodCallWeaver();
 
-                // TODO: Support the argument checks below in expression checks
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotNullOrEmptyArrayAttribute"] = new IsNotNullOrEmptyArrayArgumentMethodCallWeaver();
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MatchAttribute"] = new IsMatchArgumentMethodCallWeaver();
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotMatchAttribute"] = new IsNotMatchArgumentMethodCallWeaver();
@@ -183,10 +275,26 @@ namespace Catel.Fody.Weaving.Argument
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.ImplementsInterfaceAttribute"] = new ImplementsInterfaceArgumentMethodCallWeave();
                 ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.InheritsFromAttribute"] = new InheritsFromArgumentMethodCallWeaver();
 
-                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotOutOfRangeAttribute"] = new IsNotOutOfRangeMethodCallWeaver();
-                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MinimalAttribute"] = new IsMinimalMethodCallWeaver();
-                //ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MaximumAttribute"] = new IsMaximumMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.NotOutOfRangeAttribute"] = new IsNotOutOfRangeMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MinimalAttribute"] = new IsMinimalMethodCallWeaver();
+                ArgumentMethodCallWeaverBase.WellKnownWeavers["Catel.Fody.MaximumAttribute"] = new IsMaximumMethodCallWeaver();
             }
+        }
+
+        private bool IsOperandSupportedForArgumentChecks(object operand)
+        {
+            if (operand == null)
+            {
+                return false;
+            }
+
+            // Ignore strings
+            if (operand.GetType().FullName.Contains("System.String"))
+            {
+                return false;
+            }
+
+            return true;
         }
         #endregion
     }

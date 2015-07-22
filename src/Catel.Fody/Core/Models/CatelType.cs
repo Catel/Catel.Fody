@@ -50,7 +50,12 @@ namespace Catel.Fody
             try
             {
                 DetermineTypes();
-                DetermineMethods();
+
+                if (!DetermineMethods())
+                {
+                    return;
+                }
+
                 Properties = DetermineProperties();
                 DetermineMappings();
 
@@ -139,17 +144,24 @@ namespace Catel.Fody
             }
         }
 
-        private void DetermineMethods()
+        private bool DetermineMethods()
         {
             var module = TypeDefinition.Module;
 
-            RegisterPropertyWithDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, true));
+            var registerPropertyWithDefaultValueInvokerMethod = FindRegisterPropertyMethod(TypeDefinition, true);
+            if (registerPropertyWithDefaultValueInvokerMethod == null)
+            {
+                return false;
+            }
+
+            RegisterPropertyWithDefaultValueInvoker = module.Import(registerPropertyWithDefaultValueInvokerMethod);
             RegisterPropertyWithoutDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, false));
             GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true));
             SetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "SetValue", new[] { "property", "value" }));
             RaisePropertyChangedInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "RaisePropertyChanged", new[] { "propertyName" }));
-        }
 
+            return true;
+        }
 
         private List<CatelTypeProperty> DetermineProperties()
         {

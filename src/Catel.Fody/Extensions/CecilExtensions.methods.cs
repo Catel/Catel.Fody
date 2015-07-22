@@ -10,9 +10,15 @@ namespace Catel.Fody
     using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
+    using Mono.Cecil.Cil;
 
     public static partial class CecilExtensions
     {
+        public static SequencePoint GetFirstSequencePoint(this MethodDefinition method)
+        {
+            return method.Body.Instructions.GetFirstSequencePoint();
+        }
+
         public static MethodReference MakeGeneric(this MethodReference method, TypeReference declaringType)
         {
             var reference = new MethodReference(method.Name, method.ReturnType)

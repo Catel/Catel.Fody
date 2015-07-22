@@ -17,37 +17,54 @@ namespace Catel.Fody.Weaving.Argument
 
     public partial class ArgumentWeaver
     {
-        private bool IsSupportedExpressionArgumentCheck(Instruction instruction)
+        private bool IsSupportedExpressionArgumentCheck(MethodDefinition method, Instruction instruction)
         {
             var methodBeingCalled = instruction.Operand as MethodReference;
-            if (methodBeingCalled != null)
+            if (methodBeingCalled == null)
             {
-                if (methodBeingCalled.DeclaringType.FullName.Contains("Catel.Argument"))
-                {
-                    var finalKey = methodBeingCalled.GetFullName();
-                    if (!ArgumentMethodCallWeaverBase.WellKnownWeavers.ContainsKey(finalKey))
-                    {
-                        return false;
-                    }
-
-                    var firstParameter = methodBeingCalled.Parameters.FirstOrDefault();
-                    if (firstParameter != null)
-                    {
-                        if (firstParameter.ParameterType.FullName.Contains("System.Linq.Expressions."))
-                        {
-                            return true;
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (!methodBeingCalled.DeclaringType.FullName.Contains("Catel.Argument"))
+            {
+                return false;
+            }
+
+            var firstParameter = methodBeingCalled.Parameters.FirstOrDefault();
+            if (firstParameter == null)
+            {
+                return false;
+            }
+
+            if (!firstParameter.ParameterType.FullName.Contains("System.Linq.Expressions."))
+            {
+                return false;
+            }
+
+            var finalKey = methodBeingCalled.GetFullName();
+            if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
+            {
+                FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
+                     method.GetFullName(), methodBeingCalled.GetFullName()), method.Body.Instructions.GetSequencePoint(instruction));
+
+                return false;
+            }
+
+            return true;
         }
 
         private void RemoveObsoleteCodeForArgumentExpression(MethodDefinition method, Collection<Instruction> instructions, TypeDefinition displayClassType)
         {
-            return;
+            // Display class is used when there are still calls to load a field from the display class
+            if (instructions.UsesDisplayClass(displayClassType, OpCodes.Ldfld, OpCodes.Ldftn))
+            {
+                return;
+            }
 
+            FodyEnvironment.LogDebug(string.Format("Method '{0}' no longer uses display class '{1}', removing the display class from the method", method.GetFullName(),
+                displayClassType.GetFullName()));
+
+            // Remote display class from container
             if (method.DeclaringType.NestedTypes.Contains(displayClassType))
             {
                 method.DeclaringType.NestedTypes.Remove(displayClassType);
@@ -95,18 +112,24 @@ namespace Catel.Fody.Weaving.Argument
             for (var i = 0; i < instructions.Count; i++)
             {
                 var innerInstruction = instructions[i];
-
-                if (innerInstruction.OpCode == OpCodes.Stfld)
+                if (innerInstruction.UsesDisplayClass(displayClassType, OpCodes.Stfld))
                 {
-                    if (string.Equals(((FieldDefinition)innerInstruction.Operand).DeclaringType.Name, displayClassType.Name))
-                    {
-                        // Remove the previous 3 operations
-                        instructions.RemoveAt(i);
-                        instructions.RemoveAt(i - 1);
-                        instructions.RemoveAt(i - 2);
+                    // Remove the stfld + 2 previous operations
+                    instructions.RemoveAt(i);
+                    instructions.RemoveAt(i - 1);
+                    instructions.RemoveAt(i - 2);
 
-                        break;
-                    }
+                    i -= 3;
+                }
+            }
+
+            // Remove duplicate nop instructions at the start of a method
+            if (instructions.Count > 0)
+            {
+                var startInstruction = instructions[0];
+                if (startInstruction.IsOpCode(OpCodes.Nop))
+                {
+                    instructions.RemoveAt(0);
                 }
             }
         }
@@ -123,7 +146,7 @@ namespace Catel.Fody.Weaving.Argument
 
                 instructions.RemoveAt(i);
 
-                if (innerInstruction.OpCode == OpCodes.Ldtoken)
+                if (innerInstruction.IsOpCode(OpCodes.Ldtoken))
                 {
                     if (displayClassType == null)
                     {
@@ -137,13 +160,13 @@ namespace Catel.Fody.Weaving.Argument
                 }
 
                 // Regular code
-                if ((innerInstruction.OpCode == OpCodes.Ldloc_0) || (innerInstruction.OpCode == OpCodes.Ldloc))
+                if (innerInstruction.IsOpCode(OpCodes.Ldloc_0, OpCodes.Ldloc))
                 {
                     break;
                 }
 
                 // Async/await code
-                if ((innerInstruction.OpCode == OpCodes.Ldarg) || (innerInstruction.OpCode == OpCodes.Ldarg_0))
+                if (innerInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
                 {
                     break;
                 }
@@ -170,7 +193,7 @@ namespace Catel.Fody.Weaving.Argument
             {
                 var innerInstruction = instructions[i];
 
-                if (innerInstruction.OpCode == OpCodes.Ldtoken)
+                if (innerInstruction.IsOpCode(OpCodes.Ldtoken))
                 {
                     if (displayClassType == null)
                     {
@@ -183,7 +206,7 @@ namespace Catel.Fody.Weaving.Argument
                     }
                 }
 
-                if (innerInstruction.OpCode == OpCodes.Stfld)
+                if (innerInstruction.IsOpCode(OpCodes.Stfld))
                 {
                     var fieldDefinition = innerInstruction.Operand as FieldDefinition;
                     if (fieldDefinition == null)
@@ -231,25 +254,6 @@ namespace Catel.Fody.Weaving.Argument
             if (fieldReference != null)
             {
                 return fieldReference.Resolve();
-            }
-
-            return null;
-        }
-
-        private CustomAttribute CreateAttributeForExpressionArgumentCheck(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
-        {
-            var fullMethodName = ((MethodReference)instruction.Operand).GetFullName();
-
-            switch (fullMethodName)
-            {
-                case "Catel.Argument.IsNotNull":
-                    return CreateCustomAttribute("Catel.Fody.NotNullAttribute");
-
-                case "Catel.Argument.IsNotNullOrEmpty":
-                    return CreateCustomAttribute("Catel.Fody.NotNullOrEmptyAttribute");
-
-                case "Catel.Argument.IsNotNullOrWhitespace":
-                    return CreateCustomAttribute("Catel.Fody.NotNullOrWhitespaceAttribute");
             }
 
             return null;
