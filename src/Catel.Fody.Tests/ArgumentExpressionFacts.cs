@@ -7,6 +7,7 @@
 namespace Catel.Fody.Test
 {
     using System;
+    using System.Diagnostics;
     using System.Runtime.Serialization;
     using System.Windows.Media;
     using NUnit.Framework;
@@ -16,6 +17,21 @@ namespace Catel.Fody.Test
         [TestFixture]
         public class SupportedExpressions
         {
+            [TestCase]
+            public void CorrectlyCompilesGenericArgumentChecks()
+            {
+                // Note: do NOT instantiate the type, then you will get the "unweaved" types. You need to use this helper during unit tests
+                var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+
+                // Instantiate to have properties registered
+                var instance = Activator.CreateInstance(type);
+
+                var method = type.GetMethod("CheckForNullForGenericArgument");
+                var genericMethod = method.MakeGenericMethod(typeof (ProcessStartInfo));
+
+                CallMethodAndExpectException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null }));
+            }
+
             [TestCase]
             public void CorrectlyThrowsArgumentNullExceptionForNullTypes()
             {

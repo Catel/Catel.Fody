@@ -182,5 +182,12 @@ namespace Catel.Fody.TestAssembly
                 suspendToken.Dispose();
             }
         }
+
+        public void CheckForNullForGenericArgument<T>(T value)
+            where T : class 
+        {
+            Argument.IsNotNull(() => value);
+
+        }
     }
 }

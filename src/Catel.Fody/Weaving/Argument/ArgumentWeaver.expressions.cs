@@ -89,17 +89,31 @@ namespace Catel.Fody.Weaving.Argument
                 var innerInstruction = instructions[i];
                 if (innerInstruction.OpCode == OpCodes.Newobj)
                 {
+                    var remove = false;
+
+                    var methodReference = innerInstruction.Operand as MethodReference;
+                    if (methodReference != null)
+                    {
+                        if (string.Equals(methodReference.DeclaringType.Name, displayClassType.Name))
+                        {
+                            remove = true;
+                        }
+                    }
+
                     var methodDefinition = innerInstruction.Operand as MethodDefinition;
                     if (methodDefinition != null)
                     {
                         if (string.Equals(methodDefinition.DeclaringType.Name, displayClassType.Name))
                         {
-                            // Delete 2 instructions, same location since remove will move everything 1 place up
-                            instructions.RemoveAt(i);
-                            instructions.RemoveAt(i);
-
-                            break;
+                            remove = true;
                         }
+                    }
+
+                    if (remove)
+                    {
+                        // Delete 2 instructions, same location since remove will move everything 1 place up
+                        instructions.RemoveAt(i);
+                        instructions.RemoveAt(i);
                     }
                 }
             }
