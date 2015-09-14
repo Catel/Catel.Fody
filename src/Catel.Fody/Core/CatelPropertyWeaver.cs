@@ -232,7 +232,7 @@ namespace Catel.Fody
 
         private bool AddPropertyRegistration(PropertyDefinition property, CatelTypeProperty propertyData)
         {
-            string fieldName = string.Format("{0}Property", property.Name);
+            var fieldName = string.Format("{0}Property", property.Name);
             var declaringType = property.DeclaringType;
             var fieldReference = GetFieldReference(declaringType, fieldName, true);
             if (fieldReference == null)
@@ -248,10 +248,18 @@ namespace Catel.Fody
 
             var instructions = body.Instructions;
 
-            var returnInstruction = (from instruction in instructions
-                                     where instruction.OpCode == OpCodes.Ret
-                                     select instruction).FirstOrDefault();
-            var index = (returnInstruction != null) ? instructions.IndexOf(returnInstruction) : instructions.Count;
+            // Always inject before the first try block, or just before the last return statement
+            var instructionToInsert = (from instruction in instructions
+                                       where instruction.OpCode == OpCodes.Ret
+                                       select instruction).FirstOrDefault();
+
+            var exceptionHandler = body.ExceptionHandlers.FirstOrDefault();
+            if (exceptionHandler != null)
+            {
+                instructionToInsert = exceptionHandler.TryStart;
+            }
+
+            var index = (instructionToInsert != null) ? instructions.IndexOf(instructionToInsert) : instructions.Count;
 
             //L_0000: ldstr "FullName"
             //L_0005: ldtoken string // note that this is the property type

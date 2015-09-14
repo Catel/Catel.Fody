@@ -24,7 +24,7 @@
 	<iconUrl>http://www.catenalogic.com/catel.png</iconUrl>
 	
 	<dependencies>
-		<dependency id="Fody"/>
+		<dependency id="Fody" version="1.29.3" />
 		<!--<dependency id="Catel.Core"/>-->
 	</dependencies>	
   </metadata>
