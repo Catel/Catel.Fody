@@ -81,9 +81,11 @@
   <ItemGroup>
     <Compile Include="ArgumentChecksAsExpressionsClass.cs" />
     <Compile Include="ArgumentChecksClass.cs" />
+    <Compile Include="CSharp6.AutoPropertyInitializer.cs" />
     <Compile Include="CTL504.cs" />
     <Compile Include="CTL569.cs" />
     <Compile Include="DependentPropertyModel.cs" />
+    <Compile Include="GenericModel.cs" />
     <Compile Include="LoggingClass.cs" />
     <Compile Include="DefaultValueModel.cs" />
     <Compile Include="ExposingViewModel.cs" />

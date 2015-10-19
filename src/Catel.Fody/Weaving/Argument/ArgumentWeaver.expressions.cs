@@ -56,7 +56,7 @@ namespace Catel.Fody.Weaving.Argument
         private void RemoveObsoleteCodeForArgumentExpression(MethodDefinition method, Collection<Instruction> instructions, TypeDefinition displayClassType)
         {
             // Display class is used when there are still calls to load a field from the display class
-            if (instructions.UsesDisplayClass(displayClassType, OpCodes.Ldfld, OpCodes.Ldftn))
+            if (instructions.UsesType(displayClassType, OpCodes.Ldfld, OpCodes.Ldftn))
             {
                 return;
             }
@@ -126,7 +126,7 @@ namespace Catel.Fody.Weaving.Argument
             for (var i = 0; i < instructions.Count; i++)
             {
                 var innerInstruction = instructions[i];
-                if (innerInstruction.UsesDisplayClass(displayClassType, OpCodes.Stfld))
+                if (innerInstruction.UsesType(displayClassType, OpCodes.Stfld))
                 {
                     // Remove the stfld + 2 previous operations
                     instructions.RemoveAt(i);

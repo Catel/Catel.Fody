@@ -45,10 +45,15 @@ namespace Catel.Fody
             try
             {
 #if DEBUG
-                //if (!Debugger.IsAttached)
-                //{
-                //    Debugger.Launch();
-                //}
+                if (!Debugger.IsAttached)
+                {
+                    Debugger.Launch();
+
+                    FodyEnvironment.LogDebug = CreateLoggingCallback(LogDebug);
+                    FodyEnvironment.LogInfo = CreateLoggingCallback(LogInfo);
+                    FodyEnvironment.LogWarning = CreateLoggingCallback(LogWarning);
+                    FodyEnvironment.LogError = CreateLoggingCallback(LogError);
+                }
 #endif
 
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
@@ -168,6 +173,19 @@ namespace Catel.Fody
                 }
 #endif
             }
+        }
+
+        private static Action<string> CreateLoggingCallback(Action<string> callback)
+        {
+            return s =>
+            {
+                Trace.WriteLine(s);
+
+                if (callback != null)
+                {
+                    callback(s);
+                }
+            };
         }
 
         private void InitializeEnvironment()
