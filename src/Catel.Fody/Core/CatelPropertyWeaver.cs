@@ -551,7 +551,6 @@ namespace Catel.Fody
             var resolvedType = property.PropertyType.Resolve();
             if (resolvedType == null)
             {
-                FodyEnvironment.LogWarning(string.Format("Could not resolve type '{0}'", property.PropertyType));
                 return false;
             }
 
@@ -576,10 +575,155 @@ namespace Catel.Fody
         {
             var fieldName = GetBackingFieldName(property);
 
-            var field = GetFieldDefinition(property.DeclaringType, fieldName, false);
+            var declaringType = property.DeclaringType;
+
+            var field = GetFieldDefinition(declaringType, fieldName, false);
             if (field != null)
             {
-                property.DeclaringType.Fields.Remove(field);
+                foreach (var ctor in declaringType.GetConstructors())
+                {
+                    var ctorBody = ctor.Body;
+
+                    ctorBody.SimplifyMacros();
+
+                    var instructions = ctorBody.Instructions;
+                    var validInstructionCounter = 0;
+
+                    for (int i = 0; i < instructions.Count; i++)
+                    {
+                        var instruction = instructions[i];
+
+                        if (!instruction.IsOpCode(OpCodes.Nop))
+                        {
+                            validInstructionCounter++;
+                        }
+
+                        // Always ensure that the call to the base is the first we do
+                        if (instruction.IsOpCode(OpCodes.Call))
+                        {
+                            var methodReference = instruction.Operand as MethodReference;
+                            if (methodReference != null && methodReference.Name == ".ctor")
+                            {
+                                var declaringTypeName = methodReference.DeclaringType.FullName;
+                                if (property.DeclaringType.FullName == declaringTypeName || property.DeclaringType.BaseType.FullName == declaringTypeName)
+                                {
+                                    if (validInstructionCounter > (methodReference.Parameters.Count + 2))
+                                    {
+                                        FodyEnvironment.LogDebug("Somehow the call to the base constructor was generated after the property value initializing. Fixing this by moving the constructor call to the first line.");
+
+                                        // Use the first ldarg for the start index
+                                        var firstIndex = i;
+                                        for (var j = i -1; j > 0; j--)
+                                        {
+                                            if (!instructions[j].IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3))
+                                            {
+                                                break;
+                                            }
+
+                                            firstIndex--;
+                                        }
+
+                                        // Use the call to the end
+                                        var endIndex = i;
+
+                                        var clonedInstructions = new List<Instruction>();
+                                        for (var j = firstIndex; j <= endIndex; j++)
+                                        {
+                                            clonedInstructions.Add(instructions[firstIndex]);
+                                            instructions.RemoveAt(firstIndex);
+                                        }
+
+                                        instructions.Insert(0, clonedInstructions);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (instruction.UsesField(field))
+                        {
+                            FodyEnvironment.LogDebug(string.Format("Field '{0}.{1}' is used in ctor '{2}'. Converting field usage to property usage to maintain compatibility with Catel generated properties.",
+                                declaringType.FullName, field.Name, ctor));
+
+                            if (instruction.IsOpCode(OpCodes.Stfld))
+                            {
+                                // Setter
+                                instruction.OpCode = OpCodes.Call;
+
+                                // Note: make sure to support generic types
+                                MethodReference setter = property.SetMethod;
+                                var genericInstanceType = declaringType.MakeGenericIfRequired() as GenericInstanceType;
+                                if (genericInstanceType != null)
+                                {
+                                    setter = setter.MakeHostInstanceGeneric(genericInstanceType.GenericArguments.ToArray());
+                                }
+
+                                instruction.Operand = declaringType.Module.Import(setter);
+                            }
+                            else if (instruction.IsOpCode(OpCodes.Ldfld))
+                            {
+                                // Getter
+                                instruction.OpCode = OpCodes.Call;
+
+                                // Note: make sure to support generic types
+                                MethodReference getter = property.GetMethod;
+                                var genericInstanceType = declaringType.MakeGenericIfRequired() as GenericInstanceType;
+                                if (genericInstanceType != null)
+                                {
+                                    getter = getter.MakeHostInstanceGeneric(genericInstanceType.GenericArguments.ToArray());
+                                }
+
+                                instruction.Operand = declaringType.Module.Import(getter);
+                            }
+                            else if (instruction.IsOpCode(OpCodes.Ldflda))
+                            {
+                                // Probably setting a generic field value to a value by directly using an address. Since this was code like this:
+                                //
+                                // call instance !0 MyCompany.Models.Base.ItemsModel`1 < !T >::get_SelectedItem()
+                                // initobj !T
+                                //
+                                // We need to generate code like this:
+                                //
+                                // ldloca.s local
+                                // initobj !T
+                                // ldloc.0
+                                // call instance void Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializer_Generic_ExpectedCode`1 < !T >::set_SelectedItem(!0)
+
+                                // Note: make sure to support generic types
+                                MethodReference setter = property.SetMethod;
+                                var genericInstanceType = declaringType.MakeGenericIfRequired() as GenericInstanceType;
+                                if (genericInstanceType != null)
+                                {
+                                    setter = setter.MakeHostInstanceGeneric(genericInstanceType.GenericArguments.ToArray());
+                                }
+
+                                var variable = new VariableDefinition(property.PropertyType.MakeGenericIfRequired());
+                                ctorBody.Variables.Add(variable);
+                                ctorBody.InitLocals = true;
+
+                                var newInstructions = new List<Instruction>();
+                                newInstructions.Add(Instruction.Create(OpCodes.Ldloca, variable));
+                                newInstructions.Add(instructions[i + 1]); // Just copy this instruction
+                                newInstructions.Add(Instruction.Create(OpCodes.Ldloc, variable));
+                                newInstructions.Add(Instruction.Create(OpCodes.Call, setter));
+
+                                // Remove 2 instructions
+                                instructions.RemoveAt(i);
+                                instructions.RemoveAt(i);
+
+                                instructions.Insert(i, newInstructions);
+                            }
+                            else
+                            {
+                                FodyEnvironment.LogError(string.Format("Field '{0}.{1}' is used in ctor '{2}'. Tried to convert it to property usage, but OpCode '{3}' is not supported. Please raise an issue.",
+                                    declaringType.FullName, field.Name, ctor, instruction.OpCode));
+                            }
+                        }
+                    }
+
+                    ctorBody.OptimizeMacros();
+                }
+
+                declaringType.Fields.Remove(field);
             }
         }
 

@@ -50,12 +50,26 @@ namespace Catel.Fody
             return instructions[currentIndex - 1];
         }
 
-        public static bool UsesDisplayClass(this IList<Instruction> instructions, TypeDefinition displayClassType, params OpCode[] opCodes)
+        public static bool UsesType(this IList<Instruction> instructions, TypeDefinition typeDefinition, params OpCode[] opCodes)
         {
             for (var index = 0; index < instructions.Count; index++)
             {
                 var instruction = instructions[index];
-                if (instruction.UsesDisplayClass(displayClassType, opCodes))
+                if (instruction.UsesType(typeDefinition, opCodes))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool UsesField(this IList<Instruction> instructions, FieldDefinition field)
+        {
+            for (var index = 0; index < instructions.Count; index++)
+            {
+                var instruction = instructions[index];
+                if (instruction.UsesField(field))
                 {
                     return true;
                 }

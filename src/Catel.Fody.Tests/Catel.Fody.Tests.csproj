@@ -92,11 +92,13 @@
     <Compile Include="ArgumentFacts.cs" />
     <Compile Include="AssemblyWeaver.cs" />
     <Compile Include="ConfigurationFacts.cs" />
+    <Compile Include="CSharp6Facts.cs" />
     <Compile Include="CTL504.cs" />
     <Compile Include="CTL569.cs" />
     <Compile Include="DefaultValueFacts.cs" />
     <Compile Include="DependentPropertyFacts.cs" />
     <Compile Include="ExposeFacts.cs" />
+    <Compile Include="GenericModelFacts.cs" />
     <Compile Include="InheritanceFacts.cs" />
     <Compile Include="LoggingFacts.cs" />
     <Compile Include="MockAssemblyResolver.cs" />
