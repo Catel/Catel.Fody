@@ -95,6 +95,7 @@
     <Compile Include="CSharp6Facts.cs" />
     <Compile Include="CTL504.cs" />
     <Compile Include="CTL569.cs" />
+    <Compile Include="CTL768.cs" />
     <Compile Include="DefaultValueFacts.cs" />
     <Compile Include="DependentPropertyFacts.cs" />
     <Compile Include="ExposeFacts.cs" />

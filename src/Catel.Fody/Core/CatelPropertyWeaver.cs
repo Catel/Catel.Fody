@@ -593,51 +593,12 @@ namespace Catel.Fody
                     {
                         var instruction = instructions[i];
 
-                        if (!instruction.IsOpCode(OpCodes.Nop))
+                        if (instruction.IsOpCode(OpCodes.Nop))
                         {
-                            validInstructionCounter++;
+                            continue;
                         }
 
-                        // Always ensure that the call to the base is the first we do
-                        if (instruction.IsOpCode(OpCodes.Call))
-                        {
-                            var methodReference = instruction.Operand as MethodReference;
-                            if (methodReference != null && methodReference.Name == ".ctor")
-                            {
-                                var declaringTypeName = methodReference.DeclaringType.FullName;
-                                if (property.DeclaringType.FullName == declaringTypeName || property.DeclaringType.BaseType.FullName == declaringTypeName)
-                                {
-                                    if (validInstructionCounter > (methodReference.Parameters.Count + 2))
-                                    {
-                                        FodyEnvironment.LogDebug("Somehow the call to the base constructor was generated after the property value initializing. Fixing this by moving the constructor call to the first line.");
-
-                                        // Use the first ldarg for the start index
-                                        var firstIndex = i;
-                                        for (var j = i -1; j > 0; j--)
-                                        {
-                                            if (!instructions[j].IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3))
-                                            {
-                                                break;
-                                            }
-
-                                            firstIndex--;
-                                        }
-
-                                        // Use the call to the end
-                                        var endIndex = i;
-
-                                        var clonedInstructions = new List<Instruction>();
-                                        for (var j = firstIndex; j <= endIndex; j++)
-                                        {
-                                            clonedInstructions.Add(instructions[firstIndex]);
-                                            instructions.RemoveAt(firstIndex);
-                                        }
-
-                                        instructions.Insert(0, clonedInstructions);
-                                    }
-                                }
-                            }
-                        }
+                        validInstructionCounter++;
 
                         if (instruction.UsesField(field))
                         {
@@ -658,6 +619,9 @@ namespace Catel.Fody
                                 }
 
                                 instruction.Operand = declaringType.Module.Import(setter);
+
+                                // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
+                                instructions.MoveInstructionsToEnd(i - 2, 3);
                             }
                             else if (instruction.IsOpCode(OpCodes.Ldfld))
                             {
@@ -673,6 +637,10 @@ namespace Catel.Fody
                                 }
 
                                 instruction.Operand = declaringType.Module.Import(getter);
+
+                                // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
+                                instructions.MoveInstructionsToEnd(i - 2, 3);
+
                             }
                             else if (instruction.IsOpCode(OpCodes.Ldflda))
                             {
@@ -710,7 +678,8 @@ namespace Catel.Fody
                                 instructions.RemoveAt(i);
                                 instructions.RemoveAt(i);
 
-                                instructions.Insert(i, newInstructions);
+                                // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
+                                instructions.Insert(instructions.Count - 1, newInstructions);
                             }
                             else
                             {
