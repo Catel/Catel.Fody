@@ -84,6 +84,7 @@
     <Compile Include="CSharp6.AutoPropertyInitializer.cs" />
     <Compile Include="CTL504.cs" />
     <Compile Include="CTL569.cs" />
+    <Compile Include="CTL768.cs" />
     <Compile Include="DependentPropertyModel.cs" />
     <Compile Include="GenericModel.cs" />
     <Compile Include="LoggingClass.cs" />

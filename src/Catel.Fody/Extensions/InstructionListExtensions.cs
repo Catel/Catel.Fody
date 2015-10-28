@@ -14,6 +14,18 @@ namespace Catel.Fody
 
     public static class InstructionListExtensions
     {
+        public static void MoveInstructionsToEnd(this IList<Instruction> instructions, int startIndex, int length)
+        {
+            var instructionsToMove = new List<Instruction>();
+            for (int i = startIndex; i < startIndex + length; i++)
+            {
+                instructionsToMove.Add(instructions[startIndex]);
+                instructions.RemoveAt(startIndex);
+            }
+
+            Insert(instructions, instructions.Count - 1, instructionsToMove);
+        }
+
         public static SequencePoint GetFirstSequencePoint(this IEnumerable<Instruction> instructions)
         {
             return instructions.Select(x => x.SequencePoint).FirstOrDefault(y => y != null);
@@ -105,12 +117,12 @@ namespace Catel.Fody
             }
         }
 
-        public static int Insert(this Collection<Instruction> collection, int index, List<Instruction> instructions)
+        public static int Insert(this IList<Instruction> collection, int index, List<Instruction> instructions)
         {
             return Insert(collection, index, instructions.ToArray());
         }
 
-        public static int Insert(this Collection<Instruction> collection, int index, params Instruction[] instructions)
+        public static int Insert(this IList<Instruction> collection, int index, params Instruction[] instructions)
         {
             foreach (var instruction in instructions.Reverse())
             {
@@ -118,47 +130,5 @@ namespace Catel.Fody
             }
             return index + instructions.Length;
         }
-
-        //public static void RemoveSubsequentNops(this Collection<Instruction> collection)
-        //{
-        //    var previousWasNop = false;
-        //    for (var i = 0; i < collection.Count; i++)
-        //    {
-        //        var instruction = collection[i];
-        //        if (instruction.OpCode == OpCodes.Nop)
-        //        {
-        //            if (!previousWasNop)
-        //            {
-        //                previousWasNop = true;
-        //            }
-        //            else
-        //            {
-        //                collection.RemoveAt(i--);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            previousWasNop = false;
-        //        }
-        //    }
-        //}
-
-        //public static void FixWrongBranchOutOfMethods(this Collection<Instruction> instructions)
-        //{
-        //    var lastReturn = instructions.Last(x => x.OpCode == OpCodes.Ret);
-
-        //    foreach (var instruction in instructions)
-        //    {
-        //        if (instruction.OpCode == OpCodes.Brtrue_S || instruction.OpCode == OpCodes.Brtrue ||
-        //            instruction.OpCode == OpCodes.Brfalse || instruction.OpCode == OpCodes.Brfalse_S)
-        //        {
-        //            var targetInstruction = instruction.Operand as Instruction;
-        //            if (!instructions.Contains(targetInstruction))
-        //            {
-        //                instruction.Operand = lastReturn;
-        //            }
-        //        }
-        //    }
-        //}
     }
 }
