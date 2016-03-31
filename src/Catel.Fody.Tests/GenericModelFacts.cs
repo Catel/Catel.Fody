@@ -1,4 +1,4 @@
-﻿namespace Catel.Fody.Tests
+﻿namespace Catel.Fody.Testss
 {
     using System;
     using NUnit.Framework;

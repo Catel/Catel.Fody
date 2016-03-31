@@ -44,7 +44,7 @@ namespace Catel.Fody
         {
             try
             {
-#if DEBUG
+//#if DEBUG
                 if (!Debugger.IsAttached)
                 {
                     Debugger.Launch();
@@ -54,7 +54,7 @@ namespace Catel.Fody
                     FodyEnvironment.LogWarning = CreateLoggingCallback(LogWarning);
                     FodyEnvironment.LogError = CreateLoggingCallback(LogError);
                 }
-#endif
+//#endif
 
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
                 CacheHelper.ClearAllCaches();

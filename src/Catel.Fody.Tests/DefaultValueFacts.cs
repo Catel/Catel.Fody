@@ -5,12 +5,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
-namespace Catel.Fody.Test
+namespace Catel.Fody.Tests
 {
     using System;
     using Data;
-    using TestAssembly;
     using NUnit.Framework;
+    using TestAssembly;
 
     [TestFixture]
     public class DefaultValueFacts

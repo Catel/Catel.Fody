@@ -106,6 +106,7 @@
     <Compile Include="ModelBaseFacts.cs" />
     <Compile Include="ModelWithDoubleValuesFacts.cs" />
     <Compile Include="NoWeavingFacts.cs" />
+    <Compile Include="TestClasses\MyEventArgs.cs" />
     <Compile Include="ViewModelBaseFacts.cs" />
   </ItemGroup>
   <ItemGroup>

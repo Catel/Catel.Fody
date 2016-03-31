@@ -54,7 +54,7 @@ public static class AssemblyWeaver
         moduleDefinition.Write(AfterAssemblyPath);
 
 #if DEBUG
-        var targetFile = @"C:\Source\Catel.Fody\output\debug\Catel.Fody.Tests\Catel.Fody.TestAssembly2.dll";
+        var targetFile = @"C:\Source\Catel.Fody\output\debug\Catel.Fody.Testss\Catel.Fody.TestAssembly2.dll";
         var targetDirectory = Path.GetDirectoryName(targetFile);
         Directory.CreateDirectory(targetDirectory);
         File.Copy(AfterAssemblyPath, targetFile, true);

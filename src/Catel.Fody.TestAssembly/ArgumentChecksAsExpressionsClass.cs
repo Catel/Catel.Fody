@@ -184,9 +184,23 @@ namespace Catel.Fody.TestAssembly
         }
 
         public void CheckForNullForGenericArgument<T>(T value)
-            where T : class 
+            where T : class
         {
             Argument.IsNotNull(() => value);
+
+        }
+
+        public void CheckForNullForGenericArgumentWithPredicate<T>(T value)
+            where T : EventArgs
+        {
+            Argument.IsNotNull(() => value);
+
+        }
+
+        public void CheckForNullForGenericArgumentWithPredicate_Expected<T>(T value)
+            where T : EventArgs
+        {
+            Argument.IsNotNull("value", value);
 
         }
     }
