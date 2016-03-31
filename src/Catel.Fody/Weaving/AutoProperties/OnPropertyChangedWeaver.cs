@@ -169,7 +169,7 @@ namespace Catel.Fody.Weaving.AutoProperties
 
                 body.OptimizeMacros();
 
-                if (!methodDefinition.IsMarkedAsCompilerGenerated())
+                if (!methodDefinition.IsMarkedAsGeneratedCode())
                 {
                     // Don't support this, see CTL-569
                     return null;

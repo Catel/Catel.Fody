@@ -18,40 +18,40 @@ namespace Catel.Fody
             return $"{member.DeclaringType.FullName}.{member.Name}";
         }
 
-        public static bool IsMarkedAsCompilerGenerated(this TypeReference type)
+        public static bool IsMarkedAsGeneratedCode(this TypeReference type)
         {
-            return IsMarkedAsCompilerGeneratedInternal(type);
+            return IsMarkedAsGeneratedCodeInternal(type);
         }
 
-        public static bool IsMarkedAsCompilerGenerated(this MemberReference member)
+        public static bool IsMarkedAsGeneratedCode(this MemberReference member)
         {
-            return IsMarkedAsCompilerGeneratedInternal(member);
+            return IsMarkedAsGeneratedCodeInternal(member);
         }
 
-        private static bool IsMarkedAsCompilerGeneratedInternal(object obj)
+        private static bool IsMarkedAsGeneratedCodeInternal(object obj)
         {
             var fieldDefinition = obj as FieldDefinition;
             if (fieldDefinition != null)
             {
-                return ContainsAttribute(fieldDefinition.CustomAttributes, MsCoreReferenceFinder.CompilerGeneratedAttributeTypeName);
+                return ContainsAttribute(fieldDefinition.CustomAttributes, MsCoreReferenceFinder.GeneratedCodeAttributeTypeName);
             }
 
             var propertyDefinition = obj as PropertyDefinition;
             if (propertyDefinition != null)
             {
-                return ContainsAttribute(propertyDefinition.CustomAttributes, MsCoreReferenceFinder.CompilerGeneratedAttributeTypeName);
+                return ContainsAttribute(propertyDefinition.CustomAttributes, MsCoreReferenceFinder.GeneratedCodeAttributeTypeName);
             }
 
             var methodDefinition = obj as MethodDefinition;
             if (methodDefinition != null)
             {
-                return ContainsAttribute(methodDefinition.CustomAttributes, MsCoreReferenceFinder.CompilerGeneratedAttributeTypeName);
+                return ContainsAttribute(methodDefinition.CustomAttributes, MsCoreReferenceFinder.GeneratedCodeAttributeTypeName);
             }
 
             var typeDefinition = obj as TypeDefinition;
             if (typeDefinition != null)
             {
-                return ContainsAttribute(typeDefinition.CustomAttributes, MsCoreReferenceFinder.CompilerGeneratedAttributeTypeName);
+                return ContainsAttribute(typeDefinition.CustomAttributes, MsCoreReferenceFinder.GeneratedCodeAttributeTypeName);
             }
 
             return false;
