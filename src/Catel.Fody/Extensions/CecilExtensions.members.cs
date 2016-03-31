@@ -13,11 +13,9 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
-        private const string CompilerGeneratedAttributeTypeName = "System.Runtime.CompilerServices.CompilerGeneratedAttribute";
-
         public static string GetFullName(this MemberReference member)
         {
-            return string.Format("{0}.{1}", member.DeclaringType.FullName, member.Name);
+            return $"{member.DeclaringType.FullName}.{member.Name}";
         }
 
         public static bool IsMarkedAsCompilerGenerated(this TypeReference type)
@@ -35,25 +33,25 @@ namespace Catel.Fody
             var fieldDefinition = obj as FieldDefinition;
             if (fieldDefinition != null)
             {
-                return ContainsAttribute(fieldDefinition.CustomAttributes, CompilerGeneratedAttributeTypeName);
+                return ContainsAttribute(fieldDefinition.CustomAttributes, MsCoreReferenceFinder.CompilerGeneratedAttributeTypeName);
             }
 
             var propertyDefinition = obj as PropertyDefinition;
             if (propertyDefinition != null)
             {
-                return ContainsAttribute(propertyDefinition.CustomAttributes, CompilerGeneratedAttributeTypeName);
+                return ContainsAttribute(propertyDefinition.CustomAttributes, MsCoreReferenceFinder.CompilerGeneratedAttributeTypeName);
             }
 
             var methodDefinition = obj as MethodDefinition;
             if (methodDefinition != null)
             {
-                return ContainsAttribute(methodDefinition.CustomAttributes, CompilerGeneratedAttributeTypeName);
+                return ContainsAttribute(methodDefinition.CustomAttributes, MsCoreReferenceFinder.CompilerGeneratedAttributeTypeName);
             }
 
             var typeDefinition = obj as TypeDefinition;
             if (typeDefinition != null)
             {
-                return ContainsAttribute(typeDefinition.CustomAttributes, CompilerGeneratedAttributeTypeName);
+                return ContainsAttribute(typeDefinition.CustomAttributes, MsCoreReferenceFinder.CompilerGeneratedAttributeTypeName);
             }
 
             return false;
@@ -71,52 +69,92 @@ namespace Catel.Fody
 
         public static void MarkAsCompilerGenerated(this TypeReference type, MsCoreReferenceFinder msCoreReferenceFinder)
         {
-            MarkAsCompilerGeneratedInternal(type, msCoreReferenceFinder);
+            MarkAsGeneratedCodeInternal(type, msCoreReferenceFinder);
         }
 
         public static void MarkAsCompilerGenerated(this MemberReference member, MsCoreReferenceFinder msCoreReferenceFinder)
         {
-            MarkAsCompilerGeneratedInternal(member, msCoreReferenceFinder);
+            MarkAsGeneratedCodeInternal(member, msCoreReferenceFinder);
         }
 
-        private static void MarkAsCompilerGeneratedInternal(object obj, MsCoreReferenceFinder msCoreReferenceFinder)
+        private static void MarkAsGeneratedCodeInternal(object obj, MsCoreReferenceFinder msCoreReferenceFinder)
         {
-            var compilerGeneratedAttribute = (TypeDefinition)msCoreReferenceFinder.GetCoreTypeReference(CompilerGeneratedAttributeTypeName);
-            if (compilerGeneratedAttribute != null)
+            var fieldDefinition = obj as FieldDefinition;
+            if (fieldDefinition != null)
             {
-                var fieldDefinition = obj as FieldDefinition;
-                if (fieldDefinition != null)
-                {
-                    var attribute = CreateAttribute(compilerGeneratedAttribute, fieldDefinition.Module);
-                    fieldDefinition.CustomAttributes.Add(attribute);
-                }
+                fieldDefinition.CustomAttributes.MarkAsGeneratedCodeInternal(msCoreReferenceFinder, fieldDefinition.Module);
+            }
 
-                var propertyDefinition = obj as PropertyDefinition;
-                if (propertyDefinition != null)
-                {
-                    var attribute = CreateAttribute(compilerGeneratedAttribute, propertyDefinition.Module);
-                    propertyDefinition.CustomAttributes.Add(attribute);
-                }
+            var propertyDefinition = obj as PropertyDefinition;
+            if (propertyDefinition != null)
+            {
+                propertyDefinition.CustomAttributes.MarkAsGeneratedCodeInternal(msCoreReferenceFinder, propertyDefinition.Module);
+            }
 
-                var methodDefinition = obj as MethodDefinition;
-                if (methodDefinition != null)
-                {
-                    var attribute = CreateAttribute(compilerGeneratedAttribute, methodDefinition.Module);
-                    methodDefinition.CustomAttributes.Add(attribute);
-                }
+            var methodDefinition = obj as MethodDefinition;
+            if (methodDefinition != null)
+            {
+                methodDefinition.CustomAttributes.MarkAsGeneratedCodeInternal(msCoreReferenceFinder, methodDefinition.Module);
+            }
 
-                var typeDefinition = obj as TypeDefinition;
-                if (typeDefinition != null)
-                {
-                    var attribute = CreateAttribute(compilerGeneratedAttribute, typeDefinition.Module);
-                    typeDefinition.CustomAttributes.Add(attribute);
-                }
+            var typeDefinition = obj as TypeDefinition;
+            if (typeDefinition != null)
+            {
+                typeDefinition.CustomAttributes.MarkAsGeneratedCodeInternal(msCoreReferenceFinder, typeDefinition.Module);
             }
         }
 
-        private static CustomAttribute CreateAttribute(TypeDefinition attributeDefinition, ModuleDefinition importingModule)
+        private static void MarkAsGeneratedCodeInternal(this Collection<CustomAttribute> customAttributes, MsCoreReferenceFinder msCoreReferenceFinder, ModuleDefinition importingModule)
         {
-            return new CustomAttribute(importingModule.Import(attributeDefinition.Resolve().Constructor(false)));
+            var generatedCodeAttribute = CreateGeneratedCodeAttribute(msCoreReferenceFinder, importingModule);
+            if (generatedCodeAttribute != null)
+            {
+                customAttributes.Add(generatedCodeAttribute);
+            }
+
+            var debuggerAttribute = CreateDebuggerNonUserCodeAttribute(msCoreReferenceFinder, importingModule);
+            if (debuggerAttribute != null)
+            {
+                customAttributes.Add(debuggerAttribute);
+            }
+        }
+
+        private static CustomAttribute CreateGeneratedCodeAttribute(MsCoreReferenceFinder msCoreReferenceFinder, ModuleDefinition importingModule)
+        {
+            var attributeType = msCoreReferenceFinder.GeneratedCodeAttribute;
+            if (attributeType == null)
+            {
+                return null;
+            }
+
+            var stringType = (TypeDefinition)msCoreReferenceFinder.GetCoreTypeReference("System.String");
+
+            var constructor = attributeType.Resolve().FindConstructor(new[] {stringType, stringType}.ToList());
+            if (constructor == null)
+            {
+                return null;
+            }
+
+            var version = typeof(ModuleWeaver).Assembly.GetName().Version.ToString();
+            var name = typeof(ModuleWeaver).Assembly.GetName().Name;
+
+            var generatedAttribute = new CustomAttribute(importingModule.Import(constructor));
+            generatedAttribute.ConstructorArguments.Add(new CustomAttributeArgument(stringType, name));
+            generatedAttribute.ConstructorArguments.Add(new CustomAttributeArgument(stringType, version));
+
+            return generatedAttribute;
+        }
+
+        private static CustomAttribute CreateDebuggerNonUserCodeAttribute(MsCoreReferenceFinder msCoreReferenceFinder, ModuleDefinition importingModule)
+        {
+            var attributeType = msCoreReferenceFinder.DebuggerNonUserCodeAttribute;
+            if (attributeType == null)
+            {
+                return null;
+            }
+
+            var attribute = new CustomAttribute(importingModule.Import(attributeType.Resolve().Constructor(false)));
+            return attribute;
         }
     }
 }

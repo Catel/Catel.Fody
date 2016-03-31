@@ -30,7 +30,13 @@ namespace Catel.Fody.Weaving.Argument
                 return false;
             }
 
-            var firstParameter = methodBeingCalled.Parameters.FirstOrDefault();
+            var parameters = methodBeingCalled.Parameters;
+            if (parameters.Count == 0)
+            {
+                return false;
+            }
+
+            var firstParameter = parameters[0];
             if (firstParameter == null)
             {
                 return false;
@@ -44,8 +50,7 @@ namespace Catel.Fody.Weaving.Argument
             var finalKey = methodBeingCalled.GetFullName();
             if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
             {
-                FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
-                     method.GetFullName(), methodBeingCalled.GetFullName()), method.Body.Instructions.GetSequencePoint(instruction));
+                FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{methodBeingCalled.GetFullName()}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.Body.Instructions.GetSequencePoint(instruction));
 
                 return false;
             }
@@ -61,8 +66,7 @@ namespace Catel.Fody.Weaving.Argument
                 return;
             }
 
-            FodyEnvironment.LogDebug(string.Format("Method '{0}' no longer uses display class '{1}', removing the display class from the method", method.GetFullName(),
-                displayClassType.GetFullName()));
+            FodyEnvironment.LogDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
 
             // Remote display class from container
             if (method.DeclaringType.NestedTypes.Contains(displayClassType))

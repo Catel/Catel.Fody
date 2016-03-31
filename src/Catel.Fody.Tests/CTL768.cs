@@ -5,7 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
-namespace Catel.Fody.Testss
+namespace Catel.Fody.Tests
 {
     using System;
     using System.ComponentModel;
