@@ -47,7 +47,7 @@ namespace Catel.Fody.Weaving.Argument
                 }
                 catch (Exception ex)
                 {
-                    var error = string.Format("[{0}.{1}] {2}", type.FullName, methodDefinition.Name, ex.Message);
+                    var error = $"[{type.FullName}.{methodDefinition.Name}] {ex.Message}";
 
                     var sequencePoint = methodDefinition.Body.Instructions[instructionIndex].SequencePoint;
                     if (sequencePoint != null)

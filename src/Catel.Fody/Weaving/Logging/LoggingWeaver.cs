@@ -38,7 +38,7 @@ namespace Catel.Fody.Weaving.Logging
             var staticConstructor = _type.GetStaticConstructor();
             if (staticConstructor == null)
             {
-                FodyEnvironment.LogWarning(string.Format("Cannot weave ILog fields without a static constructor, ignoring type '{0}'", _type.FullName));
+                FodyEnvironment.LogWarning($"Cannot weave ILog fields without a static constructor, ignoring type '{_type.FullName}'");
                 return;
             }
 
@@ -51,8 +51,7 @@ namespace Catel.Fody.Weaving.Logging
             }
             catch (Exception ex)
             {
-                FodyEnvironment.LogWarning(string.Format("Failed to update static log definition in '{0}', '{1}'",
-                    _type.FullName, ex.Message));
+                FodyEnvironment.LogWarning($"Failed to update static log definition in '{_type.FullName}', '{ex.Message}'");
             }
 
             body.OptimizeMacros();
@@ -82,7 +81,7 @@ namespace Catel.Fody.Weaving.Logging
                 var methodReference = instruction.Operand as MethodReference;
                 if (methodReference != null)
                 {
-                    FodyEnvironment.LogDebug(string.Format("Weaving auto log to specific log for '{0}'", type.FullName));
+                    FodyEnvironment.LogDebug($"Weaving auto log to specific log for '{type.FullName}'");
 
                     if (string.Equals(methodReference.Name, "GetCurrentClassLogger"))
                     {
@@ -92,7 +91,7 @@ namespace Catel.Fody.Weaving.Logging
                         {
                             var point = instruction.SequencePoint;
 
-                            var message = string.Format("Cannot change method call for log '{0}', the GetLogger(type) method does not exist on the calling type (try to use LogManager.GetCurrentClassLogger())", type.FullName);
+                            var message = $"Cannot change method call for log '{type.FullName}', the GetLogger(type) method does not exist on the calling type (try to use LogManager.GetCurrentClassLogger())";
 
                             if (point != null)
                             {

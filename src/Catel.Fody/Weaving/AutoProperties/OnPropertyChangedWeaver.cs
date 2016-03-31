@@ -51,7 +51,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 var onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
                 if (onPropertyChangedMethod == null)
                 {
-                    FodyEnvironment.LogWarning(string.Format("No call to base.OnPropertyChanged(e) or a custom implementation in '{0}', cannot weave this method to automatically raise on dependent property change notifications", property.DeclaringType.Name));
+                    FodyEnvironment.LogWarning($"No call to base.OnPropertyChanged(e) or a custom implementation in '{property.DeclaringType.Name}', cannot weave this method to automatically raise on dependent property change notifications");
                     return false;
                 }
 

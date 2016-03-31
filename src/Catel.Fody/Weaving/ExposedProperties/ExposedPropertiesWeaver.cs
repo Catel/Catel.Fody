@@ -80,7 +80,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var modelPropertyToMap = modelType.GetProperty(modelPropertyName);
             if (modelPropertyToMap == null)
             {
-                FodyEnvironment.LogError(string.Format("Exposed property '{0}' does not exist on model '{1}', make sure to set the right mapping", modelPropertyName, modelType.FullName));
+                FodyEnvironment.LogError($"Exposed property '{modelPropertyName}' does not exist on model '{modelType.FullName}', make sure to set the right mapping");
                 return;
             }
 

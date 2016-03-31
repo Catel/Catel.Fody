@@ -52,7 +52,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                     if (AlreadyContainsCallToMember(propertyData.PropertyDefinition, catelType.GetValueInvoker.Name) ||
                         AlreadyContainsCallToMember(propertyData.PropertyDefinition, catelType.SetValueInvoker.Name))
                     {
-                        FodyEnvironment.LogDebug(string.Format("\t{0} already has GetValue and/or SetValue functionality. Property will be ignored.", propertyData.PropertyDefinition.GetName()));
+                        FodyEnvironment.LogDebug($"\t{propertyData.PropertyDefinition.GetName()} already has GetValue and/or SetValue functionality. Property will be ignored.");
                         continue;
                     }
 

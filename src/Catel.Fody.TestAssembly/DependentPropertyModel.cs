@@ -62,7 +62,7 @@ namespace Catel.Fody.TestAssembly
         #region Properties
         public string Profile
         {
-            get { return string.Format("Name:{0}, Age:{1}", FullName, Age).Trim(); }
+            get { return $"Name:{FullName}, Age:{Age}".Trim(); }
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace Catel.Fody.TestAssembly
         #region Properties
         public string Profile
         {
-            get { return string.Format("Name:{0}, Age:{1}", FullName, Age).Trim(); }
+            get { return $"Name:{FullName}, Age:{Age}".Trim(); }
         }
         #endregion
     }
