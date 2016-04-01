@@ -54,7 +54,7 @@ namespace Catel.Fody
                 return false;
             }
 
-            string requestKey = string.Format("{0}_{1}", typeReference.FullName, typeName);
+            string requestKey = $"{typeReference.FullName}_{typeName}";
             bool implementsModelBase;
             if (_implementsTypeCache.TryGetValue(requestKey, out implementsModelBase))
             {

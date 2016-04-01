@@ -5,7 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
-namespace Catel.Fody.Test
+namespace Catel.Fody.Tests
 {
     using Data;
     using NUnit.Framework;

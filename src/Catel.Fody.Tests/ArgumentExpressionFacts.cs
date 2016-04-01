@@ -4,12 +4,10 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Catel.Fody.Test
+namespace Catel.Fody.Tests
 {
     using System;
     using System.Diagnostics;
-    using System.Runtime.Serialization;
-    using System.Windows.Media;
     using NUnit.Framework;
 
     public class ArgumentExpressionFacts
@@ -30,6 +28,36 @@ namespace Catel.Fody.Test
                 var genericMethod = method.MakeGenericMethod(typeof (ProcessStartInfo));
 
                 CallMethodAndExpectException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null }));
+            }
+
+            [TestCase]
+            public void CorrectlyCompilesGenericArgumentWithPredicateChecks()
+            {
+                // Note: do NOT instantiate the type, then you will get the "unweaved" types. You need to use this helper during unit tests
+                var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+
+                // Instantiate to have properties registered
+                var instance = Activator.CreateInstance(type);
+
+                var method = type.GetMethod("CheckForNullForGenericArgumentWithPredicate");
+                var genericMethod = method.MakeGenericMethod(typeof(MyEventArgs));
+
+                CallMethodAndExpectException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null }));
+            }
+
+            [TestCase]
+            public void CheckForNullForGenericArgumentWithPredicateAndInstantiation()
+            {
+                // Note: do NOT instantiate the type, then you will get the "unweaved" types. You need to use this helper during unit tests
+                var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+
+                // Instantiate to have properties registered
+                var instance = Activator.CreateInstance(type);
+
+                var method = type.GetMethod("CheckForNullForGenericArgumentWithPredicateAndInstantiation");
+                var genericMethod = method.MakeGenericMethod(typeof(MyEventArgs));
+
+                CallMethodAndExpectException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null, "mystring" }));
             }
 
             [TestCase]

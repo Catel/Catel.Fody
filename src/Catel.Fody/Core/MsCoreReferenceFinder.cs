@@ -8,11 +8,14 @@ namespace Catel.Fody
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Cryptography.X509Certificates;
     using Mono.Cecil;
 
     public class MsCoreReferenceFinder
     {
+        public const string CompilerGeneratedAttributeTypeName = "System.Runtime.CompilerServices.CompilerGeneratedAttribute";
+        public const string GeneratedCodeAttributeTypeName = "System.CodeDom.Compiler.GeneratedCodeAttribute";
+        public const string DebuggerNonUserCodeAttributeTypeName = "System.Diagnostics.DebuggerNonUserCodeAttribute";
+
         private readonly ModuleWeaver _moduleWeaver;
         private readonly IAssemblyResolver _assemblyResolver;
 
@@ -21,6 +24,10 @@ namespace Catel.Fody
         // Types
         public TypeReference XmlQualifiedName;
         public TypeReference XmlSchemaSet;
+
+        public TypeReference GeneratedCodeAttribute;
+        public TypeReference CompilerGeneratedAttribute;
+        public TypeReference DebuggerNonUserCodeAttribute;
 
         public MsCoreReferenceFinder(ModuleWeaver moduleWeaver, IAssemblyResolver assemblyResolver)
         {
@@ -49,6 +56,10 @@ namespace Catel.Fody
             XmlSchemaSet = (from t in xmlTypes
                             where string.Equals(t.FullName, "System.Xml.Schema.XmlSchemaSet")
                             select t).FirstOrDefault();
+
+            GeneratedCodeAttribute = GetCoreTypeReference(GeneratedCodeAttributeTypeName);
+            CompilerGeneratedAttribute = GetCoreTypeReference(CompilerGeneratedAttributeTypeName);
+            DebuggerNonUserCodeAttribute = GetCoreTypeReference(DebuggerNonUserCodeAttributeTypeName);
         }
 
         public TypeReference GetCoreTypeReference(string typeName)

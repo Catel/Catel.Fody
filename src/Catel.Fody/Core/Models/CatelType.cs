@@ -14,8 +14,6 @@ namespace Catel.Fody
     using System.Linq;
     using System.Reflection;
 
-    using Catel.Fody.Extensions;
-
     using Mono.Cecil;
     using Mono.Cecil.Cil;
 
@@ -43,7 +41,7 @@ namespace Catel.Fody
             DetermineCatelType();
             if (Type == CatelTypeType.Unknown)
             {
-                FodyEnvironment.LogWarning(string.Format("Cannot determine the Catel type used for '{0}', type will be ignored for weaving", Name));
+                FodyEnvironment.LogWarning($"Cannot determine the Catel type used for '{Name}', type will be ignored for weaving");
                 return;
             }
 
@@ -63,7 +61,7 @@ namespace Catel.Fody
             }
             catch (Exception)
             {
-                FodyEnvironment.LogWarning(string.Format("Failed to get additional information about type '{0}', type will be ignored for weaving", Name));
+                FodyEnvironment.LogWarning($"Failed to get additional information about type '{Name}', type will be ignored for weaving");
             }
         }
 
@@ -297,7 +295,9 @@ namespace Catel.Fody
 
         public IEnumerable<PropertyDefinition> GetDependentPropertiesFrom(PropertyDefinition property)
         {
-            var dependentPropertyDefinitions = (from dependentPropertyDefinition in this.TypeDefinition.Properties where dependentPropertyDefinition != property && this.ExistPropertyDependencyBetween(dependentPropertyDefinition, property) select dependentPropertyDefinition).ToList();
+            var dependentPropertyDefinitions = (from dependentPropertyDefinition in TypeDefinition.Properties
+                                                where dependentPropertyDefinition != property && ExistPropertyDependencyBetween(dependentPropertyDefinition, property)
+                                                select dependentPropertyDefinition).ToList();
             for (var i = 0; i < dependentPropertyDefinitions.Count; i++)
             {
                 foreach (var propertyDefinition in GetDependentPropertiesFrom(dependentPropertyDefinitions[i]))

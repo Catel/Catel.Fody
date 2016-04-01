@@ -48,13 +48,13 @@ namespace Catel.Fody
 
             if (!force && !HasBackingField(property))
             {
-                FodyEnvironment.LogDebug(string.Format("\t\tSkipping '{0}' because it has no backing field", property.Name));
+                FodyEnvironment.LogDebug($"\t\tSkipping '{property.Name}' because it has no backing field");
                 return;
             }
 
             if (ImplementsICommand(property))
             {
-                FodyEnvironment.LogDebug(string.Format("\t\tSkipping '{0}' because it implements ICommand", property.Name));
+                FodyEnvironment.LogDebug($"\t\tSkipping '{property.Name}' because it implements ICommand");
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace Catel.Fody
             }
             catch (Exception ex)
             {
-                FodyEnvironment.LogError(string.Format("\t\tFailed to handle property '{0}.{1}'\n{2}\n{3}", property.DeclaringType.Name, property.Name, ex.Message, ex.StackTrace));
+                FodyEnvironment.LogError($"\t\tFailed to handle property '{property.DeclaringType.Name}.{property.Name}'\n{ex.Message}\n{ex.StackTrace}");
 
 #if DEBUG
                 Debugger.Launch();
@@ -92,7 +92,7 @@ namespace Catel.Fody
 
         private string GetChangeNotificationHandlerFieldName(PropertyDefinition property)
         {
-            string key = string.Format("{0}|{1}", property.DeclaringType.FullName, property.Name);
+            string key = $"{property.DeclaringType.FullName}|{property.Name}";
             if (_cachedFieldNames.ContainsKey(key))
             {
                 return _cachedFieldNames[key];
@@ -101,7 +101,7 @@ namespace Catel.Fody
             int counter = 2; // start at 2
             while (true)
             {
-                string fieldName = string.Format("CS$<>9__CachedAnonymousMethodDelegate{0}", counter);
+                string fieldName = $"CS$<>9__CachedAnonymousMethodDelegate{counter}";
                 if (GetFieldDefinition(property.DeclaringType, fieldName, false) == null)
                 {
                     _cachedFieldNames[key] = fieldName;
@@ -114,7 +114,7 @@ namespace Catel.Fody
 
         private string GetChangeNotificationHandlerConstructorName(PropertyDefinition property)
         {
-            string key = string.Format("{0}|{1}", property.DeclaringType.FullName, property.Name);
+            string key = $"{property.DeclaringType.FullName}|{property.Name}";
             if (_cachedFieldInitializerNames.ContainsKey(key))
             {
                 return _cachedFieldInitializerNames[key];
@@ -123,7 +123,7 @@ namespace Catel.Fody
             int counter = 0; // start at 0
             while (true)
             {
-                string methodName = string.Format("<.cctor>b__{0}", counter);
+                string methodName = $"<.cctor>b__{counter}";
                 if (GetMethodReference(property.DeclaringType, methodName, false) == null)
                 {
                     _cachedFieldInitializerNames[key] = methodName;
@@ -139,7 +139,7 @@ namespace Catel.Fody
             var staticConstructor = type.Constructor(true);
             if (staticConstructor == null)
             {
-                FodyEnvironment.LogDebug(string.Format("\t\t\t{0} - adding static constructor", type.Name));
+                FodyEnvironment.LogDebug($"\t\t\t{type.Name} - adding static constructor");
 
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
@@ -155,7 +155,7 @@ namespace Catel.Fody
 
                 type.Methods.Add(staticConstructor);
 
-                FodyEnvironment.LogDebug(string.Format("\t\t\t{0} - added static constructor", type.Name));
+                FodyEnvironment.LogDebug($"\t\t\t{type.Name} - added static constructor");
             }
         }
 
@@ -166,7 +166,7 @@ namespace Catel.Fody
                 return;
             }
 
-            FodyEnvironment.LogDebug(string.Format("\t\t\t{0} - adding On{0}Changed invocation", property.Name));
+            FodyEnvironment.LogDebug($"\t\t\t{property.Name} - adding On{property.Name}Changed invocation");
 
             var declaringType = property.DeclaringType;
             string fieldName = GetChangeNotificationHandlerFieldName(property);
@@ -218,7 +218,7 @@ namespace Catel.Fody
 
         private FieldDefinition AddPropertyFieldDefinition(PropertyDefinition property)
         {
-            string fieldName = string.Format("{0}Property", property.Name);
+            string fieldName = $"{property.Name}Property";
             var declaringType = property.DeclaringType;
 
             var fieldDefinition = new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly, _catelType.PropertyDataType);
@@ -232,12 +232,12 @@ namespace Catel.Fody
 
         private bool AddPropertyRegistration(PropertyDefinition property, CatelTypeProperty propertyData)
         {
-            var fieldName = string.Format("{0}Property", property.Name);
+            var fieldName = $"{property.Name}Property";
             var declaringType = property.DeclaringType;
             var fieldReference = GetFieldReference(declaringType, fieldName, true);
             if (fieldReference == null)
             {
-                FodyEnvironment.LogWarning(string.Format("\t\tCannot handle property '{0}.{1}' because backing field is not found", _catelType.Name, property.Name));
+                FodyEnvironment.LogWarning($"\t\tCannot handle property '{_catelType.Name}.{property.Name}' because backing field is not found");
                 return false;
             }
 
@@ -414,7 +414,7 @@ namespace Catel.Fody
 
         private int AddGetValueCall(PropertyDefinition property, FieldReference fieldReference)
         {
-            FodyEnvironment.LogDebug(string.Format("\t\t\t{0} - adding GetValue call", property.Name));
+            FodyEnvironment.LogDebug($"\t\t\t{property.Name} - adding GetValue call");
 
             var genericGetValue = new GenericInstanceMethod(_catelType.GetValueInvoker);
 
@@ -427,7 +427,7 @@ namespace Catel.Fody
 
             if (property.GetMethod == null)
             {
-                var getMethod = new MethodDefinition(string.Format("get_{0}", property.Name), MethodAttributes.Public, property.PropertyType.Import());
+                var getMethod = new MethodDefinition($"get_{property.Name}", MethodAttributes.Public, property.PropertyType.Import());
 
                 property.DeclaringType.Methods.Add(getMethod);
 
@@ -456,7 +456,7 @@ namespace Catel.Fody
 
         private int AddSetValueCall(PropertyDefinition property, FieldReference fieldReference, bool isReadOnly)
         {
-            FodyEnvironment.LogDebug(string.Format("\t\t\t{0} - adding SetValue call", property.Name));
+            FodyEnvironment.LogDebug($"\t\t\t{property.Name} - adding SetValue call");
 
             //string fieldName = string.Format("{0}Property", property.Name);
             //var declaringType = property.DeclaringType;
@@ -468,7 +468,7 @@ namespace Catel.Fody
             {
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
-                var setMethod = new MethodDefinition(string.Format("set_{0}", property.Name), MethodAttributes.Public, property.DeclaringType.Module.Import(voidType));
+                var setMethod = new MethodDefinition($"set_{property.Name}", MethodAttributes.Public, property.DeclaringType.Module.Import(voidType));
                 setMethod.Parameters.Add(new ParameterDefinition(property.PropertyType.Import()));
 
                 property.DeclaringType.Methods.Add(setMethod);
@@ -516,7 +516,7 @@ namespace Catel.Fody
 
         private string GetBackingFieldName(PropertyDefinition property)
         {
-            return string.Format("<{0}>k__BackingField", property.Name);
+            return $"<{property.Name}>k__BackingField";
         }
 
         private GenericInstanceType GetEventHandlerAdvancedPropertyChangedEventArgs(PropertyDefinition property)
@@ -602,8 +602,7 @@ namespace Catel.Fody
 
                         if (instruction.UsesField(field))
                         {
-                            FodyEnvironment.LogDebug(string.Format("Field '{0}.{1}' is used in ctor '{2}'. Converting field usage to property usage to maintain compatibility with Catel generated properties.",
-                                declaringType.FullName, field.Name, ctor));
+                            FodyEnvironment.LogDebug($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. Converting field usage to property usage to maintain compatibility with Catel generated properties.");
 
                             if (instruction.IsOpCode(OpCodes.Stfld))
                             {
@@ -683,8 +682,7 @@ namespace Catel.Fody
                             }
                             else
                             {
-                                FodyEnvironment.LogError(string.Format("Field '{0}.{1}' is used in ctor '{2}'. Tried to convert it to property usage, but OpCode '{3}' is not supported. Please raise an issue.",
-                                    declaringType.FullName, field.Name, ctor, instruction.OpCode));
+                                FodyEnvironment.LogError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. Tried to convert it to property usage, but OpCode '{instruction.OpCode}' is not supported. Please raise an issue.");
                             }
                         }
                     }

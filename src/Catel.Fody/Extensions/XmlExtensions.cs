@@ -24,7 +24,7 @@ namespace Catel.Fody
                 }
                 else
                 {
-                    throw new WeavingException(string.Format("Could not parse '{0}' from '{1}'.", nodeName, attribute.Value));
+                    throw new WeavingException($"Could not parse '{nodeName}' from '{attribute.Value}'.");
                 }
             }
         }

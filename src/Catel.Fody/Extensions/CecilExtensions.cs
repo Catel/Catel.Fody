@@ -166,7 +166,7 @@ namespace Catel.Fody
 
         public static TypeDefinition FindType(this ModuleDefinition moduleDefinition, string assemblyName, string typeName)
         {
-            var cacheKey = string.Format("{0}, {1}|{2}", typeName, assemblyName, moduleDefinition.Name);
+            var cacheKey = $"{typeName}, {assemblyName}|{moduleDefinition.Name}";
             if (_cachedTypeDefinitions.ContainsKey(cacheKey))
             {
                 return _cachedTypeDefinitions[cacheKey];
@@ -270,7 +270,7 @@ namespace Catel.Fody
 
         public static string GetName(this PropertyDefinition propertyDefinition)
         {
-            return string.Format("{0}.{1}", propertyDefinition.DeclaringType.FullName, propertyDefinition.Name);
+            return $"{propertyDefinition.DeclaringType.FullName}.{propertyDefinition.Name}";
         }
 
         public static bool IsCall(this OpCode opCode)
@@ -280,7 +280,7 @@ namespace Catel.Fody
 
         public static string GetName(this MethodDefinition methodDefinition)
         {
-            return string.Format("{0}.{1}", methodDefinition.DeclaringType.FullName, methodDefinition.Name);
+            return $"{methodDefinition.DeclaringType.FullName}.{methodDefinition.Name}";
         }
 
         public static MethodDefinition Constructor(this TypeDefinition typeDefinition, bool isStatic)

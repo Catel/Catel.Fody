@@ -1,4 +1,4 @@
-namespace Catel.Fody.Extensions
+namespace Catel.Fody
 {
     using Mono.Cecil;
 
@@ -8,13 +8,15 @@ namespace Catel.Fody.Extensions
         public static bool IsAssignableFrom(this TypeReference target, TypeReference type)
         {
             target = type.Module.Import(target).Resolve();
-            for (TypeDefinition typeDefinition = type.Resolve(); !typeDefinition.Equals(target) && !typeDefinition.Interfaces.Contains(target); typeDefinition = typeDefinition.BaseType.Resolve())
+
+            for (var typeDefinition = type.Resolve(); !typeDefinition.Equals(target) && !typeDefinition.Interfaces.Contains(target); typeDefinition = typeDefinition.BaseType.Resolve())
             {
                 if (typeDefinition.BaseType == null)
                 {
                     return false;
                 }
             }
+
             return true;
         }
         #endregion

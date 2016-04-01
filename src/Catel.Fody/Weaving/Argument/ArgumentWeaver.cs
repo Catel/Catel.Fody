@@ -60,7 +60,7 @@ namespace Catel.Fody.Weaving.Argument
             Collection<Instruction> instructions = null;
 
             var methodFullName = method.GetFullName();
-            FodyEnvironment.LogDebug(string.Format("Processing method '{0}'", methodFullName));
+            FodyEnvironment.LogDebug($"Processing method '{methodFullName}'");
 
             // Step 1) Convert attributes
             // TODO: how to handle async/await here?
@@ -84,8 +84,7 @@ namespace Catel.Fody.Weaving.Argument
                     }
                     else if (attributeFullName.StartsWith("Catel.Fody"))
                     {
-                        FodyEnvironment.LogErrorPoint(string.Format("Weaving of parameter '{0}' of methods '{1}' with attribute '{2}' is not (yet) supported, please use a different method",
-                            method.GetFullName(), parameter.Name, attributeFullName), method.GetFirstSequencePoint());
+                        FodyEnvironment.LogErrorPoint($"Weaving of parameter '{method.GetFullName()}' of methods '{parameter.Name}' with attribute '{attributeFullName}' is not (yet) supported, please use a different method", method.GetFirstSequencePoint());
                     }
                 }
             }
@@ -111,7 +110,7 @@ namespace Catel.Fody.Weaving.Argument
                         var parameterOrField = GetParameterOrFieldForExpressionArgumentCheck(method, instructions, instruction);
                         if (parameterOrField == null)
                         {
-                            FodyEnvironment.LogWarning(string.Format("Cannot weave at least one argument of method '{0}'", method.GetFullName()));
+                            FodyEnvironment.LogWarning($"Cannot weave at least one argument of method '{method.GetFullName()}'");
                             continue;
                         }
 
@@ -123,8 +122,7 @@ namespace Catel.Fody.Weaving.Argument
                         var customAttribute = ExpressionChecksToAttributeMappings[fullKey](method, instructions, instruction);
                         if (customAttribute == null)
                         {
-                            FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
-                                method.GetFullName(), fullKey), method.Body.Instructions.GetSequencePoint(instruction));
+                            FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{fullKey}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.Body.Instructions.GetSequencePoint(instruction));
 
                             continue;
                         }

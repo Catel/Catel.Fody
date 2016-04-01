@@ -44,7 +44,7 @@ namespace Catel.Fody.Services
                     System.Diagnostics.Debugger.Launch();
 #endif
 
-                    string error = string.Format("An error occurred while weaving type '{0}'", catelTypeNode.TypeDefinition.FullName);
+                    string error = $"An error occurred while weaving type '{catelTypeNode.TypeDefinition.FullName}'";
                     FodyEnvironment.LogError(error);
                 }
             }

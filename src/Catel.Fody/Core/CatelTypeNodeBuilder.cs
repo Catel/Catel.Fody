@@ -51,7 +51,7 @@ namespace Catel.Fody
 
             if (typeDefinition.IsDecoratedWithAttribute("Catel.Fody.NoWeavingAttribute"))
             {
-                FodyEnvironment.LogDebug(string.Format("\t{0} is decorated with the NoWeaving attribute, type will be ignored.", typeDefinition.FullName));
+                FodyEnvironment.LogDebug($"\t{typeDefinition.FullName} is decorated with the NoWeaving attribute, type will be ignored.");
 
                 typeDefinition.RemoveAttribute("Catel.Fody.NoWeavingAttribute");
                 return;

@@ -19,7 +19,7 @@ namespace Catel.Fody.Weaving.Argument
             var isValueType = typeToCheck.IsValueType;
             if (isValueType)
             {
-                throw new Exception(string.Format("'{0}' is a value type or struct, you cannot check for null on value types", typeToCheck.FullName));
+                throw new Exception($"'{typeToCheck.FullName}' is a value type or struct, you cannot check for null on value types");
             }
 
             selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotNull" && definition.Parameters.Count == 2 && string.Equals(definition.Parameters[1].ParameterType.FullName, typeToCheck.FullName));

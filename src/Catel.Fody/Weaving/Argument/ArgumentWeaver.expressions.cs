@@ -30,7 +30,13 @@ namespace Catel.Fody.Weaving.Argument
                 return false;
             }
 
-            var firstParameter = methodBeingCalled.Parameters.FirstOrDefault();
+            var parameters = methodBeingCalled.Parameters;
+            if (parameters.Count == 0)
+            {
+                return false;
+            }
+
+            var firstParameter = parameters[0];
             if (firstParameter == null)
             {
                 return false;
@@ -44,8 +50,7 @@ namespace Catel.Fody.Weaving.Argument
             var finalKey = methodBeingCalled.GetFullName();
             if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
             {
-                FodyEnvironment.LogWarningPoint(string.Format("Expression argument method transformation in '{0}' to '{1}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)",
-                     method.GetFullName(), methodBeingCalled.GetFullName()), method.Body.Instructions.GetSequencePoint(instruction));
+                FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{methodBeingCalled.GetFullName()}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.Body.Instructions.GetSequencePoint(instruction));
 
                 return false;
             }
@@ -61,10 +66,9 @@ namespace Catel.Fody.Weaving.Argument
                 return;
             }
 
-            FodyEnvironment.LogDebug(string.Format("Method '{0}' no longer uses display class '{1}', removing the display class from the method", method.GetFullName(),
-                displayClassType.GetFullName()));
+            FodyEnvironment.LogDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
 
-            // Remote display class from container
+            // Remove display class from container
             if (method.DeclaringType.NestedTypes.Contains(displayClassType))
             {
                 method.DeclaringType.NestedTypes.Remove(displayClassType);
@@ -80,9 +84,15 @@ namespace Catel.Fody.Weaving.Argument
                 }
             }
 
-            // Remove display class creation
-            //L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
-            //L_0005: stloc.0 
+            // Remove display class creation, can be either:
+            //
+            // Msbuild
+            //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
+            //   L_0005: stloc.0 
+            //
+            // Roslyn
+            //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
+            //   L_0005: dup
 
             for (var i = 0; i < instructions.Count; i++)
             {
@@ -113,15 +123,31 @@ namespace Catel.Fody.Weaving.Argument
                     {
                         // Delete 2 instructions, same location since remove will move everything 1 place up
                         instructions.RemoveAt(i);
+
+                        // Special case in .net core
+                        if (instructions[i].OpCode == OpCodes.Dup)
+                        {
+                            instructions.RemoveAt(i);
+                        }
+
                         instructions.RemoveAt(i);
                     }
                 }
             }
 
-            // Remove display class allocation
-            //L_0014: ldloc.0 
-            //L_0015: ldarg.3 
-            //L_0016: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass28::myObject3
+            //// Remove all assignments to the display class
+            ////   ldarg.0 
+            ////   stfld class MyClass/<>c__DisplayClass0_0`1<!!T>::myArgument
+
+            //for (var i = 0; i < instructions.Count; i++)
+            //{
+            //    var innerInstruction = instructions[i];
+            //}
+
+            // Remove display class allocation and assigments
+            //   L_0014: ldloc.0 (can also be dup)
+            //   L_0015: ldarg.3 
+            //   L_0016: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass28::myObject3
 
             for (var i = 0; i < instructions.Count; i++)
             {
@@ -181,6 +207,23 @@ namespace Catel.Fody.Weaving.Argument
 
                 // Async/await code
                 if (innerInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                {
+                    break;
+                }
+
+                // Since .NET core, we want to skip assignments:
+                //
+                //   ldarg.0 
+                //   stfld class MyClass/<>c__DisplayClass0_0`1<!!T>::myArgument
+                // 
+                // If the display class is no longer used, another method must remove the code
+                if (innerInstruction.IsOpCode(OpCodes.Stfld, OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3))
+                {
+                    break;
+                }
+
+                // .net core code
+                if (innerInstruction.IsOpCode(OpCodes.Dup))
                 {
                     break;
                 }

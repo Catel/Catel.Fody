@@ -47,7 +47,7 @@ namespace Catel.Fody
 
         private void DetermineMethods()
         {
-            string methodName = string.Format("On{0}Changed", PropertyDefinition.Name);
+            string methodName = $"On{PropertyDefinition.Name}Changed";
 
             var declaringType = PropertyDefinition.DeclaringType;
 
@@ -61,7 +61,7 @@ namespace Catel.Fody
                 {
                     if (callbackReference.HasParameters)
                     {
-                        FodyEnvironment.LogWarning(string.Format("Method '{0}.{1}' matches automatic change method name but has parameters and will not be used as automatic change callback. Rename the method to remove this warning or remove parameters to use as automatic callback method.", declaringType.FullName, callbackReference.Name));
+                        FodyEnvironment.LogWarning($"Method '{declaringType.FullName}.{callbackReference.Name}' matches automatic change method name but has parameters and will not be used as automatic change callback. Rename the method to remove this warning or remove parameters to use as automatic callback method.");
                         continue;
                     }
 
@@ -102,7 +102,7 @@ namespace Catel.Fody
             foreach (var field in fieldsWithSameType)
             {
                 //AutoProp
-                if (field.Name == string.Format("<{0}>k__BackingField", propertyName))
+                if (field.Name == $"<{propertyName}>k__BackingField")
                 {
                     return field;
                 }

@@ -140,7 +140,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
 
         private string GetXmlSchemaMethodName(CatelType catelType)
         {
-            var methodName = string.Format("GetXmlSchemaFor{0}", catelType.TypeDefinition.FullName);
+            var methodName = $"GetXmlSchemaFor{catelType.TypeDefinition.FullName}";
 
             return methodName.Replace(".", string.Empty).Replace("<", string.Empty).Replace(">", string.Empty).Replace("`", string.Empty);
         }

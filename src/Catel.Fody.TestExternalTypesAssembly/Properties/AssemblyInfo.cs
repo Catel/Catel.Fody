@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Catel.Fody.TestExternalTypesAssembly")]
+[assembly: AssemblyTitle("Catel.Fody.TestsExternalTypesAssembly")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Catel.Fody.TestExternalTypesAssembly")]
+[assembly: AssemblyProduct("Catel.Fody.TestsExternalTypesAssembly")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
