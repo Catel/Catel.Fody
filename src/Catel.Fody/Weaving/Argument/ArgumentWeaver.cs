@@ -128,13 +128,13 @@ namespace Catel.Fody.Weaving.Argument
                         }
 
                         var removedInfo = RemoveArgumentWeavingCall(method, instructions, instruction);
-                        if (!displayClasses.Contains(removedInfo.Item1))
+                        if (!displayClasses.Contains(removedInfo.DisplayClassTypeDefinition))
                         {
-                            displayClasses.Add(removedInfo.Item1);
+                            displayClasses.Add(removedInfo.DisplayClassTypeDefinition);
                         }
 
                         var weaver = ArgumentMethodCallWeaverBase.WellKnownWeavers[customAttribute.AttributeType.FullName];
-                        if (!weaver.Execute(_typeDefinition, method, parameterOrField, customAttribute, removedInfo.Item2))
+                        if (!weaver.Execute(_typeDefinition, method, parameterOrField, customAttribute, removedInfo.Index))
                         {
                             // We failed, the build should fail now
                             return;
