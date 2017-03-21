@@ -97,6 +97,7 @@
     <Compile Include="Weaving\Argument\Implementations\ImplementsInterfaceArgumentMethodCallWeave.cs" />
     <Compile Include="Weaving\Argument\Implementations\IsOfTypeArgumentMethodCallWeave.cs" />
     <Compile Include="Weaving\Argument\DefaultArgumentMethodCallWeaverBase.cs" />
+    <Compile Include="Weaving\Argument\Models\RemoveArgumentWeavingCallResult.cs" />
     <Compile Include="Weaving\Argument\RegexRelatedArgumentMethodCallWeaverBase.cs" />
     <Compile Include="Weaving\Argument\Implementations\IsNotMatchArgumentMethodCallWeaver.cs" />
     <Compile Include="Weaving\Argument\Implementations\IsMatchArgumentMethodCallWeaver.cs" />

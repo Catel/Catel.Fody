@@ -10,6 +10,7 @@ namespace Catel.Fody.Weaving.Argument
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Models;
     using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
@@ -156,10 +157,23 @@ namespace Catel.Fody.Weaving.Argument
                 {
                     // Remove the stfld + 2 previous operations
                     instructions.RemoveAt(i);
-                    instructions.RemoveAt(i - 1);
-                    instructions.RemoveAt(i - 2);
+
+                    if (i > 1)
+                    {
+                        instructions.RemoveAt(i - 1);
+                    }
+
+                    if (i > 2)
+                    {
+                        instructions.RemoveAt(i - 2);
+                    }
 
                     i -= 3;
+
+                    if (i < 0)
+                    {
+                        i = 0;
+                    }
                 }
             }
 
@@ -174,15 +188,36 @@ namespace Catel.Fody.Weaving.Argument
             }
         }
 
-        private Tuple<TypeDefinition, int> RemoveArgumentWeavingCall(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
+        private RemoveArgumentWeavingCallResult RemoveArgumentWeavingCall(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
         {
             TypeReference displayClassType = null;
             var index = instructions.IndexOf(instruction);
+
+            var hasBaseConstructorCall = false;
+            var baseClass = method.DeclaringType.BaseType;
 
             for (var i = index; i >= 0; i--)
             {
                 // Remove everything until the first ldloc.0 call
                 var innerInstruction = instructions[i];
+
+                // CTL-908: never remove call to base constructor, inject any new argument checks after the ctor code
+                if (innerInstruction.IsOpCode(OpCodes.Call))
+                {
+                    var methodReference = innerInstruction.Operand as MethodReference;
+                    if (methodReference != null)
+                    {
+                        if (methodReference.Name == ".ctor" || methodReference.Name == ".cctor")
+                        {
+                            if (string.Equals(methodReference.DeclaringType.FullName, baseClass.FullName))
+                            {
+                                hasBaseConstructorCall = true;
+                                index = i + 2;
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 instructions.RemoveAt(i);
 
@@ -231,7 +266,7 @@ namespace Catel.Fody.Weaving.Argument
                 index = i;
             }
 
-            return new Tuple<TypeDefinition, int>(displayClassType.Resolve(), index - 1);
+            return new RemoveArgumentWeavingCallResult(displayClassType.Resolve(), index - 1, hasBaseConstructorCall);
         }
 
         private object GetParameterOrFieldForExpressionArgumentCheck(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)

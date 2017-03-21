@@ -1,22 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody", "Catel.Fody\Catel.Fody.csproj", "{D9600EEB-B52A-4861-AFA4-2A3E38A06196}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{3FAFC63C-ABA6-4EA6-82B1-C0D71CA36BA4}"
-	ProjectSection(SolutionItems) = preProject
-		..\doc\history.txt = ..\doc\history.txt
-		..\doc\readme.txt = ..\doc\readme.txt
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{30F5D8D6-8019-4EBB-9641-276027A815D7}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{E30047EC-403E-428A-B232-13D1F47D6A94}"
-	ProjectSection(SolutionItems) = preProject
-		..\lib\readme.txt = ..\lib\readme.txt
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{05FFA8A6-88F3-48B7-AF0B-29C2A40CC716}"
 	ProjectSection(SolutionItems) = preProject
