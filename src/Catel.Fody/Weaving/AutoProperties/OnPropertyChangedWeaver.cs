@@ -46,7 +46,7 @@ namespace Catel.Fody.Weaving.AutoProperties
             var stringEqualsMethodReference = _catelType.TypeDefinition.Module.Import(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
 
             var dependentProperties = _catelType.GetDependentPropertiesFrom(property).ToList();
-            if (dependentProperties.Count > 0)
+            if (dependentProperties.Count > 0 && !dependentProperties.All(definition => _catelType.NoWeavingProperties.Contains(definition)))
             {
                 var onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
                 if (onPropertyChangedMethod == null)
@@ -67,6 +67,11 @@ namespace Catel.Fody.Weaving.AutoProperties
 
                     foreach (var propertyDefinition in dependentProperties)
                     {
+                        if (_catelType.NoWeavingProperties.Contains(propertyDefinition))
+                        {
+                            continue;
+                        }
+
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Ldarg_1));
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Callvirt, getMethodReference));
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Ldstr, property.Name));
