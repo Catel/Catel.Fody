@@ -51,7 +51,7 @@ namespace Catel.Fody.Weaving.Argument
             var finalKey = methodBeingCalled.GetFullName();
             if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
             {
-                FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{methodBeingCalled.GetFullName()}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.Body.Instructions.GetSequencePoint(instruction));
+                FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{methodBeingCalled.GetFullName()}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.GetSequencePoint(instruction));
 
                 return false;
             }
@@ -163,11 +163,31 @@ namespace Catel.Fody.Weaving.Argument
                         instructions.RemoveAt(i - 1);
                     }
 
-                    if (i > 2)
+                    // Special case, we only need to remove when i - 2 is ldlock.s
+                    var additionalIndex = i - 2;
+                    if (additionalIndex >= 0)
                     {
-                        instructions.RemoveAt(i - 2);
+                        var instruction = instructions[additionalIndex];
+                        if (instruction.IsOpCode(OpCodes.Ldloc_S, OpCodes.Ldloc))
+                        {
+                            var operand = instruction.Operand as VariableReference;
+                            if (operand != null)
+                            {
+                                var variableType = operand.VariableType;
+                                if (variableType.IsGenericInstance)
+                                {
+                                    variableType = variableType.GetElementType();
+                                }
+
+                                if (variableType == displayClassType)
+                                {
+                                    instructions.RemoveAt(additionalIndex);
+                                }
+                            }
+                        }
                     }
 
+                    // Reset index & start over
                     i -= 3;
 
                     if (i < 0)

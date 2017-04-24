@@ -24,7 +24,7 @@ namespace Catel.Fody.Tests
         //[TestCase("Catel.Fody.TestAssembly.DependentPropertyModelWithExistingOnPropertyChanged", "LastName", "Fernández Saúco", "Profile")]
         public void NotifiesPropertyChangedOfDepedentProperties(string modelType, string propertyName, string newValue, string expectedPropertyName)
         {
-            var type = AssemblyWeaver.Assembly.GetType(modelType);
+            var type = AssemblyWeaver.Instance.Assembly.GetType(modelType);
             var instance = Activator.CreateInstance(type);
 
             var changedProperties = new List<string>();

@@ -405,15 +405,16 @@ namespace Catel.Fody
 
             foreach (var iface in type.Interfaces)
             {
-                var result = iface;
+                var result = iface.InterfaceType;
 
-                if (iface is GenericInstanceType)
+                var genericIface = iface.InterfaceType as GenericInstanceType;
+                if (genericIface != null)
                 {
-                    var map = GetGenericArgsMap(iface, genericArgsMap, mappedFromSuperType);
+                    var map = GetGenericArgsMap(genericIface, genericArgsMap, mappedFromSuperType);
 
                     if (mappedFromSuperType.Any())
                     {
-                        result = ((GenericInstanceType)iface).ElementType.MakeGenericInstanceType(map.Select(x => x.Value).ToArray());
+                        result = genericIface.ElementType.MakeGenericInstanceType(map.Select(x => x.Value).ToArray()).Import();
                     }
                 }
 

@@ -10,7 +10,7 @@
         [TestCase]
         public void ImportedGenericTypeFromExternalAssemblyWorks()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericModel");
             var obj = (dynamic)Activator.CreateInstance(type);
 
             Assert.IsNull(obj.GenericProperty);

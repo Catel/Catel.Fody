@@ -130,7 +130,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
                                 Instruction.Create(OpCodes.Ret));
 
             getXmlSchemaMethod.Body.InitLocals = true;
-            getXmlSchemaMethod.Body.Variables.Add(new VariableDefinition("callingType", catelTypeDefinition.Module.Import(catelTypeDefinition.Module.FindType("mscorlib", "System.Type"))));
+            getXmlSchemaMethod.Body.Variables.Add(new VariableDefinition(catelTypeDefinition.Module.Import(catelTypeDefinition.Module.FindType("mscorlib", "System.Type"))));
             getXmlSchemaMethod.Body.Variables.Add(new VariableDefinition(catelTypeDefinition.Module.Import(_msCoreReferenceFinder.XmlQualifiedName)));
 
             catelTypeDefinition.Methods.Add(getXmlSchemaMethod);

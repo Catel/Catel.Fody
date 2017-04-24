@@ -17,7 +17,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void InheritanceWorks()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.InheritedClass");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.InheritedClass");
             var obj = (dynamic) Activator.CreateInstance(type);
 
             obj.PropertyOnBase = "base prop";

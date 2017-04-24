@@ -16,7 +16,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void IgnoresTypesWithNoWeavingAttribute()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.NoWeavingModelTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.NoWeavingModelTest");
 
             Assert.IsFalse(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"));
         }
@@ -24,7 +24,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void IgnoresPropertiesWithNoWeavingAttribute()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.NoPropertyWeavingModelTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.NoPropertyWeavingModelTest");
 
             Assert.IsFalse(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"));
         }

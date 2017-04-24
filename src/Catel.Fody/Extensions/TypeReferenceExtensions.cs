@@ -1,6 +1,7 @@
 namespace Catel.Fody
 {
     using Mono.Cecil;
+    using System.Linq;
 
     public static class TypeReferenceExtensions
     {
@@ -9,15 +10,24 @@ namespace Catel.Fody
         {
             target = type.Module.Import(target).Resolve();
 
-            for (var typeDefinition = type.Resolve(); !typeDefinition.Equals(target) && !typeDefinition.Interfaces.Contains(target); typeDefinition = typeDefinition.BaseType.Resolve())
+            var typeDefinition = type.Resolve();
+
+            while (typeDefinition != null)
             {
-                if (typeDefinition.BaseType == null)
+                if (typeDefinition.Equals(target))
                 {
-                    return false;
+                    return true;
                 }
+
+                if (typeDefinition.Interfaces.Any(x => x.InterfaceType.Equals(target)))
+                {
+                    return true;
+                }
+
+                typeDefinition = typeDefinition.BaseType?.Resolve();
             }
 
-            return true;
+            return false;
         }
         #endregion
     }

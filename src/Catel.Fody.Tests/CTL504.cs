@@ -16,7 +16,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void PropertyWeavingDoesNotThrowException()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.CTL504_Model");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CTL504_Model");
 
             var model = Activator.CreateInstance(type);
         }

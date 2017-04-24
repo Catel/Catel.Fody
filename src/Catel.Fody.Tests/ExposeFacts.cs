@@ -19,8 +19,8 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CreatesExposedProperties()
         {
-            var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingDerivedModel");
-            var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
+            var modelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ExposingDerivedModel");
+            var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
             var model = Activator.CreateInstance(modelType);
             var viewModel = Activator.CreateInstance(viewModelType, new [] {model});
@@ -38,8 +38,8 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CreatesExposedPropertiesFromExternalTypes()
         {
-            var modelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingDerivedModel");
-            var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
+            var modelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ExposingDerivedModel");
+            var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
             var model = Activator.CreateInstance(modelType);
             var viewModel = Activator.CreateInstance(viewModelType, new [] { model });
@@ -53,7 +53,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CanCreateReadOnlyExposedProperties()
         {
-            var viewModelType = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
+            var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
             var propertyInfo = viewModelType.GetPropertyEx("ReadOnlyProperty");
 

@@ -9,7 +9,7 @@
         [TestCase]
         public void AutoPropertyInitializer()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializer");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializer");
             var obj = (dynamic)Activator.CreateInstance(type);
 
             Assert.IsNotNull(obj.SimpleModels);
@@ -18,7 +18,7 @@
         [TestCase]
         public void AutoPropertyInitializer_Generic()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializer_Generic");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializer_Generic");
             var obj = (dynamic)Activator.CreateInstance(type);
 
             Assert.IsNotNull(obj.SimpleModels);

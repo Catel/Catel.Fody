@@ -17,7 +17,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void WeavingConstructors()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.CTL768_Model");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CTL768_Model");
 
             var model = (INotifyPropertyChanged) Activator.CreateInstance(type, new [] { "test" });
 
