@@ -111,7 +111,7 @@ namespace Catel.Fody.Weaving.Logging
                         instructions.Insert(i, 
                             Instruction.Create(OpCodes.Ldtoken, type), 
                             Instruction.Create(OpCodes.Call, getTypeFromHandle), 
-                            Instruction.Create(OpCodes.Call, type.Module.Import(getLoggerMethod)));
+                            Instruction.Create(OpCodes.Call, type.Module.ImportReference(getLoggerMethod)));
                     }
                 }
             }

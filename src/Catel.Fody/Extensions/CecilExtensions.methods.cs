@@ -45,7 +45,7 @@ namespace Catel.Fody
 
         public static MethodReference GetMethodReference(this MethodDefinition methodDefinition, Stack<TypeDefinition> typeDefinitions)
         {
-            var methodReference = FodyEnvironment.ModuleDefinition.Import(methodDefinition).GetGeneric();
+            var methodReference = FodyEnvironment.ModuleDefinition.ImportReference(methodDefinition).GetGeneric();
 
             if (methodDefinition.IsStatic)
             {

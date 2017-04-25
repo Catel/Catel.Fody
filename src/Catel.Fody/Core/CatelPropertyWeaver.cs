@@ -144,7 +144,7 @@ namespace Catel.Fody
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
                 staticConstructor = new MethodDefinition(".cctor", MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.Static | MethodAttributes.RTSpecialName,
-                    type.Module.Import(voidType));
+                    type.Module.ImportReference(voidType));
 
                 var body = staticConstructor.Body;
                 body.SimplifyMacros();
@@ -176,7 +176,7 @@ namespace Catel.Fody
 
             //.field private static class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> CS$<>9__CachedAnonymousMethodDelegate1
 
-            var field = new FieldDefinition(fieldName, FieldAttributes.Private | FieldAttributes.Static, declaringType.Module.Import(handlerType));
+            var field = new FieldDefinition(fieldName, FieldAttributes.Private | FieldAttributes.Static, declaringType.Module.ImportReference(handlerType));
 
             declaringType.Fields.Add(field);
 
@@ -198,10 +198,10 @@ namespace Catel.Fody
 
             string initializationMethodName = GetChangeNotificationHandlerConstructorName(property);
             var initializationMethod = new MethodDefinition(initializationMethodName,
-                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.Import(voidType));
+                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.ImportReference(voidType));
 
-            initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.Import(objectType)));
-            initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, declaringType.Module.Import(advancedPropertyChangedEventArgsType)));
+            initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.ImportReference(objectType)));
+            initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, declaringType.Module.ImportReference(advancedPropertyChangedEventArgsType)));
 
             var body = initializationMethod.Body;
             body.Instructions.Insert(0,
@@ -345,8 +345,8 @@ namespace Catel.Fody
                 var importedHandlerType = handlerType.Resolve();
 
                 var advancedPropertyChangedEventArgsType = property.Module.FindType("Catel.Core", "Catel.Data.AdvancedPropertyChangedEventArgs");
-                var handlerTypeConstructor = declaringType.Module.Import(importedHandlerType.Constructor(false));
-                var genericConstructor = handlerTypeConstructor.MakeHostInstanceGeneric(declaringType.Module.Import(advancedPropertyChangedEventArgsType));
+                var handlerTypeConstructor = declaringType.Module.ImportReference(importedHandlerType.Constructor(false));
+                var genericConstructor = handlerTypeConstructor.MakeHostInstanceGeneric(declaringType.Module.ImportReference(advancedPropertyChangedEventArgsType));
 
                 var finalInstruction = Instruction.Create(OpCodes.Ldsfld, handlerField);
 
@@ -468,7 +468,7 @@ namespace Catel.Fody
             {
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
-                var setMethod = new MethodDefinition($"set_{property.Name}", MethodAttributes.Public, property.DeclaringType.Module.Import(voidType));
+                var setMethod = new MethodDefinition($"set_{property.Name}", MethodAttributes.Public, property.DeclaringType.Module.ImportReference(voidType));
                 setMethod.Parameters.Add(new ParameterDefinition(property.PropertyType.Import()));
 
                 property.DeclaringType.Methods.Add(setMethod);
@@ -617,7 +617,7 @@ namespace Catel.Fody
                                     setter = setter.MakeHostInstanceGeneric(genericInstanceType.GenericArguments.ToArray());
                                 }
 
-                                instruction.Operand = declaringType.Module.Import(setter);
+                                instruction.Operand = declaringType.Module.ImportReference(setter);
 
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
                                 instructions.MoveInstructionsToEnd(i - 2, 3);
@@ -635,7 +635,7 @@ namespace Catel.Fody
                                     getter = getter.MakeHostInstanceGeneric(genericInstanceType.GenericArguments.ToArray());
                                 }
 
-                                instruction.Operand = declaringType.Module.Import(getter);
+                                instruction.Operand = declaringType.Module.ImportReference(getter);
 
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
                                 instructions.MoveInstructionsToEnd(i - 2, 3);

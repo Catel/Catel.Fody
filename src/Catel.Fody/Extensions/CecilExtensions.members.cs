@@ -138,7 +138,7 @@ namespace Catel.Fody
             var version = typeof(ModuleWeaver).Assembly.GetName().Version.ToString();
             var name = typeof(ModuleWeaver).Assembly.GetName().Name;
 
-            var generatedAttribute = new CustomAttribute(importingModule.Import(constructor));
+            var generatedAttribute = new CustomAttribute(importingModule.ImportReference(constructor));
             generatedAttribute.ConstructorArguments.Add(new CustomAttributeArgument(stringType, name));
             generatedAttribute.ConstructorArguments.Add(new CustomAttributeArgument(stringType, version));
 
@@ -153,7 +153,7 @@ namespace Catel.Fody
                 return null;
             }
 
-            var attribute = new CustomAttribute(importingModule.Import(attributeType.Resolve().Constructor(false)));
+            var attribute = new CustomAttribute(importingModule.ImportReference(attributeType.Resolve().Constructor(false)));
             return attribute;
         }
     }

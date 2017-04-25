@@ -8,7 +8,7 @@ namespace Catel.Fody
         #region Methods
         public static bool IsAssignableFrom(this TypeReference target, TypeReference type)
         {
-            target = type.Module.Import(target).Resolve();
+            target = type.Module.ImportReference(target).Resolve();
 
             var typeDefinition = type.Resolve();
 

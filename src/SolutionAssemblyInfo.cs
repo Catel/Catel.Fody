@@ -34,8 +34,3 @@ using System.Resources;
 
 [assembly: AssemblyVersion("1.5.4")]
 [assembly: AssemblyInformationalVersion("1.5.4, manual release in Visual Studio")]
-
-// CLS compliant
-#if !NETFX_CORE
-[assembly: CLSCompliant(true)]
-#endif

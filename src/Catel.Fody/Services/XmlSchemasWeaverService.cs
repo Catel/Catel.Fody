@@ -38,7 +38,7 @@ namespace Catel.Fody.Services
 
                     xmlSchemaWeaver.Execute(catelTypeNode);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 #if DEBUG
                     System.Diagnostics.Debugger.Launch();

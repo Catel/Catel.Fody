@@ -69,7 +69,7 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             var moduleDefinition = type.Module;
-            var importedMethod = moduleDefinition.Import(selectedMethod);
+            var importedMethod = moduleDefinition.ImportReference(selectedMethod);
 
             var instructions = new List<Instruction>();
 

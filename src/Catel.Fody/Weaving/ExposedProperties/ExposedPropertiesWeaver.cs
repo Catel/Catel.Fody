@@ -86,7 +86,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             var modelPropertyType = modelPropertyToMap.PropertyType;
 
-            var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, FodyEnvironment.ModuleDefinition.Import(modelPropertyType));
+            var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, FodyEnvironment.ModuleDefinition.ImportReference(modelPropertyType));
             viewModelPropertyDefinition.DeclaringType = catelType.TypeDefinition;
 
             catelType.TypeDefinition.Properties.Add(viewModelPropertyDefinition);
@@ -100,9 +100,9 @@ namespace Catel.Fody.Weaving.ExposedProperties
             catelPropertyWeaver.Execute(true);
 
             var stringType = _msCoreReferenceFinder.GetCoreTypeReference("String");
-            var stringTypeDefinition = catelType.TypeDefinition.Module.Import(stringType);
+            var stringTypeDefinition = catelType.TypeDefinition.Module.ImportReference(stringType);
 
-            var attributeConstructor = catelType.TypeDefinition.Module.Import(ViewModelToModelAttributeTypeDefinition.Constructor(false));
+            var attributeConstructor = catelType.TypeDefinition.Module.ImportReference(ViewModelToModelAttributeTypeDefinition.Constructor(false));
             var viewModelToModelAttribute = new CustomAttribute(attributeConstructor);
             viewModelToModelAttribute.ConstructorArguments.Add(new CustomAttributeArgument(stringTypeDefinition, modelName));
             viewModelToModelAttribute.ConstructorArguments.Add(new CustomAttributeArgument(stringTypeDefinition, modelPropertyName));

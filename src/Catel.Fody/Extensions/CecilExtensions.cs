@@ -41,11 +41,11 @@ namespace Catel.Fody
                 var nullableValueType = typeReference.GetNullableValueType();
                 if (nullableValueType != null)
                 {
-                    return module.Import(nullableValueType);
+                    return module.ImportReference(nullableValueType);
                 }
             }
 
-            return module.Import(typeReference);
+            return module.ImportReference(typeReference);
         }
 
         public static MethodReference FindConstructor(this TypeDefinition typeReference, List<TypeDefinition> types)
@@ -241,7 +241,7 @@ namespace Catel.Fody
                 return method;
             }
 
-            return module.Import(method);
+            return module.ImportReference(method);
         }
 
         public static MethodReference GetMethod(this ModuleDefinition module, string methodName)
