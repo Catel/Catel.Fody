@@ -16,4 +16,12 @@ namespace Catel.Fody.TestAssembly
             Argument.IsNotNull(() => obj);
         }
     }
+
+    public class CTL908_Expected
+    {
+        public CTL908_Expected(object obj)
+        {
+            Argument.IsNotNull("obj", obj);
+        }
+    }
 }

@@ -87,7 +87,7 @@ namespace Catel.Fody.Weaving.Argument
                 yield return instruction;
             }
 
-            var importedGetTypeFromHandle = module.Import(module.GetMethod("GetTypeFromHandle"));
+            var importedGetTypeFromHandle = module.ImportReference(module.GetMethod("GetTypeFromHandle"));
 
             yield return Instruction.Create(OpCodes.Ldtoken, typeReference);
             yield return Instruction.Create(OpCodes.Call, importedGetTypeFromHandle);

@@ -42,11 +42,11 @@ namespace Catel.Fody.Weaving.AutoProperties
 
         private bool AddOrUpdateOnPropertyChangedMethod(PropertyDefinition property)
         {
-            var getMethodReference = _catelType.TypeDefinition.Module.Import(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
-            var stringEqualsMethodReference = _catelType.TypeDefinition.Module.Import(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
+            var getMethodReference = _catelType.TypeDefinition.Module.ImportReference(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
+            var stringEqualsMethodReference = _catelType.TypeDefinition.Module.ImportReference(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
 
             var dependentProperties = _catelType.GetDependentPropertiesFrom(property).ToList();
-            if (dependentProperties.Count > 0)
+            if (dependentProperties.Count > 0 && !dependentProperties.All(definition => _catelType.NoWeavingProperties.Contains(definition)))
             {
                 var onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
                 if (onPropertyChangedMethod == null)
@@ -58,7 +58,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 var idx = onPropertyChangedMethod.Body.Instructions.ToList().FindLastIndex(instruction => instruction.OpCode == OpCodes.Ret);
                 if (idx > -1)
                 {
-                    var booleanTypeReference = _catelType.TypeDefinition.Module.Import(_msCoreReferenceFinder.GetCoreTypeReference("Boolean"));
+                    var booleanTypeReference = _catelType.TypeDefinition.Module.ImportReference(_msCoreReferenceFinder.GetCoreTypeReference("Boolean"));
                     if (onPropertyChangedMethod.Body.Variables.ToList().FirstOrDefault(definition => definition.VariableType != booleanTypeReference) == null)
                     {
                         onPropertyChangedMethod.Body.Variables.Add(new VariableDefinition(booleanTypeReference));
@@ -67,6 +67,11 @@ namespace Catel.Fody.Weaving.AutoProperties
 
                     foreach (var propertyDefinition in dependentProperties)
                     {
+                        if (_catelType.NoWeavingProperties.Contains(propertyDefinition))
+                        {
+                            continue;
+                        }
+
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Ldarg_1));
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Callvirt, getMethodReference));
                         onPropertyChangedMethod.Body.Instructions.Insert(idx++, Instruction.Create(OpCodes.Ldstr, property.Name));
@@ -126,7 +131,7 @@ namespace Catel.Fody.Weaving.AutoProperties
             {
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
-                methodDefinition = new MethodDefinition("OnPropertyChanged", MethodAttributes.Family | MethodAttributes.HideBySig | MethodAttributes.Virtual, type.Module.Import(voidType));
+                methodDefinition = new MethodDefinition("OnPropertyChanged", MethodAttributes.Family | MethodAttributes.HideBySig | MethodAttributes.Virtual, type.Module.ImportReference(voidType));
                 methodDefinition.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, _catelType.AdvancedPropertyChangedEventArgsType));
 
                 var body = methodDefinition.Body;
@@ -150,7 +155,7 @@ namespace Catel.Fody.Weaving.AutoProperties
             {
                 // Note: need to replace call to base, otherwise it might skip a call to a just generated base member
                 var body = methodDefinition.Body;
-                var hasReplaced = false;
+                //var hasReplaced = false;
 
                 body.SimplifyMacros();
 
@@ -162,7 +167,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                         if ((methodReference != null) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
                         {
                             instruction.Operand = baseOnPropertyChangedInvoker;
-                            hasReplaced = true;
+                            //hasReplaced = true;
                         }
                     }
                 }

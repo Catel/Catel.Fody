@@ -49,7 +49,7 @@ namespace Catel.Fody.Weaving.Argument
                 {
                     var error = $"[{type.FullName}.{methodDefinition.Name}] {ex.Message}";
 
-                    var sequencePoint = methodDefinition.Body.Instructions[instructionIndex].SequencePoint;
+                    var sequencePoint = methodDefinition.GetFirstSequencePoint();
                     if (sequencePoint != null)
                     {
                         FodyEnvironment.LogErrorPoint(error, sequencePoint);
@@ -69,7 +69,7 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             var moduleDefinition = type.Module;
-            var importedMethod = moduleDefinition.Import(selectedMethod);
+            var importedMethod = moduleDefinition.ImportReference(selectedMethod);
 
             var instructions = new List<Instruction>();
 

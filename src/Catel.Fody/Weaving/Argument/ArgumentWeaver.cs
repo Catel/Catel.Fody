@@ -122,7 +122,7 @@ namespace Catel.Fody.Weaving.Argument
                         var customAttribute = ExpressionChecksToAttributeMappings[fullKey](method, instructions, instruction);
                         if (customAttribute == null)
                         {
-                            FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{fullKey}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.Body.Instructions.GetSequencePoint(instruction));
+                            FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{fullKey}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.GetSequencePoint(instruction));
 
                             continue;
                         }
@@ -153,6 +153,16 @@ namespace Catel.Fody.Weaving.Argument
                         RemoveObsoleteCodeForArgumentExpression(method, instructions, displayClass);
                     }
                 }
+
+                // Step 4) Remove double nop commands, start at 1
+                // Note: disabled because there might be jump codes to different Nop instructions
+                //for (int i = 1; i < instructions.Count; i++)
+                //{
+                //    if (instructions[i].IsOpCode(OpCodes.Nop) && instructions[i - 1].IsOpCode(OpCodes.Nop))
+                //    {
+                //        instructions.RemoveAt(i--);
+                //    }
+                //}
             }
 
             if (instructions != null)

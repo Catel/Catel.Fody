@@ -26,31 +26,6 @@ namespace Catel.Fody
             Insert(instructions, instructions.Count - 1, instructionsToMove);
         }
 
-        public static SequencePoint GetFirstSequencePoint(this IEnumerable<Instruction> instructions)
-        {
-            return instructions.Select(x => x.SequencePoint).FirstOrDefault(y => y != null);
-        }
-
-        public static SequencePoint GetSequencePoint(this IList<Instruction> instructions, Instruction instruction)
-        {
-            var index = instructions.IndexOf(instruction);
-            if (index < 0)
-            {
-                return null;
-            }
-
-            for (int i = index; i >= 0; i--)
-            {
-                var ix = instructions[i];
-                if (ix.SequencePoint != null)
-                {
-                    return ix.SequencePoint;
-                }
-            }
-
-            return null;
-        }
-
         public static Instruction GetPreviousInstruction(this IList<Instruction> instructions, Instruction instruction)
         {
             var currentIndex = instructions.IndexOf(instruction);

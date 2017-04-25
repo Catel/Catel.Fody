@@ -20,7 +20,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void StringsCanBeUsedAfterWeaving()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
             obj.Name = "hi there";
             Assert.AreEqual("hi there", obj.Name);
@@ -29,7 +29,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void BooleansCanBeUsedAfterWeaving()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
 
             Assert.IsFalse(obj.BoolValue);
@@ -40,7 +40,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void IntegersCanBeUsedAfterWeaving()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
 
             Assert.AreEqual(0, obj.IntValue);
@@ -51,7 +51,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void GuidsCanBeUsedAfterWeaving()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
 
             Assert.AreEqual(Guid.Empty, obj.GuidValue);
@@ -62,7 +62,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CollectionsCanBeUsedAfterWeaving()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
 
             obj.CollectionProperty.Add(1);
@@ -74,7 +74,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void DoesNotWeaveExistingProperties()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
 
             obj.FullName = "hi there";
@@ -91,7 +91,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void HandlesChangeNotificationsMethodsCorrectly()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var modelBase = (dynamic) Activator.CreateInstance(type);
 
             Assert.IsFalse(modelBase.OnFullNameWithChangeCallbackChangedCalled);
@@ -110,7 +110,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void IgnoresChangeNotificationsWithoutRightSignature()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var modelBase = (dynamic)Activator.CreateInstance(type);
 
             Assert.IsFalse(modelBase.OnLastNameChangedCalled);
@@ -121,7 +121,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyWorksOnGenericClasses()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericModelBaseTest");
             var model = (dynamic)Activator.CreateInstance(type);
 
             Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "Operations"));
@@ -134,7 +134,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyWorksOnClassesWithGenericModelsWithValueTypes()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsInt");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsInt");
             var model = Activator.CreateInstance(type);
 
             string propertyNameToCheck = "MyModel";
@@ -149,7 +149,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyWorksOnClassesWithGenericModelsWithReferenceTypes()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsObject");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsObject");
             var model = Activator.CreateInstance(type);
 
             string propertyNameToCheck = "MyModel";

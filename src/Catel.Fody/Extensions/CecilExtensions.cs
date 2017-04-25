@@ -41,11 +41,11 @@ namespace Catel.Fody
                 var nullableValueType = typeReference.GetNullableValueType();
                 if (nullableValueType != null)
                 {
-                    return module.Import(nullableValueType);
+                    return module.ImportReference(nullableValueType);
                 }
             }
 
-            return module.Import(typeReference);
+            return module.ImportReference(typeReference);
         }
 
         public static MethodReference FindConstructor(this TypeDefinition typeReference, List<TypeDefinition> types)
@@ -241,7 +241,7 @@ namespace Catel.Fody
                 return method;
             }
 
-            return module.Import(method);
+            return module.ImportReference(method);
         }
 
         public static MethodReference GetMethod(this ModuleDefinition module, string methodName)
@@ -405,15 +405,16 @@ namespace Catel.Fody
 
             foreach (var iface in type.Interfaces)
             {
-                var result = iface;
+                var result = iface.InterfaceType;
 
-                if (iface is GenericInstanceType)
+                var genericIface = iface.InterfaceType as GenericInstanceType;
+                if (genericIface != null)
                 {
-                    var map = GetGenericArgsMap(iface, genericArgsMap, mappedFromSuperType);
+                    var map = GetGenericArgsMap(genericIface, genericArgsMap, mappedFromSuperType);
 
                     if (mappedFromSuperType.Any())
                     {
-                        result = ((GenericInstanceType)iface).ElementType.MakeGenericInstanceType(map.Select(x => x.Value).ToArray());
+                        result = genericIface.ElementType.MakeGenericInstanceType(map.Select(x => x.Value).ToArray()).Import();
                     }
                 }
 

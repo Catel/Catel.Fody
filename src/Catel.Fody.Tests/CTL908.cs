@@ -17,7 +17,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void WeavingConstructorWithString()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.CTL908");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CTL908");
 
             var model = Activator.CreateInstance(type, new[] {"test"});
 
@@ -27,7 +27,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void WeavingConstructorWithObject()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.CTL908");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CTL908");
 
             var model = Activator.CreateInstance(type, new[] { new object() });
 

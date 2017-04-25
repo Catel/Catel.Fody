@@ -54,7 +54,7 @@ namespace Catel.Fody
                     return;
                 }
 
-                Properties = DetermineProperties();
+                DetermineProperties();
                 DetermineMappings();
 
                 Ignore = false;
@@ -89,6 +89,8 @@ namespace Catel.Fody
 
         public List<CatelTypeProperty> Properties { get; private set; }
 
+        public List<PropertyDefinition> NoWeavingProperties { get; private set; }
+
         private void DetermineCatelType()
         {
             if (TypeDefinition.ImplementsViewModelBase())
@@ -109,8 +111,8 @@ namespace Catel.Fody
         {
             var module = TypeDefinition.Module;
 
-            PropertyDataType = module.Import(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
-            AdvancedPropertyChangedEventArgsType = module.Import(TypeDefinition.Module.FindType("Catel.Core", "AdvancedPropertyChangedEventArgs"));
+            PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
+            AdvancedPropertyChangedEventArgsType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "AdvancedPropertyChangedEventArgs"));
         }
 
         public TypeReference AdvancedPropertyChangedEventArgsType { get; private set; }
@@ -122,7 +124,7 @@ namespace Catel.Fody
                 var typeDefinition = TypeDefinition;
                 var baseTypeDefinition = TypeDefinition.BaseType.Resolve();
 
-                return typeDefinition.Module.Import(RecursiveFindMethod(baseTypeDefinition, "OnPropertyChanged"));
+                return typeDefinition.Module.ImportReference(RecursiveFindMethod(baseTypeDefinition, "OnPropertyChanged"));
             }
         }
 
@@ -152,18 +154,19 @@ namespace Catel.Fody
                 return false;
             }
 
-            RegisterPropertyWithDefaultValueInvoker = module.Import(registerPropertyWithDefaultValueInvokerMethod);
-            RegisterPropertyWithoutDefaultValueInvoker = module.Import(FindRegisterPropertyMethod(TypeDefinition, false));
-            GetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true));
-            SetValueInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "SetValue", new[] { "property", "value" }));
-            RaisePropertyChangedInvoker = module.Import(RecursiveFindMethod(TypeDefinition, "RaisePropertyChanged", new[] { "propertyName" }));
+            RegisterPropertyWithDefaultValueInvoker = module.ImportReference(registerPropertyWithDefaultValueInvokerMethod);
+            RegisterPropertyWithoutDefaultValueInvoker = module.ImportReference(FindRegisterPropertyMethod(TypeDefinition, false));
+            GetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true));
+            SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", new[] { "property", "value" }));
+            RaisePropertyChangedInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "RaisePropertyChanged", new[] { "propertyName" }));
 
             return true;
         }
 
-        private List<CatelTypeProperty> DetermineProperties()
+        private void DetermineProperties()
         {
-            var properties = new List<CatelTypeProperty>();
+            Properties = new List<CatelTypeProperty>();
+            NoWeavingProperties = new List<PropertyDefinition>();
             var typeProperties = TypeDefinition.Properties;
 
             foreach (var typeProperty in typeProperties)
@@ -171,23 +174,13 @@ namespace Catel.Fody
                 if (typeProperty.IsDecoratedWithAttribute("NoWeavingAttribute"))
                 {
                     typeProperty.RemoveAttribute("NoWeavingAttribute");
-                    continue;
+                    NoWeavingProperties.Add(typeProperty);
                 }
-
-                if (typeProperty.SetMethod == null)
+                else if (typeProperty.SetMethod != null && !typeProperty.SetMethod.IsStatic)
                 {
-                    continue;
+                    Properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty));
                 }
-
-                if (typeProperty.SetMethod.IsStatic)
-                {
-                    continue;
-                }
-
-                properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty));
             }
-
-            return properties;
         }
 
         private void DetermineMappings()

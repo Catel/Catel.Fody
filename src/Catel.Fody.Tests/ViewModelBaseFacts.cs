@@ -17,7 +17,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void StringsCanBeUsedAfterWeaving()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ViewModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ViewModelBaseTest");
             var vm = (dynamic) Activator.CreateInstance(type);
 
             vm.Name = "hi there";
@@ -28,7 +28,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void IgnoresICommandProperties()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ViewModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ViewModelBaseTest");
             var vm = (dynamic) Activator.CreateInstance(type);
 
             // TODO: Test command by setting it and check if property changed is invoked

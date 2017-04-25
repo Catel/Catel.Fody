@@ -1,6 +1,7 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/CodeInspection/Highlighting/AnalysisEnabled/@EntryValue">SOLUTION</s:String>
-	<s:String x:Key="/Default/CodeStyle/CodeCleanup/Profiles/=CodeCleanup_0020cleanup/@EntryIndexedValue">&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;Profile name="Code cleanup"&gt;&lt;CSArrangeThisQualifier&gt;True&lt;/CSArrangeThisQualifier&gt;&lt;CSMakeFieldReadonly&gt;True&lt;/CSMakeFieldReadonly&gt;&lt;CSUpdateFileHeader&gt;True&lt;/CSUpdateFileHeader&gt;&lt;CSOptimizeUsings&gt;&lt;OptimizeUsings&gt;True&lt;/OptimizeUsings&gt;&lt;EmbraceInRegion&gt;False&lt;/EmbraceInRegion&gt;&lt;RegionName&gt;&lt;/RegionName&gt;&lt;/CSOptimizeUsings&gt;&lt;CSReformatCode&gt;True&lt;/CSReformatCode&gt;&lt;CSReorderTypeMembers&gt;True&lt;/CSReorderTypeMembers&gt;&lt;AspOptimizeRegisterDirectives&gt;True&lt;/AspOptimizeRegisterDirectives&gt;&lt;HtmlReformatCode&gt;True&lt;/HtmlReformatCode&gt;&lt;CSharpFormatDocComments&gt;False&lt;/CSharpFormatDocComments&gt;&lt;/Profile&gt;</s:String>
+	
+	<s:String x:Key="/Default/CodeStyle/CodeCleanup/Profiles/=Code_0020cleanup/@EntryIndexedValue">&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;Profile name="Code cleanup"&gt;&lt;CSArrangeThisQualifier&gt;True&lt;/CSArrangeThisQualifier&gt;&lt;CSMakeFieldReadonly&gt;True&lt;/CSMakeFieldReadonly&gt;&lt;CSUpdateFileHeader&gt;True&lt;/CSUpdateFileHeader&gt;&lt;CSOptimizeUsings&gt;&lt;OptimizeUsings&gt;True&lt;/OptimizeUsings&gt;&lt;EmbraceInRegion&gt;False&lt;/EmbraceInRegion&gt;&lt;RegionName&gt;&lt;/RegionName&gt;&lt;/CSOptimizeUsings&gt;&lt;CSReformatCode&gt;True&lt;/CSReformatCode&gt;&lt;CSReorderTypeMembers&gt;True&lt;/CSReorderTypeMembers&gt;&lt;AspOptimizeRegisterDirectives&gt;True&lt;/AspOptimizeRegisterDirectives&gt;&lt;HtmlReformatCode&gt;True&lt;/HtmlReformatCode&gt;&lt;CSharpFormatDocComments&gt;False&lt;/CSharpFormatDocComments&gt;&lt;/Profile&gt;</s:String>
 	
 	<s:String x:Key="/Default/CodeStyle/CodeCleanup/SilentCleanupProfile/@EntryValue">Code cleanup</s:String>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/BLANK_LINES_AFTER_START_COMMENT/@EntryValue">2</s:Int64>
@@ -22,6 +23,7 @@
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlDocFormatter/TagAlwaysOnNewLine/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlDocFormatter/WrapBeforeAttr/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlDocFormatter/WrapLongLines/@EntryValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlDocFormatter/WRAP_LINES/@EntryValue">False</s:Boolean>
 	
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/XmlFormatter/MaxSingleLineTagLength/@EntryValue">20</s:Int64>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlFormatter/WrapBeforeAttr/@EntryValue">False</s:Boolean>
@@ -29,9 +31,10 @@
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/XmlFormatter/MaxBlankLines/@EntryValue">1</s:Int64>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/XmlFormatter/ProcessingInstructionAttributesFormat/@EntryValue">OnSingleLine</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/XmlFormatter/TagAttributesFormat/@EntryValue">FirstAttributeOnSingleLine</s:String>
+	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlFormatter/WRAP_LINES/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/CSharpFileLayoutPatterns/Pattern/@EntryValue">&lt;?xml version="1.0" encoding="utf-16"?&gt;&#xD;
 &lt;Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns"&gt;&#xD;
-  &lt;TypePattern Priority="100" DisplayName="Type Pattern"&gt;&#xD;
+  &lt;TypePattern DisplayName="COM interfaces or structs"&gt;&#xD;
     &lt;TypePattern.Match&gt;&#xD;
       &lt;Or&gt;&#xD;
         &lt;And&gt;&#xD;
@@ -41,34 +44,33 @@
             &lt;HasAttribute Name="System.Runtime.InteropServices.ComImport" /&gt;&#xD;
           &lt;/Or&gt;&#xD;
         &lt;/And&gt;&#xD;
-        &lt;HasAttribute Name="System.Runtime.InteropServices.StructLayoutAttribute" /&gt;&#xD;
+        &lt;Kind Is="Struct" /&gt;&#xD;
       &lt;/Or&gt;&#xD;
     &lt;/TypePattern.Match&gt;&#xD;
   &lt;/TypePattern&gt;&#xD;
-  &lt;TypePattern Priority="100" DisplayName="Type Pattern"&gt;&#xD;
+  &lt;TypePattern DisplayName="NUnit Test Fixtures" RemoveRegions="All"&gt;&#xD;
     &lt;TypePattern.Match&gt;&#xD;
       &lt;And&gt;&#xD;
         &lt;Kind Is="Class" /&gt;&#xD;
         &lt;HasAttribute Name="NUnit.Framework.TestFixtureAttribute" Inherited="True" /&gt;&#xD;
+        &lt;HasAttribute Name="NUnit.Framework.TestCaseFixtureAttribute" Inherited="True" /&gt;&#xD;
       &lt;/And&gt;&#xD;
     &lt;/TypePattern.Match&gt;&#xD;
-    &lt;Region Name="Setup/Teardown"&gt;&#xD;
-      &lt;Entry DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;And&gt;&#xD;
-            &lt;Kind Is="Method" /&gt;&#xD;
-            &lt;Or&gt;&#xD;
-              &lt;HasAttribute Name="NUnit.Framework.SetUpAttribute" Inherited="True" /&gt;&#xD;
-              &lt;HasAttribute Name="NUnit.Framework.TearDownAttribute" Inherited="True" /&gt;&#xD;
-              &lt;HasAttribute Name="NUnit.Framework.FixtureSetUpAttribute" Inherited="True" /&gt;&#xD;
-              &lt;HasAttribute Name="NUnit.Framework.FixtureTearDownAttribute" Inherited="True" /&gt;&#xD;
-            &lt;/Or&gt;&#xD;
-          &lt;/And&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Entry DisplayName="Entry" /&gt;&#xD;
-    &lt;Entry Priority="100" DisplayName="Entry"&gt;&#xD;
+    &lt;Entry DisplayName="Setup/Teardown Methods"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;And&gt;&#xD;
+          &lt;Kind Is="Method" /&gt;&#xD;
+          &lt;Or&gt;&#xD;
+            &lt;HasAttribute Name="NUnit.Framework.SetUpAttribute" Inherited="True" /&gt;&#xD;
+            &lt;HasAttribute Name="NUnit.Framework.TearDownAttribute" Inherited="True" /&gt;&#xD;
+            &lt;HasAttribute Name="NUnit.Framework.FixtureSetUpAttribute" Inherited="True" /&gt;&#xD;
+            &lt;HasAttribute Name="NUnit.Framework.FixtureTearDownAttribute" Inherited="True" /&gt;&#xD;
+          &lt;/Or&gt;&#xD;
+        &lt;/And&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+    &lt;Entry DisplayName="All other members" /&gt;&#xD;
+    &lt;Entry Priority="100" DisplayName="Test Methods"&gt;&#xD;
       &lt;Entry.Match&gt;&#xD;
         &lt;And&gt;&#xD;
           &lt;Kind Is="Method" /&gt;&#xD;
@@ -80,125 +82,90 @@
       &lt;/Entry.SortBy&gt;&#xD;
     &lt;/Entry&gt;&#xD;
   &lt;/TypePattern&gt;&#xD;
-  &lt;TypePattern DisplayName="Type Pattern"&gt;&#xD;
-    &lt;Region Name="Delegates"&gt;&#xD;
-      &lt;Entry Priority="100" DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;And&gt;&#xD;
-            &lt;Access Is="Public" /&gt;&#xD;
-            &lt;Kind Is="Delegate" /&gt;&#xD;
-          &lt;/And&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-        &lt;Entry.SortBy&gt;&#xD;
-          &lt;Name /&gt;&#xD;
-        &lt;/Entry.SortBy&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Region Name="${0} enum"&gt;&#xD;
-      &lt;Region.GroupBy&gt;&#xD;
+  &lt;TypePattern DisplayName="Default Pattern"&gt;&#xD;
+    &lt;Entry Priority="100" DisplayName="Public Delegates"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;And&gt;&#xD;
+          &lt;Access Is="Public" /&gt;&#xD;
+          &lt;Kind Is="Delegate" /&gt;&#xD;
+        &lt;/And&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+      &lt;Entry.SortBy&gt;&#xD;
         &lt;Name /&gt;&#xD;
-      &lt;/Region.GroupBy&gt;&#xD;
-      &lt;Entry Priority="100" DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;And&gt;&#xD;
-            &lt;Access Is="Public" /&gt;&#xD;
-            &lt;Kind Is="Enum" /&gt;&#xD;
-          &lt;/And&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-        &lt;Entry.SortBy&gt;&#xD;
-          &lt;Name /&gt;&#xD;
-        &lt;/Entry.SortBy&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Region Name="Constants"&gt;&#xD;
-      &lt;Entry DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;Or&gt;&#xD;
-            &lt;Kind Is="Constant" /&gt;&#xD;
-            &lt;And&gt;&#xD;
-              &lt;Kind Is="Field" /&gt;&#xD;
-              &lt;Static /&gt;&#xD;
-            &lt;/And&gt;&#xD;
-          &lt;/Or&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-        &lt;Entry.SortBy&gt;&#xD;
-          &lt;Kind Order="Constant Field" /&gt;&#xD;
-        &lt;/Entry.SortBy&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Region Name="Fields"&gt;&#xD;
-      &lt;Entry DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
+      &lt;/Entry.SortBy&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+    &lt;Entry Priority="100" DisplayName="Public Enums"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;And&gt;&#xD;
+          &lt;Access Is="Public" /&gt;&#xD;
+          &lt;Kind Is="Enum" /&gt;&#xD;
+        &lt;/And&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+      &lt;Entry.SortBy&gt;&#xD;
+        &lt;Name /&gt;&#xD;
+      &lt;/Entry.SortBy&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+    &lt;Entry DisplayName="Static Fields and Constants"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;Or&gt;&#xD;
+          &lt;Kind Is="Constant" /&gt;&#xD;
           &lt;And&gt;&#xD;
             &lt;Kind Is="Field" /&gt;&#xD;
-            &lt;Not&gt;&#xD;
-              &lt;Static /&gt;&#xD;
-            &lt;/Not&gt;&#xD;
+            &lt;Static /&gt;&#xD;
           &lt;/And&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-        &lt;Entry.SortBy&gt;&#xD;
-          &lt;Readonly /&gt;&#xD;
-          &lt;Name /&gt;&#xD;
-        &lt;/Entry.SortBy&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Region Name="Constructors"&gt;&#xD;
-      &lt;Entry DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;Kind Is="Constructor" /&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-        &lt;Entry.SortBy&gt;&#xD;
-          &lt;Static /&gt;&#xD;
-        &lt;/Entry.SortBy&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Region Name="Properties"&gt;&#xD;
-      &lt;Entry DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;Or&gt;&#xD;
-            &lt;Kind Is="Property" /&gt;&#xD;
-            &lt;Kind Is="Indexer" /&gt;&#xD;
-          &lt;/Or&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Region Name="${0} Members"&gt;&#xD;
-      &lt;Region.GroupBy&gt;&#xD;
-        &lt;ImplementsInterface Immediate="True" /&gt;&#xD;
-      &lt;/Region.GroupBy&gt;&#xD;
-      &lt;Entry Priority="100" DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;And&gt;&#xD;
-            &lt;Kind Is="Member" /&gt;&#xD;
-            &lt;ImplementsInterface /&gt;&#xD;
-          &lt;/And&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-        &lt;Entry.SortBy&gt;&#xD;
-          &lt;ImplementsInterface Immediate="True" /&gt;&#xD;
-        &lt;/Entry.SortBy&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Region Name="Methods"&gt;&#xD;
-      &lt;Entry DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;Kind Is="Method" /&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
-    &lt;Entry DisplayName="Entry" /&gt;&#xD;
-    &lt;Region Name="Nested type: ${0}"&gt;&#xD;
-      &lt;Region.GroupBy&gt;&#xD;
+        &lt;/Or&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+      &lt;Entry.SortBy&gt;&#xD;
+        &lt;Kind Order="Constant Field" /&gt;&#xD;
+      &lt;/Entry.SortBy&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+    &lt;Entry DisplayName="Fields"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;And&gt;&#xD;
+          &lt;Kind Is="Field" /&gt;&#xD;
+          &lt;Not&gt;&#xD;
+            &lt;Static /&gt;&#xD;
+          &lt;/Not&gt;&#xD;
+        &lt;/And&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+      &lt;Entry.SortBy&gt;&#xD;
+        &lt;Readonly /&gt;&#xD;
         &lt;Name /&gt;&#xD;
-      &lt;/Region.GroupBy&gt;&#xD;
-      &lt;Entry DisplayName="Entry"&gt;&#xD;
-        &lt;Entry.Match&gt;&#xD;
-          &lt;Kind Is="Type" /&gt;&#xD;
-        &lt;/Entry.Match&gt;&#xD;
-        &lt;Entry.SortBy&gt;&#xD;
-          &lt;Name /&gt;&#xD;
-        &lt;/Entry.SortBy&gt;&#xD;
-      &lt;/Entry&gt;&#xD;
-    &lt;/Region&gt;&#xD;
+      &lt;/Entry.SortBy&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+    &lt;Entry DisplayName="Constructors"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;Kind Is="Constructor" /&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+      &lt;Entry.SortBy&gt;&#xD;
+        &lt;Static /&gt;&#xD;
+      &lt;/Entry.SortBy&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+    &lt;Entry DisplayName="Properties, Indexers"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;Or&gt;&#xD;
+          &lt;Kind Is="Property" /&gt;&#xD;
+          &lt;Kind Is="Indexer" /&gt;&#xD;
+        &lt;/Or&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+    &lt;Entry Priority="100" DisplayName="Interface Implementations"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;And&gt;&#xD;
+          &lt;Kind Is="Member" /&gt;&#xD;
+          &lt;ImplementsInterface /&gt;&#xD;
+        &lt;/And&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+      &lt;Entry.SortBy&gt;&#xD;
+        &lt;ImplementsInterface Immediate="True" /&gt;&#xD;
+      &lt;/Entry.SortBy&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+    &lt;Entry DisplayName="All other members" /&gt;&#xD;
+    &lt;Entry DisplayName="Nested Types"&gt;&#xD;
+      &lt;Entry.Match&gt;&#xD;
+        &lt;Kind Is="Type" /&gt;&#xD;
+      &lt;/Entry.Match&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
   &lt;/TypePattern&gt;&#xD;
 &lt;/Patterns&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/CSharpMemberOrderPattern/CustomPattern/@EntryValue">&lt;?xml version="1.0" encoding="utf-8" ?&gt;&#xD;
@@ -440,6 +407,7 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EAlwaysTreatStructAsNotReorderableMigration/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EMigrateBlankLinesAroundFieldToBlankLinesAroundProperty/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EMigrateThisQualifierSettings/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002EXml_002ECodeStyle_002EFormatSettingsUpgrade_002EXmlMoveToCommonFormatterSettingsUpgrade/@EntryIndexedValue">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/UserInterface/ShortcutSchemeName/@EntryValue">None</s:String>
 	<s:String x:Key="/Default/FilterSettingsManager/AttributeFilterXml/@EntryValue">&lt;data /&gt;</s:String>
 	<s:String x:Key="/Default/FilterSettingsManager/CoverageFilterXml/@EntryValue">&lt;data&gt;&lt;IncludeFilters /&gt;&lt;ExcludeFilters /&gt;&lt;/data&gt;</s:String></wpf:ResourceDictionary>

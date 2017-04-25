@@ -18,7 +18,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsNullAsDefaultValueWhenNoAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -30,7 +30,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForStringWhenAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -42,7 +42,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForBoolWhenAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -54,7 +54,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForNullableBoolWhenNullAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -66,7 +66,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForNullableBoolWhenTrueAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -78,7 +78,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForNullableBoolWhenFalseAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -90,7 +90,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForIntWhenAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -102,7 +102,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForLongWhenAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -114,7 +114,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForDoubleWhenAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -126,7 +126,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForFloatWhenAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);
@@ -138,7 +138,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void SetsDefaultValueForEnumWhenAttributeDefined()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
 
             // Instantiate to have properties registered
             Activator.CreateInstance(type);

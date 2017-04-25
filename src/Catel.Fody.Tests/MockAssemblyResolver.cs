@@ -8,37 +8,35 @@
 using System;
 using System.Diagnostics;
 using Mono.Cecil;
+using System.Collections.Generic;
 
-public class MockAssemblyResolver : IAssemblyResolver
+public class MockAssemblyResolver : DefaultAssemblyResolver
 {
-    #region IAssemblyResolver Members
-    public AssemblyDefinition Resolve(AssemblyNameReference name)
-    {
-        return AssemblyDefinition.ReadAssembly(name.Name + ".dll");
-    }
+    private readonly Dictionary<string, AssemblyDefinition> _cache = new Dictionary<string, AssemblyDefinition>();
 
-    public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+    public override AssemblyDefinition Resolve(AssemblyNameReference name)
     {
-        throw new NotImplementedException();
-    }
+        var fullName = name.FullName;
 
-    public AssemblyDefinition Resolve(string fullName)
-    {
-        if (fullName == "System")
+        lock (_cache)
         {
-            var codeBase = typeof (Debug).Assembly.CodeBase.Replace("file:///", "");
-            return AssemblyDefinition.ReadAssembly(codeBase);
-        }
-        else
-        {
-            var codeBase = typeof (string).Assembly.CodeBase.Replace("file:///", "");
-            return AssemblyDefinition.ReadAssembly(codeBase);
-        }
-    }
+            AssemblyDefinition definition = null;
+            if (!_cache.TryGetValue(fullName, out definition))
+            {
+                if (name.Name == "System")
+                {
+                    var codeBase = typeof(Debug).Assembly.CodeBase.Replace("file:///", "");
+                    definition = AssemblyDefinition.ReadAssembly(codeBase);
+                }
+                else
+                {
+                    definition = base.Resolve(name);
+                }
 
-    public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
-    {
-        throw new NotImplementedException();
+                _cache[fullName] = definition;
+            }
+
+            return definition;
+        }
     }
-    #endregion
 }

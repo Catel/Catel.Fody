@@ -89,7 +89,7 @@ namespace Catel.Fody.Weaving.Logging
                         var getLoggerMethod = GetGetLoggerMethod(methodReference.DeclaringType);
                         if (getLoggerMethod == null)
                         {
-                            var point = instruction.SequencePoint;
+                            var point = methodReference.Resolve().GetSequencePoint(instruction);
 
                             var message = $"Cannot change method call for log '{type.FullName}', the GetLogger(type) method does not exist on the calling type (try to use LogManager.GetCurrentClassLogger())";
 
@@ -111,7 +111,7 @@ namespace Catel.Fody.Weaving.Logging
                         instructions.Insert(i, 
                             Instruction.Create(OpCodes.Ldtoken, type), 
                             Instruction.Create(OpCodes.Call, getTypeFromHandle), 
-                            Instruction.Create(OpCodes.Call, type.Module.Import(getLoggerMethod)));
+                            Instruction.Create(OpCodes.Call, type.Module.ImportReference(getLoggerMethod)));
                     }
                 }
             }

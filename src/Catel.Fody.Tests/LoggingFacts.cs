@@ -17,7 +17,7 @@ namespace Catel.Fody.Tests
         public void InheritanceWorks()
         {
             // Instantiating is sufficient
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.LoggingClass");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.LoggingClass");
             var obj = (dynamic)Activator.CreateInstance(type);
         }
     }

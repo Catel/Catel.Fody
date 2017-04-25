@@ -16,7 +16,13 @@ namespace Catel.Fody
     {
         public static SequencePoint GetFirstSequencePoint(this MethodDefinition method)
         {
-            return method.Body.Instructions.GetFirstSequencePoint();
+            return method.DebugInformation.SequencePoints.FirstOrDefault();
+        }
+
+        public static SequencePoint GetSequencePoint(this MethodDefinition method, Instruction instruction)
+        {
+            var debugInfo = method.DebugInformation;
+            return debugInfo.GetSequencePoint(instruction);
         }
 
         public static MethodReference MakeGeneric(this MethodReference method, TypeReference declaringType)
@@ -39,7 +45,7 @@ namespace Catel.Fody
 
         public static MethodReference GetMethodReference(this MethodDefinition methodDefinition, Stack<TypeDefinition> typeDefinitions)
         {
-            var methodReference = FodyEnvironment.ModuleDefinition.Import(methodDefinition).GetGeneric();
+            var methodReference = FodyEnvironment.ModuleDefinition.ImportReference(methodDefinition).GetGeneric();
 
             if (methodDefinition.IsStatic)
             {

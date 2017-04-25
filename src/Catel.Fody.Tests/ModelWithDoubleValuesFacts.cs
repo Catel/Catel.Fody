@@ -19,7 +19,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyDefaultsToDefaultDoubleValues()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.ModelWithDoubleValues");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelWithDoubleValues");
             var obj = (dynamic)Activator.CreateInstance(type);
 
             Assert.AreEqual(0.0d, obj.Top);

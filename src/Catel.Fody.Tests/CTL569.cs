@@ -18,7 +18,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void WeavingCalculatedPropertiesWithExistingOverride()
         {
-            var type = AssemblyWeaver.Assembly.GetType("Catel.Fody.TestAssembly.CTL569_ViewModel");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CTL569_ViewModel");
 
             var vm = (INotifyPropertyChanged)Activator.CreateInstance(type);
 
