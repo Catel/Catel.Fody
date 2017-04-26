@@ -14,6 +14,41 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
+        public static int FindBaseConstructorIndex(this MethodDefinition method)
+        {
+            var declaringType = method.DeclaringType;
+            if (declaringType != null)
+            {
+                var baseType = declaringType.BaseType;
+                if (baseType != null)
+                {
+                    var instructions = method.Body.Instructions;
+
+                    for (var i = 0; i < instructions.Count; i++)
+                    {
+                        var instruction = instructions[i];
+                        if (instruction.IsOpCode(OpCodes.Call))
+                        {
+                            var methodReference = instruction.Operand as MethodReference;
+                            if (methodReference != null)
+                            {
+                                if (methodReference.Name.Equals(".ctor"))
+                                {
+                                    var ctorDeclaringType = methodReference.DeclaringType?.FullName;
+                                    if (baseType.FullName.Equals(ctorDeclaringType))
+                                    {
+                                        return i;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return -1;
+        }
+
         public static SequencePoint GetFirstSequencePoint(this MethodDefinition method)
         {
             return method.DebugInformation.SequencePoints.FirstOrDefault();

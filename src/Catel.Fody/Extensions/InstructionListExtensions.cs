@@ -14,16 +14,37 @@ namespace Catel.Fody
 
     public static class InstructionListExtensions
     {
-        public static void MoveInstructionsToEnd(this IList<Instruction> instructions, int startIndex, int length)
+        public static bool IsNextInstructionOpCode(this IList<Instruction> instructions, int index, params OpCode[] opCodes)
+        {
+            var instruction = (instructions.Count > index + 1) ? instructions[index + 1] : null;
+            if (instruction == null)
+            {
+                return false;
+            }
+
+            return instruction.IsOpCode(opCodes);
+        }
+
+        public static void MoveInstructionsToPosition(this IList<Instruction> instructions, int startIndex, int length, int targetPosition)
         {
             var instructionsToMove = new List<Instruction>();
-            for (int i = startIndex; i < startIndex + length; i++)
+            for (var i = startIndex; i < startIndex + length; i++)
             {
                 instructionsToMove.Add(instructions[startIndex]);
                 instructions.RemoveAt(startIndex);
             }
 
-            Insert(instructions, instructions.Count - 1, instructionsToMove);
+            if (startIndex < targetPosition)
+            {
+                targetPosition -= instructionsToMove.Count;
+            }
+
+            Insert(instructions, targetPosition, instructionsToMove);
+        }
+
+        public static void MoveInstructionsToEnd(this IList<Instruction> instructions, int startIndex, int length)
+        {
+            MoveInstructionsToPosition(instructions, startIndex, length, instructions.Count - 1);
         }
 
         public static Instruction GetPreviousInstruction(this IList<Instruction> instructions, Instruction instruction)

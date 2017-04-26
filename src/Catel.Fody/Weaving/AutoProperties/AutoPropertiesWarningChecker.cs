@@ -38,18 +38,22 @@ namespace Catel.Fody.Weaving.AutoProperties
         {
             var propertyDefinition = propertyData.PropertyDefinition;
             var setMethod = propertyDefinition.SetMethod;
+
             if (setMethod.Name == "set_Item" && setMethod.Parameters.Count == 2 && setMethod.Parameters[1].Name == "value")
             {
                 return "Property is an indexer.";
             }
+
             if (setMethod.IsAbstract)
             {
                 return "Property is abstract.";
             }
+
             if ((propertyData.BackingFieldDefinition == null) && (propertyDefinition.GetMethod == null))
             {
                 return "Property has no field set logic or it contains multiple sets and the names cannot be mapped to a property.";
             }
+
             return null;
         }
 
