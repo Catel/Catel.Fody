@@ -16,6 +16,15 @@
         }
 
         [TestCase]
+        public void AutoPropertyInitializerWithMultipleConstructors()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializerWithMultipleConstructors");
+            var obj = (dynamic)Activator.CreateInstance(type);
+
+            Assert.IsTrue(obj.ShowErrors);
+        }
+
+        [TestCase]
         public void AutoPropertyInitializer_Generic()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializer_Generic");

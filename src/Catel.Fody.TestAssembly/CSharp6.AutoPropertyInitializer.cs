@@ -11,6 +11,23 @@
         #endregion
     }
 
+    public class CSharp6_AutoPropertyInitializerWithMultipleConstructors : ModelBase
+    {
+        public CSharp6_AutoPropertyInitializerWithMultipleConstructors()
+        {
+            
+        }
+
+        public CSharp6_AutoPropertyInitializerWithMultipleConstructors(int someValue)
+        {
+            
+        }
+
+        #region Properties
+        public bool ShowErrors { get; set; } = true;
+        #endregion
+    }
+
     public class CSharp6_AutoPropertyInitializer_Generic<T> : ModelBase
     {
         public CSharp6_AutoPropertyInitializer_Generic()
@@ -57,7 +74,7 @@
     }
 
     [NoWeaving]
-    public class CSharp6_AutoPropertyInitializer_Generic_ExpectedCode<T>
+    public class CSharp6_AutoPropertyInitializer_Generic_ExpectedCode<T> : ModelBase
     {
         public CSharp6_AutoPropertyInitializer_Generic_ExpectedCode()
         {
