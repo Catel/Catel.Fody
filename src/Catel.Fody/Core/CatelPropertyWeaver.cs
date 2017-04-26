@@ -169,7 +169,7 @@ namespace Catel.Fody
             FodyEnvironment.LogDebug($"\t\t\t{property.Name} - adding On{property.Name}Changed invocation");
 
             var declaringType = property.DeclaringType;
-            string fieldName = GetChangeNotificationHandlerFieldName(property);
+            var fieldName = GetChangeNotificationHandlerFieldName(property);
 
             var handlerType = GetEventHandlerAdvancedPropertyChangedEventArgs(property);
             var advancedPropertyChangedEventArgsType = property.Module.FindType("Catel.Core", "Catel.Data.AdvancedPropertyChangedEventArgs");
@@ -196,7 +196,7 @@ namespace Catel.Fody
             var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
             var objectType = _msCoreReferenceFinder.GetCoreTypeReference("Object");
 
-            string initializationMethodName = GetChangeNotificationHandlerConstructorName(property);
+            var initializationMethodName = GetChangeNotificationHandlerConstructorName(property);
             var initializationMethod = new MethodDefinition(initializationMethodName,
                 MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.ImportReference(voidType));
 
@@ -218,7 +218,7 @@ namespace Catel.Fody
 
         private FieldDefinition AddPropertyFieldDefinition(PropertyDefinition property)
         {
-            string fieldName = $"{property.Name}Property";
+            var fieldName = $"{property.Name}Property";
             var declaringType = property.DeclaringType;
 
             var fieldDefinition = new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly, _catelType.PropertyDataType);
@@ -336,8 +336,8 @@ namespace Catel.Fody
                 //L_0058: br.s L_005a
                 //L_005a: ldsfld class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
 
-                string handlerFieldName = GetChangeNotificationHandlerFieldName(property);
-                string handlerConstructorFieldName = GetChangeNotificationHandlerConstructorName(property);
+                var handlerFieldName = GetChangeNotificationHandlerFieldName(property);
+                var handlerConstructorFieldName = GetChangeNotificationHandlerConstructorName(property);
 
                 var handlerField = GetFieldReference(property.DeclaringType, handlerFieldName, true);
                 var handlerConstructor = GetMethodReference(property.DeclaringType, handlerConstructorFieldName, true);
@@ -620,7 +620,23 @@ namespace Catel.Fody
                                 instruction.Operand = declaringType.Module.ImportReference(setter);
 
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
-                                instructions.MoveInstructionsToEnd(i - 2, 3);
+                                var baseIndex = ctor.FindBaseConstructorIndex();
+                                if (baseIndex >= 0)
+                                {
+                                    // After a call to a ctor, a double nop is required
+                                    var indexToInsert = baseIndex + 1;
+                                    if (instructions.IsNextInstructionOpCode(baseIndex, OpCodes.Nop))
+                                    {
+                                        indexToInsert++;
+
+                                        if (instructions.IsNextInstructionOpCode(baseIndex + 1, OpCodes.Nop))
+                                        {
+                                            indexToInsert++;
+                                        }
+                                    }
+
+                                    instructions.MoveInstructionsToPosition(i - 2, 3, indexToInsert);
+                                }
                             }
                             else if (instruction.IsOpCode(OpCodes.Ldfld))
                             {
@@ -638,8 +654,23 @@ namespace Catel.Fody
                                 instruction.Operand = declaringType.Module.ImportReference(getter);
 
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
-                                instructions.MoveInstructionsToEnd(i - 2, 3);
+                                var baseIndex = ctor.FindBaseConstructorIndex();
+                                if (baseIndex >= 0)
+                                {
+                                    // After a call to a ctor, a double nop is required
+                                    var indexToInsert = baseIndex + 1;
+                                    if (instructions.IsNextInstructionOpCode(baseIndex, OpCodes.Nop))
+                                    {
+                                        indexToInsert++;
 
+                                        if (instructions.IsNextInstructionOpCode(baseIndex + 1, OpCodes.Nop))
+                                        {
+                                            indexToInsert++;
+                                        }
+                                    }
+
+                                    instructions.MoveInstructionsToPosition(i - 2, 3, indexToInsert);
+                                }
                             }
                             else if (instruction.IsOpCode(OpCodes.Ldflda))
                             {
@@ -669,16 +700,45 @@ namespace Catel.Fody
 
                                 var newInstructions = new List<Instruction>();
                                 newInstructions.Add(Instruction.Create(OpCodes.Ldloca, variable));
-                                newInstructions.Add(instructions[i + 1]); // Just copy this instruction
+                                newInstructions.Add(instructions[i + 1]); // Just copy this initobj !T instruction
                                 newInstructions.Add(Instruction.Create(OpCodes.Ldloc, variable));
                                 newInstructions.Add(Instruction.Create(OpCodes.Call, setter));
 
-                                // Remove 2 instructions
+                                // Remove 3 instructions
+                                // ldarg
+                                // ldflda
+                                // init T
                                 instructions.RemoveAt(i);
                                 instructions.RemoveAt(i);
 
+                                if (instructions[i - 1].IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                                {
+                                    newInstructions.Insert(0, Instruction.Create(OpCodes.Ldarg_0));
+                                    instructions.RemoveAt(i - 1);
+                                }
+
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
-                                instructions.Insert(instructions.Count - 1, newInstructions);
+                                var baseIndex = ctor.FindBaseConstructorIndex();
+                                if (baseIndex >= 0)
+                                {
+                                    // After a call to a ctor, a double nop is required
+                                    var indexToInsert = baseIndex + 1;
+                                    if (instructions.IsNextInstructionOpCode(baseIndex, OpCodes.Nop))
+                                    {
+                                        indexToInsert++;
+
+                                        if (instructions.IsNextInstructionOpCode(baseIndex + 1, OpCodes.Nop))
+                                        {
+                                            indexToInsert++;
+                                        }
+                                    }
+
+                                    instructions.Insert(indexToInsert, newInstructions);
+                                }
+                                else
+                                {
+                                    FodyEnvironment.LogError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. A rare condition occurred (no base ctor found), please contact support");
+                                }
                             }
                             else
                             {
