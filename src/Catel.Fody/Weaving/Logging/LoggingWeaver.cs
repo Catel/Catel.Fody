@@ -55,6 +55,7 @@ namespace Catel.Fody.Weaving.Logging
             }
 
             body.OptimizeMacros();
+            staticConstructor.UpdateDebugInfo();
         }
 
         private void UpdateCallsToGetCurrentClassLogger(MethodBody ctorBody)
