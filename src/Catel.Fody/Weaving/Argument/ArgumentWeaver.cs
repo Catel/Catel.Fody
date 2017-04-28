@@ -168,6 +168,7 @@ namespace Catel.Fody.Weaving.Argument
             if (instructions != null)
             {
                 method.Body.OptimizeMacros();
+                method.UpdateDebugInfo();
             }
         }
 
