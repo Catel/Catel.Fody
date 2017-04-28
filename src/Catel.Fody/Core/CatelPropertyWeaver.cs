@@ -748,6 +748,7 @@ namespace Catel.Fody
                     }
 
                     ctorBody.OptimizeMacros();
+                    ctor.UpdateDebugInfo();
                 }
 
                 declaringType.Fields.Remove(field);
