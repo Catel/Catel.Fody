@@ -82,6 +82,7 @@
     <Compile Include="AssemblyWeaver.cs" />
     <Compile Include="ConfigurationFacts.cs" />
     <Compile Include="CSharp6Facts.cs" />
+    <Compile Include="Helpers\AssemblyDirectoryHelper.cs" />
     <Compile Include="Repros\CTL504.cs" />
     <Compile Include="Repros\CTL569.cs" />
     <Compile Include="Repros\CTL768.cs" />
@@ -93,7 +94,6 @@
     <Compile Include="GenericModelFacts.cs" />
     <Compile Include="InheritanceFacts.cs" />
     <Compile Include="LoggingFacts.cs" />
-    <Compile Include="MockAssemblyResolver.cs" />
     <Compile Include="ModelBaseFacts.cs" />
     <Compile Include="ModelWithDoubleValuesFacts.cs" />
     <Compile Include="NoWeavingFacts.cs" />
