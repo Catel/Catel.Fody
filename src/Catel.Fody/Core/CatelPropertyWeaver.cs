@@ -504,6 +504,13 @@ namespace Catel.Fody
                 instructionsToAdd.Add(Instruction.Create(OpCodes.Box, property.PropertyType.Import()));
             }
 
+            if (_catelType.SetValueInvoker.Parameters.Count > 2)
+            {
+                // Catel v5 is a new signature:
+                // protected internal void SetValue(string name, object value, bool notifyOnChange = true)
+                instructionsToAdd.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+            }
+
             instructionsToAdd.Add(Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker));
             instructionsToAdd.Add(Instruction.Create(OpCodes.Ret));
 

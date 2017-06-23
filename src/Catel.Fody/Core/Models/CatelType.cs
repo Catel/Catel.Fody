@@ -45,12 +45,20 @@ namespace Catel.Fody
                 return;
             }
 
+            Version = TypeDefinition.GetCatelVersion();
+            if (Version == CatelVersion.Unknown)
+            {
+                FodyEnvironment.LogWarning($"Cannot determine the Catel version used for '{Name}', type will be ignored for weaving");
+                return;
+            }
+
             try
             {
                 DetermineTypes();
 
                 if (!DetermineMethods())
                 {
+                    FodyEnvironment.LogWarning($"Cannot determine the Catel methods used for '{Name}', type will be ignored for weaving");
                     return;
                 }
 
@@ -70,6 +78,8 @@ namespace Catel.Fody
         public bool Ignore { get; private set; }
 
         public TypeDefinition TypeDefinition { get; private set; }
+
+        public CatelVersion Version { get; private set; }
 
         public CatelTypeType Type { get; private set; }
 
@@ -132,7 +142,7 @@ namespace Catel.Fody
         {
             get
             {
-                TypeDefinition typeDefinition = TypeDefinition;
+                var typeDefinition = TypeDefinition;
                 var propertyDefinitions = new List<PropertyDefinition>();
                 while (typeDefinition.BaseType.FullName != "System.Object")
                 {
@@ -157,7 +167,22 @@ namespace Catel.Fody
             RegisterPropertyWithDefaultValueInvoker = module.ImportReference(registerPropertyWithDefaultValueInvokerMethod);
             RegisterPropertyWithoutDefaultValueInvoker = module.ImportReference(FindRegisterPropertyMethod(TypeDefinition, false));
             GetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true));
-            SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", new[] { "property", "value" }));
+
+            string[] parameterNames;
+
+            switch (Version)
+            {
+                case CatelVersion.v4:
+                    parameterNames = new[] {"property", "value"};
+                    break;
+
+                case CatelVersion.v5:
+                default:
+                    parameterNames = new[] { "property", "value", "notifyOnChange" };
+                    break;
+            }
+
+            SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames));
             RaisePropertyChangedInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "RaisePropertyChanged", new[] { "propertyName" }));
 
             return true;
@@ -205,15 +230,44 @@ namespace Catel.Fody
 
                 if (includeDefaultValue)
                 {
-                    // Search for this method:         
-                    // public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
-                    methods = (from method in currentTypeDefinition.Methods where method.Name == "RegisterProperty" && method.IsPublic && method.Parameters.Count == 7 && method.HasGenericParameters && method.GenericParameters.Count == 1 && method.Parameters[0].ParameterType.FullName.Contains("System.String") && !method.Parameters[2].ParameterType.FullName.Contains("System.Func") select method).ToList();
+                    // Search for this method:  
+                    // v4: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
+                    // v5+: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
+
+                    var argumentCount = 0;
+
+                    switch (Version)
+                    {
+                        case CatelVersion.v4:
+                            argumentCount = 7;
+                            break;
+
+                        case CatelVersion.v5:
+                        default:
+                            argumentCount = 6;
+                            break;
+                    }
+
+                    methods = (from method in currentTypeDefinition.Methods
+                               where method.Name == "RegisterProperty" &&
+                                     method.IsPublic &&
+                                     method.Parameters.Count == argumentCount && 
+                                     method.HasGenericParameters &&
+                                     method.GenericParameters.Count == 1 &&
+                                     method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                     !method.Parameters[2].ParameterType.FullName.Contains("System.Func")
+                               select method).ToList();
                 }
                 else
                 {
                     // Search for this method:         
                     // public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
-                    methods = (from method in currentTypeDefinition.Methods where method.Name == "RegisterProperty" && method.IsPublic && !method.HasGenericParameters && method.Parameters[0].ParameterType.FullName.Contains("System.String") select method).ToList();
+                    methods = (from method in currentTypeDefinition.Methods
+                               where method.Name == "RegisterProperty" &&
+                                     method.IsPublic &&
+                                     !method.HasGenericParameters &&
+                                     method.Parameters[0].ParameterType.FullName.Contains("System.String")
+                               select method).ToList();
                 }
 
                 if (methods.Count > 0)

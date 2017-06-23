@@ -63,6 +63,8 @@ namespace Catel.Fody
 
                 InitializeEnvironment();
 
+                LogInfo($"Catel.Fody v{GetType().Assembly.GetName().Version}");
+
                 // 1st step: set up the basics
                 var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
                 msCoreReferenceFinder.Execute();

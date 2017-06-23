@@ -46,23 +46,19 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.0.5\lib\net40\Mono.Cecil.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\lib\FodyCecil.2.0.6\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.0.5\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\lib\FodyCecil.2.0.6\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Pdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.0.5\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\lib\FodyCecil.2.0.6\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Rocks, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.0.5\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\lib\FodyCecil.2.0.6\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -86,6 +82,7 @@
     <Compile Include="AssemblyWeaver.cs" />
     <Compile Include="ConfigurationFacts.cs" />
     <Compile Include="CSharp6Facts.cs" />
+    <Compile Include="Helpers\AssemblyDirectoryHelper.cs" />
     <Compile Include="Repros\CTL504.cs" />
     <Compile Include="Repros\CTL569.cs" />
     <Compile Include="Repros\CTL768.cs" />
@@ -97,7 +94,6 @@
     <Compile Include="GenericModelFacts.cs" />
     <Compile Include="InheritanceFacts.cs" />
     <Compile Include="LoggingFacts.cs" />
-    <Compile Include="MockAssemblyResolver.cs" />
     <Compile Include="ModelBaseFacts.cs" />
     <Compile Include="ModelWithDoubleValuesFacts.cs" />
     <Compile Include="NoWeavingFacts.cs" />

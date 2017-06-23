@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using Catel.Fody;
 using Catel.Fody.TestAssembly;
+using Catel.Fody.Tests;
 using Catel.Reflection;
 using Mono.Cecil;
 
@@ -54,16 +55,20 @@ public class AssemblyWeaver
 
         Debug.WriteLine("Weaving assembly on-demand from '{0}' to '{1}'", BeforeAssemblyPath, AfterAssemblyPath);
 
-        var assemblyResolver = new MockAssemblyResolver();
-        foreach (var referenceAssemblyPath in referenceAssemblyPaths)
-        {
-            //var directoryName = Path.GetDirectoryName(referenceAssemblyPath);
-            //assemblyResolver.AddSearchDirectory(directoryName);
-        }
+        var assemblyResolver = new DefaultAssemblyResolver();
+        assemblyResolver.AddSearchDirectory(AssemblyDirectoryHelper.GetCurrentDirectory());
+        //foreach (var referenceAssemblyPath in referenceAssemblyPaths)
+        //{
+        //    var directoryName = Path.GetDirectoryName(referenceAssemblyPath);
+        //    assemblyResolver.AddSearchDirectory(directoryName);
+        //}
+
+        var metadataResolver = new MetadataResolver(assemblyResolver);
 
         var readerParameters = new ReaderParameters
         {
             AssemblyResolver = assemblyResolver,
+            MetadataResolver = metadataResolver,
             ReadSymbols = File.Exists(oldPdb),
         };
 
