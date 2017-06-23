@@ -45,12 +45,20 @@ namespace Catel.Fody
                 return;
             }
 
+            Version = TypeDefinition.GetCatelVersion();
+            if (Version == CatelVersion.Unknown)
+            {
+                FodyEnvironment.LogWarning($"Cannot determine the Catel version used for '{Name}', type will be ignored for weaving");
+                return;
+            }
+
             try
             {
                 DetermineTypes();
 
                 if (!DetermineMethods())
                 {
+                    FodyEnvironment.LogWarning($"Cannot determine the Catel methods used for '{Name}', type will be ignored for weaving");
                     return;
                 }
 
@@ -70,6 +78,8 @@ namespace Catel.Fody
         public bool Ignore { get; private set; }
 
         public TypeDefinition TypeDefinition { get; private set; }
+
+        public CatelVersion Version { get; private set; }
 
         public CatelTypeType Type { get; private set; }
 
@@ -132,7 +142,7 @@ namespace Catel.Fody
         {
             get
             {
-                TypeDefinition typeDefinition = TypeDefinition;
+                var typeDefinition = TypeDefinition;
                 var propertyDefinitions = new List<PropertyDefinition>();
                 while (typeDefinition.BaseType.FullName != "System.Object")
                 {
@@ -157,7 +167,22 @@ namespace Catel.Fody
             RegisterPropertyWithDefaultValueInvoker = module.ImportReference(registerPropertyWithDefaultValueInvokerMethod);
             RegisterPropertyWithoutDefaultValueInvoker = module.ImportReference(FindRegisterPropertyMethod(TypeDefinition, false));
             GetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "GetValue", new[] { "property" }, true));
-            SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", new[] { "property", "value" }));
+
+            string[] parameterNames;
+
+            switch (Version)
+            {
+                case CatelVersion.v4:
+                    parameterNames = new[] {"property", "value"};
+                    break;
+
+                case CatelVersion.v5:
+                default:
+                    parameterNames = new[] { "property", "value", "notifyOnChange" };
+                    break;
+            }
+
+            SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames));
             RaisePropertyChangedInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "RaisePropertyChanged", new[] { "propertyName" }));
 
             return true;
@@ -209,12 +234,18 @@ namespace Catel.Fody
                     // v4: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     // v5+: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
 
-                    var version = currentTypeDefinition.Module.Assembly.GetVersion();
+                    var argumentCount = 0;
 
-                    var argumentCount = 6;
-                    if (version.Major == 4)
+                    switch (Version)
                     {
-                        argumentCount = 7;
+                        case CatelVersion.v4:
+                            argumentCount = 7;
+                            break;
+
+                        case CatelVersion.v5:
+                        default:
+                            argumentCount = 6;
+                            break;
                     }
 
                     methods = (from method in currentTypeDefinition.Methods

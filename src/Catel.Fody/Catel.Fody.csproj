@@ -64,6 +64,7 @@
     <Compile Include="..\SolutionAssemblyInfo.cs">
       <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CatelVersion.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Core\Models\CatelTypeProperty.cs" />
     <Compile Include="Extensions\CecilExtensions.assembly.cs" />
