@@ -7,10 +7,37 @@
 
 namespace Catel.Fody
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
     using Mono.Cecil;
 
     public static partial class CecilExtensions
     {
+        public static Version GetVersion(this AssemblyDefinition assemblyDefinition)
+        {
+            return assemblyDefinition.Name.Version;
+
+            //var stringVersion = "0.0.0.0";
+
+            //var assemblyVersionAttributeName = typeof(AssemblyVersionAttribute).FullName;
+            //var assemblyFileVersionAttributeName = typeof(AssemblyFileVersionAttribute).FullName;
+
+            //var attribute = assemblyDefinition.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == assemblyVersionAttributeName);
+            //if (attribute == null)
+            //{
+            //    attribute = assemblyDefinition.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == assemblyFileVersionAttributeName);
+            //}
+
+            //if (attribute != null)
+            //{
+            //    stringVersion = (string)attribute.ConstructorArguments.First().Value;
+            //}
+
+            //var version = new Version(stringVersion);
+            //return version;
+        }
+
         public static AssemblyDefinition Resolve(this IAssemblyResolver assemblyResolver, string name)
         {
             return assemblyResolver.Resolve(new AssemblyNameReference(name, null));
