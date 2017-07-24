@@ -81,7 +81,10 @@ namespace Catel.Fody.Weaving.Argument
                 var variable = method.Body.Variables[i];
                 if (string.Equals(variable.VariableType.Name, displayClassType.Name))
                 {
-                    method.Body.Variables.RemoveAt(i--);
+                    method.Body.Variables.RemoveAt(i);
+                    method.DebugInformation.Scope.Variables.RemoveAt(i);
+
+                    i--;
                 }
             }
 
