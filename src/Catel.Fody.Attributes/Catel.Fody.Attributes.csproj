@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-    <AssemblyName>Catel.Core</AssemblyName>
-    <RootNamespace>Catel</RootNamespace>
+    <TargetFramework>netstandard1.4</TargetFramework>
+    <AssemblyName>Catel.Fody.Attributes</AssemblyName>
+    <RootNamespace>Catel.Fody</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <SignAssembly>false</SignAssembly>
     <DelaySign>false</DelaySign>
   </PropertyGroup>

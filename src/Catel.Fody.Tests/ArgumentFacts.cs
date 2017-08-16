@@ -7,10 +7,12 @@
 namespace Catel.Fody.Tests
 {
     using System;
-
+    using System.Reflection;
+    using System.Threading;
     using NUnit.Framework;
 
     [TestFixture]
+    [RequiresThread(ApartmentState.STA)]
     public class ArgumentFacts
     {
         #region Methods
@@ -595,13 +597,16 @@ namespace Catel.Fody.Tests
             try
             {
                 action();
-
-                Assert.Fail("Expected exception '{0}'", typeof(TException).Name);
             }
             catch (Exception ex)
             {
-                var exceptionType = ex.GetType();
+                var targetInvocationException = ex as TargetInvocationException;
+                if (targetInvocationException != null)
+                {
+                    ex = targetInvocationException.InnerException;
+                }
 
+                var exceptionType = ex.GetType();
                 if (exceptionType == typeof(TException))
                 {
                     return;
@@ -619,6 +624,8 @@ namespace Catel.Fody.Tests
 
                 Assert.Fail("Expected exception '{0}' but got '{1}'", typeof(TException).Name, ex.GetType().Name);
             }
+
+            Assert.Fail("Expected exception '{0}', but no exception was thrown", typeof(TException).Name);
         }
         #endregion
     }
