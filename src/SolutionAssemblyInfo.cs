@@ -17,7 +17,7 @@ using System.Resources;
 ////[assembly: AssemblyDescription("DEFINED IN ACTUAL ASSEMBLYINFO")]
 
 [assembly: AssemblyCompany("CatenaLogic")]
-[assembly: AssemblyCopyright("Copyright © CatenaLogic 2010 - 2014")]
+[assembly: AssemblyCopyright("Copyright © CatenaLogic 2010 - 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US")]
@@ -32,5 +32,5 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.5.4")]
-[assembly: AssemblyInformationalVersion("1.5.4, manual release in Visual Studio")]
+[assembly: AssemblyVersion("2.17.2")]
+[assembly: AssemblyInformationalVersion("2.17.2, manual release in Visual Studio")]
