@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody", "Catel.Fody\Catel.Fody.csproj", "{D9600EEB-B52A-4861-AFA4-2A3E38A06196}"
 EndProject
@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{05FFA8A6-8
 		Catel.Fody.sln.DotSettings = Catel.Fody.sln.DotSettings
 		Catel.Fody.vsmdi = Catel.Fody.vsmdi
 		Local.testsettings = Local.testsettings
+		SolutionAssemblyInfo.cs = SolutionAssemblyInfo.cs
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
@@ -25,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AttributesAssembly", "Attri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody.TestExternalTypesAssembly", "Catel.Fody.TestExternalTypesAssembly\Catel.Fody.TestExternalTypesAssembly.csproj", "{B9B894EE-7946-4020-B254-3625993AE0D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody.Attributes", "Catel.Fody.Attributes\Catel.Fody.Attributes.csproj", "{5E735B00-1EDF-4ACD-A777-91BABA85B2C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catel.Fody.Attributes", "Catel.Fody.Attributes\Catel.Fody.Attributes.csproj", "{5E735B00-1EDF-4ACD-A777-91BABA85B2C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,5 +66,8 @@ Global
 		{A5694D95-F959-4A8F-9A1C-E4EDD733245E} = {30F5D8D6-8019-4EBB-9641-276027A815D7}
 		{B9B894EE-7946-4020-B254-3625993AE0D0} = {77E19AE6-B67C-421E-A49A-E61ED7CCC98D}
 		{5E735B00-1EDF-4ACD-A777-91BABA85B2C5} = {A5694D95-F959-4A8F-9A1C-E4EDD733245E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B8FBD666-DAD3-4467-90B2-A3D54DA5FE4D}
 	EndGlobalSection
 EndGlobal

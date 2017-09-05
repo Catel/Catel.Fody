@@ -12,4 +12,4 @@ using System.Reflection;
 [assembly: AssemblyDescription("Catel.Fody attributes class")]
 
 // Sign attributes assembly
-[assembly: AssemblyKeyFile(@"..\..\..\Catel.snk")]
+//[assembly: AssemblyKeyFile(@"..\..\..\Catel.snk")]
