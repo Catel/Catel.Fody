@@ -159,6 +159,7 @@
     <Compile Include="Repros\CTL504.cs" />
     <Compile Include="Repros\CTL569.cs" />
     <Compile Include="Repros\CTL768.cs" />
+    <Compile Include="Repros\GH0012.cs" />
     <Compile Include="Repros\GH0008.cs" />
     <Compile Include="Repros\CTL908.cs" />
     <Compile Include="DefaultValueFacts.cs" />
