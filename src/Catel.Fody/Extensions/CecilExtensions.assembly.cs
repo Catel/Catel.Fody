@@ -38,6 +38,11 @@ namespace Catel.Fody
             //return version;
         }
 
+        public static bool IsNetStandardLibrary(this AssemblyDefinition assemblyDefinition)
+        {
+            return assemblyDefinition.MainModule.FileName.IndexOf("netstandard", 0, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         public static AssemblyDefinition Resolve(this IAssemblyResolver assemblyResolver, string name)
         {
             return assemblyResolver.Resolve(new AssemblyNameReference(name, null));

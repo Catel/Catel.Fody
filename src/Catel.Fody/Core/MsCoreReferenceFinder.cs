@@ -6,6 +6,7 @@
 
 namespace Catel.Fody
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
@@ -37,15 +38,6 @@ namespace Catel.Fody
 
         public void Execute()
         {
-            var msCoreLibDefinition = _assemblyResolver.Resolve("mscorlib");
-            var msCoreTypes = msCoreLibDefinition.MainModule.Types;
-
-            var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
-            if (objectDefinition == null)
-            {
-                return;
-            }
-
             var xmlDefinition = _assemblyResolver.Resolve("System.Xml");
             var xmlTypes = xmlDefinition.MainModule.Types;
 
@@ -81,7 +73,14 @@ namespace Catel.Fody
             var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
             if (objectDefinition == null)
             {
-                msCoreTypes.AddRange(GetWinRtTypes());
+                if (msCoreLibDefinition.IsNetStandardLibrary())
+                {
+                    msCoreTypes.AddRange(GetNetStandardTypes());
+                }
+                else
+                {
+                    msCoreTypes.AddRange(GetWinRtTypes());
+                }
             }
             else
             {
@@ -105,6 +104,23 @@ namespace Catel.Fody
             var systemRuntimeTypes = systemRuntime.MainModule.Types;
 
             return systemRuntimeTypes;
+        }
+
+        private IEnumerable<TypeReference> GetNetStandardTypes()
+        {
+            // Load all assemblies, it's slower but then we are sure we have all types
+            var allTypes = new List<TypeReference>();
+
+            foreach (var assembly in _moduleWeaver.ModuleDefinition.AssemblyReferences)
+            {
+                var resolvedAssembly = _assemblyResolver.Resolve(assembly);
+                if ((resolvedAssembly != null) && resolvedAssembly.IsNetStandardLibrary())
+                {
+                    allTypes.AddRange(resolvedAssembly.MainModule.Types);
+                }
+            }
+
+            return allTypes;
         }
     }
 }
