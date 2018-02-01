@@ -21,6 +21,11 @@ namespace Catel.Fody.Weaving.XmlSchemas
 
         public void Execute(CatelType catelType)
         {
+            if (_msCoreReferenceFinder.XmlSchemaSet == null || _msCoreReferenceFinder.XmlQualifiedName == null)
+            {
+                return;
+            }
+
             if (catelType.TypeDefinition.IsAbstract)
             {
                 return;
