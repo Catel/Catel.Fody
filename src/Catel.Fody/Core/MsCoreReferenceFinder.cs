@@ -39,15 +39,22 @@ namespace Catel.Fody
         public void Execute()
         {
             var xmlDefinition = _assemblyResolver.Resolve("System.Xml");
-            var xmlTypes = xmlDefinition.MainModule.Types;
+            if (xmlDefinition != null)
+            {
+                var xmlTypes = xmlDefinition.MainModule.Types;
 
-            XmlQualifiedName = (from t in xmlTypes
-                                where string.Equals(t.FullName, "System.Xml.XmlQualifiedName")
+                XmlQualifiedName = (from t in xmlTypes
+                                    where string.Equals(t.FullName, "System.Xml.XmlQualifiedName")
+                                    select t).FirstOrDefault();
+
+                XmlSchemaSet = (from t in xmlTypes
+                                where string.Equals(t.FullName, "System.Xml.Schema.XmlSchemaSet")
                                 select t).FirstOrDefault();
-
-            XmlSchemaSet = (from t in xmlTypes
-                            where string.Equals(t.FullName, "System.Xml.Schema.XmlSchemaSet")
-                            select t).FirstOrDefault();
+            }
+            else
+            {
+                FodyEnvironment.LogInfo("System.Xml not referenced, disabling xml-related features");
+            }
 
             GeneratedCodeAttribute = GetCoreTypeReference(GeneratedCodeAttributeTypeName);
             CompilerGeneratedAttribute = GetCoreTypeReference(CompilerGeneratedAttributeTypeName);
