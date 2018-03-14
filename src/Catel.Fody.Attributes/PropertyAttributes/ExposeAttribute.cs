@@ -9,6 +9,10 @@ namespace Catel.Fody
 {
     using System;
 
+    /// <summary>
+    /// The expose attribute.
+    /// </summary>
+    /// <seealso cref="System.Attribute" />
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class ExposeAttribute : Attribute
     {

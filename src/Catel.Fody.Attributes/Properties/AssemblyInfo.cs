@@ -9,7 +9,4 @@ using System.Reflection;
 
 [assembly: AssemblyTitle("Catel.Fody.Attributes")]
 [assembly: AssemblyProduct("Catel.Fody.Attributes")]
-[assembly: AssemblyDescription("Catel.Fody attributes class")]
-
-// Sign attributes assembly
-//[assembly: AssemblyKeyFile(@"..\..\..\Catel.snk")]
+[assembly: AssemblyDescription("Catel.Fody attributes library")]
