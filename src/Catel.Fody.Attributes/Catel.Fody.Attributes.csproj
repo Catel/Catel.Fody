@@ -13,7 +13,7 @@
     <PackageId>Catel.Fody</PackageId>
     <PackageVersion>3.0.0-alpha0001</PackageVersion>
     <Authors>geertvanhorrik,simoncropp</Authors>
-    <Description>Catel fody add-in that auomatically generates Catel style properties and more!</Description>
+    <Description>Catel fody add-in that automatically generates Catel style properties and more!</Description>
     <PackageProjectUrl>https://github.com/Catel/Catel.Fody</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/Catel/Catel.Fody/blob/develop/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/Catel/Catel.Fody</RepositoryUrl>
