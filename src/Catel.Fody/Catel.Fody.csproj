@@ -20,6 +20,7 @@
     <RepositoryUrl>https://github.com/Catel/Catel.Fody</RepositoryUrl>
     <PackageTags>catel;fody;ilweaving;weaving</PackageTags>
     <PackageOutputPath>$(ProjectDir)..\..\output\$(ConfigurationName)\</PackageOutputPath>
+    <DisableFody>true</DisableFody>
   </PropertyGroup>
 
   <ItemGroup>
