@@ -82,10 +82,10 @@ namespace Catel.Fody.Weaving.Logging
                 var methodReference = instruction.Operand as MethodReference;
                 if (methodReference != null)
                 {
-                    FodyEnvironment.LogDebug($"Weaving auto log to specific log for '{type.FullName}'");
-
                     if (string.Equals(methodReference.Name, "GetCurrentClassLogger"))
                     {
+                        FodyEnvironment.LogDebug($"Weaving auto log to specific log for '{type.FullName}'");
+
                         // We have a possible match
                         var getLoggerMethod = GetGetLoggerMethod(methodReference.DeclaringType);
                         if (getLoggerMethod == null)
