@@ -84,8 +84,6 @@ namespace Catel.Fody.Weaving.Logging
                 {
                     if (string.Equals(methodReference.Name, "GetCurrentClassLogger"))
                     {
-                        FodyEnvironment.LogDebug($"Weaving auto log to specific log for '{type.FullName}'");
-
                         // We have a possible match
                         var getLoggerMethod = GetGetLoggerMethod(methodReference.DeclaringType);
                         if (getLoggerMethod == null)
@@ -104,6 +102,8 @@ namespace Catel.Fody.Weaving.Logging
                             }
                             continue;
                         }
+
+                        FodyEnvironment.LogDebug($"Weaving auto log to specific log for '{type.FullName}'");
 
                         var getTypeFromHandle = type.Module.GetMethodAndImport("GetTypeFromHandle");
 
