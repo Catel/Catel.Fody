@@ -25,8 +25,6 @@ namespace Catel.Fody
             LogWarningPoint = (s, p) => { Debug.WriteLine(s); };
             LogError = s => { Debug.WriteLine(s); };
             LogErrorPoint = (s, p) => { Debug.WriteLine(s); };
-
-            AssemblyResolver = ModuleDefinition.AssemblyResolver;
         }
 
         public IAssemblyResolver AssemblyResolver { get; set; }
@@ -59,6 +57,12 @@ namespace Catel.Fody
                     FodyEnvironment.LogError = CreateLoggingCallback(LogError);
                 }
 #endif
+
+                // First of all, set the assembly resolver
+                if (AssemblyResolver == null)
+                {
+                    AssemblyResolver = ModuleDefinition.AssemblyResolver;
+                }
 
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
                 CacheHelper.ClearAllCaches();
