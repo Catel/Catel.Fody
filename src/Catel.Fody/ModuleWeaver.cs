@@ -25,6 +25,8 @@ namespace Catel.Fody
             LogWarningPoint = (s, p) => { Debug.WriteLine(s); };
             LogError = s => { Debug.WriteLine(s); };
             LogErrorPoint = (s, p) => { Debug.WriteLine(s); };
+
+            AssemblyResolver = ModuleDefinition.AssemblyResolver;
         }
 
         public IAssemblyResolver AssemblyResolver { get; set; }
