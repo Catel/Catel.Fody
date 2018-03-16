@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catel.Fody", "Catel.Fody\Catel.Fody.csproj", "{D9600EEB-B52A-4861-AFA4-2A3E38A06196}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catel.Fody", "Catel.Fody\Catel.Fody.csproj", "{D9600EEB-B52A-4861-AFA4-2A3E38A06196}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{30F5D8D6-8019-4EBB-9641-276027A815D7}"
 EndProject
@@ -11,6 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{05FFA8A6-8
 	ProjectSection(SolutionItems) = preProject
 		Catel.Fody.sln.DotSettings = Catel.Fody.sln.DotSettings
 		Catel.Fody.vsmdi = Catel.Fody.vsmdi
+		Directory.build.project.props = Directory.build.project.props
+		Directory.build.props = Directory.build.props
+		Directory.build.shared.explicit.props = Directory.build.shared.explicit.props
+		Directory.build.shared.implicit.props = Directory.build.shared.implicit.props
+		Directory.build.targets = Directory.build.targets
 		Local.testsettings = Local.testsettings
 		SolutionAssemblyInfo.cs = SolutionAssemblyInfo.cs
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings

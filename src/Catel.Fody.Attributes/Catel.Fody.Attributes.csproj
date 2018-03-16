@@ -4,21 +4,12 @@
     <AssemblyName>Catel.Fody.Attributes</AssemblyName>
     <RootNamespace>Catel.Fody</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageId>Catel.Fody</PackageId>
     <PackageVersion>3.0.0-alpha0001</PackageVersion>
     <Authors>geertvanhorrik,simoncropp</Authors>
-    <Description>Catel fody add-in that automatically generates Catel style properties and more!</Description>
-    <PackageProjectUrl>https://github.com/Catel/Catel.Fody</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/Catel/Catel.Fody/blob/develop/LICENSE</PackageLicenseUrl>
+
     <RepositoryUrl>https://github.com/Catel/Catel.Fody</RepositoryUrl>
     <PackageTags>catel;fody;ilweaving;weaving</PackageTags>
-    <PackageOutputPath>$(ProjectDir)..\..\output\$(ConfigurationName)\</PackageOutputPath>
 
     <!-- The properties below come from the FodyPackaging.props, see explanation at end of file -->
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeFodyFiles</TargetsForTfmSpecificContentInPackage>
@@ -28,10 +19,6 @@
 
   <ItemGroup>
     <PackageReference Include="Fody" Version="2.4.6" PrivateAssets="None" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\*.cs" />
   </ItemGroup>
 
 <!-- 

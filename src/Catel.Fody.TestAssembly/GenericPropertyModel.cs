@@ -16,6 +16,8 @@ namespace Catel.Fody.TestAssembly
             : base()
         {
             var i = 42;
+
+            Console.WriteLine(i);
         }
     }
 
@@ -25,6 +27,8 @@ namespace Catel.Fody.TestAssembly
             : base()
         {
             var i = new object();
+
+            Console.WriteLine(i);
         }
     }
 

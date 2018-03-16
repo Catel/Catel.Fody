@@ -1,0 +1,15 @@
+<Project>
+  <!-- 
+    This file applies to all projects automatically, this file contains all the project specific data
+  -->
+
+  <PropertyGroup>
+    <Description>Catel fody add-in that automatically generates Catel style properties and more!</Description>
+    <PackageIconUrl>https://github.com/Catel/Assets/raw/master/packages/logo.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/Catel/Catel.Fody</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Catel/Catel.Fody/blob/develop/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Catel/Catel.Fody</RepositoryUrl>
+  </PropertyGroup>
+  
+   
+</Project>
