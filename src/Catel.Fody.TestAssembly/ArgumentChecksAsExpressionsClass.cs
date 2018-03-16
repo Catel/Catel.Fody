@@ -90,7 +90,9 @@ namespace Catel.Fody.TestAssembly
             Argument.IsNotNull(() => myObject);
         }
 
+#pragma warning disable 1998
         public async Task CheckForNullAsync(object myObject)
+#pragma warning restore 1998
         {
             Argument.IsNotNull(() => myObject);
         }

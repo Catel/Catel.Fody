@@ -5,20 +5,11 @@
     <AssemblyName>Catel.Fody</AssemblyName>
     <RootNamespace>Catel.Fody</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <DisableFody>true</DisableFody>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FodyHelpers" Version="2.4.6" />
     <PackageReference Update="NETStandard.Library" Version="2.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\*.cs" />
   </ItemGroup>
 </Project>
