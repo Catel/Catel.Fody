@@ -82,8 +82,6 @@ namespace Catel.Fody.Weaving.Logging
                 var methodReference = instruction.Operand as MethodReference;
                 if (methodReference != null)
                 {
-                    FodyEnvironment.LogDebug($"Weaving auto log to specific log for '{type.FullName}'");
-
                     if (string.Equals(methodReference.Name, "GetCurrentClassLogger"))
                     {
                         // We have a possible match
@@ -104,6 +102,8 @@ namespace Catel.Fody.Weaving.Logging
                             }
                             continue;
                         }
+
+                        FodyEnvironment.LogDebug($"Weaving auto log to specific log for '{type.FullName}'");
 
                         var getTypeFromHandle = type.Module.GetMethodAndImport("GetTypeFromHandle");
 

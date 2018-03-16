@@ -6,16 +6,15 @@
 namespace Catel.Fody
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using System.Xml.Linq;
-
+    using global::Fody;
     using Services;
 
     using Mono.Cecil;
-    using Mono.Cecil.Cil;
 
-    public class ModuleWeaver
+    public class ModuleWeaver : BaseModuleWeaver
     {
         public ModuleWeaver()
         {
@@ -28,19 +27,22 @@ namespace Catel.Fody
             LogErrorPoint = (s, p) => { Debug.WriteLine(s); };
         }
 
-        public XElement Config { get; set; }
-
-        public Action<string> LogDebug { get; set; }
-        public Action<string> LogInfo { get; set; }
-        public Action<string> LogWarning { get; set; }
-        public Action<string, SequencePoint> LogWarningPoint { get; set; }
-        public Action<string> LogError { get; set; }
-        public Action<string, SequencePoint> LogErrorPoint { get; set; }
-
         public IAssemblyResolver AssemblyResolver { get; set; }
-        public ModuleDefinition ModuleDefinition { get; set; }
 
-        public void Execute()
+        public override bool ShouldCleanReference => true;
+
+        public override IEnumerable<string> GetAssembliesForScanning()
+        {
+            var assemblies = new List<string>();
+
+            // For now just return all references
+            assemblies.Add("netstandard");
+            assemblies.AddRange(ModuleDefinition.AssemblyReferences.Select(x => x.Name));
+
+            return assemblies;
+        }
+
+        public override void Execute()
         {
             try
             {
@@ -55,6 +57,12 @@ namespace Catel.Fody
                     FodyEnvironment.LogError = CreateLoggingCallback(LogError);
                 }
 #endif
+
+                // First of all, set the assembly resolver
+                if (AssemblyResolver == null)
+                {
+                    AssemblyResolver = ModuleDefinition.AssemblyResolver;
+                }
 
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
                 CacheHelper.ClearAllCaches();

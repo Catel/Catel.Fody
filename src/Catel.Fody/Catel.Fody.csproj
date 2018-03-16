@@ -1,138 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D9600EEB-B52A-4861-AFA4-2A3E38A06196}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Catel.Fody</RootNamespace>
+    <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
     <AssemblyName>Catel.Fody</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\output\debug\Catel.Fody\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
+    <RootNamespace>Catel.Fody</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <DisableFody>true</DisableFody>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\output\release\Catel.Fody\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.1.2\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.1.2\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.1.2\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.1.2\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="FodyHelpers" Version="2.4.6" />
+    <PackageReference Update="NETStandard.Library" Version="2.0.1" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\SolutionAssemblyInfo.cs">
-      <Link>Properties\SolutionAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="CatelVersion.cs" />
-    <Compile Include="Configuration.cs" />
-    <Compile Include="Core\Models\CatelTypeProperty.cs" />
-    <Compile Include="Extensions\CecilExtensions.assembly.cs" />
-    <Compile Include="Extensions\CecilExtensions.debuginfo.cs" />
-    <Compile Include="Extensions\TypeReferenceExtensions.cs" />
-    <Compile Include="Extensions\CecilCatelExtensions.cs" />
-    <Compile Include="Extensions\CecilExtensions.attributes.cs" />
-    <Compile Include="Extensions\CecilExtensions.fields.cs" />
-    <Compile Include="Extensions\CecilExtensions.members.cs" />
-    <Compile Include="Extensions\CecilExtensions.methods.cs" />
-    <Compile Include="Extensions\ResolvingExtensions.cs" />
-    <Compile Include="Extensions\XmlExtensions.cs" />
-    <Compile Include="FodyEnvironment.cs" />
-    <Compile Include="Helpers\CacheHelper.cs" />
-    <Compile Include="Services\ArgumentWeaverService.cs" />
-    <Compile Include="Services\ExposedPropertiesWeaverService.cs" />
-    <Compile Include="Services\LoggingWeaverService.cs" />
-    <Compile Include="Weaving\Argument\ArgumentInstructionSequenceBuilder.cs" />
-    <Compile Include="Weaving\Argument\ArgumentWeaver.cs" />
-    <Compile Include="Weaving\Argument\ArgumentMethodCallWeaverBase.cs" />
-    <Compile Include="Weaving\Argument\ArgumentWeaver.expressions.cs" />
-    <Compile Include="Weaving\Argument\BoundariesCheckRelatedArgumentMethodCallWeaverBase.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsMaximumMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsMinimalMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsNotOutOfRangeMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\InheritsFromArgumentMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\Implementations\ImplementsInterfaceArgumentMethodCallWeave.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsOfTypeArgumentMethodCallWeave.cs" />
-    <Compile Include="Weaving\Argument\DefaultArgumentMethodCallWeaverBase.cs" />
-    <Compile Include="Weaving\Argument\Models\RemoveArgumentWeavingCallResult.cs" />
-    <Compile Include="Weaving\Argument\RegexRelatedArgumentMethodCallWeaverBase.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsNotMatchArgumentMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsMatchArgumentMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsNotNullArgumentMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsNotNullOrEmptyArgumentMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsNotNullOrEmptyArrayArgumentMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\Implementations\IsNotNullOrWhitespaceArgumentMethodCallWeaver.cs" />
-    <Compile Include="Weaving\Argument\TypeCheckRelatedArgumentMethodCallWeaverBase.cs" />
-    <Compile Include="Weaving\AutoProperties\OnPropertyChangedWeaver.cs" />
-    <Compile Include="Weaving\ExposedProperties\ExposedPropertiesWarningChecker.cs" />
-    <Compile Include="Weaving\ExposedProperties\ExposedPropertiesWeaver.cs" />
-    <Compile Include="Extensions\InstructionExtensions.cs" />
-    <Compile Include="ModuleWeaver.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions\CecilExtensions.cs" />
-    <Compile Include="Core\CodeGenTypeCleaner.cs" />
-    <Compile Include="Extensions\InstructionListExtensions.cs" />
-    <Compile Include="Core\Models\MemberMapping.cs" />
-    <Compile Include="Core\MsCoreReferenceFinder.cs" />
-    <Compile Include="Core\CatelPropertyWeaver.cs" />
-    <Compile Include="Services\AutoPropertiesWeaverService.cs" />
-    <Compile Include="Core\ReferenceCleaner.cs" />
-    <Compile Include="Core\Models\CatelType.cs" />
-    <Compile Include="Core\CatelTypeNodeBuilder.cs" />
-    <Compile Include="Weaving\AutoProperties\AutoPropertiesWeaver.cs" />
-    <Compile Include="Weaving\AutoProperties\AutoPropertiesWarningChecker.cs" />
-    <Compile Include="Core\WeavingException.cs" />
-    <Compile Include="Services\XmlSchemasWeaverService.cs" />
-    <Compile Include="Weaving\Logging\LoggingWeaver.cs" />
-    <Compile Include="Weaving\XmlSchemas\XmlSchemasWeaver.cs" />
+    <Compile Include="..\*.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets. -->
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild" />
 </Project>
