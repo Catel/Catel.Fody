@@ -6,9 +6,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageId>Catel.Fody</PackageId>
     <PackageVersion>3.0.0-alpha0001</PackageVersion>
-    <Authors>geertvanhorrik,simoncropp</Authors>
-
-    <RepositoryUrl>https://github.com/Catel/Catel.Fody</RepositoryUrl>
+    <Description>Catel fody add-in that automatically generates Catel style properties and more!</Description>
     <PackageTags>catel;fody;ilweaving;weaving</PackageTags>
 
     <!-- The properties below come from the FodyPackaging.props, see explanation at end of file -->

@@ -4,12 +4,11 @@
   -->
 
   <PropertyGroup>
-    <Description>Catel fody add-in that automatically generates Catel style properties and more!</Description>
+    <Authors>geertvanhorrik,simoncropp</Authors>
     <PackageIconUrl>https://github.com/Catel/Assets/raw/master/packages/logo.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/Catel/Catel.Fody</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/Catel/Catel.Fody/blob/develop/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/Catel/Catel.Fody</RepositoryUrl>
   </PropertyGroup>
-  
    
 </Project>
