@@ -61,6 +61,11 @@ namespace Catel.Fody
             return IsDecoratedWithAttribute(propertyDefinition.CustomAttributes, attributeName);
         }
 
+        public static bool IsDecoratedWithAttribute(this MethodDefinition methodDefinition, string attributeName)
+        {
+            return IsDecoratedWithAttribute(methodDefinition.CustomAttributes, attributeName);
+        }
+
         public static bool IsDecoratedWithAttribute(Collection<CustomAttribute> customAttributes, string attributeName)
         {
             return GetAttribute(customAttributes, attributeName) != null;
