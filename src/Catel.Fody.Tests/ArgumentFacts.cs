@@ -591,7 +591,18 @@ namespace Catel.Fody.Tests
 
             method.Invoke(instance, new object[] { typeof(int) });
         }
-        
+
+        [TestCase]
+        public void NoThrowsArgumentNullExceptionForNullTypesWhenMethodIsMarkedWithNoWeavingAttribute()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksClass");
+
+            var instance = Activator.CreateInstance(type);
+            var method = type.GetMethod("NoWeavingCheckForNull");
+
+            method.Invoke(instance, new object[] { null });
+        }
+
         private static void CallMethodAndExpectException<TException>(Action action)
         {
             try
@@ -627,6 +638,8 @@ namespace Catel.Fody.Tests
 
             Assert.Fail("Expected exception '{0}', but no exception was thrown", typeof(TException).Name);
         }
+
+
         #endregion
     }
 }
