@@ -55,6 +55,13 @@ namespace Catel.Fody.Weaving.Argument
                 return;
             }
 
+            if (method.IsDecoratedWithAttribute("NoWeavingAttribute"))
+            {
+                FodyEnvironment.LogDebug($"\t\tSkipping '{method.Name}' because 'Catel.Fody.NoWeavingAttribute'");
+
+                return;
+            }
+
             // Note: very important to only simplify/optimize methods that we actually change, otherwise some Mono.Cecil bugs
             // will appear on the surface
             Collection<Instruction> instructions = null;

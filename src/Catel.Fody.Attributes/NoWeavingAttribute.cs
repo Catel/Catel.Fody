@@ -13,7 +13,7 @@ namespace Catel.Fody
     /// No weaving attribute.
     /// </summary>
     /// <seealso cref="System.Attribute" />
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method |AttributeTargets.Class, AllowMultiple = false)]
     public class NoWeavingAttribute : Attribute
     {
     }

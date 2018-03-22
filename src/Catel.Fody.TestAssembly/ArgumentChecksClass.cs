@@ -132,5 +132,10 @@ namespace Catel.Fody.TestAssembly
             //Argument.IsNotNull("myObject6", myObject6);
             //Argument.IsNotNull("myObject7", myObject7);
         }
+
+        [NoWeaving]
+        public void NoWeavingCheckForNull([NotNull] object myObject)
+        {
+        }
     }
 }
