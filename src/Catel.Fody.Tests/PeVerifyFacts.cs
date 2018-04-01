@@ -5,8 +5,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
+#pragma warning disable 618
 namespace Catel.Fody.TestAssembly
 {
+    using global::Fody;
     using NUnit.Framework;
 
     [TestFixture]
@@ -17,7 +19,7 @@ namespace Catel.Fody.TestAssembly
         {
             var weaver = AssemblyWeaver.Instance;
 
-            Verifier.Verify(weaver.BeforeAssemblyPath, weaver.AfterAssemblyPath);
+            PeVerifier.ThrowIfDifferent(weaver.BeforeAssemblyPath, weaver.AfterAssemblyPath);
         }
     }
 }

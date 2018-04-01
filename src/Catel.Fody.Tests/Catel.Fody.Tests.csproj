@@ -45,8 +45,8 @@
     <Reference Include="Catel.MVVM, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\lib\Catel.MVVM.5.0.0\lib\net46\Catel.MVVM.dll</HintPath>
     </Reference>
-    <Reference Include="FodyHelpers, Version=2.4.6.0, Culture=neutral, PublicKeyToken=1ca091877d12ca03, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyHelpers.2.4.6\lib\net46\FodyHelpers.dll</HintPath>
+    <Reference Include="FodyHelpers">
+      <HintPath>..\..\lib\FodyHelpers.3.0.0\lib\net46\FodyHelpers.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,17 +58,17 @@
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\lib\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.4.6\lib\net46\Mono.Cecil.dll</HintPath>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\lib\FodyHelpers.3.0.0\lib\net46\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.4.6\lib\net46\Mono.Cecil.Mdb.dll</HintPath>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\..\lib\FodyHelpers.3.0.0\lib\net46\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.4.6\lib\net46\Mono.Cecil.Pdb.dll</HintPath>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\..\lib\FodyHelpers.3.0.0\lib\net46\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\FodyCecil.2.4.6\lib\net46\Mono.Cecil.Rocks.dll</HintPath>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\..\lib\FodyHelpers.3.0.0\lib\net46\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\..\lib\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
@@ -185,7 +185,6 @@
     <Compile Include="NoWeavingFacts.cs" />
     <Compile Include="PeVerifyFacts.cs" />
     <Compile Include="TestClasses\MyEventArgs.cs" />
-    <Compile Include="Verifier.cs" />
     <Compile Include="ViewModelBaseFacts.cs" />
   </ItemGroup>
   <ItemGroup>
