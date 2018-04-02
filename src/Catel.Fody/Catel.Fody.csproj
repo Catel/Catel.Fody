@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="2.4.6" />
+    <PackageReference Include="FodyHelpers" Version="3.0.0" />
     <PackageReference Update="NETStandard.Library" Version="2.0.1" />
   </ItemGroup>
 </Project>
