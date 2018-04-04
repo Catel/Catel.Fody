@@ -321,6 +321,14 @@ namespace Catel.Fody.Weaving.Argument
                     }
                 }
 
+                // If this is a call to a new argument is not null, also stop processing (fix for https://github.com/Catel/Catel.Fody/issues/20)
+                if (innerInstruction.UsesObjectFromDeclaringTypeName("Argument") &&
+                    innerInstruction != instruction)
+                {
+                    break;
+                }
+
+                // From this point, the instruction can be removed
                 startRemoveIndex = i;
 
                 if (innerInstruction.IsOpCode(OpCodes.Ldtoken))
