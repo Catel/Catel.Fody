@@ -7,8 +7,11 @@
 namespace Catel.Fody.Tests
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using NUnit.Framework;
+    using TestAssembly;
 
     public class ArgumentExpressionFacts
     {
@@ -644,6 +647,33 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForOfImplementsInterface2");
 
                 method.Invoke(instance, new object[] { typeof(int) });
+            }
+
+            [TestCase]
+            public void CheckForNullWithMultipleParametersWithoutContent()
+            {
+                var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+
+                var instance = Activator.CreateInstance(type);
+
+                var method = type.GetMethod("CheckForNullWithMultipleParametersWithoutContent");
+
+                CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null }));
+            }
+
+            [TestCase]
+            public void CheckForNullWithMultipleParametersWithoutContent_EmptyRawCollection()
+            {
+                var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
+
+                var instance = Activator.CreateInstance(type);
+
+                var method = type.GetMethod("CheckForNullWithMultipleParametersWithoutContent");
+
+                var customClassType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CustomClassType");
+                var customClassInstance = Activator.CreateInstance(customClassType);
+
+                CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { customClassInstance, null, (IList)new List<string>() }));
             }
         }
 
