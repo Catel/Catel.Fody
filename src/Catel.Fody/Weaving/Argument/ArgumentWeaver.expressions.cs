@@ -69,25 +69,6 @@ namespace Catel.Fody.Weaving.Argument
 
             FodyEnvironment.LogDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
 
-            // Remove display class from container
-            if (method.DeclaringType.NestedTypes.Contains(displayClassType))
-            {
-                method.DeclaringType.NestedTypes.Remove(displayClassType);
-            }
-
-            // Remove display class - variables
-            for (var i = 0; i < method.Body.Variables.Count; i++)
-            {
-                var variable = method.Body.Variables[i];
-                if (string.Equals(variable.VariableType.Name, displayClassType.Name))
-                {
-                    method.Body.Variables.RemoveAt(i);
-                    method.DebugInformation.Scope.Variables.RemoveAt(i);
-
-                    i--;
-                }
-            }
-
             // Remove display class creation, can be either:
             //
             // Msbuild
@@ -97,44 +78,74 @@ namespace Catel.Fody.Weaving.Argument
             // Roslyn
             //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
             //   L_0005: dup
+            //
 
+            // Remove special constructors
+            if (method.IsConstructor)
+            {
+                // We need to delete from the newobj => call to base constructor:
+                //   L_000c: ldarg.0 
+                //   L_000d: call instance void [mscorlib]System.Object::.ctor()
+                for (var i = 0; i < instructions.Count; i++)
+                {
+                    var innerInstruction = instructions[i];
+                    if (innerInstruction.OpCode == OpCodes.Newobj)
+                    {
+                        var remove = innerInstruction.UsesObjectFromDeclaringTypeName(displayClassType.Name);
+                        if (remove)
+                        {
+                            var startIndex = i;
+                            var endIndex = i;
+
+                            for (var j = i + 1; j < instructions.Count; j++)
+                            {
+                                var nextInstruction = instructions[j];
+                                if (nextInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                                {
+                                    var nextNextInstruction = instructions[j + 1];
+                                    if (nextNextInstruction.IsCallToMethodName(".ctor") ||
+                                        nextNextInstruction.IsCallToMethodName(".cctor"))
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                endIndex++;
+                            }
+
+                            for (var removeIndex = startIndex; removeIndex < endIndex; removeIndex++)
+                            {
+                                // Remove start index because it's our base address (and remove will move up everything)
+                                instructions.RemoveAt(startIndex);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // We need to remove usages of the constructor
             for (var i = 0; i < instructions.Count; i++)
             {
                 var innerInstruction = instructions[i];
                 if (innerInstruction.OpCode == OpCodes.Newobj)
                 {
-                    var remove = false;
-
-                    var methodReference = innerInstruction.Operand as MethodReference;
-                    if (methodReference != null)
-                    {
-                        if (string.Equals(methodReference.DeclaringType.Name, displayClassType.Name))
-                        {
-                            remove = true;
-                        }
-                    }
-
-                    var methodDefinition = innerInstruction.Operand as MethodDefinition;
-                    if (methodDefinition != null)
-                    {
-                        if (string.Equals(methodDefinition.DeclaringType.Name, displayClassType.Name))
-                        {
-                            remove = true;
-                        }
-                    }
-
+                    var remove = innerInstruction.UsesObjectFromDeclaringTypeName(displayClassType.Name);
                     if (remove)
                     {
-                        // Delete 2 instructions, same location since remove will move everything 1 place up
+                        // Delete 1 instruction, same location since remove will move everything 1 place up
                         instructions.RemoveAt(i);
+                        //instructions.RemoveAt(i);
 
-                        // Special case in .net core
-                        if (instructions[i].OpCode == OpCodes.Dup)
-                        {
-                            instructions.RemoveAt(i);
-                        }
-
-                        instructions.RemoveAt(i);
+                        //if (instructions[i].OpCode == OpCodes.Dup)
+                        //{
+                        //    // Roslyn
+                        //    instructions.RemoveAt(i);
+                        //}
+                        //else if ()
+                        //{
+                        //    // MsBuild
+                        //    instructions.RemoveAt(i);
+                        //}
                     }
                 }
             }
@@ -200,6 +211,72 @@ namespace Catel.Fody.Weaving.Argument
                 }
             }
 
+            // Remove display class loading
+            for (var i = 0; i < instructions.Count; i++)
+            {
+                var innerInstruction = instructions[i];
+                if (innerInstruction.UsesType(displayClassType, OpCodes.Ldtoken))
+                {
+                    instructions.RemoveAt(i--);
+                }
+            }
+
+            // Remove display class from container
+            var declaringType = displayClassType.DeclaringType;
+            if (declaringType != null)
+            {
+                declaringType.NestedTypes.Remove(displayClassType);
+            }
+
+            // Remove display class - variables
+            for (var i = 0; i < method.Body.Variables.Count; i++)
+            {
+                var variable = method.Body.Variables[i];
+                if (string.Equals(variable.VariableType.Name, displayClassType.Name))
+                {
+                    method.Body.Variables.RemoveAt(i);
+                    method.DebugInformation.Scope.Variables.RemoveAt(i);
+
+                    i--;
+                }
+            }
+
+            // Special case, remove any Dup opcodes before the argument checks
+            for (var i = 0; i < instructions.Count; i++)
+            {
+                var remove = false;
+
+                var innerInstruction = instructions[i];
+                if (innerInstruction.IsOpCode(OpCodes.Dup))
+                {
+                    // If we have a non-expression argument call within 4 instructions, remove this one
+                    for (var j = i + 1; j <= i + 5; j++)
+                    {
+                        if (j < instructions.Count)
+                        {
+                            var nextInstruction = instructions[j];
+                            if (nextInstruction.IsOpCode(OpCodes.Call))
+                            {
+                                var operand = nextInstruction.Operand as MethodReference;
+                                if (operand != null)
+                                {
+                                    if (operand.DeclaringType.Name.Contains("Argument") &&
+                                        operand.Parameters[0].ParameterType.Name.Contains("String"))
+                                    {
+                                        remove = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (remove)
+                {
+                    instructions.RemoveAt(i--);
+                }
+            }
+
             // Remove duplicate nop instructions at the start of a method
             if (instructions.Count > 0)
             {
@@ -214,12 +291,14 @@ namespace Catel.Fody.Weaving.Argument
         private RemoveArgumentWeavingCallResult RemoveArgumentWeavingCall(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)
         {
             TypeReference displayClassType = null;
-            var index = instructions.IndexOf(instruction);
+
+            var endRemoveIndex = instructions.IndexOf(instruction);
+            var startRemoveIndex = endRemoveIndex;
 
             var hasBaseConstructorCall = false;
             var baseClass = method.DeclaringType.BaseType;
 
-            for (var i = index; i >= 0; i--)
+            for (var i = endRemoveIndex; i >= 0; i--)
             {
                 // Remove everything until the first ldloc.0 call
                 var innerInstruction = instructions[i];
@@ -235,14 +314,22 @@ namespace Catel.Fody.Weaving.Argument
                             if (string.Equals(methodReference.DeclaringType.FullName, baseClass.FullName))
                             {
                                 hasBaseConstructorCall = true;
-                                index = i + 2;
+                                startRemoveIndex = i + 2;
                                 break;
                             }
                         }
                     }
                 }
 
-                instructions.RemoveAt(i);
+                // If this is a call to a new argument is not null, also stop processing (fix for https://github.com/Catel/Catel.Fody/issues/20)
+                if (innerInstruction.UsesObjectFromDeclaringTypeName("Argument") &&
+                    innerInstruction != instruction)
+                {
+                    break;
+                }
+
+                // From this point, the instruction can be removed
+                startRemoveIndex = i;
 
                 if (innerInstruction.IsOpCode(OpCodes.Ldtoken))
                 {
@@ -264,9 +351,16 @@ namespace Catel.Fody.Weaving.Argument
                 }
 
                 // Async/await code
-                if (innerInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                //
+                //   ldarg.0
+                //   ldfld 
+                if (innerInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3))
                 {
-                    break;
+                    var nextInstruction = instructions[i + 1];
+                    if (nextInstruction.IsOpCode(OpCodes.Ldfld))
+                    {
+                        break;
+                    }
                 }
 
                 // Since .NET core, we want to skip assignments:
@@ -275,9 +369,13 @@ namespace Catel.Fody.Weaving.Argument
                 //   stfld class MyClass/<>c__DisplayClass0_0`1<!!T>::myArgument
                 // 
                 // If the display class is no longer used, another method must remove the code
-                if (innerInstruction.IsOpCode(OpCodes.Stfld, OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3))
+                if (innerInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3))
                 {
-                    break;
+                    var nextInstruction = instructions[i + 1];
+                    if (nextInstruction.IsOpCode(OpCodes.Stfld))
+                    {
+                        break;
+                    }
                 }
 
                 // .net core code
@@ -285,11 +383,15 @@ namespace Catel.Fody.Weaving.Argument
                 {
                     break;
                 }
-
-                index = i;
             }
 
-            return new RemoveArgumentWeavingCallResult(displayClassType.Resolve(), index - 1, hasBaseConstructorCall);
+            // Remove at the end so we have access to next / previous instructions
+            for (var i = endRemoveIndex; i >= startRemoveIndex; i--)
+            {
+                instructions.RemoveAt(i);
+            }
+
+            return new RemoveArgumentWeavingCallResult(displayClassType.Resolve(), startRemoveIndex, hasBaseConstructorCall);
         }
 
         private object GetParameterOrFieldForExpressionArgumentCheck(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)

@@ -85,19 +85,19 @@ public class AssemblyWeaver
             moduleDefinition.Write(AfterAssemblyPath);
         }
 
-        if (Debugger.IsAttached)
-        {
-#if DEBUG
-            var output = "debug";
-#else
-            var output = "release";
-#endif
+//        if (Debugger.IsAttached)
+//        {
+//#if DEBUG
+//            var output = "debug";
+//#else
+//            var output = "release";
+//#endif
 
-            var targetFile = $@"C:\Source\Catel.Fody\output\{output}\Catel.Fody.Tests\Catel.Fody.TestAssembly2.dll";
-            var targetDirectory = Path.GetDirectoryName(targetFile);
-            Directory.CreateDirectory(targetDirectory);
-            File.Copy(AfterAssemblyPath, targetFile, true);
-        }
+//            var targetFile = $@"C:\Source\Catel.Fody\output\{output}\Catel.Fody.Tests\Catel.Fody.TestAssembly2.dll";
+//            var targetDirectory = Path.GetDirectoryName(targetFile);
+//            Directory.CreateDirectory(targetDirectory);
+//            File.Copy(AfterAssemblyPath, targetFile, true);
+//        }
 
         Assembly = Assembly.LoadFile(AfterAssemblyPath);
     }

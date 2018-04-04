@@ -6,9 +6,7 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
@@ -52,6 +50,13 @@ namespace Catel.Fody.Weaving.Argument
         {
             if (method.Body == null)
             {
+                return;
+            }
+
+            if (method.IsDecoratedWithAttribute("NoWeavingAttribute"))
+            {
+                FodyEnvironment.LogDebug($"\t\tSkipping '{method.Name}' because 'Catel.Fody.NoWeavingAttribute'");
+
                 return;
             }
 
