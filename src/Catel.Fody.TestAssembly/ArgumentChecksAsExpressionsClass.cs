@@ -25,6 +25,11 @@ namespace Catel.Fody.TestAssembly
             Argument.IsMinimal(() => myValue, 1);
         }
 
+        public void CheckForMinimalInt_Expected(int myValue)
+        {
+            Argument.IsMinimal("myValue", myValue, 1);
+        }
+
         public void CheckForMinimalDouble(double myValue)
         {
             Argument.IsMinimal(() => myValue, 1.0d);
@@ -53,6 +58,11 @@ namespace Catel.Fody.TestAssembly
         public void CheckForOutOfRangeInt(int myValue)
         {
             Argument.IsNotOutOfRange(() => myValue, 1, 4);
+        }
+
+        public void CheckForOutOfRangeInt_Expected(int myValue)
+        {
+            Argument.IsNotOutOfRange("myValue", myValue, 1, 4);
         }
 
         public void CheckForOutOfRangeString(string myValue)
@@ -95,6 +105,17 @@ namespace Catel.Fody.TestAssembly
 #pragma warning restore 1998
         {
             Argument.IsNotNull(() => myObject);
+
+            //Console.WriteLine(myObject);
+        }
+
+#pragma warning disable 1998
+        public async Task CheckForNullAsync_Expected(object myObject)
+#pragma warning restore 1998
+        {
+            Argument.IsNotNull("myObject", myObject);
+
+            //Console.WriteLine(myObject);
         }
 
         public void CheckForOfType(object myObject)
@@ -164,6 +185,13 @@ namespace Catel.Fody.TestAssembly
             Argument.IsNotNull(() => customClassType);
             Argument.IsNotNull(() => rawCollection);
             Argument.IsNotNull(() => filteredCollection);
+        }
+
+        public void CheckForNullWithMultipleParametersWithoutContent_Expected(CustomClassType customClassType, IEnumerable rawCollection, IList filteredCollection)
+        {
+            Argument.IsNotNull("customClassType", customClassType);
+            Argument.IsNotNull("rawCollection", rawCollection);
+            Argument.IsNotNull("filteredCollection", filteredCollection);
         }
 
         public void CheckForNullWithMultipleParametersContentOnly(CustomClassType customClassType, IEnumerable rawCollection, IList filteredCollection)

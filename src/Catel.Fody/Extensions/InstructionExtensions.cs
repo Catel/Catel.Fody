@@ -28,6 +28,57 @@ namespace Catel.Fody
             return false;
         }
 
+        public static bool IsCallToMethodName(this Instruction instruction, string methodName)
+        {
+            if (!instruction.IsOpCode(OpCodes.Call, OpCodes.Calli, OpCodes.Callvirt))
+            {
+                return false;
+            }
+
+            var methodReference = instruction.Operand as MethodReference;
+            if (methodReference != null)
+            {
+                if (string.Equals(methodReference.Name, methodName))
+                {
+                    return true;
+                }
+            }
+
+            var methodDefinition = instruction.Operand as MethodDefinition;
+            if (methodDefinition != null)
+            {
+                if (string.Equals(methodDefinition.Name, methodName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool UsesObjectFromDeclaringTypeName(this Instruction instruction, string declaringTypeName)
+        {
+            var methodReference = instruction.Operand as MethodReference;
+            if (methodReference != null)
+            {
+                if (string.Equals(methodReference.DeclaringType.Name, declaringTypeName))
+                {
+                    return true;
+                }
+            }
+
+            var methodDefinition = instruction.Operand as MethodDefinition;
+            if (methodDefinition != null)
+            {
+                if (string.Equals(methodDefinition.DeclaringType.Name, declaringTypeName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static bool UsesType(this Instruction instruction, TypeDefinition typeDefinition, params OpCode[] opCodes)
         {
             if (instruction.IsOpCode(opCodes))
@@ -63,6 +114,24 @@ namespace Catel.Fody
                 if (methodReference != null)
                 {
                     if (string.Equals(methodReference.DeclaringType.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+
+                var operandTypeDefinition = instruction.Operand as TypeDefinition;
+                if (operandTypeDefinition != null)
+                {
+                    if (string.Equals(operandTypeDefinition.Name, typeDefinition.Name))
+                    {
+                        return true;
+                    }
+                }
+
+                var operandTypeReference = instruction.Operand as TypeReference;
+                if (operandTypeReference != null)
+                {
+                    if (string.Equals(operandTypeReference.Name, typeDefinition.Name))
                     {
                         return true;
                     }
