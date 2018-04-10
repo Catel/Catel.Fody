@@ -118,24 +118,46 @@ namespace Catel.Fody.TestAssembly
             //Console.WriteLine(myObject);
         }
 
+#pragma warning disable 1998
+        public async Task CheckForNullAsync_MultipleParameters(object myObject1, object myObject2, object myObject3)
+#pragma warning restore 1998
+        {
+            Argument.IsNotNull(() => myObject1);
+            Argument.IsNotNull(() => myObject2);
+            Argument.IsNotNull(() => myObject3);
+
+            //Console.WriteLine(myObject);
+        }
+
+#pragma warning disable 1998
+        public async Task CheckForNullAsync_MultipleParameters_Expected(object myObject1, object myObject2, object myObject3)
+#pragma warning restore 1998
+        {
+            Argument.IsNotNull("myObject1", myObject1);
+            Argument.IsNotNull("myObject2", myObject2);
+            Argument.IsNotNull("myObject3", myObject3);
+
+            //Console.WriteLine(myObject);
+        }
+
         public void CheckForOfType(object myObject)
         {
-            Argument.IsOfType(() => myObject, typeof (IComparable));
+            Argument.IsOfType(() => myObject, typeof(IComparable));
         }
 
         public void CheckForOfType2(Type myType)
         {
-            Argument.IsOfType(() => myType, typeof (IComparable));
+            Argument.IsOfType(() => myType, typeof(IComparable));
         }
 
         public void CheckForOfImplementsInterface(object myObject)
         {
-            Argument.ImplementsInterface(() => myObject, typeof (IComparable));
+            Argument.ImplementsInterface(() => myObject, typeof(IComparable));
         }
 
         public void CheckForOfImplementsInterface2(Type myType)
         {
-            Argument.ImplementsInterface(() => myType, typeof (IComparable));
+            Argument.ImplementsInterface(() => myType, typeof(IComparable));
         }
 
         public void CheckForMatch(string myString)
@@ -148,7 +170,7 @@ namespace Catel.Fody.TestAssembly
             Argument.IsNotMatch(() => myString, "\\d+");
         }
 
-        private static readonly object[] Objects = new object[] {null, null, null};
+        private static readonly object[] Objects = new object[] { null, null, null };
 
         public void CheckForNullWithInnerExpression(object obj)
         {
@@ -165,9 +187,9 @@ namespace Catel.Fody.TestAssembly
 
             IDisposable suspendToken = null;
             var filteredCollectionType = filteredCollection.GetType();
-            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof (FastObservableCollection<>))
+            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof(FastObservableCollection<>))
             {
-                suspendToken = (IDisposable) filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
+                suspendToken = (IDisposable)filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
             }
 
             filteredCollection.Clear();
@@ -198,9 +220,9 @@ namespace Catel.Fody.TestAssembly
         {
             IDisposable suspendToken = null;
             var filteredCollectionType = filteredCollection.GetType();
-            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof (FastObservableCollection<>))
+            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof(FastObservableCollection<>))
             {
-                suspendToken = (IDisposable) filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
+                suspendToken = (IDisposable)filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
             }
 
             filteredCollection.Clear();
@@ -257,7 +279,7 @@ namespace Catel.Fody.TestAssembly
     {
         public void SomeMethod()
         {
-            
+
         }
     }
 }

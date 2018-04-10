@@ -140,6 +140,8 @@
     <Compile Include="ArgumentChecksClass.cs" />
     <Compile Include="Bugs\GH0012.cs" />
     <Compile Include="Bugs\GH0008.cs" />
+    <Compile Include="Bugs\GH0021\MyDerivedService.cs" />
+    <Compile Include="Bugs\GH0021\MyService.cs" />
     <Compile Include="CSharp6.AutoPropertyInitializer.cs" />
     <Compile Include="Bugs\CTL504.cs" />
     <Compile Include="Bugs\CTL569.cs" />

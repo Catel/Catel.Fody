@@ -67,18 +67,14 @@ namespace Catel.Fody.Weaving.Argument
                 return;
             }
 
-            FodyEnvironment.LogDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
+            var isAsyncMethod = method.IsAsyncMethod();
+            //if (isAsyncMethod)
+            //{
+            //    // Too complex for now
+            //    return;
+            //}
 
-            // Remove display class creation, can be either:
-            //
-            // Msbuild
-            //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
-            //   L_0005: stloc.0 
-            //
-            // Roslyn
-            //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
-            //   L_0005: dup
-            //
+            FodyEnvironment.LogDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
 
             // Remove special constructors
             if (method.IsConstructor)
@@ -113,17 +109,35 @@ namespace Catel.Fody.Weaving.Argument
                                 endIndex++;
                             }
 
-                            for (var removeIndex = startIndex; removeIndex < endIndex; removeIndex++)
-                            {
-                                // Remove start index because it's our base address (and remove will move up everything)
-                                instructions.RemoveAt(startIndex);
-                            }
+                            instructions.RemoveInstructions(startIndex, endIndex);
                         }
                     }
                 }
             }
 
-            // We need to remove usages of the constructor
+            // Remove display class creation, can be either:
+            //
+            // Msbuild
+            //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
+            //   L_0005: stloc.0 
+            //
+            // Roslyn
+            //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
+            //   L_0005: dup
+            //
+            // Async methods
+            //   L_0000: ldarg.0
+            //   L_0001: ldfld int32 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /< CheckForNullAsync > d__16::<> 1__state
+            //   L_0006: stloc.0
+            //   L_0007: ldarg.0
+            //   L_0008: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /<> c__DisplayClass16_0::.ctor()
+            //   L_000d: stfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::<>8__1
+            //   L_0012: ldarg.0 
+            //   L_0013: ldfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::<>8__1
+            //   L_0018: ldarg.0 
+            //   L_0019: ldfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::myObject
+            //   L_001e: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0::myObject
+            //   L_0023: nop 
             for (var i = 0; i < instructions.Count; i++)
             {
                 var innerInstruction = instructions[i];
@@ -132,32 +146,115 @@ namespace Catel.Fody.Weaving.Argument
                     var remove = innerInstruction.UsesObjectFromDeclaringTypeName(displayClassType.Name);
                     if (remove)
                     {
-                        // Delete 1 instruction, same location since remove will move everything 1 place up
-                        instructions.RemoveAt(i);
-                        //instructions.RemoveAt(i);
+                        var startIndex = i;
+                        var endIndex = i;
 
-                        //if (instructions[i].OpCode == OpCodes.Dup)
-                        //{
-                        //    // Roslyn
-                        //    instructions.RemoveAt(i);
-                        //}
-                        //else if ()
-                        //{
-                        //    // MsBuild
-                        //    instructions.RemoveAt(i);
-                        //}
+                        // If the next instruction is stloc, remove that one as well
+                        if (!isAsyncMethod)
+                        {
+                            endIndex++;
+
+                            if (instructions[i + 1].IsOpCode(OpCodes.Stloc, OpCodes.Stloc_0))
+                            {
+                                endIndex++;
+                            }
+                        }
+                        else
+                        {
+                            // In async methods, we need to delete more since the values are stored in a field
+                            if (instructions[i - 1].IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                            {
+                                startIndex--;
+                            }
+
+                            // Search 
+                            var fieldOfDisplayClass = method.DeclaringType.Fields.First(x => x.FieldType.Name.Equals(displayClassType.Name));
+
+                            for (var j = i + 1; j < instructions.Count - 1; j++)
+                            {
+                                var currentInstruction = instructions[j];
+                                var nextInstruction = instructions[j + 1];
+
+                                if (currentInstruction.UsesField(fieldOfDisplayClass))
+                                {
+                                    endIndex = j;
+
+                                    if (nextInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                                    {
+                                        endIndex = j + 1;
+
+                                        // Skip next instruction check, just handled it
+                                        j++;
+                                    }
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        instructions.RemoveInstructions(startIndex, endIndex);
                     }
                 }
             }
 
-            //// Remove all assignments to the display class
-            ////   ldarg.0 
-            ////   stfld class MyClass/<>c__DisplayClass0_0`1<!!T>::myArgument
+            // Remove assignments in async methods
+            //   Option A:
+            //     L_0012: ldarg.0
+            //     L_0013: ldfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass18_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync_MultipleParameters>d__18::<>8__1
+            //
+            //   Option B:
+            //     L_0018: ldarg.0 
+            //     L_0019: ldfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync_MultipleParameters>d__18::myObject1
+            //     L_001e: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass18_0::myObject1
+            if (isAsyncMethod)
+            {
+                var fieldOfDisplayClass = method.DeclaringType.Fields.First(x => x.FieldType.Name.Equals(displayClassType.Name));
 
-            //for (var i = 0; i < instructions.Count; i++)
-            //{
-            //    var innerInstruction = instructions[i];
-            //}
+                for (var i = 1; i < instructions.Count - 2; i++)
+                {
+                    var instruction = instructions[i];
+                    if (instruction.IsOpCode(OpCodes.Ldfld))
+                    {
+                        var startIndex = i;
+                        var endIndex = i;
+
+                        if (instruction.UsesField(fieldOfDisplayClass))
+                        {
+                            // Option A
+                            endIndex = i + 1;
+
+                            var previousInstruction = instructions[i - 1];
+                            if (previousInstruction.IsOpCode(OpCodes.Ldarg))
+                            {
+                                startIndex = i - 1;
+                            }
+                        }
+
+                        var nextInstruction = instructions[i + 1];
+                        if (nextInstruction.UsesType(displayClassType, OpCodes.Stfld))
+                        {
+                            // Option B
+                            endIndex = i + 2;
+
+                            var previousInstruction = instructions[i - 1];
+                            if (previousInstruction.IsOpCode(OpCodes.Ldarg))
+                            {
+                                startIndex = i - 1;
+                            }
+                        }
+
+                        if (endIndex > startIndex)
+                        {
+                            instructions.RemoveInstructions(startIndex, endIndex);
+
+                            // Always reset
+                            i = 1;
+                        }
+                    }
+                }
+            }
 
             // Remove display class allocation and assigments
             //   L_0014: ldloc.0 (can also be dup)
@@ -228,7 +325,7 @@ namespace Catel.Fody.Weaving.Argument
                 declaringType.NestedTypes.Remove(displayClassType);
             }
 
-            // Remove display class - variables
+            // Remove display class - variables (regular methods)
             for (var i = 0; i < method.Body.Variables.Count; i++)
             {
                 var variable = method.Body.Variables[i];
@@ -236,6 +333,18 @@ namespace Catel.Fody.Weaving.Argument
                 {
                     method.Body.Variables.RemoveAt(i);
                     method.DebugInformation.Scope.Variables.RemoveAt(i);
+
+                    i--;
+                }
+            }
+
+            // Remove display class - fields (async methods)
+            for (var i = 0; i < method.DeclaringType.Fields.Count; i++)
+            {
+                var field = method.DeclaringType.Fields[i];
+                if (string.Equals(field.FieldType.Name, displayClassType.Name))
+                {
+                    method.DeclaringType.Fields.RemoveAt(i);
 
                     i--;
                 }
