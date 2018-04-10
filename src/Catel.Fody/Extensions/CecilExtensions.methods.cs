@@ -14,6 +14,28 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
+        public static bool IsAsyncMethod(this MethodDefinition method)
+        {
+            if (!method.Name.Contains("MoveNext"))
+            {
+                return false;
+            }
+
+            var declaringType = method.DeclaringType;
+            if (declaringType == null)
+            {
+                return false;
+            }
+
+            var setStateMachineMethod = declaringType.Methods.FirstOrDefault(x => x.Name.Equals("SetStateMachine"));
+            if (setStateMachineMethod == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public static int FindBaseConstructorIndex(this MethodDefinition method)
         {
             var declaringType = method.DeclaringType;

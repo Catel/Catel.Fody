@@ -650,18 +650,6 @@ namespace Catel.Fody.Tests
             }
 
             [TestCase]
-            public void CheckForNullWithUsage()
-            {
-                var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");
-
-                var instance = Activator.CreateInstance(type);
-
-                var method = type.GetMethod("CheckForNullWithUsage");
-
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null }));
-            }
-
-            [TestCase]
             public void CheckForNullWithMultipleParametersWithoutContent()
             {
                 var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass");

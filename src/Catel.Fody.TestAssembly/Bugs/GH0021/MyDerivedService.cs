@@ -16,5 +16,13 @@ namespace Catel.Fody.TestAssembly.Bugs.GH0021
             var model = (ModelBaseTest)a;
             model.Name = "test";
         }
+
+        public override void MyMethod_Expected(object a, object b)
+        {
+            Argument.IsNotNull("b", b);
+
+            var model = (ModelBaseTest)a;
+            model.Name = "test";
+        }
     }
 }
