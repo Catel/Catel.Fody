@@ -168,6 +168,7 @@
     <Compile Include="ConfigurationFacts.cs" />
     <Compile Include="CSharp6Facts.cs" />
     <Compile Include="Helpers\AssemblyDirectoryHelper.cs" />
+    <Compile Include="Helpers\ExceptionTester.cs" />
     <Compile Include="Repros\CTL504.cs" />
     <Compile Include="Repros\CTL569.cs" />
     <Compile Include="Repros\CTL768.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="ModelWithDoubleValuesFacts.cs" />
     <Compile Include="NoWeavingFacts.cs" />
     <Compile Include="PeVerifyFacts.cs" />
+    <Compile Include="Repros\GH0021.cs" />
     <Compile Include="TestClasses\MyEventArgs.cs" />
     <Compile Include="ViewModelBaseFacts.cs" />
   </ItemGroup>

@@ -120,22 +120,22 @@ namespace Catel.Fody.TestAssembly
 
         public void CheckForOfType(object myObject)
         {
-            Argument.IsOfType(() => myObject, typeof (IComparable));
+            Argument.IsOfType(() => myObject, typeof(IComparable));
         }
 
         public void CheckForOfType2(Type myType)
         {
-            Argument.IsOfType(() => myType, typeof (IComparable));
+            Argument.IsOfType(() => myType, typeof(IComparable));
         }
 
         public void CheckForOfImplementsInterface(object myObject)
         {
-            Argument.ImplementsInterface(() => myObject, typeof (IComparable));
+            Argument.ImplementsInterface(() => myObject, typeof(IComparable));
         }
 
         public void CheckForOfImplementsInterface2(Type myType)
         {
-            Argument.ImplementsInterface(() => myType, typeof (IComparable));
+            Argument.ImplementsInterface(() => myType, typeof(IComparable));
         }
 
         public void CheckForMatch(string myString)
@@ -148,7 +148,7 @@ namespace Catel.Fody.TestAssembly
             Argument.IsNotMatch(() => myString, "\\d+");
         }
 
-        private static readonly object[] Objects = new object[] {null, null, null};
+        private static readonly object[] Objects = new object[] { null, null, null };
 
         public void CheckForNullWithInnerExpression(object obj)
         {
@@ -165,9 +165,9 @@ namespace Catel.Fody.TestAssembly
 
             IDisposable suspendToken = null;
             var filteredCollectionType = filteredCollection.GetType();
-            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof (FastObservableCollection<>))
+            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof(FastObservableCollection<>))
             {
-                suspendToken = (IDisposable) filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
+                suspendToken = (IDisposable)filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
             }
 
             filteredCollection.Clear();
@@ -198,9 +198,9 @@ namespace Catel.Fody.TestAssembly
         {
             IDisposable suspendToken = null;
             var filteredCollectionType = filteredCollection.GetType();
-            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof (FastObservableCollection<>))
+            if (filteredCollectionType.IsGenericTypeEx() && filteredCollectionType.GetGenericTypeDefinitionEx() == typeof(FastObservableCollection<>))
             {
-                suspendToken = (IDisposable) filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
+                suspendToken = (IDisposable)filteredCollectionType.GetMethodEx("SuspendChangeNotifications").Invoke(filteredCollection, null);
             }
 
             filteredCollection.Clear();
@@ -257,7 +257,7 @@ namespace Catel.Fody.TestAssembly
     {
         public void SomeMethod()
         {
-            
+
         }
     }
 }
