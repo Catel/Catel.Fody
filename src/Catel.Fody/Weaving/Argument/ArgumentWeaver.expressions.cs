@@ -68,11 +68,11 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             var isAsyncMethod = method.IsAsyncMethod();
-            if (isAsyncMethod)
-            {
-                // Too complex for now
-                return;
-            }
+            //if (isAsyncMethod)
+            //{
+            //    // Too complex for now
+            //    return;
+            //}
 
             FodyEnvironment.LogDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
 
@@ -236,7 +236,7 @@ namespace Catel.Fody.Weaving.Argument
                         if (nextInstruction.UsesType(displayClassType, OpCodes.Stfld))
                         {
                             // Option B
-                            endIndex = i + 1;
+                            endIndex = i + 2;
 
                             var previousInstruction = instructions[i - 1];
                             if (previousInstruction.IsOpCode(OpCodes.Ldarg))
@@ -342,10 +342,10 @@ namespace Catel.Fody.Weaving.Argument
             for (var i = 0; i < method.DeclaringType.Fields.Count; i++)
             {
                 var field = method.DeclaringType.Fields[i];
-                if (string.Equals(field.Name, displayClassType.Name))
+                if (string.Equals(field.FieldType.Name, displayClassType.Name))
                 {
                     method.DeclaringType.Fields.RemoveAt(i);
-                    
+
                     i--;
                 }
             }
