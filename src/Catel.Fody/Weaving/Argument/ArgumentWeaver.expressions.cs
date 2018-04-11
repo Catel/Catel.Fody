@@ -414,9 +414,38 @@ namespace Catel.Fody.Weaving.Argument
                 {
                     var methodDeclaringType = method.DeclaringType;
                     var field = method.DeclaringType.Fields[i];
-                    var anyMethodUsesField = methodDeclaringType.Methods.Any(x => x.Body.Instructions.UsesField(field));
+
+                    if (!field.IsPrivate)
+                    {
+                        continue;
+                    }
+
+                    // Separate check for current method since this method is already simplified (and we don't want to optimize it yet)
+                    if (instructions.UsesField(field))
+                    {
+                        continue;
+                    }
+
+                    var anyMethodUsesField = methodDeclaringType.Methods.Any(x =>
+                    {
+                        var usesField = false;
+
+                        if (!x.Name.Equals(method.Name))
+                        {
+                            var body = x.Body;
+
+                            body.SimplifyMacros();
+                            usesField = body.Instructions.UsesField(field);
+                            body.OptimizeMacros();
+                        }
+
+                        return usesField;
+                    });
+
                     if (!anyMethodUsesField)
                     {
+                        
+
                         method.DeclaringType.Fields.RemoveAt(i);
 
                         i--;
