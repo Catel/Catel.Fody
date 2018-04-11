@@ -106,10 +106,10 @@ namespace Catel.Fody.Weaving.Argument
                                     }
                                 }
 
-                                endIndex++;
+                                endIndex = j;
                             }
 
-                            instructions.RemoveInstructions(startIndex, endIndex);
+                            instructions.RemoveInstructionsFromPositions(startIndex, endIndex);
                         }
                     }
                 }
@@ -125,19 +125,40 @@ namespace Catel.Fody.Weaving.Argument
             //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
             //   L_0005: dup
             //
-            // Async methods
-            //   L_0000: ldarg.0
-            //   L_0001: ldfld int32 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /< CheckForNullAsync > d__16::<> 1__state
-            //   L_0006: stloc.0
-            //   L_0007: ldarg.0
-            //   L_0008: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /<> c__DisplayClass16_0::.ctor()
-            //   L_000d: stfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::<>8__1
-            //   L_0012: ldarg.0 
-            //   L_0013: ldfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::<>8__1
-            //   L_0018: ldarg.0 
-            //   L_0019: ldfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::myObject
-            //   L_001e: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0::myObject
-            //   L_0023: nop 
+            // Async methods (note that in release mode, the compiler won't generate a field for the display class, and we need to
+            // support both debug and release mode):
+            //
+            //   DEBUG MODE (display class stored in a field)
+            //     L_0000: ldarg.0
+            //     L_0001: ldfld int32 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /< CheckForNullAsync > d__16::<> 1__state
+            //     L_0006: stloc.0
+            //     L_0007: ldarg.0
+            //     L_0008: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /<> c__DisplayClass16_0::.ctor()
+            //     L_000d: stfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::<>8__1
+            //     L_0012: ldarg.0 
+            //     L_0013: ldfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::<>8__1
+            //     L_0018: ldarg.0 
+            //     L_0019: ldfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::myObject
+            //     L_001e: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0::myObject
+            //     L_0023: nop 
+            //   
+            //   RELEASE MODE (display class not stored in a field)
+            //     L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /<> c__DisplayClass16_0::.ctor()
+            //     L_0005: dup
+            //     L_0006: ldarg.0
+            //     L_0007: ldfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /< CheckForNullAsync > d__16::myObject
+            //     L_000c: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /<> c__DisplayClass16_0::myObject
+            //     L_0011: ldtoken Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /<> c__DisplayClass16_0
+            //     L_0016: call class [mscorlib] System.Type[mscorlib] System.Type::GetTypeFromHandle(valuetype[mscorlib] System.RuntimeTypeHandle)
+            //     L_001b: call class [System.Core] System.Linq.Expressions.ConstantExpression[System.Core] System.Linq.Expressions.Expression::Constant(object, class [mscorlib] System.Type)
+            //     L_0020: ldtoken object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0::myObject
+            //     L_0025: call class [mscorlib] System.Reflection.FieldInfo[mscorlib] System.Reflection.FieldInfo::GetFieldFromHandle(valuetype[mscorlib] System.RuntimeFieldHandle)
+            //     L_002a: call class [System.Core] System.Linq.Expressions.MemberExpression[System.Core] System.Linq.Expressions.Expression::Field(class [System.Core] System.Linq.Expressions.Expression, class [mscorlib] System.Reflection.FieldInfo)
+            //     L_002f: call !!0[] [mscorlib] System.Array::Empty<class [System.Core] System.Linq.Expressions.ParameterExpression>()
+            //     L_0034: call class [System.Core] System.Linq.Expressions.Expression`1<!!0> [System.Core] System.Linq.Expressions.Expression::Lambda<class [mscorlib] System.Func`1<object>>(class [System.Core] System.Linq.Expressions.Expression, class [System.Core] System.Linq.Expressions.ParameterExpression[])
+            //     L_0039: call void[Catel.Core] Catel.Argument::IsNotNull<object>(class [System.Core] System.Linq.Expressions.Expression`1<class [mscorlib] System.Func`1<!!0>>)
+            //     L_003e: leave.s L_0057
+
             for (var i = 0; i < instructions.Count; i++)
             {
                 var innerInstruction = instructions[i];
@@ -152,49 +173,91 @@ namespace Catel.Fody.Weaving.Argument
                         // If the next instruction is stloc, remove that one as well
                         if (!isAsyncMethod)
                         {
-                            endIndex++;
-
-                            if (instructions[i + 1].IsOpCode(OpCodes.Stloc, OpCodes.Stloc_0))
+                            var nextIndex = i + 1;
+                            if (nextIndex < instructions.Count)
                             {
-                                endIndex++;
+                                if (instructions[nextIndex].IsOpCode(OpCodes.Stloc, OpCodes.Stloc_0))
+                                {
+                                    endIndex = nextIndex;
+                                }
                             }
                         }
                         else
                         {
                             // In async methods, we need to delete more since the values are stored in a field
-                            if (instructions[i - 1].IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                            var previousIndex = i - 1;
+                            if (previousIndex >= 0)
                             {
-                                startIndex--;
+                                if (instructions[previousIndex].IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                                {
+                                    startIndex--;
+                                }
                             }
 
                             // Search 
-                            var fieldOfDisplayClass = method.DeclaringType.Fields.First(x => x.FieldType.Name.Equals(displayClassType.Name));
-
-                            for (var j = i + 1; j < instructions.Count - 1; j++)
+                            var fieldOfDisplayClass = method.DeclaringType.Fields.FirstOrDefault(x => x.FieldType.Name.Equals(displayClassType.Name));
+                            if (fieldOfDisplayClass != null)
                             {
-                                var currentInstruction = instructions[j];
-                                var nextInstruction = instructions[j + 1];
-
-                                if (currentInstruction.UsesField(fieldOfDisplayClass))
+                                // Async in DEBUG mode
+                                for (var j = i + 1; j < instructions.Count - 1; j++)
                                 {
-                                    endIndex = j;
+                                    var currentInstruction = instructions[j];
+                                    var nextInstruction = instructions[j + 1];
 
-                                    if (nextInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                                    if (currentInstruction.UsesField(fieldOfDisplayClass))
                                     {
-                                        endIndex = j + 1;
+                                        endIndex = j;
 
-                                        // Skip next instruction check, just handled it
-                                        j++;
+                                        if (nextInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                                        {
+                                            endIndex = j + 1;
+
+                                            // Skip next instruction check, just handled it
+                                            j++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        break;
                                     }
                                 }
-                                else
+                            }
+                            else
+                            {
+                                // Async in RELEASE mode
+                                for (var j = i + 1; j < instructions.Count - 1; j++)
                                 {
-                                    break;
+                                    var currentInstruction = instructions[j];
+                                    if (currentInstruction.IsOpCode(OpCodes.Dup))
+                                    {
+                                        endIndex = j;
+
+                                        continue;
+                                    }
+
+                                    var nextInstruction = instructions[j + 1];
+
+                                    if (currentInstruction.UsesObjectFromDeclaringTypeName(displayClassType.Name))
+                                    {
+                                        endIndex = j;
+
+                                        if (nextInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                                        {
+                                            endIndex = j + 1;
+
+                                            // Skip next instruction check, just handled it
+                                            j++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
                                 }
                             }
                         }
 
-                        instructions.RemoveInstructions(startIndex, endIndex);
+                        instructions.RemoveInstructionsFromPositions(startIndex, endIndex);
                     }
                 }
             }
@@ -210,7 +273,7 @@ namespace Catel.Fody.Weaving.Argument
             //     L_001e: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass18_0::myObject1
             if (isAsyncMethod)
             {
-                var fieldOfDisplayClass = method.DeclaringType.Fields.First(x => x.FieldType.Name.Equals(displayClassType.Name));
+                var fieldOfDisplayClass = method.DeclaringType.Fields.FirstOrDefault(x => x.FieldType.Name.Equals(displayClassType.Name));
 
                 for (var i = 1; i < instructions.Count - 2; i++)
                 {
@@ -220,10 +283,10 @@ namespace Catel.Fody.Weaving.Argument
                         var startIndex = i;
                         var endIndex = i;
 
-                        if (instruction.UsesField(fieldOfDisplayClass))
+                        if (fieldOfDisplayClass != null && instruction.UsesField(fieldOfDisplayClass))
                         {
                             // Option A
-                            endIndex = i + 1;
+                            endIndex = i;
 
                             var previousInstruction = instructions[i - 1];
                             if (previousInstruction.IsOpCode(OpCodes.Ldarg))
@@ -236,7 +299,7 @@ namespace Catel.Fody.Weaving.Argument
                         if (nextInstruction.UsesType(displayClassType, OpCodes.Stfld))
                         {
                             // Option B
-                            endIndex = i + 2;
+                            endIndex = i + 1;
 
                             var previousInstruction = instructions[i - 1];
                             if (previousInstruction.IsOpCode(OpCodes.Ldarg))
@@ -247,7 +310,7 @@ namespace Catel.Fody.Weaving.Argument
 
                         if (endIndex > startIndex)
                         {
-                            instructions.RemoveInstructions(startIndex, endIndex);
+                            instructions.RemoveInstructionsFromPositions(startIndex, endIndex);
 
                             // Always reset
                             i = 1;
@@ -318,13 +381,6 @@ namespace Catel.Fody.Weaving.Argument
                 }
             }
 
-            // Remove display class from container
-            var declaringType = displayClassType.DeclaringType;
-            if (declaringType != null)
-            {
-                declaringType.NestedTypes.Remove(displayClassType);
-            }
-
             // Remove display class - variables (regular methods)
             for (var i = 0; i < method.Body.Variables.Count; i++)
             {
@@ -348,6 +404,31 @@ namespace Catel.Fody.Weaving.Argument
 
                     i--;
                 }
+            }
+
+            // Remove unused fields (clean up async methods that we have optimized, we don't check non-async because it 
+            // would require to check *all* methods of a class)
+            if (isAsyncMethod)
+            {
+                for (var i = 0; i < method.DeclaringType.Fields.Count; i++)
+                {
+                    var methodDeclaringType = method.DeclaringType;
+                    var field = method.DeclaringType.Fields[i];
+                    var anyMethodUsesField = methodDeclaringType.Methods.Any(x => x.Body.Instructions.UsesField(field));
+                    if (!anyMethodUsesField)
+                    {
+                        method.DeclaringType.Fields.RemoveAt(i);
+
+                        i--;
+                    }
+                }
+            }
+
+            // Remove display class from container
+            var declaringType = displayClassType.DeclaringType;
+            if (declaringType != null)
+            {
+                declaringType.NestedTypes.Remove(displayClassType);
             }
 
             // Special case, remove any Dup opcodes before the argument checks
