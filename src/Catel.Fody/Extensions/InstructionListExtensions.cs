@@ -14,13 +14,25 @@ namespace Catel.Fody
 
     public static class InstructionListExtensions
     {
-        public static bool RemoveInstructions(this IList<Instruction> instructions, int startIndex, int endIndex)
+        public static bool RemoveInstructionsFromPositions(this IList<Instruction> instructions, int startIndex, int endIndex)
         {
-            for (var removeIndex = startIndex; removeIndex < endIndex; removeIndex++)
+            // If we put in 0, 0, we want to remove the first one
+            return RemoveInstructions(instructions, startIndex, (endIndex - startIndex) + 1);
+        }
+
+        public static bool RemoveInstructions(this IList<Instruction> instructions, int startIndex, int count)
+        {
+            for (var i = 0; i < count; i++)
             {
                 // Remove start index because it's our base address (and remove will move up everything)
                 instructions.RemoveAt(startIndex);
             }
+
+            //for (var removeIndex = startIndex; removeIndex <= endIndex; removeIndex++)
+            //{
+            //    // Remove start index because it's our base address (and remove will move up everything)
+            //    instructions.RemoveAt(startIndex);
+            //}
 
             return true;
         }

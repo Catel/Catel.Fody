@@ -6,6 +6,10 @@
     <RootNamespace>Catel.Fody</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <DisableFody>true</DisableFody>
+    <Configurations>Debug;Release;Test</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Test|net46|AnyCPU'">
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <ItemGroup>

@@ -140,6 +140,28 @@ namespace Catel.Fody.TestAssembly
             //Console.WriteLine(myObject);
         }
 
+#pragma warning disable 1998
+        public async Task CheckForNullAsync_MultipleParameters_Usages(object myObject1, object myObject2, object myObject3)
+#pragma warning restore 1998
+        {
+            Argument.IsNotNull(() => myObject1);
+            Argument.IsNotNull(() => myObject2);
+            Argument.IsNotNull(() => myObject3);
+
+            Console.WriteLine(myObject2);
+        }
+
+#pragma warning disable 1998
+        public async Task CheckForNullAsync_MultipleParameters_Usages_Expected(object myObject1, object myObject2, object myObject3)
+#pragma warning restore 1998
+        {
+            Argument.IsNotNull("myObject1", myObject1);
+            Argument.IsNotNull("myObject2", myObject2);
+            Argument.IsNotNull("myObject3", myObject3);
+
+            Console.WriteLine(myObject2);
+        }
+
         public void CheckForOfType(object myObject)
         {
             Argument.IsOfType(() => myObject, typeof(IComparable));
