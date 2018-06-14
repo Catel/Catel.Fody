@@ -5,7 +5,7 @@
 *.suo
 *.user
 *.sln.docstates
-*.g.cs
+
 .nuget/
 tools/FAKE/
 build-log.xml
@@ -21,14 +21,12 @@ TestResult.xml
 [Pp]ackages*/
 bin
 obj
-[Ll]ib/
+[Ll]ib/*
+![Ll]ib/repositories.config
 *.ide/
 *_i.c
 *_p.c
-*.chk
-*.ide
 *.ilk
-*.jrs
 *.meta
 *.obj
 *.orig
@@ -125,5 +123,6 @@ Desktop.ini
 
 # mstest test results
 TestResults
-src/UpgradeLog.htm
 src/.vs/
+.sonarqube/
+.github/

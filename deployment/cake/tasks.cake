@@ -1,12 +1,36 @@
 #addin "nuget:?package=MagicChunks"
 #addin "nuget:?package=Cake.FileHelpers"
+#addin "nuget:?package=Cake.Sonar"
+#tool "nuget:?package=MSBuild.SonarQube.Runner.Tool"
 
 Information("Running target '{0}'", target);
 Information("Using output directory '{0}'", outputRootDirectory);
 
+var nuGetExe = System.IO.Path.GetFullPath(outputRootDirectory + "/../../tools/nuget.exe");
+
+//-------------------------------------------------------------
+
+Task("UpdateNuGet")
+    .ContinueOnError()
+    .Does(() => 
+{
+    Information("Making sure NuGet is using the latest version");
+
+    var exitCode = StartProcess(nuGetExe, new ProcessSettings
+    {
+        Arguments = "update -self"
+    });
+
+    var newNuGetVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(nuGetExe);
+    var newNuGetVersion = newNuGetVersionInfo.FileVersion;
+
+    Information("Updating NuGet.exe exited with '{0}', version is '{1}'", exitCode, newNuGetVersion);
+});
+
 //-------------------------------------------------------------
 
 Task("RestorePackages")
+    .IsDependentOn("UpdateNuGet")
 	.Does(() =>
 {
 	var solutions = GetFiles("./**/*.sln");
@@ -102,9 +126,31 @@ Task("UpdateInfo")
 
 //-------------------------------------------------------------
 
+Task("SonarBegin")
+    .ContinueOnError()
+    .Does(() =>
+{
+    if (string.IsNullOrWhiteSpace(sonarUrl))
+    {
+        Information("Skipping Sonar integration since url is not specified");
+        return;
+    }
+
+    SonarBegin(new SonarBeginSettings {
+        Url = sonarUrl,
+        Login = sonarUsername,
+        Password = sonarPassword,
+        Verbose = true,
+        Key = sonarProject
+    });
+});
+
+//-------------------------------------------------------------
+
 Task("Build")
 	.IsDependentOn("Clean")
 	.IsDependentOn("UpdateInfo")
+    .IsDependentOn("SonarBegin")
 	.Does(() =>
 {
 	var msBuildSettings = new MSBuildSettings {
@@ -122,14 +168,39 @@ Task("Build")
 
 //-------------------------------------------------------------
 
-Task("CodeSign")
+Task("SonarEnd")
     .IsDependentOn("Build")
+    .ContinueOnError()
+    .Does(() =>
+{
+    if (string.IsNullOrWhiteSpace(sonarUrl))
+    {
+        // No need to log, we already did
+        return;
+    }
+
+    SonarEnd(new SonarEndSettings {
+        Login = sonarUsername,
+        Password = sonarPassword,
+     });
+});
+
+//-------------------------------------------------------------
+
+Task("CodeSign")
+    .IsDependentOn("SonarEnd")
     .ContinueOnError()
     .Does(() =>
 {
     if (isCiBuild)
     {
         Information("Skipping code signing because this is a CI build");
+        return;
+    }
+
+    if (string.IsNullOrWhiteSpace(codeSignCertificateSubjectName))
+    {
+        Information("Skipping code signing because the certificate subject name was not specified");
         return;
     }
 
@@ -148,12 +219,27 @@ Task("CodeSign")
 
     Information("Found '{0}' files to code sign, this can take a few minutes", filesToSign.Count);
 
-    Sign(filesToSign, new SignToolSignSettings 
+    var signToolSignSettings = new SignToolSignSettings 
     {
         AppendSignature = false,
         TimeStampUri = new Uri(codeSignTimeStampUri),
         CertSubjectName = codeSignCertificateSubjectName
-    });
+    };
+
+    Sign(filesToSign, signToolSignSettings);
+
+    // Note parallel doesn't seem to be faster in an example repository:
+    // 1 thread:   1m 30s
+    // 4 threads:  1m 30s
+    // 10 threads: 1m 30s
+    // Parallel.ForEach(filesToSign, new ParallelOptions 
+    //     { 
+    //         MaxDegreeOfParallelism = 10 
+    //     },
+    //     fileToSign => 
+    //     { 
+    //         Sign(fileToSign, signToolSignSettings);
+    //     });
 });
 
 //-------------------------------------------------------------
@@ -210,6 +296,26 @@ Task("Package")
             MSBuild(projectFileName, msBuildSettings);
         }
 	}
+
+    var codeSign = (!isCiBuild && !string.IsNullOrWhiteSpace(codeSignCertificateSubjectName));
+    if (codeSign)
+    {
+        // For details, see https://docs.microsoft.com/en-us/nuget/create-packages/sign-a-package
+        // nuget sign MyPackage.nupkg -CertificateSubjectName <MyCertSubjectName> -Timestamper <TimestampServiceURL>
+        var filesToSign = GetFiles(string.Format("{0}/*.nupkg", outputRootDirectory));
+
+        foreach (var fileToSign in filesToSign)
+        {
+            Information("Signing NuGet package '{0}'", fileToSign);
+
+            var exitCode = StartProcess(nuGetExe, new ProcessSettings
+            {
+                Arguments = string.Format("sign \"{0}\" -CertificateSubjectName \"{1}\" -Timestamper \"{2}\"", fileToSign, codeSignCertificateSubjectName, codeSignTimeStampUri)
+            });
+
+            Information("Signing NuGet package exited with '{0}'", exitCode);
+        }
+    }
 });
 
 //-------------------------------------------------------------
