@@ -13,6 +13,7 @@ var StartYear = 2010;
 
 var ComponentsToBuild = new string[]
 {
+    "Catel.Fody",
     "Catel.Fody.Attributes",
 };
 
