@@ -16,6 +16,11 @@
     <Configurations>Debug;Release;Test</Configurations>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- SonarQube requires a project guid -->
+    <ProjectGuid>59D96401-C486-4916-86CC-56C2538E953E</ProjectGuid>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Fody" Version="3.0.1" PrivateAssets="None" />
   </ItemGroup>
