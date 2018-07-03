@@ -64,6 +64,14 @@ namespace Catel.Fody
                     AssemblyResolver = ModuleDefinition.AssemblyResolver;
                 }
 
+                if (TypeSystem == null)
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    var typeCache = new global::Fody.TypeCache(AssemblyResolver.Resolve);
+#pragma warning restore CS0618 // Type or member is obsolete
+                    TypeSystem = new global::Fody.TypeSystem(typeCache.FindType, ModuleDefinition);
+                }
+
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
                 CacheHelper.ClearAllCaches();
 
