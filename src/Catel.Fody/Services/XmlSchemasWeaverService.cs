@@ -13,20 +13,22 @@ namespace Catel.Fody.Services
 
     public class XmlSchemasWeaverService
     {
+        private readonly ModuleWeaver _moduleWeaver;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
 
         private bool? _isSupported;
 
-        public XmlSchemasWeaverService(MsCoreReferenceFinder msCoreReferenceFinder, CatelTypeNodeBuilder catelTypeNodeBuilder)
+        public XmlSchemasWeaverService(ModuleWeaver moduleWeaver, MsCoreReferenceFinder msCoreReferenceFinder, CatelTypeNodeBuilder catelTypeNodeBuilder)
         {
+            _moduleWeaver = moduleWeaver;
             _msCoreReferenceFinder = msCoreReferenceFinder;
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
         }
 
         public void Execute()
         {
-            var xmlSchemaWeaver = new XmlSchemasWeaver(_msCoreReferenceFinder);
+            var xmlSchemaWeaver = new XmlSchemasWeaver(_moduleWeaver, _msCoreReferenceFinder);
             foreach (var catelTypeNode in _catelTypeNodeBuilder.CatelTypes)
             {
                 try

@@ -24,14 +24,17 @@ namespace Catel.Fody
 
         private readonly CatelType _catelType;
         private readonly CatelTypeProperty _propertyData;
+        private readonly ModuleWeaver _moduleWeaver;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         #endregion
 
         #region Constructors
-        public CatelPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, MsCoreReferenceFinder msCoreReferenceFinder)
+        public CatelPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, ModuleWeaver moduleWeaver, 
+            MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _catelType = catelType;
             _propertyData = propertyData;
+            _moduleWeaver = moduleWeaver;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
         #endregion
@@ -373,7 +376,7 @@ namespace Catel.Fody
             for (int i = 0; i < parameters.Count; i++)
             {
                 var parameterType = parameters[i];
-                if (string.CompareOrdinal(parameterType.ParameterType.FullName, FodyEnvironment.ModuleDefinition.TypeSystem.Boolean.FullName) != 0)
+                if (string.CompareOrdinal(parameterType.ParameterType.FullName, _moduleWeaver.TypeSystem.BooleanDefinition.FullName) != 0)
                 {
                     break;
                 }

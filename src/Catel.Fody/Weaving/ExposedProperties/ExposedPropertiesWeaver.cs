@@ -13,20 +13,23 @@ namespace Catel.Fody.Weaving.ExposedProperties
     public class ExposedPropertiesWeaver
     {
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
+        private readonly ModuleWeaver _moduleWeaver;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
-        private readonly TypeDefinition ViewModelToModelAttributeTypeDefinition;
+        private readonly TypeDefinition _viewModelToModelAttributeTypeDefinition;
 
-        public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
+        public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, ModuleWeaver moduleWeaver, 
+            MsCoreReferenceFinder msCoreReferenceFinder)
         {
-            ViewModelToModelAttributeTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.MVVM", "Catel.MVVM.ViewModelToModelAttribute") as TypeDefinition;
+            _viewModelToModelAttributeTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.MVVM", "Catel.MVVM.ViewModelToModelAttribute") as TypeDefinition;
 
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
+            _moduleWeaver = moduleWeaver;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
 
         public void Execute()
         {
-            if (ViewModelToModelAttributeTypeDefinition == null)
+            if (_viewModelToModelAttributeTypeDefinition == null)
             {
                 return;
             }
@@ -96,13 +99,13 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
             catelTypeProperty.IsReadOnly = isReadOnly;
 
-            var catelPropertyWeaver = new CatelPropertyWeaver(catelType, catelTypeProperty, _msCoreReferenceFinder);
+            var catelPropertyWeaver = new CatelPropertyWeaver(catelType, catelTypeProperty, _moduleWeaver, _msCoreReferenceFinder);
             catelPropertyWeaver.Execute(true);
 
             var stringType = _msCoreReferenceFinder.GetCoreTypeReference("String");
             var stringTypeDefinition = catelType.TypeDefinition.Module.ImportReference(stringType);
 
-            var attributeConstructor = catelType.TypeDefinition.Module.ImportReference(ViewModelToModelAttributeTypeDefinition.Constructor(false));
+            var attributeConstructor = catelType.TypeDefinition.Module.ImportReference(_viewModelToModelAttributeTypeDefinition.Constructor(false));
             var viewModelToModelAttribute = new CustomAttribute(attributeConstructor);
             viewModelToModelAttribute.ConstructorArguments.Add(new CustomAttributeArgument(stringTypeDefinition, modelName));
             viewModelToModelAttribute.ConstructorArguments.Add(new CustomAttributeArgument(stringTypeDefinition, modelPropertyName));

@@ -108,7 +108,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.LogInfo("Weaving properties");
 
-                    var propertyWeaverService = new AutoPropertiesWeaverService(configuration, typeNodeBuilder, msCoreReferenceFinder);
+                    var propertyWeaverService = new AutoPropertiesWeaverService(configuration, this, typeNodeBuilder, msCoreReferenceFinder);
                     propertyWeaverService.Execute();
                 }
                 else
@@ -121,7 +121,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.LogInfo("Weaving exposed properties");
 
-                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
+                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(this, typeNodeBuilder, msCoreReferenceFinder);
                     exposedPropertiesWeaverService.Execute();
                 }
                 else
@@ -160,7 +160,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.LogInfo("Weaving xml schemas");
 
-                    var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);
+                    var xmlSchemasWeaverService = new XmlSchemasWeaverService(this, msCoreReferenceFinder, typeNodeBuilder);
                     xmlSchemasWeaverService.Execute();
                 }
                 else
