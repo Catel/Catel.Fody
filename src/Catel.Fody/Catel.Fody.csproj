@@ -8,12 +8,21 @@
     <DisableFody>true</DisableFody>
     <Configurations>Debug;Release;Test</Configurations>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <!-- SonarQube requires a project guid -->
+    <ProjectGuid>0B8FEB0F-84FE-425D-BF0D-D00D52BA6BA5</ProjectGuid>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Test|net46|AnyCPU'">
     <Optimize>false</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="3.0.1" />
+    <PackageReference Include="FodyHelpers" Version="3.1.3" />
     <PackageReference Update="NETStandard.Library" Version="2.0.1" />
   </ItemGroup>
+  
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
 </Project>

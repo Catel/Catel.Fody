@@ -11,10 +11,17 @@
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageOutputPath>$(ProjectDir)..\..\output\$(ConfigurationName)\</PackageOutputPath>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <PackageOutputPath>$(ProjectDir)..\..\output\$(Configuration)\</PackageOutputPath>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb;.xml</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <Deterministic>False</Deterministic>
   </PropertyGroup>
 
+  <!-- (temporary?) workaround for https://github.com/dotnet/sdk/issues/1458 -->
+  <ItemGroup>
+    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.3" PrivateAssets="All" />
+  </ItemGroup>
+  
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>full</DebugType>
   </PropertyGroup>
@@ -29,6 +36,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\*.cs" />
+    <Compile Include="..\*.cs">
+      <SonarQubeExclude>true</SonarQubeExclude>
+    </Compile>
   </ItemGroup>
 </Project>

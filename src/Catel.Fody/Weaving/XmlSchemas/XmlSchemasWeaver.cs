@@ -12,10 +12,12 @@ namespace Catel.Fody.Weaving.XmlSchemas
 
     public class XmlSchemasWeaver
     {
+        private readonly ModuleWeaver _moduleWeaver;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-        public XmlSchemasWeaver(MsCoreReferenceFinder msCoreReferenceFinder)
+        public XmlSchemasWeaver(ModuleWeaver moduleWeaver, MsCoreReferenceFinder msCoreReferenceFinder)
         {
+            _moduleWeaver = moduleWeaver;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
 
@@ -76,7 +78,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
 
             var attributeConstructor = catelTypeDefinition.Module.ImportReference(xmlSchemaProviderAttribute.Resolve().Constructor(false));
             var customAttribute = new CustomAttribute(attributeConstructor);
-            customAttribute.ConstructorArguments.Add(new CustomAttributeArgument(catelTypeDefinition.Module.TypeSystem.String, methodName));
+            customAttribute.ConstructorArguments.Add(new CustomAttributeArgument(_moduleWeaver.TypeSystem.StringReference, methodName));
 
             catelTypeDefinition.CustomAttributes.Add(customAttribute);
 

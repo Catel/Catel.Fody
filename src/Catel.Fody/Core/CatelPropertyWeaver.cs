@@ -24,14 +24,17 @@ namespace Catel.Fody
 
         private readonly CatelType _catelType;
         private readonly CatelTypeProperty _propertyData;
+        private readonly ModuleWeaver _moduleWeaver;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         #endregion
 
         #region Constructors
-        public CatelPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, MsCoreReferenceFinder msCoreReferenceFinder)
+        public CatelPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, ModuleWeaver moduleWeaver, 
+            MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _catelType = catelType;
             _propertyData = propertyData;
+            _moduleWeaver = moduleWeaver;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
         #endregion
@@ -369,16 +372,30 @@ namespace Catel.Fody
 
             var registerPropertyInvoker = (propertyData.DefaultValue == null) ? _catelType.RegisterPropertyWithoutDefaultValueInvoker : _catelType.RegisterPropertyWithDefaultValueInvoker;
 
-            var parameters = registerPropertyInvoker.Parameters.Reverse().ToList();
-            for (int i = 0; i < parameters.Count; i++)
+            // Fill up the final booleans:
+            // RegisterProperty([0] string name, [1] Type type, 
+            //     [2] Func<object> createDefaultValue = null,
+            //     [3] EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, 
+            //     [4] bool includeInSerialization = true, 
+            //     [5] bool includeInBackup = true)
+            var parameters = registerPropertyInvoker.Parameters.Skip(4).ToList();
+            for (var i = 0; i < parameters.Count; i++)
             {
-                var parameterType = parameters[i];
-                if (string.CompareOrdinal(parameterType.ParameterType.FullName, FodyEnvironment.ModuleDefinition.TypeSystem.Boolean.FullName) != 0)
+                var parameter = parameters[i];
+                if (string.CompareOrdinal(parameter.ParameterType.FullName, _moduleWeaver.TypeSystem.BooleanDefinition.FullName) != 0)
                 {
                     break;
                 }
 
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+                // IncludeInBackup index is 5
+                if (!propertyData.IncludeInBackup && parameter.Index == 5)
+                {
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_0));
+                }
+                else
+                {
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+                }
             }
 
             // Make call to register property generic

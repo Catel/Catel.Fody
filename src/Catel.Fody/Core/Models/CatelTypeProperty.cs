@@ -25,11 +25,13 @@ namespace Catel.Fody
             DetermineFields();
             DetermineMethods();
             DetermineDefaultValue();
+            DetermineIncludeInBackup();
         }
 
         #region Fields
         public string Name { get; private set; }
         public bool IsReadOnly { get; set; }
+        public bool IncludeInBackup { get; set; }
 
         public TypeDefinition TypeDefinition { get; private set; }
         public PropertyDefinition PropertyDefinition { get; private set; }
@@ -92,6 +94,19 @@ namespace Catel.Fody
                 // Note: do not remove since we are now using System.ComponentModel.DefaultValueAttribute after
                 // the discussion at https://catelproject.atlassian.net/browse/CTL-244
                 //PropertyDefinition.RemoveAttribute("Catel.Fody.DefaultValueAttribute");
+            }
+        }
+
+        private void DetermineIncludeInBackup()
+        {
+            IncludeInBackup = true;
+
+            var excludeFromBackupAttribute = PropertyDefinition.GetAttribute("Catel.Fody.ExcludeFromBackupAttribute");
+            if (excludeFromBackupAttribute != null)
+            {
+                IncludeInBackup = false;
+
+                PropertyDefinition.RemoveAttribute("Catel.Fody.ExcludeFromBackupAttribute");
             }
         }
 

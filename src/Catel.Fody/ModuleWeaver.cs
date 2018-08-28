@@ -64,6 +64,16 @@ namespace Catel.Fody
                     AssemblyResolver = ModuleDefinition.AssemblyResolver;
                 }
 
+                if (TypeSystem == null)
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    var typeCache = new global::Fody.TypeCache(x => AssemblyResolver.Resolve(x));
+                    typeCache.BuildAssembliesToScan(this);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+                    TypeSystem = new global::Fody.TypeSystem(x => typeCache.FindType(x), ModuleDefinition);
+                }
+
                 // Clear cache because static members will be re-used over multiple builds over multiple systems
                 CacheHelper.ClearAllCaches();
 
@@ -108,7 +118,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.LogInfo("Weaving properties");
 
-                    var propertyWeaverService = new AutoPropertiesWeaverService(configuration, typeNodeBuilder, msCoreReferenceFinder);
+                    var propertyWeaverService = new AutoPropertiesWeaverService(configuration, this, typeNodeBuilder, msCoreReferenceFinder);
                     propertyWeaverService.Execute();
                 }
                 else
@@ -121,7 +131,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.LogInfo("Weaving exposed properties");
 
-                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(typeNodeBuilder, msCoreReferenceFinder);
+                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(this, typeNodeBuilder, msCoreReferenceFinder);
                     exposedPropertiesWeaverService.Execute();
                 }
                 else
@@ -160,13 +170,17 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.LogInfo("Weaving xml schemas");
 
-                    var xmlSchemasWeaverService = new XmlSchemasWeaverService(msCoreReferenceFinder, typeNodeBuilder);
+                    var xmlSchemasWeaverService = new XmlSchemasWeaverService(this, msCoreReferenceFinder, typeNodeBuilder);
                     xmlSchemasWeaverService.Execute();
                 }
                 else
                 {
                     FodyEnvironment.LogInfo("Weaving xml schemas is disabled");
                 }
+
+                // Validate that nothing has been left out
+                var validationService = new ValidationService(this);
+                validationService.Validate();
 
                 // Last step: clean up
                 var referenceCleaner = new ReferenceCleaner(this);
