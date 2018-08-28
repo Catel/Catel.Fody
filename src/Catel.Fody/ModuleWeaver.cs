@@ -178,6 +178,10 @@ namespace Catel.Fody
                     FodyEnvironment.LogInfo("Weaving xml schemas is disabled");
                 }
 
+                // Validate that nothing has been left out
+                var validationService = new ValidationService(this);
+                validationService.Validate();
+
                 // Last step: clean up
                 var referenceCleaner = new ReferenceCleaner(this);
                 referenceCleaner.Execute();
