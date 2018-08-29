@@ -9,6 +9,7 @@
     <Description>Catel.Fody.TestExternalTypesAssembly library.</Description>
     <PackageTags></PackageTags>
     <SonarQubeExclude>true</SonarQubeExclude>
+    <DisableFody>true</DisableFody>
   </PropertyGroup>
 
   <ItemGroup>
