@@ -47,7 +47,7 @@ namespace Catel.Fody.Tests
         {
             var changeCount = 0;
 
-            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DependentPerson");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DependentPersonViewModel");
             dynamic instance = Activator.CreateInstance(type);
 
             var notifyPropertyChanged = (INotifyPropertyChanged)instance;
