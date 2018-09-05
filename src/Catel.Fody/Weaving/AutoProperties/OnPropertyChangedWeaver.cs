@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="OnPropertyChangedWeaver.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
 // </copyright>
@@ -154,30 +154,33 @@ namespace Catel.Fody.Weaving.AutoProperties
             else
             {
                 // Note: need to replace call to base, otherwise it might skip a call to a just generated base member
-                var body = methodDefinition.Body;
-                //var hasReplaced = false;
-
-                body.SimplifyMacros();
-
-                foreach (var instruction in body.Instructions)
-                {
-                    if (instruction.OpCode == OpCodes.Call)
-                    {
-                        var methodReference = instruction.Operand as MethodReference;
-                        if ((methodReference != null) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
-                        {
-                            instruction.Operand = baseOnPropertyChangedInvoker;
-                            //hasReplaced = true;
-                        }
-                    }
-                }
-
-                body.OptimizeMacros();
-
                 if (!methodDefinition.IsMarkedAsGeneratedCode())
                 {
-                    // Don't support this, see CTL-569
-                    return null;
+                    var body = methodDefinition.Body;
+                    //var hasReplaced = false;
+
+                    body.SimplifyMacros();
+
+                    foreach (var instruction in body.Instructions)
+                    {
+                        if (instruction.OpCode == OpCodes.Call)
+                        {
+                            var methodReference = instruction.Operand as MethodReference;
+                            if ((methodReference != null) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
+                            {
+                                instruction.Operand = baseOnPropertyChangedInvoker;
+                                //hasReplaced = true;
+                            }
+                        }
+                    }
+
+                    body.OptimizeMacros();
+
+                    if (!methodDefinition.IsMarkedAsGeneratedCode())
+                    {
+                        // Don't support this, see CTL-569
+                        return null;
+                    }
                 }
             }
 
