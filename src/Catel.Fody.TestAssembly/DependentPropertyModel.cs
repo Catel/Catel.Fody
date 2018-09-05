@@ -57,6 +57,30 @@ namespace Catel.Fody.TestAssembly
         #endregion
     }
 
+    public class Person : ModelBase
+    {
+        public string FirstName { get; set; }
+
+        public string Surnames { get; set; }
+    }
+
+    public class DependentPersonViewModel : ViewModelBase
+    {
+        [Model]
+        public Person Person { get; private set; }
+
+        [ViewModelToModel]
+        public string FirstName { get; set; }
+
+        [ViewModelToModel]
+        public string Surnames { get; set; }
+
+        public string FullName
+        {
+            get { return $"{FirstName} {Surnames}"; }
+        }
+    }
+
     public class DependentPropertyModelWithExistingOnPropertyChanged : DependentPropertyModel
     {
         #region Properties

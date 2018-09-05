@@ -378,6 +378,7 @@ namespace Catel.Fody
                         if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
                         {
                             found = true;
+                            break;
                         }
                         else
                         {

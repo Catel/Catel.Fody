@@ -41,6 +41,34 @@ namespace Catel.Fody.Tests
 
             Assert.Contains(expectedPropertyName, changedProperties);
         }
+
+        [TestCase("John", "Doe")]
+        public void NotifiesDependentProperties(string firstName, string lastName)
+        {
+            var changeCount = 0;
+
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DependentPerson");
+            dynamic instance = Activator.CreateInstance(type);
+
+            var notifyPropertyChanged = (INotifyPropertyChanged)instance;
+            notifyPropertyChanged.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == "FullName")
+                {
+                    changeCount++;
+                }
+            };
+
+            instance.FirstName = firstName;
+
+            Assert.AreEqual(1, changeCount);
+            Assert.AreEqual(firstName + " ", instance.FullName);
+
+            instance.Surnames = lastName;
+
+            Assert.AreEqual(2, changeCount);
+            Assert.AreEqual(firstName + " " + lastName, instance.FullName);
+        }
         #endregion
     }
 }

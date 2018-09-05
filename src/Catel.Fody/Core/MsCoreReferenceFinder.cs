@@ -94,23 +94,27 @@ namespace Catel.Fody
                 msCoreTypes.AddRange(GetDotNetTypes());
             }
 
-            return msCoreTypes;
+            return msCoreTypes.OrderBy(x => x.FullName);
         }
 
         private IEnumerable<TypeReference> GetDotNetTypes()
         {
-            var systemDefinition = _assemblyResolver.Resolve("System");
-            var systemTypes = systemDefinition.MainModule.Types;
+            var allTypes = new List<TypeReference>();
 
-            return systemTypes;
+            allTypes.AddRange(GetTypesFromAssembly("System"));
+
+            return allTypes;
         }
 
         private IEnumerable<TypeReference> GetWinRtTypes()
         {
-            var systemRuntime = _assemblyResolver.Resolve("System.Runtime");
-            var systemRuntimeTypes = systemRuntime.MainModule.Types;
+            var allTypes = new List<TypeReference>();
 
-            return systemRuntimeTypes;
+            allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
+            allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
+            allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
+
+            return allTypes;
         }
 
         private IEnumerable<TypeReference> GetNetStandardTypes()
@@ -128,6 +132,18 @@ namespace Catel.Fody
             }
 
             return allTypes;
+        }
+
+        private IEnumerable<TypeReference> GetTypesFromAssembly(string assemblyName)
+        {
+            var assembly = _assemblyResolver.Resolve(assemblyName);
+            if (assembly is null)
+            {
+                return Array.Empty<TypeReference>();
+            }
+
+            var systemTypes = assembly.MainModule.Types;
+            return systemTypes;
         }
     }
 }
