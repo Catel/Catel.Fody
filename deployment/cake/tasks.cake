@@ -1,8 +1,11 @@
+#l "lib-generic.cake"
 #l "generic-tasks.cake"
 #l "apps-uwp-tasks.cake"
 #l "apps-web-tasks.cake"
 #l "apps-wpf-tasks.cake"
 #l "components-tasks.cake"
+#l "docker-tasks.cake"
+#l "tests.cake"
 
 #addin "nuget:?package=System.Net.Http&version=4.3.3"
 #addin "nuget:?package=Newtonsoft.Json&version=11.0.2"
@@ -27,6 +30,7 @@ ValidateUwpAppsInput();
 ValidateWebAppsInput();
 ValidateWpfAppsInput();
 ValidateComponentsInput();
+ValidateDockerImagesInput();
 
 //-------------------------------------------------------------
 
@@ -34,7 +38,7 @@ private void BuildTestProjects()
 {
     foreach (var testProject in TestProjects)
     {
-        Information("Building test project '{0}'", testProject);
+        LogSeparator("Building test project '{0}'", testProject);
 
         var projectFileName = GetProjectFileName(testProject);
         
@@ -73,6 +77,7 @@ Task("UpdateInfo")
     UpdateInfoForUwpApps();
     UpdateInfoForWebApps();
     UpdateInfoForWpfApps();
+    UpdateInfoForDockerImages();
 });
 
 //-------------------------------------------------------------
@@ -113,6 +118,7 @@ Task("Build")
     BuildUwpApps();
     BuildWebApps();
     BuildWpfApps();
+    BuildDockerImages();
 
     if (!string.IsNullOrWhiteSpace(SonarUrl))
     {
@@ -189,6 +195,20 @@ Task("Build")
 
 //-------------------------------------------------------------
 
+Task("Test")
+    // Note: no dependency on 'build' since we might have already built the solution
+    .Does(() =>
+{
+    foreach (var testProject in TestProjects)
+    {
+        LogSeparator("Running tests for '{0}'", testProject);
+
+        RunUnitTests(testProject);
+    }
+});
+
+//-------------------------------------------------------------
+
 Task("Package")
     // Note: no dependency on 'build' since we might have already built the solution
     // Make sure we have the temporary "project.assets.json" in case we need to package with Visual Studio
@@ -202,6 +222,7 @@ Task("Package")
     PackageUwpApps();
     PackageWebApps();
     PackageWpfApps();
+    PackageDockerImages();
 });
 
 //-------------------------------------------------------------
@@ -256,6 +277,7 @@ Task("Deploy")
     DeployUwpApps();
     DeployWebApps();
     DeployWpfApps();
+    DeployDockerImages();
 });
 
 //-------------------------------------------------------------
@@ -264,20 +286,29 @@ Task("Deploy")
 // stages
 //-------------------------------------------------------------
 
+Task("BuildAndTest")
+    .IsDependentOn("Build")
+    .IsDependentOn("Test");
+
+//-------------------------------------------------------------
+
 Task("BuildAndPackage")
     .IsDependentOn("Build")
+    .IsDependentOn("Test")
     .IsDependentOn("Package");
 
 //-------------------------------------------------------------
 
 Task("BuildAndPackageLocal")
     .IsDependentOn("Build")
+    //.IsDependentOn("Test") // Note: don't test for performance on local builds
     .IsDependentOn("PackageLocal");
 
 //-------------------------------------------------------------
 
 Task("BuildAndDeploy")
     .IsDependentOn("Build")
+    .IsDependentOn("Test")
     .IsDependentOn("Package")
     .IsDependentOn("Deploy");
 
