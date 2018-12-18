@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.5.4" PrivateAssets="all" />
     <PackageReference Include="Catel.Core" Version="5.6.0-beta0001" />
-    <PackageReference Include="Catel.MVVM" Version="5.6.0-beta0001" />
+    <PackageReference Include="Catel.MVVM" Version="5.9.0-beta0000" />
   </ItemGroup>
 
   <ItemGroup>
