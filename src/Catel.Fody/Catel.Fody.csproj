@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
     <AssemblyName>Catel.Fody</AssemblyName>
@@ -17,12 +17,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Test|net46|AnyCPU'">
     <Optimize>false</Optimize>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="Catel.Fody.xcf" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Catel.Fody.xcf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="3.1.3" />
+    <PackageReference Include="FodyHelpers" Version="3.3.3" />
     <PackageReference Update="NETStandard.Library" Version="2.0.1" />
   </ItemGroup>
   
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
 </Project>

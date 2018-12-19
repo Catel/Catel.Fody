@@ -1,8 +1,11 @@
+#l "lib-generic.cake"
 #l "generic-tasks.cake"
 #l "apps-uwp-tasks.cake"
 #l "apps-web-tasks.cake"
 #l "apps-wpf-tasks.cake"
 #l "components-tasks.cake"
+#l "docker-tasks.cake"
+#l "tests.cake"
 
 #addin "nuget:?package=System.Net.Http&version=4.3.3"
 #addin "nuget:?package=Newtonsoft.Json&version=11.0.2"
@@ -12,8 +15,6 @@
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0012"
 
 //-------------------------------------------------------------
-
-var Target = GetBuildServerVariable("Target", "Default");
 
 Information("Running target '{0}'", Target);
 Information("Using output directory '{0}'", OutputRootDirectory);
@@ -27,25 +28,42 @@ ValidateUwpAppsInput();
 ValidateWebAppsInput();
 ValidateWpfAppsInput();
 ValidateComponentsInput();
+ValidateDockerImagesInput();
 
 //-------------------------------------------------------------
 
 private void BuildTestProjects()
 {
+    // In case of a local build and we have included / excluded anything, skip tests
+    if (IsLocalBuild && (Include.Length > 0 || Exclude.Length > 0))
+    {
+        Information("Skipping test project because this is a local build with specific includes / excludes");
+        return;
+    }
+
     foreach (var testProject in TestProjects)
     {
-        Information("Building test project '{0}'", testProject);
+        LogSeparator("Building test project '{0}'", testProject);
 
         var projectFileName = GetProjectFileName(testProject);
         
         var msBuildSettings = new MSBuildSettings
         {
             Verbosity = Verbosity.Quiet, // Verbosity.Diagnostic
-            ToolVersion = MSBuildToolVersion.VS2017,
+            ToolVersion = MSBuildToolVersion.Default,
             Configuration = ConfigurationName,
             MSBuildPlatform = MSBuildPlatform.x86, // Always require x86, see platform for actual target platform
             PlatformTarget = PlatformTarget.MSIL
         };
+
+        var toolPath = GetVisualStudioPath(msBuildSettings.ToolVersion);
+        if (!string.IsNullOrWhiteSpace(toolPath))
+        {
+            msBuildSettings.ToolPath = toolPath;
+        }
+
+        // Always disable SourceLink
+        msBuildSettings.WithProperty("EnableSourceLink", "false");
 
         // Force disable SonarQube
         msBuildSettings.WithProperty("SonarQubeExclude", "true");
@@ -64,7 +82,20 @@ private void BuildTestProjects()
 
 //-------------------------------------------------------------
 
+Task("Prepare")
+    .Does(async () =>
+{
+    await PrepareForComponentsAsync();
+    await PrepareForUwpAppsAsync();
+    await PrepareForWebAppsAsync();
+    await PrepareForWpfAppsAsync();
+    await PrepareForDockerImagesAsync();
+});
+
+//-------------------------------------------------------------
+
 Task("UpdateInfo")
+    .IsDependentOn("Prepare")
     .Does(() =>
 {
     UpdateSolutionAssemblyInfo();
@@ -73,6 +104,7 @@ Task("UpdateInfo")
     UpdateInfoForUwpApps();
     UpdateInfoForWebApps();
     UpdateInfoForWpfApps();
+    UpdateInfoForDockerImages();
 });
 
 //-------------------------------------------------------------
@@ -113,6 +145,7 @@ Task("Build")
     BuildUwpApps();
     BuildWebApps();
     BuildWpfApps();
+    BuildDockerImages();
 
     if (!string.IsNullOrWhiteSpace(SonarUrl))
     {
@@ -189,6 +222,20 @@ Task("Build")
 
 //-------------------------------------------------------------
 
+Task("Test")
+    // Note: no dependency on 'build' since we might have already built the solution
+    .Does(() =>
+{
+    foreach (var testProject in TestProjects)
+    {
+        LogSeparator("Running tests for '{0}'", testProject);
+
+        RunUnitTests(testProject);
+    }
+});
+
+//-------------------------------------------------------------
+
 Task("Package")
     // Note: no dependency on 'build' since we might have already built the solution
     // Make sure we have the temporary "project.assets.json" in case we need to package with Visual Studio
@@ -202,6 +249,7 @@ Task("Package")
     PackageUwpApps();
     PackageWebApps();
     PackageWpfApps();
+    PackageDockerImages();
 });
 
 //-------------------------------------------------------------
@@ -224,21 +272,6 @@ Task("PackageLocal")
     {
         Information("Copying build artifact for '{0}'", component);
     
-        var cacheDirectory = Environment.ExpandEnvironmentVariables(string.Format("%userprofile%/.nuget/packages/{0}/{1}", component, VersionNuGet));
-
-        Information("Checking for existing local NuGet cached version at '{0}'", cacheDirectory);
-
-        if (DirectoryExists(cacheDirectory))
-        {
-            Information("Deleting already existing NuGet cached version from '{0}'", cacheDirectory);
-            
-            DeleteDirectory(cacheDirectory, new DeleteDirectorySettings()
-            {
-                Force = true,
-                Recursive = true
-            });
-        }
-        
         var sourceFile = string.Format("{0}/{1}.{2}.nupkg", OutputRootDirectory, component, VersionNuGet);
         CopyFiles(new [] { sourceFile }, NuGetLocalPackagesDirectory);
     }
@@ -256,6 +289,7 @@ Task("Deploy")
     DeployUwpApps();
     DeployWebApps();
     DeployWpfApps();
+    DeployDockerImages();
 });
 
 //-------------------------------------------------------------
@@ -264,20 +298,29 @@ Task("Deploy")
 // stages
 //-------------------------------------------------------------
 
+Task("BuildAndTest")
+    .IsDependentOn("Build")
+    .IsDependentOn("Test");
+
+//-------------------------------------------------------------
+
 Task("BuildAndPackage")
     .IsDependentOn("Build")
+    .IsDependentOn("Test")
     .IsDependentOn("Package");
 
 //-------------------------------------------------------------
 
 Task("BuildAndPackageLocal")
     .IsDependentOn("Build")
+    //.IsDependentOn("Test") // Note: don't test for performance on local builds
     .IsDependentOn("PackageLocal");
 
 //-------------------------------------------------------------
 
 Task("BuildAndDeploy")
     .IsDependentOn("Build")
+    .IsDependentOn("Test")
     .IsDependentOn("Package")
     .IsDependentOn("Deploy");
 

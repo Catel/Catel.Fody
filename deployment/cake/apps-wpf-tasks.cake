@@ -18,7 +18,27 @@ private void ValidateWpfAppsInput()
 
 private bool HasWpfApps()
 {
-    return WpfApps != null && WpfApps.Length > 0;
+    return WpfApps != null && WpfApps.Count > 0;
+}
+
+//-------------------------------------------------------------
+
+private async Task PrepareForWpfAppsAsync()
+{
+    if (!HasWpfApps())
+    {
+        return;
+    }
+
+    // Check whether projects should be processed, `.ToList()` 
+    // is required to prevent issues with foreach
+    foreach (var wpfApp in WpfApps.ToList())
+    {
+        if (!ShouldProcessProject(wpfApp))
+        {
+            WpfApps.Remove(wpfApp);
+        }
+    }
 }
 
 //-------------------------------------------------------------
@@ -50,11 +70,20 @@ private void BuildWpfApps()
         
         var msBuildSettings = new MSBuildSettings {
             Verbosity = Verbosity.Quiet, // Verbosity.Diagnostic
-            ToolVersion = MSBuildToolVersion.VS2017,
+            ToolVersion = MSBuildToolVersion.Default,
             Configuration = ConfigurationName,
             MSBuildPlatform = MSBuildPlatform.x86, // Always require x86, see platform for actual target platform
             PlatformTarget = PlatformTarget.MSIL
         };
+
+        var toolPath = GetVisualStudioPath(msBuildSettings.ToolVersion);
+        if (!string.IsNullOrWhiteSpace(toolPath))
+        {
+            msBuildSettings.ToolPath = toolPath;
+        }
+
+        // Always disable SourceLink
+        msBuildSettings.WithProperty("EnableSourceLink", "false");
 
         // Note: we need to set OverridableOutputPath because we need to be able to respect
         // AppendTargetFrameworkToOutputPath which isn't possible for global properties (which
@@ -327,8 +356,7 @@ private void DeployWpfApps()
     var azureStorageSyncExe = azureStorageSyncExes.LastOrDefault();
     if (azureStorageSyncExe == null)
     {
-        Error("Can't find the AzureStorageSync tool that should have been installed via this script");
-        return;
+        throw new Exception("Can't find the AzureStorageSync tool that should have been installed via this script");
     }
 
     foreach (var wpfApp in WpfApps)
@@ -351,7 +379,7 @@ private void DeployWpfApps()
 
         if (exitCode != 0)
         {
-            Error("Received unexpected exit code '{0}' for WPF app '{1}'", exitCode, wpfApp);
+            throw new Exception(string.Format("Received unexpected exit code '{0}' for WPF app '{1}'", exitCode, wpfApp));
         }
     }
 }

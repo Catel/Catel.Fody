@@ -7,8 +7,8 @@
 
 namespace Catel.Fody.Weaving.Argument
 {
-    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Models;
     using Mono.Cecil;
@@ -68,11 +68,12 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             var isAsyncMethod = method.IsAsyncMethod();
-            //if (isAsyncMethod)
-            //{
-            //    // Too complex for now
-            //    return;
-            //}
+            if (isAsyncMethod)
+            {
+                // Too complex for now, see https://github.com/Catel/Catel.Fody/issues/33
+                FodyEnvironment.LogWarning($"Method '{method.GetFullName()}' should no longer use display class '{displayClassType.GetFullName()}', but optimization for async methods has been turned off for now (see https://github.com/Catel/Catel.Fody/issues/33 for details)");
+                return;
+            }
 
             FodyEnvironment.LogDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
 
@@ -388,7 +389,6 @@ namespace Catel.Fody.Weaving.Argument
                 if (string.Equals(variable.VariableType.Name, displayClassType.Name))
                 {
                     method.Body.Variables.RemoveAt(i);
-                    method.DebugInformation.Scope.Variables.RemoveAt(i);
 
                     i--;
                 }
