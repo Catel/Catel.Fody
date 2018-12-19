@@ -48,7 +48,7 @@ namespace Catel.Fody.Weaving.Argument
 
         private void ProcessMethod(MethodDefinition method)
         {
-            if (method.Body == null)
+            if (method.Body is null)
             {
                 return;
             }
@@ -78,7 +78,7 @@ namespace Catel.Fody.Weaving.Argument
                     var attributeFullName = customAttribute.AttributeType.FullName;
                     if (ArgumentMethodCallWeaverBase.WellKnownWeavers.ContainsKey(attributeFullName))
                     {
-                        if (instructions == null)
+                        if (instructions is null)
                         {
                             method.Body.SimplifyMacros();
                             instructions = method.Body.Instructions;
@@ -100,7 +100,7 @@ namespace Catel.Fody.Weaving.Argument
             // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginnen of the ctor)
             if (instructions != null || ContainsArgumentChecks(method))
             {
-                if (instructions == null)
+                if (instructions is null)
                 {
                     method.Body.SimplifyMacros();
                     instructions = method.Body.Instructions;
@@ -113,7 +113,7 @@ namespace Catel.Fody.Weaving.Argument
                     {
                         var fullKey = ((MethodReference)instruction.Operand).GetFullName();
                         var parameterOrField = GetParameterOrFieldForExpressionArgumentCheck(method, instructions, instruction);
-                        if (parameterOrField == null)
+                        if (parameterOrField is null)
                         {
                             FodyEnvironment.LogWarning($"Cannot weave at least one argument of method '{method.GetFullName()}'");
                             continue;
@@ -125,7 +125,7 @@ namespace Catel.Fody.Weaving.Argument
                         }
 
                         var customAttribute = ExpressionChecksToAttributeMappings[fullKey](method, instructions, instruction);
-                        if (customAttribute == null)
+                        if (customAttribute is null)
                         {
                             FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{fullKey}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.GetSequencePoint(instruction));
 
