@@ -71,6 +71,7 @@ namespace Catel.Fody.Weaving.Argument
             if (isAsyncMethod)
             {
                 // Too complex for now, see https://github.com/Catel/Catel.Fody/issues/33
+                FodyEnvironment.LogWarning($"Method '{method.GetFullName()}' should no longer use display class '{displayClassType.GetFullName()}', but optimization for async methods has been turned off for now (see https://github.com/Catel/Catel.Fody/issues/33 for details)");
                 return;
             }
 
