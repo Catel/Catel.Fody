@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net46;net47</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestExternalTypesAssembly</AssemblyName>
@@ -13,7 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.5.4" PrivateAssets="all" />
     <PackageReference Include="Catel.Core" Version="5.9.0-beta0000" />
     <PackageReference Include="Catel.MVVM" Version="5.9.0-beta0000" />
   </ItemGroup>
@@ -37,7 +36,6 @@
     <PackageReference Update="NETStandard.Library" Version="2.0.1" />
   </ItemGroup>
 
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props')" />
 </Project>

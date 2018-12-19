@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.0</TargetFrameworks>
     <AssemblyName>Catel.Fody.Attributes</AssemblyName>
@@ -25,7 +25,6 @@
     <ProjectReference Include="..\$(PackageId)\$(PackageId).csproj" PrivateAssets="All" Condition="$(TargetFramework)=='fake'" />
   </ItemGroup>
   
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
 
   <!--
