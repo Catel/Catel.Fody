@@ -70,7 +70,7 @@ namespace Catel.Fody.Weaving.Argument
             var isAsyncMethod = method.IsAsyncMethod();
             if (isAsyncMethod)
             {
-                // Too complex for now
+                // Too complex for now, see https://github.com/Catel/Catel.Fody/issues/33
                 return;
             }
 
