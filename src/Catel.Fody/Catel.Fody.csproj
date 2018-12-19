@@ -17,6 +17,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Test|net46|AnyCPU'">
     <Optimize>false</Optimize>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="Catel.Fody.xcf" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Catel.Fody.xcf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FodyHelpers" Version="3.3.3" />
