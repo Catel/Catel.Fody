@@ -40,9 +40,9 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
             var oo = (dynamic)Activator.CreateInstance(type);
 
-            Assert.IsFalse(oo.LastNameWithWrongCallback);
+            Assert.IsFalse(oo.OnLastNameWithWrongCallbackChangedCallbackCalled);
             oo.LastNameWithWrongCallback = "change";
-            Assert.IsFalse(oo.LastNameWithWrongCallback);
+            Assert.IsFalse(oo.OnLastNameWithWrongCallbackChangedCallbackCalled);
         }
     }
 }

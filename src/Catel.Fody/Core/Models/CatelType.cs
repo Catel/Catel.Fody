@@ -109,7 +109,7 @@ namespace Catel.Fody
             {
                 Type = CatelTypeType.ViewModel;
             }
-            else if (TypeDefinition.ImplementsCatelModel())
+            else if (TypeDefinition.ImplementsModelBase())
             {
                 Type = CatelTypeType.Model;
             }
@@ -164,8 +164,21 @@ namespace Catel.Fody
         {
             var module = TypeDefinition.Module;
 
+            // ObservableObject or derived methods
+            RaisePropertyChangedInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "RaisePropertyChanged", new[] { "propertyName" }));
+            if (RaisePropertyChangedInvoker is null)
+            {
+                return false;
+            }
+
+            // ModelBase or derived methods
+            if (Type == CatelTypeType.ObservableObject)
+            {
+                return true;
+            }
+
             var registerPropertyWithDefaultValueInvokerMethod = FindRegisterPropertyMethod(TypeDefinition, true);
-            if (registerPropertyWithDefaultValueInvokerMethod == null)
+            if (registerPropertyWithDefaultValueInvokerMethod is null)
             {
                 return false;
             }
@@ -189,7 +202,6 @@ namespace Catel.Fody
             }
 
             SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames));
-            RaisePropertyChangedInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "RaisePropertyChanged", new[] { "propertyName" }));
 
             return true;
         }

@@ -9,30 +9,31 @@ namespace Catel.Fody
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
-
     using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
 
+#if DEBUG
+    using System.Diagnostics;
+#endif
+
     public class ModelBasePropertyWeaver : PropertyWeaverBase
     {
-        #region Fields
-
-        #endregion
-
-        #region Constructors
-        public ModelBasePropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, ModuleWeaver moduleWeaver, 
+        public ModelBasePropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, ModuleWeaver moduleWeaver,
             MsCoreReferenceFinder msCoreReferenceFinder)
             : base(catelType, propertyData, moduleWeaver, msCoreReferenceFinder)
         {
         }
-        #endregion
 
         #region Methods
         public void Execute(bool force = false)
         {
+            if (_catelType.GetValueInvoker is null || _catelType.SetValueInvoker is null)
+            {
+                return;
+            }
+
             var property = _propertyData.PropertyDefinition;
             if (property is null)
             {
@@ -40,19 +41,26 @@ namespace Catel.Fody
                 return;
             }
 
+            if (AlreadyContainsCallToMember(property.GetMethod, _catelType.GetValueInvoker.Name) ||
+                AlreadyContainsCallToMember(property.SetMethod, _catelType.SetValueInvoker.Name))
+            {
+                FodyEnvironment.LogDebug($"\t{property.GetName()} already has GetValue and/or SetValue functionality. Property will be ignored.");
+                return;
+            }
+
             if (!force && !HasBackingField(property))
             {
-                FodyEnvironment.LogDebug($"\t\tSkipping '{property.Name}' because it has no backing field");
+                FodyEnvironment.LogDebug($"\t\tSkipping '{property.GetName()}' because it has no backing field");
                 return;
             }
 
             if (ImplementsICommand(property))
             {
-                FodyEnvironment.LogDebug($"\t\tSkipping '{property.Name}' because it implements ICommand");
+                FodyEnvironment.LogDebug($"\t\tSkipping '{property.GetName()}' because it implements ICommand");
                 return;
             }
 
-            FodyEnvironment.LogDebug("\t\t" + property.Name);
+            FodyEnvironment.LogDebug("\t\t" + property.GetName());
 
             try
             {
@@ -85,16 +93,16 @@ namespace Catel.Fody
 
         private string GetChangeNotificationHandlerConstructorName(PropertyDefinition property)
         {
-            string key = $"{property.DeclaringType.FullName}|{property.Name}";
+            var key = $"{property.DeclaringType.FullName}|{property.Name}";
             if (_cachedFieldInitializerNames.ContainsKey(key))
             {
                 return _cachedFieldInitializerNames[key];
             }
 
-            int counter = 0; // start at 0
+            var counter = 0; // start at 0
             while (true)
             {
-                string methodName = $"<.cctor>b__{counter}";
+                var methodName = $"<.cctor>b__{counter}";
                 if (GetMethodReference(property.DeclaringType, methodName, false) == null)
                 {
                     _cachedFieldInitializerNames[key] = methodName;
@@ -551,7 +559,7 @@ namespace Catel.Fody
                     var instructions = ctorBody.Instructions;
                     var validInstructionCounter = 0;
 
-                    for (int i = 0; i < instructions.Count; i++)
+                    for (var i = 0; i < instructions.Count; i++)
                     {
                         var instruction = instructions[i];
 
@@ -660,11 +668,13 @@ namespace Catel.Fody
                                 ctorBody.Variables.Add(variable);
                                 ctorBody.InitLocals = true;
 
-                                var newInstructions = new List<Instruction>();
-                                newInstructions.Add(Instruction.Create(OpCodes.Ldloca, variable));
-                                newInstructions.Add(instructions[i + 1]); // Just copy this initobj !T instruction
-                                newInstructions.Add(Instruction.Create(OpCodes.Ldloc, variable));
-                                newInstructions.Add(Instruction.Create(OpCodes.Call, setter));
+                                var newInstructions = new List<Instruction>
+                                {
+                                    Instruction.Create(OpCodes.Ldloca, variable),
+                                    instructions[i + 1], // Just copy this initobj !T instruction
+                                    Instruction.Create(OpCodes.Ldloc, variable),
+                                    Instruction.Create(OpCodes.Call, setter)
+                                };
 
                                 // Remove 3 instructions
                                 // ldarg
@@ -715,6 +725,19 @@ namespace Catel.Fody
 
                 declaringType.Fields.Remove(field);
             }
+        }
+
+        public static bool AlreadyContainsCallToMember(MethodDefinition methodDefinition, string methodName)
+        {
+            if (methodDefinition is null)
+            {
+                return false;
+            }
+
+            var instructions = methodDefinition.Body.Instructions;
+            return instructions.Any(x => x.OpCode.IsCall() && 
+                                         x.Operand is MethodReference &&
+                                         ((MethodReference)x.Operand).Name == methodName);
         }
         #endregion
     }
