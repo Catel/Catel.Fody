@@ -37,7 +37,7 @@ namespace Catel.Fody.Weaving.AutoProperties
         {
             foreach (var catelType in catelTypes)
             {
-                if (catelType.SetValueInvoker == null)
+                if (catelType.SetValueInvoker is null)
                 {
                     continue;
                 }
@@ -63,8 +63,19 @@ namespace Catel.Fody.Weaving.AutoProperties
 
                     body.SimplifyMacros();
 
-                    var propertyWeaver = new CatelPropertyWeaver(catelType, propertyData, _moduleWeaver, _msCoreReferenceFinder);
-                    propertyWeaver.Execute();
+                    switch (catelType.Type)
+                    {
+                        case CatelTypeType.ViewModel:
+                        case CatelTypeType.Model:
+                            var modelBasePropertyWeaver = new ModelBasePropertyWeaver(catelType, propertyData, _moduleWeaver, _msCoreReferenceFinder);
+                            modelBasePropertyWeaver.Execute();
+                            break;
+
+                        case CatelTypeType.ObservableObject:
+                            var observableObjectPropertyWeaver = new ObservableObjectPropertyWeaver(catelType, propertyData, _moduleWeaver, _msCoreReferenceFinder);
+                            observableObjectPropertyWeaver.Execute();
+                            break;
+                    }
 
                     body.InitLocals = true;
                     body.OptimizeMacros();

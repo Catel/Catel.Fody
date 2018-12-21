@@ -36,7 +36,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             foreach (var catelType in _catelTypeNodeBuilder.CatelTypes)
             {
-                if (catelType.TypeDefinition.ImplementsViewModelBase())
+                if (catelType.Type == CatelTypeType.ViewModel)
                 {
                     ProcessType(catelType);
                 }
@@ -99,7 +99,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
             catelTypeProperty.IsReadOnly = isReadOnly;
 
-            var catelPropertyWeaver = new CatelPropertyWeaver(catelType, catelTypeProperty, _moduleWeaver, _msCoreReferenceFinder);
+            var catelPropertyWeaver = new ModelBasePropertyWeaver(catelType, catelTypeProperty, _moduleWeaver, _msCoreReferenceFinder);
             catelPropertyWeaver.Execute(true);
 
             var stringType = _msCoreReferenceFinder.GetCoreTypeReference("String");

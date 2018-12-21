@@ -16,26 +16,17 @@ namespace Catel.Fody
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
 
-    public class CatelPropertyWeaver
+    public class ModelBasePropertyWeaver : PropertyWeaverBase
     {
         #region Fields
-        private readonly Dictionary<string, string> _cachedFieldInitializerNames = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _cachedFieldNames = new Dictionary<string, string>();
 
-        private readonly CatelType _catelType;
-        private readonly CatelTypeProperty _propertyData;
-        private readonly ModuleWeaver _moduleWeaver;
-        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         #endregion
 
         #region Constructors
-        public CatelPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, ModuleWeaver moduleWeaver, 
+        public ModelBasePropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, ModuleWeaver moduleWeaver, 
             MsCoreReferenceFinder msCoreReferenceFinder)
+            : base(catelType, propertyData, moduleWeaver, msCoreReferenceFinder)
         {
-            _catelType = catelType;
-            _propertyData = propertyData;
-            _moduleWeaver = moduleWeaver;
-            _msCoreReferenceFinder = msCoreReferenceFinder;
         }
         #endregion
 
@@ -43,7 +34,7 @@ namespace Catel.Fody
         public void Execute(bool force = false)
         {
             var property = _propertyData.PropertyDefinition;
-            if (property == null)
+            if (property is null)
             {
                 FodyEnvironment.LogWarning("Skipping an unknown property because it has no property definition");
                 return;
@@ -89,29 +80,6 @@ namespace Catel.Fody
 #if DEBUG
                 Debugger.Launch();
 #endif
-            }
-        }
-
-
-        private string GetChangeNotificationHandlerFieldName(PropertyDefinition property)
-        {
-            string key = $"{property.DeclaringType.FullName}|{property.Name}";
-            if (_cachedFieldNames.ContainsKey(key))
-            {
-                return _cachedFieldNames[key];
-            }
-
-            int counter = 2; // start at 2
-            while (true)
-            {
-                string fieldName = $"CS$<>9__CachedAnonymousMethodDelegate{counter}";
-                if (GetFieldDefinition(property.DeclaringType, fieldName, false) == null)
-                {
-                    _cachedFieldNames[key] = fieldName;
-                    return fieldName;
-                }
-
-                counter++;
             }
         }
 
@@ -538,36 +506,6 @@ namespace Catel.Fody
             return finalIndex;
         }
 
-        private string GetBackingFieldName(PropertyDefinition property)
-        {
-            return $"<{property.Name}>k__BackingField";
-        }
-
-        private GenericInstanceType GetEventHandlerAdvancedPropertyChangedEventArgs(PropertyDefinition property)
-        {
-            var genericHandlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.EventHandler`1");
-            if (genericHandlerType == null)
-            {
-                FodyEnvironment.LogError("Expected to find EventHandler<T>, but type was not  found");
-                return null;
-            }
-
-            var advancedPropertyChangedEventArgsType = property.Module.FindType("Catel.Core", "Catel.Data.AdvancedPropertyChangedEventArgs");
-
-            var handlerType = new GenericInstanceType(genericHandlerType);
-            handlerType.GenericArguments.Add(advancedPropertyChangedEventArgsType);
-
-            return handlerType;
-        }
-
-        private bool HasBackingField(PropertyDefinition property)
-        {
-            var fieldName = GetBackingFieldName(property);
-
-            var field = GetFieldReference(property.DeclaringType, fieldName, false);
-            return (field != null);
-        }
-
         private bool ImplementsICommand(PropertyDefinition property)
         {
             var commandInterfaces = new List<string>(new[] { "ICommand", "ICatelCommand" });
@@ -777,55 +715,6 @@ namespace Catel.Fody
 
                 declaringType.Fields.Remove(field);
             }
-        }
-
-        private static FieldDefinition GetFieldDefinition(TypeDefinition declaringType, string fieldName, bool allowGenericResolving)
-        {
-            var fieldReference = GetFieldReference(declaringType, fieldName, allowGenericResolving);
-
-            return fieldReference != null ? fieldReference.Resolve() : null;
-        }
-
-        private static FieldReference GetFieldReference(TypeDefinition declaringType, string fieldName, bool allowGenericResolving)
-        {
-            var field = (from x in declaringType.Fields
-                         where x.Name == fieldName
-                         select x).FirstOrDefault();
-
-            if (field == null)
-            {
-                return null;
-            }
-
-            FieldReference fieldReference = field;
-
-            if (declaringType.HasGenericParameters && allowGenericResolving)
-            {
-                fieldReference = field.MakeGeneric(declaringType);
-            }
-
-            return fieldReference;
-        }
-
-        private static MethodReference GetMethodReference(TypeDefinition declaringType, string methodName, bool allowGenericResolving)
-        {
-            var method = (from x in declaringType.Methods
-                          where x.Name == methodName
-                          select x).FirstOrDefault();
-
-            if (method == null)
-            {
-                return null;
-            }
-
-            MethodReference methodReference = method;
-
-            if (declaringType.HasGenericParameters && allowGenericResolving)
-            {
-                methodReference = method.MakeGeneric(declaringType);
-            }
-
-            return methodReference;
         }
         #endregion
     }
