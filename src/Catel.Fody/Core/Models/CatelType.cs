@@ -19,6 +19,8 @@ namespace Catel.Fody
 
     public enum CatelTypeType
     {
+        ObservableObject,
+
         Model,
 
         ViewModel,
@@ -110,6 +112,10 @@ namespace Catel.Fody
             else if (TypeDefinition.ImplementsCatelModel())
             {
                 Type = CatelTypeType.Model;
+            }
+            else if (TypeDefinition.ImplementsObservableObject())
+            {
+                Type = CatelTypeType.ObservableObject;
             }
             else
             {
