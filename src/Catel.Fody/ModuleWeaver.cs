@@ -59,12 +59,12 @@ namespace Catel.Fody
 #endif
 
                 // First of all, set the assembly resolver
-                if (AssemblyResolver == null)
+                if (AssemblyResolver is null)
                 {
                     AssemblyResolver = ModuleDefinition.AssemblyResolver;
                 }
 
-                if (TypeSystem == null)
+                if (TypeSystem is null)
                 {
 #pragma warning disable CS0618 // Type or member is obsolete
                     var typeCache = new global::Fody.TypeCache(x => AssemblyResolver.Resolve(x));
@@ -90,7 +90,7 @@ namespace Catel.Fody
                 // Validate if Catel.Core is referenced
                 var isRunningAgainstCatelCore = false;
                 var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
-                if (catelCoreReference == null)
+                if (catelCoreReference is null)
                 {
                     if (!ModuleDefinition.Name.StartsWith("Catel.Core"))
                     {

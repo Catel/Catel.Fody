@@ -23,6 +23,8 @@ namespace Catel.Fody
         #region Constructors
         public CatelTypeNodeBuilder(List<TypeDefinition> allTypes)
         {
+            CatelTypes = new List<CatelType>();
+
             _allClasses = allTypes.Where(x => x.IsClass).ToList();
         }
         #endregion
@@ -30,7 +32,6 @@ namespace Catel.Fody
         #region Methods
         public void Execute()
         {
-            CatelTypes = new List<CatelType>();
             foreach (var typeDefinition in _allClasses)
             {
                 AddCatelTypeIfRequired(typeDefinition);
@@ -39,12 +40,12 @@ namespace Catel.Fody
 
         private void AddCatelTypeIfRequired(TypeDefinition typeDefinition)
         {
-            if (typeDefinition == null)
+            if (typeDefinition is null)
             {
                 return;
             }
 
-            if (typeDefinition.BaseType == null)
+            if (typeDefinition.BaseType is null)
             {
                 return;
             }
