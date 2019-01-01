@@ -48,7 +48,7 @@ namespace Catel.Fody
 
         private void DetermineMethods()
         {
-            string methodName = $"On{PropertyDefinition.Name}Changed";
+            var methodName = $"On{PropertyDefinition.Name}Changed";
 
             var declaringType = PropertyDefinition.DeclaringType;
 

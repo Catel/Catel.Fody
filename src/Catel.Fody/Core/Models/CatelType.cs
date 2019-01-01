@@ -376,7 +376,7 @@ namespace Catel.Fody
 
         public bool ExistPropertyDependencyBetween(PropertyDefinition dependentPropertyDefinition, PropertyDefinition property)
         {
-            bool found = false;
+            var found = false;
             if (dependentPropertyDefinition != null)
             {
                 var getMethodDefinition = dependentPropertyDefinition.GetMethod;

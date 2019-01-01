@@ -68,7 +68,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
                 modelPropertyName = (string)(exposeAttribute.ConstructorArguments[1].Value ?? viewModelPropertyName);
             }
 
-            bool isReadOnly = false;
+            var isReadOnly = false;
             var isReadOnlyProperty = (from property in exposeAttribute.Properties
                                       where string.Equals(property.Name, "IsReadOnly")
                                       select property).FirstOrDefault();

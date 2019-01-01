@@ -507,7 +507,7 @@ namespace Catel.Fody
          *          -> Dictionary<string, int>
          */
 
-            for (int i = 0; i < genericArgs.Count; i++)
+            for (var i = 0; i < genericArgs.Count; i++)
             {
                 var arg = genericArgs[i];
 

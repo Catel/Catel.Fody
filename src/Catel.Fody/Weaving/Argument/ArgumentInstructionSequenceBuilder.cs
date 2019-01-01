@@ -101,7 +101,7 @@ namespace Catel.Fody.Weaving.Argument
 
             foreach (var argument in attribute.ConstructorArguments)
             {
-                object value = argument.Value;
+                var value = argument.Value;
                 if (value is string s)
                 {
                     yield return Instruction.Create(OpCodes.Ldstr, s);
