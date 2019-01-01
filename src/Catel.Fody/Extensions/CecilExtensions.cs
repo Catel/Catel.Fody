@@ -486,7 +486,7 @@ namespace Catel.Fody
          *      What would happen if we walk up the hierarchy from StringIntMap:
          *          -> StringIntMap
          *              - here dont have any generic agrs or params for StringIntMap.
-         *              - but when we reesolve StringIntMap we get a
+         *              - but when we resolve StringIntMap we get a
          *                  reference to the base class StringMap<int>,
          *          -> StringMap<int>
          *              - this reference will have one generic argument
