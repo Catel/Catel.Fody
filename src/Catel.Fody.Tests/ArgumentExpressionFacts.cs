@@ -561,7 +561,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOfType");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object() }));
+                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new[] { new object() }));
             }
 
             [TestCase]
@@ -672,7 +672,7 @@ namespace Catel.Fody.Tests
                 var customClassType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CustomClassType");
                 var customClassInstance = Activator.CreateInstance(customClassType);
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { customClassInstance, null, (IList)new List<string>() }));
+                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new[] { customClassInstance, null, (IList)new List<string>() }));
             }
         }
     }

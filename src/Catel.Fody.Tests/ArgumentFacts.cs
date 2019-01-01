@@ -504,7 +504,7 @@ namespace Catel.Fody.Tests
 
             var method = type.GetMethod("CheckForOfType");
 
-            ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object() }));
+            ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new[] { new object() }));
         }
 
         [TestCase]
