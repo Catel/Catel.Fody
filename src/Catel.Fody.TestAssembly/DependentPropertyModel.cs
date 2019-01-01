@@ -7,7 +7,6 @@
 
 namespace Catel.Fody.TestAssembly
 {
-    using System;
     using System.Collections.Generic;
     using Data;
     using MVVM;

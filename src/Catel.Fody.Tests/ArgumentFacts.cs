@@ -7,7 +7,6 @@
 namespace Catel.Fody.Tests
 {
     using System;
-    using System.Reflection;
     using System.Threading;
     using NUnit.Framework;
 

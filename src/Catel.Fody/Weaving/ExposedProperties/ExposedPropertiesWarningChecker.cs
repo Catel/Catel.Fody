@@ -7,7 +7,6 @@
 namespace Catel.Fody.Weaving.ExposedProperties
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     public class ExposedPropertiesWarningChecker
     {

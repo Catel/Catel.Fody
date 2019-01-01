@@ -8,7 +8,6 @@
 namespace Catel.Fody.Weaving.Argument
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using Models;
     using Mono.Cecil;

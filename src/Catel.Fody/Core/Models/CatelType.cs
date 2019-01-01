@@ -7,13 +7,10 @@
 namespace Catel.Fody
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
-    using System.Reflection;
-
     using Mono.Cecil;
     using Mono.Cecil.Cil;
 

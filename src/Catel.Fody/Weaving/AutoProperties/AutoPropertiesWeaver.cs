@@ -7,9 +7,6 @@
 namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
-    using System.Linq;
-
-    using Mono.Cecil;
     using Mono.Cecil.Rocks;
 
     public class AutoPropertiesWeaver

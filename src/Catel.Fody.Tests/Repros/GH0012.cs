@@ -8,9 +8,6 @@
 namespace Catel.Fody.Tests
 {
     using System;
-    using System.ComponentModel;
-    using Catel.Services;
-    using Data;
     using NUnit.Framework;
 
     [TestFixture]

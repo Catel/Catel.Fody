@@ -11,7 +11,6 @@ namespace Catel.Fody.Tests
     using System.Collections.Generic;
     using System.Diagnostics;
     using NUnit.Framework;
-    using TestAssembly;
 
     public class ArgumentExpressionFacts
     {
@@ -285,8 +284,8 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForMinimalInt");
 
                 method.Invoke(instance, new object[] { 3 });
-            }     
-        
+            }
+
             [TestCase]
             public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalDouble()
             {
@@ -309,8 +308,8 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForMinimalDouble");
 
                 method.Invoke(instance, new object[] { 3.0d });
-            }      
-        
+            }
+
             [TestCase]
             public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForMinimalFloat()
             {
@@ -405,8 +404,8 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForMaximumFloat");
 
                 method.Invoke(instance, new object[] { 0.0f });
-            }    
-        
+            }
+
             [TestCase]
             public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeInt()
             {
@@ -429,8 +428,8 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForOutOfRangeInt");
 
                 method.Invoke(instance, new object[] { 3 });
-            }    
-        
+            }
+
             [TestCase]
             public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeDouble()
             {
@@ -453,8 +452,8 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForOutOfRangeDouble");
 
                 method.Invoke(instance, new object[] { 3.0d });
-            }        
-        
+            }
+
             [TestCase]
             public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeFloat()
             {
@@ -477,8 +476,8 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForOutOfRangeFloat");
 
                 method.Invoke(instance, new object[] { 3.0f });
-            }        
-        
+            }
+
             /*
             [TestCase]
             public void CorrectlyThrowsArgumentOutOfRangeExceptionExceptionForOutOfRangeString()

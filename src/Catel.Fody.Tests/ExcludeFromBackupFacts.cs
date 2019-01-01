@@ -1,12 +1,7 @@
 ﻿namespace Catel.Fody.Tests
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Catel.Fody.TestAssembly;
     using NUnit.Framework;
 
     [TestFixture]

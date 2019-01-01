@@ -8,7 +8,6 @@
 namespace Catel.Fody.Tests
 {
     using System.Xml.Linq;
-    using Catel.Tests;
     using Fody;
     using NUnit.Framework;
 

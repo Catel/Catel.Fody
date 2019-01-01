@@ -8,8 +8,6 @@
 namespace Catel.Fody
 {
     using System;
-    using System.Linq;
-    using System.Reflection;
     using Mono.Cecil;
 
     public static partial class CecilExtensions
