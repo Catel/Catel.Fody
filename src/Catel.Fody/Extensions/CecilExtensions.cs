@@ -139,8 +139,7 @@ namespace Catel.Fody
                 return null;
             }
 
-            var genericInstanceType = typeReference as GenericInstanceType;
-            if (genericInstanceType == null)
+            if (!(typeReference is GenericInstanceType genericInstanceType))
             {
                 return null;
             }
@@ -239,8 +238,7 @@ namespace Catel.Fody
 
         public static PropertyReference GetProperty(this TypeReference typeReference, string propertyName)
         {
-            var typeDefinition = typeReference as TypeDefinition;
-            if (typeDefinition == null)
+            if (!(typeReference is TypeDefinition typeDefinition))
             {
                 typeDefinition = typeReference.Resolve();
             }
@@ -442,8 +440,7 @@ namespace Catel.Fody
             {
                 var result = iface.InterfaceType;
 
-                var genericIface = iface.InterfaceType as GenericInstanceType;
-                if (genericIface != null)
+                if (iface.InterfaceType is GenericInstanceType genericIface)
                 {
                     var map = GetGenericArgsMap(genericIface, genericArgsMap, mappedFromSuperType);
 

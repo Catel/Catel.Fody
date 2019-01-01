@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ArgumentInstructionSequenceBuilder.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
@@ -64,8 +64,7 @@ namespace Catel.Fody.Weaving.Argument
 
         private static IEnumerable<Instruction> BuildDefaultInstructionsInternal(object parameterDefinitionOrFieldDefinition)
         {
-            var fieldDefinition = parameterDefinitionOrFieldDefinition as FieldDefinition;
-            if (fieldDefinition != null)
+            if (parameterDefinitionOrFieldDefinition is FieldDefinition fieldDefinition)
             {
                 return BuildDefaultInstructions(fieldDefinition);
             }

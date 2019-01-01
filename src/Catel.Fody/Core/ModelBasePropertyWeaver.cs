@@ -581,8 +581,7 @@ namespace Catel.Fody
 
                                 // Note: make sure to support generic types
                                 MethodReference setter = property.SetMethod;
-                                var genericInstanceType = declaringType.MakeGenericIfRequired() as GenericInstanceType;
-                                if (genericInstanceType != null)
+                                if (declaringType.MakeGenericIfRequired() is GenericInstanceType genericInstanceType)
                                 {
                                     setter = setter.MakeHostInstanceGeneric(genericInstanceType.GenericArguments.ToArray());
                                 }
@@ -615,8 +614,7 @@ namespace Catel.Fody
 
                                 // Note: make sure to support generic types
                                 MethodReference getter = property.GetMethod;
-                                var genericInstanceType = declaringType.MakeGenericIfRequired() as GenericInstanceType;
-                                if (genericInstanceType != null)
+                                if (declaringType.MakeGenericIfRequired() is GenericInstanceType genericInstanceType)
                                 {
                                     getter = getter.MakeHostInstanceGeneric(genericInstanceType.GenericArguments.ToArray());
                                 }
@@ -658,8 +656,7 @@ namespace Catel.Fody
 
                                 // Note: make sure to support generic types
                                 MethodReference setter = property.SetMethod;
-                                var genericInstanceType = declaringType.MakeGenericIfRequired() as GenericInstanceType;
-                                if (genericInstanceType != null)
+                                if (declaringType.MakeGenericIfRequired() is GenericInstanceType genericInstanceType)
                                 {
                                     setter = setter.MakeHostInstanceGeneric(genericInstanceType.GenericArguments.ToArray());
                                 }

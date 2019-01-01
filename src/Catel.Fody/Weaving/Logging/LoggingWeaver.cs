@@ -79,8 +79,7 @@ namespace Catel.Fody.Weaving.Logging
             {
                 var instruction = instructions[i];
 
-                var methodReference = instruction.Operand as MethodReference;
-                if (methodReference != null)
+                if (instruction.Operand is MethodReference methodReference)
                 {
                     if (string.Equals(methodReference.Name, "GetCurrentClassLogger"))
                     {

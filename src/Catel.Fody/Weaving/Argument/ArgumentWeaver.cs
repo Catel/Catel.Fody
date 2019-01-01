@@ -181,8 +181,7 @@ namespace Catel.Fody.Weaving.Argument
         {
             foreach (var instruction in method.Body.Instructions)
             {
-                var methodReference = instruction.Operand as MethodReference;
-                if (methodReference != null)
+                if (instruction.Operand is MethodReference methodReference)
                 {
                     if (methodReference.GetFullName().Contains("Catel.Argument"))
                     {

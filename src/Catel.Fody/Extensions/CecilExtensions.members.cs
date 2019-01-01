@@ -30,26 +30,22 @@ namespace Catel.Fody
 
         private static bool IsMarkedAsGeneratedCodeInternal(object obj)
         {
-            var fieldDefinition = obj as FieldDefinition;
-            if (fieldDefinition != null)
+            if (obj is FieldDefinition fieldDefinition)
             {
                 return ContainsAttribute(fieldDefinition.CustomAttributes, MsCoreReferenceFinder.GeneratedCodeAttributeTypeName);
             }
 
-            var propertyDefinition = obj as PropertyDefinition;
-            if (propertyDefinition != null)
+            if (obj is PropertyDefinition propertyDefinition)
             {
                 return ContainsAttribute(propertyDefinition.CustomAttributes, MsCoreReferenceFinder.GeneratedCodeAttributeTypeName);
             }
 
-            var methodDefinition = obj as MethodDefinition;
-            if (methodDefinition != null)
+            if (obj is MethodDefinition methodDefinition)
             {
                 return ContainsAttribute(methodDefinition.CustomAttributes, MsCoreReferenceFinder.GeneratedCodeAttributeTypeName);
             }
 
-            var typeDefinition = obj as TypeDefinition;
-            if (typeDefinition != null)
+            if (obj is TypeDefinition typeDefinition)
             {
                 return ContainsAttribute(typeDefinition.CustomAttributes, MsCoreReferenceFinder.GeneratedCodeAttributeTypeName);
             }
@@ -79,26 +75,22 @@ namespace Catel.Fody
 
         private static void MarkAsGeneratedCodeInternal(object obj, MsCoreReferenceFinder msCoreReferenceFinder)
         {
-            var fieldDefinition = obj as FieldDefinition;
-            if (fieldDefinition != null)
+            if (obj is FieldDefinition fieldDefinition)
             {
                 fieldDefinition.CustomAttributes.MarkAsGeneratedCodeInternal(msCoreReferenceFinder, fieldDefinition.Module);
             }
 
-            var propertyDefinition = obj as PropertyDefinition;
-            if (propertyDefinition != null)
+            if (obj is PropertyDefinition propertyDefinition)
             {
                 propertyDefinition.CustomAttributes.MarkAsGeneratedCodeInternal(msCoreReferenceFinder, propertyDefinition.Module);
             }
 
-            var methodDefinition = obj as MethodDefinition;
-            if (methodDefinition != null)
+            if (obj is MethodDefinition methodDefinition)
             {
                 methodDefinition.CustomAttributes.MarkAsGeneratedCodeInternal(msCoreReferenceFinder, methodDefinition.Module);
             }
 
-            var typeDefinition = obj as TypeDefinition;
-            if (typeDefinition != null)
+            if (obj is TypeDefinition typeDefinition)
             {
                 typeDefinition.CustomAttributes.MarkAsGeneratedCodeInternal(msCoreReferenceFinder, typeDefinition.Module);
             }

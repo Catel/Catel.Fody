@@ -171,8 +171,8 @@ namespace Catel.Fody
                     {
                         return null;
                     }
-                    var field = instruction.Operand as FieldReference;
-                    if (field != null)
+
+                    if (instruction.Operand is FieldReference field)
                     {
                         if (field.DeclaringType != property.DeclaringType)
                         {

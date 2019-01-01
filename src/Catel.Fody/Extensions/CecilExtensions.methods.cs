@@ -51,8 +51,7 @@ namespace Catel.Fody
                         var instruction = instructions[i];
                         if (instruction.IsOpCode(OpCodes.Call))
                         {
-                            var methodReference = instruction.Operand as MethodReference;
-                            if (methodReference != null)
+                            if (instruction.Operand is MethodReference methodReference)
                             {
                                 if (methodReference.Name.Equals(".ctor"))
                                 {
