@@ -245,7 +245,7 @@ namespace Catel.Fody
 
                 if (includeDefaultValue)
                 {
-                    // Search for this method:  
+                    // Search for this method:
                     // v4: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     // v5+: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
 
@@ -266,7 +266,7 @@ namespace Catel.Fody
                     methods = (from method in currentTypeDefinition.Methods
                                where method.Name == "RegisterProperty" &&
                                      method.IsPublic &&
-                                     method.Parameters.Count == argumentCount && 
+                                     method.Parameters.Count == argumentCount &&
                                      method.HasGenericParameters &&
                                      method.GenericParameters.Count == 1 &&
                                      method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
@@ -275,7 +275,7 @@ namespace Catel.Fody
                 }
                 else
                 {
-                    // Search for this method:         
+                    // Search for this method:
                     // public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     methods = (from method in currentTypeDefinition.Methods
                                where method.Name == "RegisterProperty" &&

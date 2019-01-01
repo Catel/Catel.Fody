@@ -43,7 +43,7 @@ namespace Catel.Fody.TestAssembly
 
     public class GenericModelBaseTest : GenericModelBaseTestBase<int>
     {
-        
+
     }
 
     /// <summary>

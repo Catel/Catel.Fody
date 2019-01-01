@@ -17,7 +17,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         private readonly TypeDefinition _viewModelToModelAttributeTypeDefinition;
 
-        public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, ModuleWeaver moduleWeaver, 
+        public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, ModuleWeaver moduleWeaver,
             MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _viewModelToModelAttributeTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.MVVM", "Catel.MVVM.ViewModelToModelAttribute") as TypeDefinition;

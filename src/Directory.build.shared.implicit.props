@@ -1,8 +1,8 @@
 <Project>
-  <!-- 
+  <!--
     This file applies to projects automatically, but should not contain any project-specific information so it can easily be replaced
   -->
-  
+
   <PropertyGroup>
     <NoWarn>$(NoWarn);CS1591;CS1998;NU1603;NU1605;NU1608;NU1701</NoWarn>
     <NoError>$(NoError);CS1591;CS1998;NU1603;NU1605;NU1608;NU1701</NoError>

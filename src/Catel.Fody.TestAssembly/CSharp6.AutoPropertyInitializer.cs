@@ -15,12 +15,12 @@
     {
         public CSharp6_AutoPropertyInitializerWithMultipleConstructors()
         {
-            
+
         }
 
         public CSharp6_AutoPropertyInitializerWithMultipleConstructors(int someValue)
         {
-            
+
         }
 
         #region Properties
@@ -32,12 +32,12 @@
     {
         public CSharp6_AutoPropertyInitializer_Generic()
         {
-            
+
         }
 
         public CSharp6_AutoPropertyInitializer_Generic(Guid guid)
         {
-            
+
         }
 
         #region Properties
@@ -52,7 +52,7 @@
         public CSharp6_AutoPropertyInitializer_Generic()
             : base(Guid.NewGuid())
         {
-            
+
         }
 
         public string AdditionalProperty { get; set; }

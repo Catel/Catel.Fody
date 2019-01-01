@@ -21,7 +21,7 @@ namespace Catel.Fody.Weaving.Argument
         #endregion
 
         #region Methods
-        public bool Execute(TypeDefinition type, MethodDefinition methodDefinition, 
+        public bool Execute(TypeDefinition type, MethodDefinition methodDefinition,
             object parameterDefinitionOrFieldDefinition, CustomAttribute attribute, int instructionIndex)
         {
             TypeReference targetType = null;

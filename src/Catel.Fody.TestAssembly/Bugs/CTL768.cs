@@ -8,7 +8,7 @@
     {
         public CTL768_BaseModel(string location)
         {
-            
+
         }
     }
 

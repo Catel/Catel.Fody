@@ -12,7 +12,7 @@ namespace Catel.Fody
 
     public static class CacheHelper
     {
-        private static readonly Dictionary<string, IDictionary> _cacheByName = new Dictionary<string, IDictionary>(); 
+        private static readonly Dictionary<string, IDictionary> _cacheByName = new Dictionary<string, IDictionary>();
 
         public static T GetCache<T>(string name)
             where T : IDictionary, new()
