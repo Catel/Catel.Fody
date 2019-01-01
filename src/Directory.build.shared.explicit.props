@@ -1,5 +1,5 @@
 <Project>
-  <!-- 
+  <!--
     This file applies to projects when it gets imported explicitly using the line below:
 
     <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
@@ -7,23 +7,23 @@
 
   <!-- Explicit additional project properties that require stuff set before -->
   <PropertyGroup>
-    <!-- 
+    <!--
       Use MsBuildProjectName, this allows us to use the same assembly name for different
       versions, e.g.:
-      
+
       Orc.EntityFramework5 => Orc.EntityFramework.dll
       Orc.EntityFramework6 => Orc.EntityFramework.dll
-      
+
       If we would use AssemblyName, they would be compiled into the same directory
     -->
     <OverridableOutputPath>$(ProjectDir)..\..\output\$(Configuration)\$(MSBuildProjectName)\</OverridableOutputPath>
     <OutputPath>$(OverridableOutputPath)</OutputPath>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
-  
-  <!-- 
-    Fix for .NET Core 3.0, see https://github.com/dotnet/core-sdk/issues/192, it 
-    uses obj/release instead of [outputdirectory] 
+
+  <!--
+    Fix for .NET Core 3.0, see https://github.com/dotnet/core-sdk/issues/192, it
+    uses obj/release instead of [outputdirectory]
   -->
   <PropertyGroup Condition=" '$(DotNetPackIntermediateOutputPath)' != '' ">
     <IntermediateOutputPath>$(DotNetPackIntermediateOutputPath)</IntermediateOutputPath>
@@ -34,7 +34,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs;Resources\**\*.cs" />
     <Page Remove="Platforms\**\*.xaml" />
@@ -70,23 +70,23 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
     <DefineConstants>$(DefineConstants);NETCORE;NETCORE2_1;NETCOREAPP;NETCOREAPP2_1</DefineConstants>
   </PropertyGroup>
-  
+
   <!-- .NET Core app 3.0 -->
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
     <DefineConstants>$(DefineConstants);NETCORE;NETCORE3_0;NETCOREAPP;NETCOREAPP3_0</DefineConstants>
   </PropertyGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
     <Compile Include="Platforms\net\**\*.cs" />
     <Page Include="Platforms\net\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
     <Compile Update="Platforms\net\**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
   </ItemGroup>
-  
+
   <!-- .NET Standard 2.0 -->
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETSTANDARD;NETSTANDARD2_0;NS;NS20</DefineConstants>
   </PropertyGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <Compile Include="Platforms\netstandard2.0\**\*.cs" />
     <Page Include="Platforms\netstandard2.0\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
@@ -103,9 +103,9 @@
     <EnableWpfProjectSetup>true</EnableWpfProjectSetup>
     <DefineConstants>$(DefineConstants);NET;NET45;NET451</DefineConstants>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
-    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>   
+    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>
     <DefineConstants>$(DefineConstants);NET;NET45;NET452</DefineConstants>
   </PropertyGroup>
 
@@ -117,17 +117,17 @@
 
   <!-- .NET 4.6 -->
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>   
+    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>
     <DefineConstants>$(DefineConstants);NET;NET46;NET460</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>   
+    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>
     <DefineConstants>$(DefineConstants);NET;NET46;NET461</DefineConstants>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>   
+    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>
     <DefineConstants>$(DefineConstants);NET;NET46;NET462</DefineConstants>
   </PropertyGroup>
 
@@ -139,22 +139,22 @@
 
   <!-- .NET 4.7 -->
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
-    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>   
+    <EnableWpfProjectSetup>true</EnableWpfProjectSetup>
     <DefineConstants>$(DefineConstants);NET;NET47;NET470</DefineConstants>
   </PropertyGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <Compile Include="Platforms\net\**\*.cs" />
     <Page Include="Platforms\net\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
     <Compile Update="Platforms\net\**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
   </ItemGroup>
-  
+
   <!-- UAP 10.0 -->
   <PropertyGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <EnableDefaultXamlItems>true</EnableDefaultXamlItems>
     <DefineConstants>$(DefineConstants);UAP;NETFX_CORE;UWP;WINDOWS_UWP</DefineConstants>
   </PropertyGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Platforms\uap10.0\**\*.cs" />
     <Page Include="Platforms\uap10.0\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
@@ -165,7 +165,7 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'xamarin.ios10' ">
     <DefineConstants>$(DefineConstants);XAMARIN;IOS</DefineConstants>
   </PropertyGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'xamarin.ios10' ">
     <Compile Include="Platforms\xamarin.ios\**\*.cs" />
     <Page Include="Platforms\xamarin.ios\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
@@ -176,7 +176,7 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'monoandroid70' ">
     <DefineConstants>$(DefineConstants);XAMARIN;ANDROID</DefineConstants>
   </PropertyGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'monoandroid70' ">
     <Compile Include="Platforms\xamarin.android\**\*.cs" />
     <Page Include="Platforms\xamarin.android\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
