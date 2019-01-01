@@ -473,7 +473,7 @@ namespace Catel.Fody
          * parameters (genericPars).
          *
          * However, these concrete arguments don't necessarily have
-         * to be concrete TypeReferences, these may be referencec to
+         * to be concrete TypeReferences, these may be referenced to
          * generic parameters from super type.
          *
          * Example:
