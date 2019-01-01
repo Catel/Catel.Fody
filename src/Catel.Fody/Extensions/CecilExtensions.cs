@@ -214,7 +214,7 @@ namespace Catel.Fody
 
             foreach (var module in resolvedAssembly.Modules)
             {
-                var allTypes = module.GetAllTypeDefinitions().OrderBy(x => x.FullName);
+                var allTypes = module.GetAllTypeDefinitions().OrderBy(x => x.FullName).ToList();
 
                 var type = (from typeDefinition in allTypes
                             where typeDefinition.FullName == typeName
