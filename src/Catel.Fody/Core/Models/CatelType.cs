@@ -377,28 +377,25 @@ namespace Catel.Fody
         public bool ExistPropertyDependencyBetween(PropertyDefinition dependentPropertyDefinition, PropertyDefinition property)
         {
             var found = false;
-            if (dependentPropertyDefinition != null)
+            var getMethodDefinition = dependentPropertyDefinition?.GetMethod;
+            if (getMethodDefinition != null && getMethodDefinition.HasBody)
             {
-                var getMethodDefinition = dependentPropertyDefinition.GetMethod;
-                if ((getMethodDefinition != null) && getMethodDefinition.HasBody)
+                var processor = getMethodDefinition.Body.GetILProcessor();
+
+                var idx = 0;
+                while (!found && idx < processor.Body.Instructions.Count)
                 {
-                    var processor = getMethodDefinition.Body.GetILProcessor();
+                    var instruction = processor.Body.Instructions[idx];
 
-                    var idx = 0;
-                    while (!found && idx < processor.Body.Instructions.Count)
+                    MethodDefinition methodDefinition;
+                    if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
                     {
-                        var instruction = processor.Body.Instructions[idx];
-
-                        MethodDefinition methodDefinition;
-                        if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
-                        {
-                            found = true;
-                            break;
-                        }
-                        else
-                        {
-                            idx++;
-                        }
+                        found = true;
+                        break;
+                    }
+                    else
+                    {
+                        idx++;
                     }
                 }
             }

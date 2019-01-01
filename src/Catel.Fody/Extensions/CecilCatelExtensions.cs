@@ -100,12 +100,7 @@ namespace Catel.Fody
 
         public static bool DerivesFromType(this TypeDefinition typeDefinition, string typeName)
         {
-            if (typeDefinition == null)
-            {
-                return false;
-            }
-
-            var baseType = typeDefinition.BaseType;
+            var baseType = typeDefinition?.BaseType;
             if (baseType == null)
             {
                 return false;

@@ -152,11 +152,7 @@ namespace Catel.Fody
 
         private static FieldDefinition GetSingleField(PropertyDefinition property, Code code, MethodDefinition methodDefinition)
         {
-            if (methodDefinition == null)
-            {
-                return null;
-            }
-            if (methodDefinition.Body == null)
+            if (methodDefinition?.Body == null)
             {
                 return null;
             }
@@ -185,11 +181,8 @@ namespace Catel.Fody
                     }
                 }
             }
-            if (fieldReference != null)
-            {
-                return fieldReference.Resolve();
-            }
-            return null;
+
+            return fieldReference?.Resolve();
         }
     }
 }

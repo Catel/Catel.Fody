@@ -452,10 +452,7 @@ namespace Catel.Fody.Weaving.Argument
 
             // Remove display class from container
             var declaringType = displayClassType.DeclaringType;
-            if (declaringType != null)
-            {
-                declaringType.NestedTypes.Remove(displayClassType);
-            }
+            declaringType?.NestedTypes.Remove(displayClassType);
 
             // Special case, remove any Dup opcodes before the argument checks
             for (var i = 0; i < instructions.Count; i++)
