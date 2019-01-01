@@ -102,13 +102,13 @@ namespace Catel.Fody.Weaving.Argument
             foreach (var argument in attribute.ConstructorArguments)
             {
                 object value = argument.Value;
-                if (value is string)
+                if (value is string s)
                 {
-                    yield return Instruction.Create(OpCodes.Ldstr, (string)value);
+                    yield return Instruction.Create(OpCodes.Ldstr, s);
                 }
-                else if (value is int)
+                else if (value is int i)
                 {
-                    yield return Instruction.Create(OpCodes.Ldc_I4, (int)value);
+                    yield return Instruction.Create(OpCodes.Ldc_I4, i);
                 }
                 else if (value is long)
                 {
@@ -117,13 +117,13 @@ namespace Catel.Fody.Weaving.Argument
                         yield return instruction;
                     }
                 }
-                else if (value is float)
+                else if (value is float f)
                 {
-                    yield return Instruction.Create(OpCodes.Ldc_R4, (float)value);
+                    yield return Instruction.Create(OpCodes.Ldc_R4, f);
                 }
-                else if (value is double)
+                else if (value is double d)
                 {
-                    yield return Instruction.Create(OpCodes.Ldc_R8, (double)value);
+                    yield return Instruction.Create(OpCodes.Ldc_R8, d);
                 }
             }
         }

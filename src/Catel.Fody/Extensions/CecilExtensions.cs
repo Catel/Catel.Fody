@@ -404,13 +404,13 @@ namespace Catel.Fody
                     break;
                 }
 
-                if (currentBase is GenericInstanceType)
+                if (currentBase is GenericInstanceType instanceType)
                 {
                     previousGenericArgsMap = GetGenericArgsMap(current.BaseType, previousGenericArgsMap, mappedFromSuperType);
 
                     if (mappedFromSuperType.Any())
                     {
-                        currentBase = ((GenericInstanceType)currentBase).ElementType.MakeGenericInstanceType(previousGenericArgsMap.Select(x => x.Value).ToArray());
+                        currentBase = instanceType.ElementType.MakeGenericInstanceType(previousGenericArgsMap.Select(x => x.Value).ToArray());
                         mappedFromSuperType.Clear();
                     }
                 }
