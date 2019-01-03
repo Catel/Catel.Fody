@@ -15,12 +15,22 @@ namespace Catel.Fody
 
         public static bool ImplementsCatelModel(this TypeReference typeReference)
         {
-            if (typeReference == null)
+            if (typeReference is null)
             {
                 return false;
             }
 
+            if (ImplementsViewModelBase(typeReference))
+            {
+                return true;
+            }
+
             if (ImplementsModelBase(typeReference))
+            {
+                return true;
+            }
+
+            if (ImplementsObservableObject(typeReference))
             {
                 return true;
             }
@@ -36,6 +46,11 @@ namespace Catel.Fody
         public static bool ImplementsDataObjectBase(this TypeReference typeReference)
         {
             return ImplementsBaseType(typeReference, "Catel.Data.DataObjectBase");
+        }
+
+        public static bool ImplementsObservableObject(this TypeReference typeReference)
+        {
+            return ImplementsBaseType(typeReference, "Catel.Data.ObservableObject");
         }
 
         public static bool ImplementsModelBase(this TypeReference typeReference)
