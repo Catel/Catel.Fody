@@ -15,7 +15,7 @@ namespace Catel.Fody.Services
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-        public AutoPropertiesWeaverService(Configuration configuration, ModuleWeaver moduleWeaver, 
+        public AutoPropertiesWeaverService(Configuration configuration, ModuleWeaver moduleWeaver,
             CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _configuration = configuration;

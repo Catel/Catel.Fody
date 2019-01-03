@@ -35,8 +35,7 @@ namespace Catel.Fody
                 return false;
             }
 
-            var methodReference = instruction.Operand as MethodReference;
-            if (methodReference != null)
+            if (instruction.Operand is MethodReference methodReference)
             {
                 if (string.Equals(methodReference.Name, methodName))
                 {
@@ -44,8 +43,7 @@ namespace Catel.Fody
                 }
             }
 
-            var methodDefinition = instruction.Operand as MethodDefinition;
-            if (methodDefinition != null)
+            if (instruction.Operand is MethodDefinition methodDefinition)
             {
                 if (string.Equals(methodDefinition.Name, methodName))
                 {
@@ -58,8 +56,7 @@ namespace Catel.Fody
 
         public static bool UsesObjectFromDeclaringTypeName(this Instruction instruction, string declaringTypeName)
         {
-            var methodReference = instruction.Operand as MethodReference;
-            if (methodReference != null)
+            if (instruction.Operand is MethodReference methodReference)
             {
                 if (string.Equals(methodReference.DeclaringType.Name, declaringTypeName))
                 {
@@ -67,8 +64,7 @@ namespace Catel.Fody
                 }
             }
 
-            var methodDefinition = instruction.Operand as MethodDefinition;
-            if (methodDefinition != null)
+            if (instruction.Operand is MethodDefinition methodDefinition)
             {
                 if (string.Equals(methodDefinition.DeclaringType.Name, declaringTypeName))
                 {
@@ -83,8 +79,7 @@ namespace Catel.Fody
         {
             if (instruction.IsOpCode(opCodes))
             {
-                var fieldDefinition = instruction.Operand as FieldDefinition;
-                if (fieldDefinition != null)
+                if (instruction.Operand is FieldDefinition fieldDefinition)
                 {
                     if (string.Equals(fieldDefinition.DeclaringType.Name, typeDefinition.Name))
                     {
@@ -92,8 +87,7 @@ namespace Catel.Fody
                     }
                 }
 
-                var fieldReference = instruction.Operand as FieldReference;
-                if (fieldReference != null)
+                if (instruction.Operand is FieldReference fieldReference)
                 {
                     if (string.Equals(fieldReference.DeclaringType.Name, typeDefinition.Name))
                     {
@@ -101,8 +95,7 @@ namespace Catel.Fody
                     }
                 }
 
-                var methodDefinition = instruction.Operand as MethodDefinition;
-                if (methodDefinition != null)
+                if (instruction.Operand is MethodDefinition methodDefinition)
                 {
                     if (string.Equals(methodDefinition.DeclaringType.Name, typeDefinition.Name))
                     {
@@ -110,8 +103,7 @@ namespace Catel.Fody
                     }
                 }
 
-                var methodReference = instruction.Operand as MethodReference;
-                if (methodReference != null)
+                if (instruction.Operand is MethodReference methodReference)
                 {
                     if (string.Equals(methodReference.DeclaringType.Name, typeDefinition.Name))
                     {
@@ -119,8 +111,7 @@ namespace Catel.Fody
                     }
                 }
 
-                var operandTypeDefinition = instruction.Operand as TypeDefinition;
-                if (operandTypeDefinition != null)
+                if (instruction.Operand is TypeDefinition operandTypeDefinition)
                 {
                     if (string.Equals(operandTypeDefinition.Name, typeDefinition.Name))
                     {
@@ -128,8 +119,7 @@ namespace Catel.Fody
                     }
                 }
 
-                var operandTypeReference = instruction.Operand as TypeReference;
-                if (operandTypeReference != null)
+                if (instruction.Operand is TypeReference operandTypeReference)
                 {
                     if (string.Equals(operandTypeReference.Name, typeDefinition.Name))
                     {
@@ -143,8 +133,7 @@ namespace Catel.Fody
 
         public static bool UsesField(this Instruction instruction, FieldDefinition fieldDefinition)
         {
-            var usedFieldDefinition = instruction.Operand as FieldDefinition;
-            if (usedFieldDefinition != null)
+            if (instruction.Operand is FieldDefinition usedFieldDefinition)
             {
                 if (string.Equals(usedFieldDefinition.Name, fieldDefinition.Name))
                 {
@@ -152,8 +141,7 @@ namespace Catel.Fody
                 }
             }
 
-            var usedFieldReference = instruction.Operand as FieldReference;
-            if (usedFieldReference != null)
+            if (instruction.Operand is FieldReference usedFieldReference)
             {
                 if (string.Equals(usedFieldReference.Name, fieldDefinition.Name))
                 {

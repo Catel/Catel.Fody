@@ -7,7 +7,6 @@
 
 namespace Catel.Fody
 {
-    using System;
     using System.Collections.ObjectModel;
     using Catel.Data;
 

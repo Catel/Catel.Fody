@@ -165,8 +165,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                     {
                         if (instruction.OpCode == OpCodes.Call)
                         {
-                            var methodReference = instruction.Operand as MethodReference;
-                            if ((methodReference != null) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
+                            if ((instruction.Operand is MethodReference methodReference) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
                             {
                                 instruction.Operand = baseOnPropertyChangedInvoker;
                                 //hasReplaced = true;

@@ -8,7 +8,6 @@
 namespace Catel.Fody.Tests
 {
     using System.Xml.Linq;
-    using Catel.Tests;
     using Fody;
     using NUnit.Framework;
 
@@ -18,7 +17,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CanReadFalseNode()
         {
-            var xElement = XElement.Parse(@"<Node attr='false'/>");
+            var xElement = XElement.Parse("<Node attr='false'/>");
 
             xElement.ReadBool("attr", b => Assert.IsFalse(b));
         }
@@ -26,7 +25,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CanReadTrueNode()
         {
-            var xElement = XElement.Parse(@"<Node attr='true'/>");
+            var xElement = XElement.Parse("<Node attr='true'/>");
 
             xElement.ReadBool("attr", b => Assert.IsTrue(b));
         }
@@ -34,7 +33,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void DoesNotReadInvalidBoolNode()
         {
-            var xElement = XElement.Parse(@"<Node attr='foo'/>");
+            var xElement = XElement.Parse("<Node attr='foo'/>");
 
             ExceptionTester.CallMethodAndExpectException<WeavingException>(() => xElement.ReadBool("attr", b => Assert.Fail()));
         }
@@ -42,7 +41,7 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void DoesNotSetBoolWhenNodeMissing()
         {
-            var xElement = XElement.Parse(@"<Node attr='false'/>");
+            var xElement = XElement.Parse("<Node attr='false'/>");
 
             xElement.ReadBool("missing", b => Assert.Fail());
         }
@@ -50,12 +49,12 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyReadsWeaveProperties()
         {
-            var falseElement = XElement.Parse(@"<Node WeaveProperties='false' />");
+            var falseElement = XElement.Parse("<Node WeaveProperties='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
             Assert.IsFalse(falseConfiguration.WeaveProperties);
 
-            var trueElement = XElement.Parse(@"<Node WeaveProperties='true' />");
+            var trueElement = XElement.Parse("<Node WeaveProperties='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
             Assert.IsTrue(trueConfiguration.WeaveProperties);
@@ -64,12 +63,12 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyReadsWeaveExposedProperties()
         {
-            var falseElement = XElement.Parse(@"<Node WeaveExposedProperties='false' />");
+            var falseElement = XElement.Parse("<Node WeaveExposedProperties='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
             Assert.IsFalse(falseConfiguration.WeaveExposedProperties);
 
-            var trueElement = XElement.Parse(@"<Node WeaveExposedProperties='true' />");
+            var trueElement = XElement.Parse("<Node WeaveExposedProperties='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
             Assert.IsTrue(trueConfiguration.WeaveExposedProperties);
@@ -78,12 +77,12 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyReadsWeaveArguments()
         {
-            var falseElement = XElement.Parse(@"<Node WeaveArguments='false' />");
+            var falseElement = XElement.Parse("<Node WeaveArguments='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
             Assert.IsFalse(falseConfiguration.WeaveArguments);
 
-            var trueElement = XElement.Parse(@"<Node WeaveArguments='true' />");
+            var trueElement = XElement.Parse("<Node WeaveArguments='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
             Assert.IsTrue(trueConfiguration.WeaveArguments);
@@ -92,12 +91,12 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyReadsWeaveLogging()
         {
-            var falseElement = XElement.Parse(@"<Node WeaveLogging='false' />");
+            var falseElement = XElement.Parse("<Node WeaveLogging='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
             Assert.IsFalse(falseConfiguration.WeaveLogging);
 
-            var trueElement = XElement.Parse(@"<Node WeaveLogging='true' />");
+            var trueElement = XElement.Parse("<Node WeaveLogging='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
             Assert.IsTrue(trueConfiguration.WeaveLogging);
@@ -106,12 +105,12 @@ namespace Catel.Fody.Tests
         [TestCase]
         public void CorrectlyReadsGenerateXmlSchemas()
         {
-            var falseElement = XElement.Parse(@"<Node GenerateXmlSchemas='false' />");
+            var falseElement = XElement.Parse("<Node GenerateXmlSchemas='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
             Assert.IsFalse(falseConfiguration.GenerateXmlSchemas);
 
-            var trueElement = XElement.Parse(@"<Node GenerateXmlSchemas='true' />");
+            var trueElement = XElement.Parse("<Node GenerateXmlSchemas='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
             Assert.IsTrue(trueConfiguration.GenerateXmlSchemas);

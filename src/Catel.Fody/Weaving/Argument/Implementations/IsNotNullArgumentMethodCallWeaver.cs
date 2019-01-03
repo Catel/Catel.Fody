@@ -10,7 +10,6 @@ namespace Catel.Fody.Weaving.Argument
     using System.Linq;
 
     using Mono.Cecil;
-    using Mono.Cecil.Cil;
 
     public sealed class IsNotNullArgumentMethodCallWeaver : DefaultArgumentMethodCallWeaverBase
     {
