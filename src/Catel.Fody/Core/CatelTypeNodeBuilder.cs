@@ -40,12 +40,7 @@ namespace Catel.Fody
 
         private void AddCatelTypeIfRequired(TypeDefinition typeDefinition)
         {
-            if (typeDefinition is null)
-            {
-                return;
-            }
-
-            if (typeDefinition.BaseType is null)
+            if (typeDefinition?.BaseType is null)
             {
                 return;
             }

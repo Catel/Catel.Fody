@@ -7,9 +7,6 @@
 namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
-    using System.Linq;
-
-    using Mono.Cecil;
     using Mono.Cecil.Rocks;
 
     public class AutoPropertiesWeaver
@@ -19,7 +16,7 @@ namespace Catel.Fody.Weaving.AutoProperties
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-        public AutoPropertiesWeaver(Configuration configuration, ModuleWeaver moduleWeaver, 
+        public AutoPropertiesWeaver(Configuration configuration, ModuleWeaver moduleWeaver,
             CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _configuration = configuration;

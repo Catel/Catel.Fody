@@ -218,10 +218,7 @@ namespace Catel.Fody.TestAssembly
 
             // Removed external code for simplicity of test
 
-            if (suspendToken != null)
-            {
-                suspendToken.Dispose();
-            }
+            suspendToken?.Dispose();
         }
 
         public void CheckForNullWithMultipleParametersWithoutContent(CustomClassType customClassType, IEnumerable rawCollection, IList filteredCollection)
@@ -251,10 +248,7 @@ namespace Catel.Fody.TestAssembly
 
             // Removed external code for simplicity of test
 
-            if (suspendToken != null)
-            {
-                suspendToken.Dispose();
-            }
+            suspendToken?.Dispose();
         }
 
         public void CheckForNullForGenericArgument<T>(T value)

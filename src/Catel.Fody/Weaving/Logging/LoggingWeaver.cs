@@ -79,8 +79,7 @@ namespace Catel.Fody.Weaving.Logging
             {
                 var instruction = instructions[i];
 
-                var methodReference = instruction.Operand as MethodReference;
-                if (methodReference != null)
+                if (instruction.Operand is MethodReference methodReference)
                 {
                     if (string.Equals(methodReference.Name, "GetCurrentClassLogger"))
                     {
@@ -109,9 +108,9 @@ namespace Catel.Fody.Weaving.Logging
 
                         instructions.RemoveAt(i);
 
-                        instructions.Insert(i, 
-                            Instruction.Create(OpCodes.Ldtoken, type), 
-                            Instruction.Create(OpCodes.Call, getTypeFromHandle), 
+                        instructions.Insert(i,
+                            Instruction.Create(OpCodes.Ldtoken, type),
+                            Instruction.Create(OpCodes.Call, getTypeFromHandle),
                             Instruction.Create(OpCodes.Call, type.Module.ImportReference(getLoggerMethod)));
                     }
                 }

@@ -50,7 +50,7 @@ namespace Catel.Fody
         {
             return IsDecoratedWithAttribute(typeDefinition.CustomAttributes, attributeName);
         }
-        
+
         public static bool IsDecoratedWithAttribute(this ParameterDefinition parameterDefinition, string attributeName)
         {
             return IsDecoratedWithAttribute(parameterDefinition.CustomAttributes, attributeName);

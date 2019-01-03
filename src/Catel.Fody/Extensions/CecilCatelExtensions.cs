@@ -70,7 +70,7 @@ namespace Catel.Fody
                 return false;
             }
 
-            string requestKey = $"{typeReference.FullName}_{typeName}";
+            var requestKey = $"{typeReference.FullName}_{typeName}";
             bool implementsModelBase;
             if (_implementsTypeCache.TryGetValue(requestKey, out implementsModelBase))
             {
@@ -100,12 +100,7 @@ namespace Catel.Fody
 
         public static bool DerivesFromType(this TypeDefinition typeDefinition, string typeName)
         {
-            if (typeDefinition == null)
-            {
-                return false;
-            }
-
-            var baseType = typeDefinition.BaseType;
+            var baseType = typeDefinition?.BaseType;
             if (baseType == null)
             {
                 return false;

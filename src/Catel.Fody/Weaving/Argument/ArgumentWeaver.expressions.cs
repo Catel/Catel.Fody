@@ -8,7 +8,6 @@
 namespace Catel.Fody.Weaving.Argument
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using Models;
     using Mono.Cecil;
@@ -20,8 +19,7 @@ namespace Catel.Fody.Weaving.Argument
     {
         private bool IsSupportedExpressionArgumentCheck(MethodDefinition method, Instruction instruction)
         {
-            var methodBeingCalled = instruction.Operand as MethodReference;
-            if (methodBeingCalled == null)
+            if (!(instruction.Operand is MethodReference methodBeingCalled))
             {
                 return false;
             }
@@ -81,7 +79,7 @@ namespace Catel.Fody.Weaving.Argument
             if (method.IsConstructor)
             {
                 // We need to delete from the newobj => call to base constructor:
-                //   L_000c: ldarg.0 
+                //   L_000c: ldarg.0
                 //   L_000d: call instance void [mscorlib]System.Object::.ctor()
                 for (var i = 0; i < instructions.Count; i++)
                 {
@@ -120,7 +118,7 @@ namespace Catel.Fody.Weaving.Argument
             //
             // Msbuild
             //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
-            //   L_0005: stloc.0 
+            //   L_0005: stloc.0
             //
             // Roslyn
             //   L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass1a::.ctor()
@@ -136,13 +134,13 @@ namespace Catel.Fody.Weaving.Argument
             //     L_0007: ldarg.0
             //     L_0008: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /<> c__DisplayClass16_0::.ctor()
             //     L_000d: stfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::<>8__1
-            //     L_0012: ldarg.0 
+            //     L_0012: ldarg.0
             //     L_0013: ldfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::<>8__1
-            //     L_0018: ldarg.0 
+            //     L_0018: ldarg.0
             //     L_0019: ldfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync>d__16::myObject
             //     L_001e: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass16_0::myObject
-            //     L_0023: nop 
-            //   
+            //     L_0023: nop
+            //
             //   RELEASE MODE (display class not stored in a field)
             //     L_0000: newobj instance void Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass /<> c__DisplayClass16_0::.ctor()
             //     L_0005: dup
@@ -195,7 +193,7 @@ namespace Catel.Fody.Weaving.Argument
                                 }
                             }
 
-                            // Search 
+                            // Search
                             var fieldOfDisplayClass = method.DeclaringType.Fields.FirstOrDefault(x => x.FieldType.Name.Equals(displayClassType.Name));
                             if (fieldOfDisplayClass != null)
                             {
@@ -269,7 +267,7 @@ namespace Catel.Fody.Weaving.Argument
             //     L_0013: ldfld class Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass18_0 Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync_MultipleParameters>d__18::<>8__1
             //
             //   Option B:
-            //     L_0018: ldarg.0 
+            //     L_0018: ldarg.0
             //     L_0019: ldfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<CheckForNullAsync_MultipleParameters>d__18::myObject1
             //     L_001e: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass18_0::myObject1
             if (isAsyncMethod)
@@ -320,9 +318,9 @@ namespace Catel.Fody.Weaving.Argument
                 }
             }
 
-            // Remove display class allocation and assigments
+            // Remove display class allocation and assignments
             //   L_0014: ldloc.0 (can also be dup)
-            //   L_0015: ldarg.3 
+            //   L_0015: ldarg.3
             //   L_0016: stfld object Catel.Fody.TestAssembly.ArgumentChecksAsExpressionsClass/<>c__DisplayClass28::myObject3
 
             for (var i = 0; i < instructions.Count; i++)
@@ -345,8 +343,7 @@ namespace Catel.Fody.Weaving.Argument
                         var instruction = instructions[additionalIndex];
                         if (instruction.IsOpCode(OpCodes.Ldloc_S, OpCodes.Ldloc))
                         {
-                            var operand = instruction.Operand as VariableReference;
-                            if (operand != null)
+                            if (instruction.Operand is VariableReference operand)
                             {
                                 var variableType = operand.VariableType;
                                 if (variableType.IsGenericInstance)
@@ -406,7 +403,7 @@ namespace Catel.Fody.Weaving.Argument
                 }
             }
 
-            // Remove unused fields (clean up async methods that we have optimized, we don't check non-async because it 
+            // Remove unused fields (clean up async methods that we have optimized, we don't check non-async because it
             // would require to check *all* methods of a class)
             if (isAsyncMethod)
             {
@@ -444,7 +441,7 @@ namespace Catel.Fody.Weaving.Argument
 
                     if (!anyMethodUsesField)
                     {
-                        
+
 
                         method.DeclaringType.Fields.RemoveAt(i);
 
@@ -455,10 +452,7 @@ namespace Catel.Fody.Weaving.Argument
 
             // Remove display class from container
             var declaringType = displayClassType.DeclaringType;
-            if (declaringType != null)
-            {
-                declaringType.NestedTypes.Remove(displayClassType);
-            }
+            declaringType?.NestedTypes.Remove(displayClassType);
 
             // Special case, remove any Dup opcodes before the argument checks
             for (var i = 0; i < instructions.Count; i++)
@@ -476,8 +470,7 @@ namespace Catel.Fody.Weaving.Argument
                             var nextInstruction = instructions[j];
                             if (nextInstruction.IsOpCode(OpCodes.Call))
                             {
-                                var operand = nextInstruction.Operand as MethodReference;
-                                if (operand != null)
+                                if (nextInstruction.Operand is MethodReference operand)
                                 {
                                     if (operand.DeclaringType.Name.Contains("Argument") &&
                                         operand.Parameters[0].ParameterType.Name.Contains("String"))
@@ -525,8 +518,7 @@ namespace Catel.Fody.Weaving.Argument
                 // CTL-908: never remove call to base constructor, inject any new argument checks after the ctor code
                 if (innerInstruction.IsOpCode(OpCodes.Call))
                 {
-                    var methodReference = innerInstruction.Operand as MethodReference;
-                    if (methodReference != null)
+                    if (innerInstruction.Operand is MethodReference methodReference)
                     {
                         if (methodReference.Name == ".ctor" || methodReference.Name == ".cctor")
                         {
@@ -572,7 +564,7 @@ namespace Catel.Fody.Weaving.Argument
                 // Async/await code
                 //
                 //   ldarg.0
-                //   ldfld 
+                //   ldfld
                 if (innerInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3))
                 {
                     var nextInstruction = instructions[i + 1];
@@ -584,9 +576,9 @@ namespace Catel.Fody.Weaving.Argument
 
                 // Since .NET core, we want to skip assignments:
                 //
-                //   ldarg.0 
+                //   ldarg.0
                 //   stfld class MyClass/<>c__DisplayClass0_0`1<!!T>::myArgument
-                // 
+                //
                 // If the display class is no longer used, another method must remove the code
                 if (innerInstruction.IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3))
                 {
@@ -647,8 +639,7 @@ namespace Catel.Fody.Weaving.Argument
                     var fieldDefinition = innerInstruction.Operand as FieldDefinition;
                     if (fieldDefinition == null)
                     {
-                        var fieldReference = innerInstruction.Operand as FieldReference;
-                        if (fieldReference != null)
+                        if (innerInstruction.Operand is FieldReference fieldReference)
                         {
                             fieldDefinition = fieldReference.Resolve();
                         }
@@ -659,14 +650,12 @@ namespace Catel.Fody.Weaving.Argument
                         // We found it, now check 1 instruction back for the actual parameter
                         var finalInstruction = instructions[i - 1];
 
-                        var finalFieldDefinition = finalInstruction.Operand as FieldDefinition;
-                        if (finalFieldDefinition != null)
+                        if (finalInstruction.Operand is FieldDefinition finalFieldDefinition)
                         {
                             return finalFieldDefinition;
                         }
 
-                        var parameterDefinition = finalInstruction.Operand as ParameterDefinition;
-                        if (parameterDefinition != null)
+                        if (finalInstruction.Operand is ParameterDefinition parameterDefinition)
                         {
                             return parameterDefinition;
                         }
@@ -680,14 +669,12 @@ namespace Catel.Fody.Weaving.Argument
         private FieldDefinition GetFieldDefinition(Instruction instruction)
         {
             // First call to ldtoken with FieldDefinition contains the display class type
-            var fieldDefinition = instruction.Operand as FieldDefinition;
-            if (fieldDefinition != null)
+            if (instruction.Operand is FieldDefinition fieldDefinition)
             {
                 return fieldDefinition;
             }
 
-            var fieldReference = instruction.Operand as FieldReference;
-            if (fieldReference != null)
+            if (instruction.Operand is FieldReference fieldReference)
             {
                 return fieldReference.Resolve();
             }

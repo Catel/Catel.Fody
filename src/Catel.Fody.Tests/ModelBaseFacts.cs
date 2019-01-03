@@ -137,7 +137,7 @@ namespace Catel.Fody.Tests
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsInt");
             var model = Activator.CreateInstance(type);
 
-            string propertyNameToCheck = "MyModel";
+            var propertyNameToCheck = "MyModel";
 
             Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck));
 
@@ -152,7 +152,7 @@ namespace Catel.Fody.Tests
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericPropertyModelAsObject");
             var model = Activator.CreateInstance(type);
 
-            string propertyNameToCheck = "MyModel";
+            var propertyNameToCheck = "MyModel";
 
             Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck));
 

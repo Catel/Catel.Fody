@@ -205,10 +205,7 @@ namespace Catel.Fody
             {
                 Trace.WriteLine(s);
 
-                if (callback != null)
-                {
-                    callback(s);
-                }
+                callback?.Invoke(s);
             };
         }
 
