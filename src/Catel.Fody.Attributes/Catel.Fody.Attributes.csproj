@@ -50,10 +50,16 @@
       <NetStandardFilesToInclude Include="$(WeaverDirPath)\netstandard2*\$(PackageId).xcf" />
       <NetStandardFilesToInclude Include="$(WeaverDirPath)\netstandard2*\$(PackageId).pdb" />
     </ItemGroup>
+    
     <CreateItem Include="@(NetClassicFilesToInclude)" AdditionalMetadata="PackagePath=netclassicweaver">
       <Output TaskParameter="Include" ItemName="TfmSpecificPackageFile" />
     </CreateItem>
+    
     <CreateItem Include="@(NetStandardFilesToInclude)" AdditionalMetadata="PackagePath=netstandardweaver">
+      <Output TaskParameter="Include" ItemName="TfmSpecificPackageFile" />
+    </CreateItem>
+    
+    <CreateItem Include="$(MSBuildThisFileDirectory)..\$(PackageId)\$(PackageId).props" AdditionalMetadata="PackagePath=build">
       <Output TaskParameter="Include" ItemName="TfmSpecificPackageFile" />
     </CreateItem>
   </Target>
