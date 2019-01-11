@@ -44,6 +44,12 @@ namespace Catel.Fody.Weaving.AutoProperties
 
         private bool AddOrUpdateOnPropertyChangedMethod(PropertyDefinition property)
         {
+            if (property.HasParameters)
+            {
+                // Not supported
+                return true;
+            }
+
             var getMethodReference = _catelType.TypeDefinition.Module.ImportReference(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
             var stringEqualsMethodReference = _catelType.TypeDefinition.Module.ImportReference(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
 
