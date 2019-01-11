@@ -23,13 +23,16 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Content Include="Catel.Fody.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Catel.Fody.xcf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="3.3.3" />
+    <PackageReference Include="FodyHelpers" Version="3.3.5" />
     <PackageReference Update="NETStandard.Library" Version="2.0.1" />
   </ItemGroup>
   

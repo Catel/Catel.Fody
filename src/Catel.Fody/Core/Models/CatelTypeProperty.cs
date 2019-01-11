@@ -7,7 +7,6 @@
 
 namespace Catel.Fody
 {
-    using System;
     using System.Diagnostics;
     using System.Linq;
     using Mono.Cecil;
@@ -49,7 +48,7 @@ namespace Catel.Fody
 
         private void DetermineMethods()
         {
-            string methodName = $"On{PropertyDefinition.Name}Changed";
+            var methodName = $"On{PropertyDefinition.Name}Changed";
 
             var declaringType = PropertyDefinition.DeclaringType;
 
@@ -153,11 +152,7 @@ namespace Catel.Fody
 
         private static FieldDefinition GetSingleField(PropertyDefinition property, Code code, MethodDefinition methodDefinition)
         {
-            if (methodDefinition == null)
-            {
-                return null;
-            }
-            if (methodDefinition.Body == null)
+            if (methodDefinition?.Body == null)
             {
                 return null;
             }
@@ -171,8 +166,8 @@ namespace Catel.Fody
                     {
                         return null;
                     }
-                    var field = instruction.Operand as FieldReference;
-                    if (field != null)
+
+                    if (instruction.Operand is FieldReference field)
                     {
                         if (field.DeclaringType != property.DeclaringType)
                         {
@@ -186,11 +181,8 @@ namespace Catel.Fody
                     }
                 }
             }
-            if (fieldReference != null)
-            {
-                return fieldReference.Resolve();
-            }
-            return null;
+
+            return fieldReference?.Resolve();
         }
     }
 }

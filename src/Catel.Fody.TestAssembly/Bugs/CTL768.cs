@@ -1,6 +1,5 @@
 ﻿namespace Catel.Fody.TestAssembly
 {
-    using System.Collections.Generic;
     using System.IO;
     using Collections;
     using Data;
@@ -9,7 +8,7 @@
     {
         public CTL768_BaseModel(string location)
         {
-            
+
         }
     }
 

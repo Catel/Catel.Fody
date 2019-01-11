@@ -31,6 +31,8 @@ namespace Catel.Fody.Weaving.AutoProperties
         #region Methods
         public void Execute()
         {
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{_catelType.TypeDefinition.FullName}'");
+
             foreach (var propertyDefinition in _catelType.AllProperties)
             {
                 if (!AddOrUpdateOnPropertyChangedMethod(propertyDefinition))
@@ -42,6 +44,12 @@ namespace Catel.Fody.Weaving.AutoProperties
 
         private bool AddOrUpdateOnPropertyChangedMethod(PropertyDefinition property)
         {
+            if (property.HasParameters)
+            {
+                // Not supported
+                return true;
+            }
+
             var getMethodReference = _catelType.TypeDefinition.Module.ImportReference(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
             var stringEqualsMethodReference = _catelType.TypeDefinition.Module.ImportReference(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
 
@@ -165,8 +173,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                     {
                         if (instruction.OpCode == OpCodes.Call)
                         {
-                            var methodReference = instruction.Operand as MethodReference;
-                            if ((methodReference != null) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
+                            if ((instruction.Operand is MethodReference methodReference) && string.Equals(methodReference.Name, baseOnPropertyChangedInvoker.Name))
                             {
                                 instruction.Operand = baseOnPropertyChangedInvoker;
                                 //hasReplaced = true;

@@ -23,7 +23,7 @@ namespace Catel.Fody
         /// <exception cref="ArgumentException">The <paramref name="propertyName" /> is <c>null</c> or whitespace.</exception>
         /// <remarks>
         /// Do not create default values for attribute constructors! For more information, see:
-        /// http://stackoverflow.com/questions/8290853/attribute-argument-must-be-a-constant-error-when-using-an-optional-parameter-in 
+        /// http://stackoverflow.com/questions/8290853/attribute-argument-must-be-a-constant-error-when-using-an-optional-parameter-in
         /// </remarks>
         public ExposeAttribute(string propertyName)
             : this(propertyName, null)

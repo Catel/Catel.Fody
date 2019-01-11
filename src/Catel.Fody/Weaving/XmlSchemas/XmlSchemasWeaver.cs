@@ -23,7 +23,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
 
         public void Execute(CatelType catelType)
         {
-            if (_msCoreReferenceFinder.XmlSchemaSet == null || _msCoreReferenceFinder.XmlQualifiedName == null)
+            if (_msCoreReferenceFinder.XmlSchemaSet is null || _msCoreReferenceFinder.XmlQualifiedName is null)
             {
                 return;
             }
@@ -48,8 +48,8 @@ namespace Catel.Fody.Weaving.XmlSchemas
                 return;
             }
 
-            FodyEnvironment.LogDebug("\t\t Adding xml schema for type " + catelType.TypeDefinition.FullName);
-
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{catelType.TypeDefinition.FullName}'");
+            
             if (AddXmlSchemaProviderAttribute(catelType))
             {
                 AddGetXmlSchemaMethod(catelType);

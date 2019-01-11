@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ArgumentInstructionSequenceBuilder.cs" company="Catel development team">
 //   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
 // </copyright>
@@ -64,8 +64,7 @@ namespace Catel.Fody.Weaving.Argument
 
         private static IEnumerable<Instruction> BuildDefaultInstructionsInternal(object parameterDefinitionOrFieldDefinition)
         {
-            var fieldDefinition = parameterDefinitionOrFieldDefinition as FieldDefinition;
-            if (fieldDefinition != null)
+            if (parameterDefinitionOrFieldDefinition is FieldDefinition fieldDefinition)
             {
                 return BuildDefaultInstructions(fieldDefinition);
             }
@@ -102,14 +101,14 @@ namespace Catel.Fody.Weaving.Argument
 
             foreach (var argument in attribute.ConstructorArguments)
             {
-                object value = argument.Value;
-                if (value is string)
+                var value = argument.Value;
+                if (value is string s)
                 {
-                    yield return Instruction.Create(OpCodes.Ldstr, (string)value);
+                    yield return Instruction.Create(OpCodes.Ldstr, s);
                 }
-                else if (value is int)
+                else if (value is int i)
                 {
-                    yield return Instruction.Create(OpCodes.Ldc_I4, (int)value);
+                    yield return Instruction.Create(OpCodes.Ldc_I4, i);
                 }
                 else if (value is long)
                 {
@@ -118,13 +117,13 @@ namespace Catel.Fody.Weaving.Argument
                         yield return instruction;
                     }
                 }
-                else if (value is float)
+                else if (value is float f)
                 {
-                    yield return Instruction.Create(OpCodes.Ldc_R4, (float)value);
+                    yield return Instruction.Create(OpCodes.Ldc_R4, f);
                 }
-                else if (value is double)
+                else if (value is double d)
                 {
-                    yield return Instruction.Create(OpCodes.Ldc_R8, (double)value);
+                    yield return Instruction.Create(OpCodes.Ldc_R8, d);
                 }
             }
         }

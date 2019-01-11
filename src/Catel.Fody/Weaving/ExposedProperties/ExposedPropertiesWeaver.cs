@@ -17,7 +17,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         private readonly TypeDefinition _viewModelToModelAttributeTypeDefinition;
 
-        public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, ModuleWeaver moduleWeaver, 
+        public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, ModuleWeaver moduleWeaver,
             MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _viewModelToModelAttributeTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.MVVM", "Catel.MVVM.ViewModelToModelAttribute") as TypeDefinition;
@@ -45,6 +45,8 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
         private void ProcessType(CatelType catelType)
         {
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{catelType.TypeDefinition.FullName}'");
+
             foreach (var property in catelType.Properties)
             {
                 var propertyDefinition = property.PropertyDefinition;
@@ -68,7 +70,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
                 modelPropertyName = (string)(exposeAttribute.ConstructorArguments[1].Value ?? viewModelPropertyName);
             }
 
-            bool isReadOnly = false;
+            var isReadOnly = false;
             var isReadOnlyProperty = (from property in exposeAttribute.Properties
                                       where string.Equals(property.Name, "IsReadOnly")
                                       select property).FirstOrDefault();

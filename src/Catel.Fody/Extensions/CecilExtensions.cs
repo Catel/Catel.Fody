@@ -139,8 +139,7 @@ namespace Catel.Fody
                 return null;
             }
 
-            var genericInstanceType = typeReference as GenericInstanceType;
-            if (genericInstanceType == null)
+            if (!(typeReference is GenericInstanceType genericInstanceType))
             {
                 return null;
             }
@@ -215,7 +214,7 @@ namespace Catel.Fody
 
             foreach (var module in resolvedAssembly.Modules)
             {
-                var allTypes = module.GetAllTypeDefinitions().OrderBy(x => x.FullName);
+                var allTypes = module.GetAllTypeDefinitions().OrderBy(x => x.FullName).ToList();
 
                 var type = (from typeDefinition in allTypes
                             where typeDefinition.FullName == typeName
@@ -239,8 +238,7 @@ namespace Catel.Fody
 
         public static PropertyReference GetProperty(this TypeReference typeReference, string propertyName)
         {
-            var typeDefinition = typeReference as TypeDefinition;
-            if (typeDefinition == null)
+            if (!(typeReference is TypeDefinition typeDefinition))
             {
                 typeDefinition = typeReference.Resolve();
             }
@@ -406,13 +404,13 @@ namespace Catel.Fody
                     break;
                 }
 
-                if (currentBase is GenericInstanceType)
+                if (currentBase is GenericInstanceType instanceType)
                 {
                     previousGenericArgsMap = GetGenericArgsMap(current.BaseType, previousGenericArgsMap, mappedFromSuperType);
 
                     if (mappedFromSuperType.Any())
                     {
-                        currentBase = ((GenericInstanceType)currentBase).ElementType.MakeGenericInstanceType(previousGenericArgsMap.Select(x => x.Value).ToArray());
+                        currentBase = instanceType.ElementType.MakeGenericInstanceType(previousGenericArgsMap.Select(x => x.Value).ToArray());
                         mappedFromSuperType.Clear();
                     }
                 }
@@ -442,8 +440,7 @@ namespace Catel.Fody
             {
                 var result = iface.InterfaceType;
 
-                var genericIface = iface.InterfaceType as GenericInstanceType;
-                if (genericIface != null)
+                if (iface.InterfaceType is GenericInstanceType genericIface)
                 {
                     var map = GetGenericArgsMap(genericIface, genericArgsMap, mappedFromSuperType);
 
@@ -476,7 +473,7 @@ namespace Catel.Fody
          * parameters (genericPars).
          *
          * However, these concrete arguments don't necessarily have
-         * to be concrete TypeReferences, these may be referencec to
+         * to be concrete TypeReferences, these may be referenced to
          * generic parameters from super type.
          *
          * Example:
@@ -489,7 +486,7 @@ namespace Catel.Fody
          *      What would happen if we walk up the hierarchy from StringIntMap:
          *          -> StringIntMap
          *              - here dont have any generic agrs or params for StringIntMap.
-         *              - but when we reesolve StringIntMap we get a
+         *              - but when we resolve StringIntMap we get a
          *                  reference to the base class StringMap<int>,
          *          -> StringMap<int>
          *              - this reference will have one generic argument
@@ -510,7 +507,7 @@ namespace Catel.Fody
          *          -> Dictionary<string, int>
          */
 
-            for (int i = 0; i < genericArgs.Count; i++)
+            for (var i = 0; i < genericArgs.Count; i++)
             {
                 var arg = genericArgs[i];
 

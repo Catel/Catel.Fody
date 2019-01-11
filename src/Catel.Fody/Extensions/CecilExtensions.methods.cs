@@ -22,12 +22,8 @@ namespace Catel.Fody
             }
 
             var declaringType = method.DeclaringType;
-            if (declaringType == null)
-            {
-                return false;
-            }
 
-            var setStateMachineMethod = declaringType.Methods.FirstOrDefault(x => x.Name.Equals("SetStateMachine"));
+            var setStateMachineMethod = declaringType?.Methods.FirstOrDefault(x => x.Name.Equals("SetStateMachine"));
             if (setStateMachineMethod == null)
             {
                 return false;
@@ -39,28 +35,24 @@ namespace Catel.Fody
         public static int FindBaseConstructorIndex(this MethodDefinition method)
         {
             var declaringType = method.DeclaringType;
-            if (declaringType != null)
+            var baseType = declaringType?.BaseType;
+            if (baseType != null)
             {
-                var baseType = declaringType.BaseType;
-                if (baseType != null)
-                {
-                    var instructions = method.Body.Instructions;
+                var instructions = method.Body.Instructions;
 
-                    for (var i = 0; i < instructions.Count; i++)
+                for (var i = 0; i < instructions.Count; i++)
+                {
+                    var instruction = instructions[i];
+                    if (instruction.IsOpCode(OpCodes.Call))
                     {
-                        var instruction = instructions[i];
-                        if (instruction.IsOpCode(OpCodes.Call))
+                        if (instruction.Operand is MethodReference methodReference)
                         {
-                            var methodReference = instruction.Operand as MethodReference;
-                            if (methodReference != null)
+                            if (methodReference.Name.Equals(".ctor"))
                             {
-                                if (methodReference.Name.Equals(".ctor"))
+                                var ctorDeclaringType = methodReference.DeclaringType?.FullName;
+                                if (baseType.FullName.Equals(ctorDeclaringType))
                                 {
-                                    var ctorDeclaringType = methodReference.DeclaringType?.FullName;
-                                    if (baseType.FullName.Equals(ctorDeclaringType))
-                                    {
-                                        return i;
-                                    }
+                                    return i;
                                 }
                             }
                         }

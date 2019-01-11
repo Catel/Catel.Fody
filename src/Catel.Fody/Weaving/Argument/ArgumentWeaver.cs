@@ -40,6 +40,8 @@ namespace Catel.Fody.Weaving.Argument
         #region Methods
         public void Execute()
         {
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{_typeDefinition.FullName}'");
+
             foreach (var method in _typeDefinition.Methods)
             {
                 ProcessMethod(method);
@@ -65,7 +67,7 @@ namespace Catel.Fody.Weaving.Argument
             Collection<Instruction> instructions = null;
 
             var methodFullName = method.GetFullName();
-            FodyEnvironment.LogDebug($"Processing method '{methodFullName}'");
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{methodFullName}'");
 
             // Step 1) Convert attributes
             // TODO: how to handle async/await here?
@@ -97,7 +99,7 @@ namespace Catel.Fody.Weaving.Argument
             // Step 2) Convert expressions to normal calls
             var displayClasses = new List<TypeDefinition>();
 
-            // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginnen of the ctor)
+            // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginning of the ctor)
             if (instructions != null || ContainsArgumentChecks(method))
             {
                 if (instructions is null)
@@ -181,8 +183,7 @@ namespace Catel.Fody.Weaving.Argument
         {
             foreach (var instruction in method.Body.Instructions)
             {
-                var methodReference = instruction.Operand as MethodReference;
-                if (methodReference != null)
+                if (instruction.Operand is MethodReference methodReference)
                 {
                     if (methodReference.GetFullName().Contains("Catel.Argument"))
                     {

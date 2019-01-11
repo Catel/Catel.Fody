@@ -4,11 +4,11 @@
 
     public class GenericModel<T> : ModelBase
     {
-        public T GenericProperty { get; set; } 
+        public T GenericProperty { get; set; }
     }
 
     public class GenericModel : GenericModel<SimpleModel>
     {
-        
+
     }
 }

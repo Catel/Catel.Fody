@@ -1,5 +1,5 @@
 <Project>
-  <!-- 
+  <!--
     This file applies to all projects automatically, this file contains all the project specific data
   -->
 
@@ -10,5 +10,5 @@
     <PackageLicenseUrl>https://github.com/Catel/Catel.Fody/blob/develop/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/Catel/Catel.Fody</RepositoryUrl>
   </PropertyGroup>
-   
+
 </Project>

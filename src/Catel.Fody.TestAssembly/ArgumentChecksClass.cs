@@ -14,18 +14,18 @@ namespace Catel.Fody.TestAssembly
         public void CheckForMinimalInt([Minimal(1)]int myValue)
         {
             // Argument.IsMinimal<int>("myValue", myValue, 1);
-        }          
-        
+        }
+
         public void CheckForMinimalDouble([Minimal(1.0d)]double myValue)
         {
             // Argument.IsMinimal<double>("myValue", myValue, 1.0d);
-        }            
-        
+        }
+
         public void CheckForMinimalFloat([Minimal(1.0f)]float myValue)
         {
             // Argument.IsMinimal<int>("myValue", myValue, 1.0f);
-        }         
-        
+        }
+
         public void CheckForMaximumInt([Maximum(5)]int myValue)
         {
             // Argument.IsMaximum<int>("myValue", myValue, 1);
@@ -39,23 +39,23 @@ namespace Catel.Fody.TestAssembly
         public void CheckForMaximumFloat([Maximum(5.0f)]float myValue)
         {
             // Argument.IsMaximum<int>("myValue", myValue, 1.0f);
-        }      
+        }
 
         public void CheckForOutOfRangeInt([NotOutOfRange(1, 4)]int myValue)
         {
             // Argument.IsNotOutOfRange<int>("myValue", myValue, 1, 4);
-        }           
-        
+        }
+
         public void CheckForOutOfRangeString([NotOutOfRange("a", "d")]string myValue)
         {
             // Argument.IsNotOutOfRange<string>("myValue", myValue, "a", "d");
-        }      
-        
+        }
+
         public void CheckForOutOfRangeDouble([NotOutOfRange(1.0d, 4.0d)]double myValue)
         {
             // Argument.IsNotOutOfRange<double>("myValue", myValue, 1.0d, 4.0d);
         }
-        
+
         public void CheckForOutOfRangeFloat([NotOutOfRange(1.0f, 4.0f)]float myValue)
         {
             // Argument.IsNotOutOfRange<float>("myValue", myValue, 1.0f, 4.0f);
@@ -70,7 +70,7 @@ namespace Catel.Fody.TestAssembly
         {
             Argument.InheritsFrom("myType", myType, typeof(ArgumentException));
         }
-        
+
         public void CheckForNullOrEmpty([NotNullOrEmpty] string myString)
         {
             // Argument.IsNotNullOrEmpty(() => myString);
@@ -99,13 +99,13 @@ namespace Catel.Fody.TestAssembly
         public void CheckForOfType2([OfType(typeof(IComparable))]Type myType)
         {
             // Argument.IsOfType(() => myType, typeof(IComparable));
-        }    
-        
+        }
+
         public void CheckForOfImplementsInterface([OfType(typeof(IComparable))]object myObject)
         {
             // Argument.ImplementsInterface(() => myObject, typeof(IComparable));
-        }       
-        
+        }
+
         public void CheckForOfImplementsInterface2([OfType(typeof(IComparable))]Type myType)
         {
             // Argument.ImplementsInterface(() => myType, typeof(IComparable));

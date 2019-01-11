@@ -61,7 +61,7 @@
             // IL_0000: ldarg.0      // this
             // IL_0001: ldarg.1      // 'value'
             // IL_0002: stfld        bool Catel.Fody.TestAssembly.ObservableObjectTest_Expected/*0200004A*/::_onLastNameChangedCallbackCalled/*040000B7*/
-            // IL_0007: ret   
+            // IL_0007: ret
 
             var setter = property.SetMethod;
             if (setter is null)
@@ -96,7 +96,7 @@
             // {
             //     _myField = value;
             // }
-            // 
+            //
             // to
             // set
             // {

@@ -7,13 +7,10 @@
 namespace Catel.Fody
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
-    using System.Reflection;
-
     using Mono.Cecil;
     using Mono.Cecil.Cil;
 
@@ -248,11 +245,11 @@ namespace Catel.Fody
 
                 if (includeDefaultValue)
                 {
-                    // Search for this method:  
+                    // Search for this method:
                     // v4: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     // v5+: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
 
-                    var argumentCount = 0;
+                    int argumentCount;
 
                     switch (Version)
                     {
@@ -269,7 +266,7 @@ namespace Catel.Fody
                     methods = (from method in currentTypeDefinition.Methods
                                where method.Name == "RegisterProperty" &&
                                      method.IsPublic &&
-                                     method.Parameters.Count == argumentCount && 
+                                     method.Parameters.Count == argumentCount &&
                                      method.HasGenericParameters &&
                                      method.GenericParameters.Count == 1 &&
                                      method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
@@ -278,7 +275,7 @@ namespace Catel.Fody
                 }
                 else
                 {
-                    // Search for this method:         
+                    // Search for this method:
                     // public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     methods = (from method in currentTypeDefinition.Methods
                                where method.Name == "RegisterProperty" &&
@@ -379,29 +376,31 @@ namespace Catel.Fody
 
         public bool ExistPropertyDependencyBetween(PropertyDefinition dependentPropertyDefinition, PropertyDefinition property)
         {
-            bool found = false;
-            if (dependentPropertyDefinition != null)
+            if (dependentPropertyDefinition.HasParameters)
             {
-                var getMethodDefinition = dependentPropertyDefinition.GetMethod;
-                if ((getMethodDefinition != null) && getMethodDefinition.HasBody)
+                return false;
+            }
+
+            var found = false;
+            var getMethodDefinition = dependentPropertyDefinition?.GetMethod;
+            if (getMethodDefinition != null && getMethodDefinition.HasBody)
+            {
+                var processor = getMethodDefinition.Body.GetILProcessor();
+
+                var idx = 0;
+                while (!found && idx < processor.Body.Instructions.Count)
                 {
-                    var processor = getMethodDefinition.Body.GetILProcessor();
+                    var instruction = processor.Body.Instructions[idx];
 
-                    var idx = 0;
-                    while (!found && idx < processor.Body.Instructions.Count)
+                    MethodDefinition methodDefinition;
+                    if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
                     {
-                        var instruction = processor.Body.Instructions[idx];
-
-                        MethodDefinition methodDefinition;
-                        if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
-                        {
-                            found = true;
-                            break;
-                        }
-                        else
-                        {
-                            idx++;
-                        }
+                        found = true;
+                        break;
+                    }
+                    else
+                    {
+                        idx++;
                     }
                 }
             }
