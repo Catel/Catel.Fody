@@ -34,7 +34,7 @@ namespace Catel.Fody.Weaving.AutoProperties
         {
             foreach (var catelType in catelTypes)
             {
-                FodyEnvironment.LogDebug("\t" + catelType.TypeDefinition.FullName);
+                FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{catelType.TypeDefinition.FullName}'");
 
                 foreach (var propertyData in catelType.Properties)
                 {

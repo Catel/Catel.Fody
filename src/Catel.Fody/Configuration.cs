@@ -25,12 +25,12 @@ namespace Catel.Fody
                 return;
             }
 
-            config.ReadBool("WeaveProperties", value => WeaveProperties = value);
-            config.ReadBool("WeaveExposedProperties", value => WeaveExposedProperties = value);
-            config.ReadBool("WeaveCalculatedProperties", value => WeaveCalculatedProperties = value);
-            config.ReadBool("WeaveArguments", value => WeaveArguments = value);
-            config.ReadBool("WeaveLogging", value => WeaveLogging = value);
-            config.ReadBool("GenerateXmlSchemas", value => GenerateXmlSchemas = value);
+            config.ReadBool(nameof(WeaveProperties), value => WeaveProperties = value);
+            config.ReadBool(nameof(WeaveExposedProperties), value => WeaveExposedProperties = value);
+            config.ReadBool(nameof(WeaveCalculatedProperties), value => WeaveCalculatedProperties = value);
+            config.ReadBool(nameof(WeaveArguments), value => WeaveArguments = value);
+            config.ReadBool(nameof(WeaveLogging), value => WeaveLogging = value);
+            config.ReadBool(nameof(GenerateXmlSchemas), value => GenerateXmlSchemas = value);
         }
 
         public bool WeaveProperties { get; private set; }

@@ -42,6 +42,8 @@ namespace Catel.Fody.Weaving.Logging
                 return;
             }
 
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{_type.FullName}'");
+
             var body = staticConstructor.Body;
             body.SimplifyMacros();
 

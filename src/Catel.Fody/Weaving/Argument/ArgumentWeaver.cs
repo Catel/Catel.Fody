@@ -40,6 +40,8 @@ namespace Catel.Fody.Weaving.Argument
         #region Methods
         public void Execute()
         {
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{_typeDefinition.FullName}'");
+
             foreach (var method in _typeDefinition.Methods)
             {
                 ProcessMethod(method);
@@ -65,7 +67,7 @@ namespace Catel.Fody.Weaving.Argument
             Collection<Instruction> instructions = null;
 
             var methodFullName = method.GetFullName();
-            FodyEnvironment.LogDebug($"Processing method '{methodFullName}'");
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{methodFullName}'");
 
             // Step 1) Convert attributes
             // TODO: how to handle async/await here?

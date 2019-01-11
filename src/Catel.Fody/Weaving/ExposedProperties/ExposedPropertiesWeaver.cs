@@ -45,6 +45,8 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
         private void ProcessType(CatelType catelType)
         {
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{catelType.TypeDefinition.FullName}'");
+
             foreach (var property in catelType.Properties)
             {
                 var propertyDefinition = property.PropertyDefinition;

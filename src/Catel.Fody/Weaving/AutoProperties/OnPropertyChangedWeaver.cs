@@ -31,6 +31,8 @@ namespace Catel.Fody.Weaving.AutoProperties
         #region Methods
         public void Execute()
         {
+            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{_catelType.TypeDefinition.FullName}'");
+
             foreach (var propertyDefinition in _catelType.AllProperties)
             {
                 if (!AddOrUpdateOnPropertyChangedMethod(propertyDefinition))
