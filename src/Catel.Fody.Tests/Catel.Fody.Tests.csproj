@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Catel.Core" Version="5.9.0-beta0005" />
-    <PackageReference Include="Catel.MVVM" Version="5.9.0-beta0000" />
+    <PackageReference Include="Catel.MVVM" Version="5.9.0-beta0012" />
     <PackageReference Include="FodyHelpers" Version="3.3.5" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Moq" Version="4.10.1" />
