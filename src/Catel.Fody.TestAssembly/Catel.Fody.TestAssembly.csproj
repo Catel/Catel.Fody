@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net46;net47</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestAssembly</AssemblyName>
     <RootNamespace>Catel.Fody.TestAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
