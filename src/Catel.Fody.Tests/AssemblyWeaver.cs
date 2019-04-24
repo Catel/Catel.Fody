@@ -9,10 +9,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Xml.Linq;
 using Catel.Fody;
 using Catel.Fody.TestAssembly;
 using Catel.Fody.Tests;
 using Catel.Reflection;
+using Fody;
 using Mono.Cecil;
 
 public class AssemblyWeaver
@@ -54,8 +56,8 @@ public class AssemblyWeaver
 
         Debug.WriteLine("Weaving assembly on-demand from '{0}' to '{1}'", BeforeAssemblyPath, AfterAssemblyPath);
 
-        var assemblyResolver = new DefaultAssemblyResolver();
-        assemblyResolver.AddSearchDirectory(AssemblyDirectoryHelper.GetCurrentDirectory());
+        var assemblyResolver = new TestAssemblyResolver();
+        //assemblyResolver.AddSearchDirectory(AssemblyDirectoryHelper.GetCurrentDirectory());
         //foreach (var referenceAssemblyPath in referenceAssemblyPaths)
         //{
         //    var directoryName = Path.GetDirectoryName(referenceAssemblyPath);
@@ -76,8 +78,11 @@ public class AssemblyWeaver
             var weavingTask = new ModuleWeaver
             {
                 ModuleDefinition = moduleDefinition,
+                AssemblyFilePath = AfterAssemblyPath,
                 AssemblyResolver = assemblyResolver,
                 LogError = LogError,
+                Config = XElement.Parse(@"<Weavers><Catel /></Weavers>"),
+                AddinDirectoryPath = Path.Combine(AssemblyDirectoryHelper.GetCurrentDirectory(), "..", "..", "Catel.Fody")
             };
 
             weavingTask.Execute();

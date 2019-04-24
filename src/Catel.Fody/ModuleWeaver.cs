@@ -66,10 +66,8 @@ namespace Catel.Fody
 
                 if (TypeSystem is null)
                 {
-#pragma warning disable CS0618 // Type or member is obsolete
                     var typeCache = new global::Fody.TypeCache(x => AssemblyResolver.Resolve(x));
                     typeCache.BuildAssembliesToScan(this);
-#pragma warning restore CS0618 // Type or member is obsolete
 
                     TypeSystem = new global::Fody.TypeSystem(x => typeCache.FindType(x), ModuleDefinition);
                 }
