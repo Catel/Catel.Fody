@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fody" Version="5.0.5" PrivateAssets="None" />
+    <PackageReference Include="Fody" Version="5.0.6" PrivateAssets="None" />
     <PackageReference Update="NETStandard.Library" Version="2.0.1" />
   </ItemGroup>
 
