@@ -25,29 +25,10 @@
 
     }
 
+
     public class EntityBaseWithID<T, S>
         where S : EntityBaseWithID<T, S>
     {
         public T ID { get; set; }
-
-        //this is why I'm using S
-        public override bool Equals(object other)
-        {
-            if (other is S n)
-            {
-                return n.ID.Equals(ID);
-            }
-
-            return false;
-        }
-
-        //irrelevant for this example
-        public override int GetHashCode()
-        {
-            var hashCode = 509650306;
-            hashCode = hashCode * -1521134295 + EqualityComparer<T>.Default.GetHashCode(ID);
-            hashCode = hashCode * -1521134295 + GetType().GetHashCode();
-            return hashCode;
-        }
     }
 }

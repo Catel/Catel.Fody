@@ -89,7 +89,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
                 return;
             }
 
-            var modelPropertyType = modelPropertyToMap.PropertyType;
+            var modelPropertyType = modelType.ResolveGenericPropertyType(modelPropertyToMap);
 
             var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, FodyEnvironment.ModuleDefinition.ImportReference(modelPropertyType));
             viewModelPropertyDefinition.DeclaringType = catelType.TypeDefinition;

@@ -13,6 +13,10 @@
             var instance = Activator.CreateInstance(type) as dynamic;
 
             Assert.IsNotNull(instance);
+
+            var idProperty = type.GetProperty("ID");
+
+            Assert.AreEqual(typeof(int), idProperty.PropertyType);
         }
     }
 }
