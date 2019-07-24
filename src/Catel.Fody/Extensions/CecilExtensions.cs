@@ -22,7 +22,7 @@ namespace Catel.Fody
 
             while (true)
             {
-                if (baseType == null)
+                if (baseType is null)
                 {
                     break;
                 }
@@ -207,7 +207,7 @@ namespace Catel.Fody
             }
 
             var resolvedAssembly = moduleDefinition.ResolveAssembly(assemblyName);
-            if (resolvedAssembly == null)
+            if (resolvedAssembly is null)
             {
                 return null;
             }
@@ -219,7 +219,7 @@ namespace Catel.Fody
                 var type = (from typeDefinition in allTypes
                             where typeDefinition.FullName == typeName
                             select typeDefinition).FirstOrDefault();
-                if (type == null)
+                if (type is null)
                 {
                     type = (from typeDefinition in allTypes
                             where typeDefinition.Name == typeName
@@ -269,7 +269,7 @@ namespace Catel.Fody
         public static MethodReference GetMethodAndImport(this ModuleDefinition module, string methodName)
         {
             var method = GetMethod(module, methodName);
-            if (method == null)
+            if (method is null)
             {
                 return method;
             }
@@ -399,7 +399,7 @@ namespace Catel.Fody
             do
             {
                 var currentBase = current.BaseType;
-                if (currentBase == null)
+                if (currentBase is null)
                 {
                     break;
                 }

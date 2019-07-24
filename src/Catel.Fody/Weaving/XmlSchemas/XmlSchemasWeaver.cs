@@ -103,7 +103,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
             var importedGetTypeFromHandle = catelTypeDefinition.Module.ImportReference(getTypeFromHandle);
 
             var xmlSchemaManager = (TypeDefinition)catelTypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.Xml.XmlSchemaManager");
-            if (xmlSchemaManager == null)
+            if (xmlSchemaManager is null)
             {
                 // Support versions before 3.8
                 xmlSchemaManager = (TypeDefinition)catelTypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");

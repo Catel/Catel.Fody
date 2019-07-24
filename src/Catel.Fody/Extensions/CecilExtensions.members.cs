@@ -55,7 +55,7 @@ namespace Catel.Fody
 
         private static bool ContainsAttribute(Collection<CustomAttribute> customAttributes, string attributeTypeName)
         {
-            if (customAttributes == null)
+            if (customAttributes is null)
             {
                 return false;
             }
@@ -114,7 +114,7 @@ namespace Catel.Fody
         private static CustomAttribute CreateGeneratedCodeAttribute(MsCoreReferenceFinder msCoreReferenceFinder, ModuleDefinition importingModule)
         {
             var attributeType = msCoreReferenceFinder.GeneratedCodeAttribute;
-            if (attributeType == null)
+            if (attributeType is null)
             {
                 return null;
             }
@@ -122,7 +122,7 @@ namespace Catel.Fody
             var stringType = (TypeDefinition)msCoreReferenceFinder.GetCoreTypeReference("System.String");
 
             var constructor = attributeType.Resolve().FindConstructor(new[] {stringType, stringType}.ToList());
-            if (constructor == null)
+            if (constructor is null)
             {
                 return null;
             }
@@ -140,7 +140,7 @@ namespace Catel.Fody
         private static CustomAttribute CreateDebuggerNonUserCodeAttribute(MsCoreReferenceFinder msCoreReferenceFinder, ModuleDefinition importingModule)
         {
             var attributeType = msCoreReferenceFinder.DebuggerNonUserCodeAttribute;
-            if (attributeType == null)
+            if (attributeType is null)
             {
                 return null;
             }

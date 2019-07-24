@@ -78,7 +78,7 @@ namespace Catel.Fody
             var msCoreTypes = msCoreLibDefinition.MainModule.Types.Cast<TypeReference>().ToList();
 
             var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
-            if (objectDefinition == null)
+            if (objectDefinition is null)
             {
                 if (msCoreLibDefinition.IsNetStandardLibrary())
                 {

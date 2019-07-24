@@ -29,7 +29,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
         public void Execute()
         {
-            if (_viewModelToModelAttributeTypeDefinition == null)
+            if (_viewModelToModelAttributeTypeDefinition is null)
             {
                 return;
             }
@@ -83,7 +83,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
             // Check property definition on model
             var modelType = modelProperty.PropertyDefinition.PropertyType;
             var modelPropertyToMap = modelType.GetProperty(modelPropertyName);
-            if (modelPropertyToMap == null)
+            if (modelPropertyToMap is null)
             {
                 FodyEnvironment.LogError($"Exposed property '{modelPropertyName}' does not exist on model '{modelType.FullName}', make sure to set the right mapping");
                 return;

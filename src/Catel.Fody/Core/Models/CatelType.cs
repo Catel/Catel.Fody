@@ -292,7 +292,7 @@ namespace Catel.Fody
                 }
 
                 var baseType = currentTypeDefinition.BaseType;
-                if (baseType == null || baseType.FullName == "System.Object")
+                if (baseType is null || baseType.FullName == "System.Object")
                 {
                     return null;
                 }
@@ -320,7 +320,7 @@ namespace Catel.Fody
                 }
 
                 var baseType = currentTypeDefinition.BaseType;
-                if (baseType == null || baseType.FullName == "System.Object")
+                if (baseType is null || baseType.FullName == "System.Object")
                 {
                     return null;
                 }

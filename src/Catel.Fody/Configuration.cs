@@ -20,7 +20,7 @@ namespace Catel.Fody
             WeaveLogging = true;
             GenerateXmlSchemas = false;
 
-            if (config == null)
+            if (config is null)
             {
                 return;
             }

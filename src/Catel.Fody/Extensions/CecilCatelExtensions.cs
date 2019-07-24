@@ -65,7 +65,7 @@ namespace Catel.Fody
 
         public static bool ImplementsBaseType(this TypeReference typeReference, string typeName)
         {
-            if (typeReference == null)
+            if (typeReference is null)
             {
                 return false;
             }
@@ -101,7 +101,7 @@ namespace Catel.Fody
         public static bool DerivesFromType(this TypeDefinition typeDefinition, string typeName)
         {
             var baseType = typeDefinition?.BaseType;
-            if (baseType == null)
+            if (baseType is null)
             {
                 return false;
             }

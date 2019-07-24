@@ -57,7 +57,7 @@ namespace Catel.Fody.Weaving.AutoProperties
             if (dependentProperties.Count > 0 && !dependentProperties.All(definition => _catelType.NoWeavingProperties.Contains(definition)))
             {
                 var onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
-                if (onPropertyChangedMethod == null)
+                if (onPropertyChangedMethod is null)
                 {
                     FodyEnvironment.LogWarning($"No call to base.OnPropertyChanged(e) or a custom implementation in '{property.DeclaringType.Name}', cannot weave this method to automatically raise on dependent property change notifications");
                     return false;
@@ -67,7 +67,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 if (idx > -1)
                 {
                     var booleanTypeReference = _catelType.TypeDefinition.Module.ImportReference(_msCoreReferenceFinder.GetCoreTypeReference("Boolean"));
-                    if (onPropertyChangedMethod.Body.Variables.ToList().FirstOrDefault(definition => definition.VariableType != booleanTypeReference) == null)
+                    if (onPropertyChangedMethod.Body.Variables.ToList().FirstOrDefault(definition => definition.VariableType != booleanTypeReference) is null)
                     {
                         onPropertyChangedMethod.Body.Variables.Add(new VariableDefinition(booleanTypeReference));
                         onPropertyChangedMethod.Body.InitLocals = true;
@@ -135,7 +135,7 @@ namespace Catel.Fody.Weaving.AutoProperties
 
             var baseOnPropertyChangedInvoker = _catelType.BaseOnPropertyChangedInvoker;
 
-            if (methodDefinition == null)
+            if (methodDefinition is null)
             {
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 

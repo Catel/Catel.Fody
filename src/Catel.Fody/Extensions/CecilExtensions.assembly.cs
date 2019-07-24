@@ -22,7 +22,7 @@ namespace Catel.Fody
             //var assemblyFileVersionAttributeName = typeof(AssemblyFileVersionAttribute).FullName;
 
             //var attribute = assemblyDefinition.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == assemblyVersionAttributeName);
-            //if (attribute == null)
+            //if (attribute is null)
             //{
             //    attribute = assemblyDefinition.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == assemblyFileVersionAttributeName);
             //}

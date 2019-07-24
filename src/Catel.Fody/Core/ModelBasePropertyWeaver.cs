@@ -103,7 +103,7 @@ namespace Catel.Fody
             while (true)
             {
                 var methodName = $"<.cctor>b__{counter}";
-                if (GetMethodReference(property.DeclaringType, methodName, false) == null)
+                if (GetMethodReference(property.DeclaringType, methodName, false) is null)
                 {
                     _cachedFieldInitializerNames[key] = methodName;
                     return methodName;
@@ -116,7 +116,7 @@ namespace Catel.Fody
         private void EnsureStaticConstructor(TypeDefinition type)
         {
             var staticConstructor = type.Constructor(true);
-            if (staticConstructor == null)
+            if (staticConstructor is null)
             {
                 FodyEnvironment.LogDebug($"\t\t\t{type.Name} - adding static constructor");
 
@@ -140,7 +140,7 @@ namespace Catel.Fody
 
         private void AddChangeNotificationHandlerField(PropertyDefinition property, CatelTypeProperty propertyData)
         {
-            if (propertyData.ChangeCallbackReference == null)
+            if (propertyData.ChangeCallbackReference is null)
             {
                 return;
             }
@@ -214,7 +214,7 @@ namespace Catel.Fody
             var fieldName = $"{property.Name}Property";
             var declaringType = property.DeclaringType;
             var fieldReference = GetFieldReference(declaringType, fieldName, true);
-            if (fieldReference == null)
+            if (fieldReference is null)
             {
                 FodyEnvironment.LogWarning($"\t\tCannot handle property '{_catelType.Name}.{property.Name}' because backing field is not found");
                 return false;
@@ -346,7 +346,7 @@ namespace Catel.Fody
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
             }
 
-            var registerPropertyInvoker = (propertyData.DefaultValue == null) ? _catelType.RegisterPropertyWithoutDefaultValueInvoker : _catelType.RegisterPropertyWithDefaultValueInvoker;
+            var registerPropertyInvoker = (propertyData.DefaultValue is null) ? _catelType.RegisterPropertyWithoutDefaultValueInvoker : _catelType.RegisterPropertyWithDefaultValueInvoker;
 
             // Fill up the final booleans:
             // RegisterProperty([0] string name, [1] Type type,
@@ -418,7 +418,7 @@ namespace Catel.Fody
 
             genericGetValue.GenericArguments.Add(property.PropertyType.Import());
 
-            if (property.GetMethod == null)
+            if (property.GetMethod is null)
             {
                 var getMethod = new MethodDefinition($"get_{property.Name}", MethodAttributes.Public, property.PropertyType.Import());
 
@@ -457,7 +457,7 @@ namespace Catel.Fody
 
             // Writes SetValue(PropertyData propertyName, object value)
 
-            if (property.SetMethod == null)
+            if (property.SetMethod is null)
             {
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
@@ -519,7 +519,7 @@ namespace Catel.Fody
             var commandInterfaces = new List<string>(new[] { "ICommand", "ICatelCommand" });
 
             var resolvedType = property.PropertyType.Resolve();
-            if (resolvedType == null)
+            if (resolvedType is null)
             {
                 return false;
             }
