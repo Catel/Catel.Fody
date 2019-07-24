@@ -77,7 +77,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             if (isReadOnlyProperty.Argument.Value != null)
             {
-                isReadOnly = (bool) isReadOnlyProperty.Argument.Value;
+                isReadOnly = (bool)isReadOnlyProperty.Argument.Value;
             }
 
             // Check property definition on model

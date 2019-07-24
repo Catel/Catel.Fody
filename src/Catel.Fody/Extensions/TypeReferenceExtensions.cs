@@ -1,7 +1,9 @@
 ﻿namespace Catel.Fody
 {
     using Mono.Cecil;
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     public static class TypeReferenceExtensions
@@ -13,54 +15,108 @@
                 return propertyReference.PropertyType;
             }
 
-            // This would return "T" in "Model<T>"
-            var genericParameterName = propertyReference.PropertyType.Name;
+            // Build up hierarchy until the class that actually defines the property
+            var hierarchy = typeReference.Resolve().GetHierarchy(x => x.Properties.Any(y => y.Name == propertyReference.Name));
+            var genericParameter = (GenericParameter)propertyReference.PropertyType;
 
-            // Important: make sure the declaring type itself isn't providing this element
-            var declaredOnDeclaringTypeItself = (from x in typeReference.GenericParameters
-                                                 where x.Name == genericParameterName
-                                                 select x).Any();
-            if (declaredOnDeclaringTypeItself)
+            var finalTypeReference = ResolveGenericParameter(hierarchy, genericParameter);
+            if (finalTypeReference is null)
             {
-                // Property is meant to be generic
-                return propertyReference.PropertyType;
+                // Keep generic
+                finalTypeReference = propertyReference.PropertyType;
             }
-
-            var finalTypeReference = propertyReference.PropertyType;
-
-            // Search down the line if we can find the generic parameter type
-            var type = typeReference;
-            var previousType = typeReference;
-            while (type != null)
-            {
-                var genericParameter = (from x in type.Resolve().GenericParameters
-                                        where x.Name == genericParameterName
-                                        select x).FirstOrDefault();
-                if (genericParameter is null)
-                {
-                    previousType = type;
-                    type = type.Resolve().BaseType;
-                    continue;
-                }
-
-                var parentGenericInstance = ((TypeDefinition)previousType).BaseType as GenericInstanceType;
-                if (parentGenericInstance is null)
-                {
-                    // Unable to resolve
-                    break;
-                }
-
-                // Get right right index
-                finalTypeReference = parentGenericInstance.GenericArguments[genericParameter.Position];
-                break;
-            }
-
-            // Note: note sure if this method supports "redefinitions" of multiple generics, but in that 
-            // case this method should recursively call itself to resolve from the declaringType again in
-            // case the new property != provided property, but we for now we keep this method simple
 
             return finalTypeReference;
         }
+
+        public static IEnumerable<TypeDefinition> Traverse(this TypeDefinition typeDefinition)
+        {
+            var baseTypes = new List<TypeDefinition>();
+
+            // Interfaces
+            baseTypes.AddRange(typeDefinition.Interfaces.Select(x => x.InterfaceType.Resolve()));
+
+            // Base class
+            var baseType = typeDefinition.BaseType;
+            if (baseType != null)
+            {
+                baseTypes.Add(baseType.Resolve());
+            }
+
+            // Step 1: return current base types
+            foreach (var x in baseTypes)
+            {
+                yield return x;
+            }
+
+            // Step 2: recurse
+            foreach (var x in baseTypes)
+            {
+                foreach (var y in Traverse(x))
+                {
+                    yield return y;
+                }
+            }
+        }
+
+        public static List<TypeWithSelfReference> GetHierarchy(this TypeDefinition typeDefinition, Func<TypeDefinition, bool> breakCondition = null)
+        {
+            var hierarchy = new List<TypeWithSelfReference>();
+
+            foreach (var definition in typeDefinition.Traverse())
+            {
+                hierarchy.Add(new TypeWithSelfReference(definition, null));
+
+                if (breakCondition != null && breakCondition(definition))
+                {
+                    break;
+                }
+            }
+
+            hierarchy.Reverse();
+
+            for (var i = 0; i < hierarchy.Count; i++)
+            {
+                var baseType = typeDefinition.BaseType;
+                if (i < hierarchy.Count - 1)
+                {
+                    // Use base from hierarchy
+                    baseType = hierarchy[i + 1].Type.BaseType;
+                }
+
+                hierarchy[i] = new TypeWithSelfReference(hierarchy[i].Type, baseType);
+            }
+
+            return hierarchy.ToList();
+            //return hierarchy.Take(hierarchy.Count - 1).ToList();
+        }
+
+        public static TypeReference ResolveGenericParameter(IEnumerable<TypeWithSelfReference> hierarchy, GenericParameter parameter)
+        {
+            foreach (var (type, reference) in hierarchy)
+            {
+                foreach (var genericParameter in type.GenericParameters)
+                {
+                    if (genericParameter != parameter)
+                    {
+                        continue;
+                    }
+
+                    var nextArgument = ((GenericInstanceType)reference).GenericArguments[genericParameter.Position];
+                    if (!(nextArgument is GenericParameter nextParameter))
+                    {
+                        return nextArgument;
+                    }
+
+                    parameter = nextParameter;
+
+                    break;
+                }
+            }
+
+            return null;
+        }
+
         public static bool IsAssignableFrom(this TypeReference target, TypeReference type)
         {
             target = type.Module.ImportReference(target).Resolve();
@@ -96,6 +152,26 @@
             }
 
             return false;
+        }
+    }
+
+    [DebuggerDisplay("{Type} => {Reference}")]
+    public class TypeWithSelfReference
+    {
+        public TypeWithSelfReference(TypeDefinition type, TypeReference reference)
+        {
+            Type = type;
+            Reference = reference;
+        }
+
+        public TypeDefinition Type { get; }
+
+        public TypeReference Reference { get; }
+
+        public void Deconstruct(out TypeDefinition type, out TypeReference derived)
+        {
+            type = Type;
+            derived = Reference;
         }
     }
 }
