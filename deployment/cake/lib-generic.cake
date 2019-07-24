@@ -1,13 +1,32 @@
 var _dotNetCoreCache = new Dictionary<string, bool>();
 
+public enum TargetType
+{
+    Unknown,
+
+    Component,
+
+    DockerImage,
+
+    GitHubPages,
+
+    Tool,
+
+    UwpApp,
+
+    WebApp,
+
+    WpfApp
+}
+
 //-------------------------------------------------------------
 
 private void LogSeparator(string messageFormat, params object[] args)
 {
     Information("");
-    Information("----------------------------------------");
+    Information("--------------------------------------------------------------------------------");
     Information(messageFormat, args);
-    Information("----------------------------------------");
+    Information("--------------------------------------------------------------------------------");
     Information("");
 }
 
@@ -16,8 +35,19 @@ private void LogSeparator(string messageFormat, params object[] args)
 private void LogSeparator()
 {
     Information("");
-    Information("----------------------------------------");
+    Information("--------------------------------------------------------------------------------");
     Information("");
+}
+
+//-------------------------------------------------------------
+
+private string GetTempDirectory(string section, string projectName)
+{
+    var tempDirectory = Directory(string.Format("./temp/{0}/{1}", section, projectName));
+
+    CreateDirectory(tempDirectory);
+
+    return tempDirectory;
 }
 
 //-------------------------------------------------------------
@@ -202,6 +232,17 @@ private string GetProjectSlug(string projectName)
 {
     var slug = projectName.Replace(".", "").Replace(" ", "");
     return slug;
+}
+
+//-------------------------------------------------------------
+
+private string GetTargetSpecificConfigurationValue(TargetType targetType, string configurationPrefix, string fallbackValue)
+{
+    // Allow per project overrides via "[configurationPrefix][targetType]"
+    var keyToCheck = string.Format("{0}{1}", configurationPrefix, targetType);
+
+    var value = GetBuildServerVariable(keyToCheck, fallbackValue);
+    return value;
 }
 
 //-------------------------------------------------------------

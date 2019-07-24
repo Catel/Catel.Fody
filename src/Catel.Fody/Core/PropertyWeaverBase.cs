@@ -35,7 +35,7 @@
             while (true)
             {
                 var fieldName = $"CS$<>9__CachedAnonymousMethodDelegate{counter}";
-                if (GetFieldDefinition(property.DeclaringType, fieldName, false) == null)
+                if (GetFieldDefinition(property.DeclaringType, fieldName, false) is null)
                 {
                     _cachedFieldNames[key] = fieldName;
                     return fieldName;

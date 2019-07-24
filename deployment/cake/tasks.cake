@@ -1,10 +1,16 @@
 #l "lib-generic.cake"
+#l "lib-nuget.cake"
+#l "lib-sourcelink.cake"
+#l "issuetrackers.cake"
+#l "notifications.cake"
 #l "generic-tasks.cake"
 #l "apps-uwp-tasks.cake"
 #l "apps-web-tasks.cake"
 #l "apps-wpf-tasks.cake"
 #l "components-tasks.cake"
+#l "tools-tasks.cake"
 #l "docker-tasks.cake"
+#l "github-pages-tasks.cake"
 #l "tests.cake"
 
 #addin "nuget:?package=System.Net.Http&version=4.3.3"
@@ -12,7 +18,7 @@
 #addin "nuget:?package=Cake.Sonar&version=1.1.0"
 
 #tool "nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.3.0"
-#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0012"
+#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0012&prerelease"
 
 //-------------------------------------------------------------
 
@@ -28,7 +34,9 @@ ValidateUwpAppsInput();
 ValidateWebAppsInput();
 ValidateWpfAppsInput();
 ValidateComponentsInput();
+ValidateToolsInput();
 ValidateDockerImagesInput();
+ValidateGitHubPagesInput();
 
 //-------------------------------------------------------------
 
@@ -82,10 +90,12 @@ Task("Prepare")
     .Does(async () =>
 {
     await PrepareForComponentsAsync();
+    await PrepareForToolsAsync();
     await PrepareForUwpAppsAsync();
     await PrepareForWebAppsAsync();
     await PrepareForWpfAppsAsync();
     await PrepareForDockerImagesAsync();
+    await PrepareForGitHubPagesAsync();
 });
 
 //-------------------------------------------------------------
@@ -97,10 +107,12 @@ Task("UpdateInfo")
     UpdateSolutionAssemblyInfo();
     
     UpdateInfoForComponents();
+    UpdateInfoForTools();
     UpdateInfoForUwpApps();
     UpdateInfoForWebApps();
     UpdateInfoForWpfApps();
     UpdateInfoForDockerImages();
+    UpdateInfoForGitHubPages();
 });
 
 //-------------------------------------------------------------
@@ -108,6 +120,7 @@ Task("UpdateInfo")
 Task("Build")
     .IsDependentOn("Clean")
     .IsDependentOn("UpdateInfo")
+    .IsDependentOn("VerifyDependencies")
     .IsDependentOn("CleanupCode")
     .Does(async () =>
 {
@@ -138,10 +151,12 @@ Task("Build")
     }
 
     BuildComponents();
+    BuildTools();
     BuildUwpApps();
     BuildWebApps();
     BuildWpfApps();
     BuildDockerImages();
+    BuildGitHubPages();
 
     if (enableSonar)
     {
@@ -242,10 +257,12 @@ Task("Package")
     .Does(() =>
 {
     PackageComponents();
+    PackageTools();
     PackageUwpApps();
     PackageWebApps();
     PackageWpfApps();
     PackageDockerImages();
+    PackageGitHubPages();
 });
 
 //-------------------------------------------------------------
@@ -255,7 +272,7 @@ Task("PackageLocal")
     .Does(() =>
 {
     // For now only package components, we might need to move this to components-tasks.cake in the future
-    if (!HasComponents())
+    if (!HasComponents() && !HasTools())
     {
         return;
     }
@@ -279,13 +296,26 @@ Task("Deploy")
     // Note: no dependency on 'package' since we might have already packaged the solution
     // Make sure we have the temporary "project.assets.json" in case we need to package with Visual Studio
     .IsDependentOn("RestorePackages")
-    .Does(() =>
+    .Does(async () =>
 {
-    DeployComponents();
-    DeployUwpApps();
-    DeployWebApps();
-    DeployWpfApps();
-    DeployDockerImages();
+    await DeployComponentsAsync();
+    await DeployToolsAsync();
+    await DeployUwpAppsAsync();
+    await DeployWebAppsAsync();
+    await DeployWpfAppsAsync();
+    await DeployDockerImagesAsync();
+    await DeployGitHubPagesAsync();
+});
+
+//-------------------------------------------------------------
+
+Task("Finalize")
+    // Note: no dependency on 'deploy' since we might have already deployed the solution
+    .Does(async () =>
+{
+    Information("Finalizing release '{0}'", VersionFullSemVer);
+
+    await CreateAndReleaseVersionAsync();
 });
 
 //-------------------------------------------------------------
@@ -322,8 +352,40 @@ Task("BuildAndDeploy")
 
 //-------------------------------------------------------------
 
-Task("Default")
-    .IsDependentOn("BuildAndPackage");
+Task("Default")    
+    .Does(async () =>
+{
+    Error("No target specified, please specify one of the following targets:\n" +
+          " - Prepare\n" +
+          " - UpdateInfo\n" +
+          " - Build\n" + 
+          " - Test\n" + 
+          " - Package\n" + 
+          " - Deploy\n" + 
+          " - Finalize\n\n" + 
+          "or one of the combined ones:\n" +
+          " - BuildAndTest\n" + 
+          " - BuildAndPackage\n" + 
+          " - BuildAndPackageLocal\n" + 
+          " - BuildAndDeploy\n");
+});
+
+
+//-------------------------------------------------------------
+// Test wrappers
+//-------------------------------------------------------------
+
+Task("TestNotifications")    
+    .Does(async () =>
+{
+    await NotifyAsync("MyProject", "This is a generic test");
+    await NotifyAsync("MyProject", "This is a component test", TargetType.Component);
+    await NotifyAsync("MyProject", "This is a docker image test", TargetType.DockerImage);
+    await NotifyAsync("MyProject", "This is a web app test", TargetType.WebApp);
+    await NotifyAsync("MyProject", "This is a wpf app test", TargetType.WpfApp);
+    await NotifyErrorAsync("MyProject", "This is an error");
+});
+
 
 //-------------------------------------------------------------
 

@@ -298,7 +298,7 @@ namespace Catel.Fody.Weaving.Argument
 
         private bool IsOperandSupportedForArgumentChecks(object operand)
         {
-            if (operand == null)
+            if (operand is null)
             {
                 return false;
             }

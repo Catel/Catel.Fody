@@ -29,7 +29,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
         public void Execute()
         {
-            if (_viewModelToModelAttributeTypeDefinition == null)
+            if (_viewModelToModelAttributeTypeDefinition is null)
             {
                 return;
             }
@@ -77,19 +77,19 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
             if (isReadOnlyProperty.Argument.Value != null)
             {
-                isReadOnly = (bool) isReadOnlyProperty.Argument.Value;
+                isReadOnly = (bool)isReadOnlyProperty.Argument.Value;
             }
 
             // Check property definition on model
             var modelType = modelProperty.PropertyDefinition.PropertyType;
             var modelPropertyToMap = modelType.GetProperty(modelPropertyName);
-            if (modelPropertyToMap == null)
+            if (modelPropertyToMap is null)
             {
                 FodyEnvironment.LogError($"Exposed property '{modelPropertyName}' does not exist on model '{modelType.FullName}', make sure to set the right mapping");
                 return;
             }
 
-            var modelPropertyType = modelPropertyToMap.PropertyType;
+            var modelPropertyType = modelType.ResolveGenericPropertyType(modelPropertyToMap);
 
             var viewModelPropertyDefinition = new PropertyDefinition(viewModelPropertyName, PropertyAttributes.None, FodyEnvironment.ModuleDefinition.ImportReference(modelPropertyType));
             viewModelPropertyDefinition.DeclaringType = catelType.TypeDefinition;

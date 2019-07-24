@@ -63,7 +63,7 @@ namespace Catel.Fody.Weaving.Argument
                 }
             }
 
-            if (selectedMethod == null)
+            if (selectedMethod is null)
             {
                 return false;
             }

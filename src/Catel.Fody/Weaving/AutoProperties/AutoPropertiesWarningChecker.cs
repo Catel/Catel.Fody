@@ -49,7 +49,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 return "Property is abstract.";
             }
 
-            if ((propertyData.BackingFieldDefinition == null) && (propertyDefinition.GetMethod == null))
+            if ((propertyData.BackingFieldDefinition is null) && (propertyDefinition.GetMethod is null))
             {
                 return "Property has no field set logic or it contains multiple sets and the names cannot be mapped to a property.";
             }

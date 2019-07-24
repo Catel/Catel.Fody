@@ -168,17 +168,40 @@ private void PackageDockerImages()
         return;
     }
 
+    // The following directories are being created, ready for docker images to be used:
+    // ./output => output of the publish step
+    // ./config => docker image and config files, in case they need to be packed as well
+
     foreach (var dockerImage in DockerImages)
     {
         LogSeparator("Packaging docker image '{0}'", dockerImage);
 
         var projectFileName = string.Format("./src/{0}/{0}.csproj", dockerImage);
-        var dockerImageSpecificationFileName = string.Format("./deployment/docker/{0}/{0}", dockerImage);
+        var dockerImageSpecificationDirectory = string.Format("./deployment/docker/{0}/", dockerImage);
+        var dockerImageSpecificationFileName = string.Format("{0}/{1}", dockerImageSpecificationDirectory, dockerImage);
 
-        var outputDirectory = string.Format("{0}/{1}/", OutputRootDirectory, dockerImage);
+        var outputRootDirectory =  string.Format("{0}/{1}/output", OutputRootDirectory, dockerImage);
+
+        Information("1) Preparing ./config for package '{0}'", dockerImage);
+
+        // ./config
+        var confTargetDirectory = string.Format("{0}/conf", outputRootDirectory);
+        Information("Conf directory: '{0}'", confTargetDirectory);
+
+        CreateDirectory(confTargetDirectory);
+
+        var confSourceDirectory = string.Format("{0}*", dockerImageSpecificationDirectory);
+        Information("Copying files from '{0}' => '{1}'", confSourceDirectory, confTargetDirectory);
+
+        CopyFiles(confSourceDirectory, confTargetDirectory, true);
+
+        LogSeparator();
+
+        Information("2) Preparing ./output using 'dotnet publish' for package '{0}'", dockerImage);
+
+        // ./output
+        var outputDirectory = string.Format("{0}/output", outputRootDirectory);
         Information("Output directory: '{0}'", outputDirectory);
-
-        Information("1) Using 'dotnet publish' to package '{0}'", dockerImage);
 
         var msBuildSettings = new DotNetCoreMSBuildSettings();
 
@@ -190,16 +213,22 @@ private void PackageDockerImages()
         msBuildSettings.WithProperty("ConfigurationName", ConfigurationName);
         msBuildSettings.WithProperty("PackageVersion", VersionNuGet);
 
+        // Disable code analyses, we experienced publish issues with mvc .net core projects
+        msBuildSettings.WithProperty("RunCodeAnalysis", "false");
+
         var publishSettings = new DotNetCorePublishSettings
         {
             MSBuildSettings = msBuildSettings,
             OutputDirectory = outputDirectory,
-            Configuration = ConfigurationName
+            Configuration = ConfigurationName,
+            //NoBuild = true
         };
 
         DotNetCorePublish(projectFileName, publishSettings);
-        
-        Information("2) Using 'docker build' to package '{0}'", dockerImage);
+
+        LogSeparator();
+
+        Information("3) Using 'docker build' to package '{0}'", dockerImage);
 
         // docker build ..\..\output\Release\platform -f .\Dockerfile
 
@@ -221,7 +250,9 @@ private void PackageDockerImages()
 
         ConfigureDockerSettings(dockerSettings);
 
-        DockerBuild(dockerSettings, outputDirectory);
+        Information("Docker files source directory: '{0}'", outputRootDirectory);
+
+        DockerBuild(dockerSettings, outputRootDirectory);
 
         LogSeparator();
     }
@@ -229,7 +260,7 @@ private void PackageDockerImages()
 
 //-------------------------------------------------------------
 
-private void DeployDockerImages()
+private async Task DeployDockerImagesAsync()
 {
     if (!HasDockerImages())
     {
@@ -319,6 +350,8 @@ private void DeployDockerImages()
                 Force = true,
                 NoRawLog = true,
             });
+
+            await NotifyAsync(dockerImage, string.Format("Deployed to Octopus Deploy"), TargetType.DockerImage);
         }
         finally
         {
@@ -367,7 +400,7 @@ Task("PackageDockerImages")
 
 Task("DeployDockerImages")
     .IsDependentOn("PackageDockerImages")
-    .Does(() =>
+    .Does(async () =>
 {
-    DeployDockerImages();
+    await DeployDockerImagesAsync();
 });

@@ -54,14 +54,14 @@ namespace Catel.Fody.Services
 
         private bool CatelVersionSupportsXmlSchemaManager(CatelType catelType)
         {
-            if (catelType == null)
+            if (catelType is null)
             {
                 return false;
             }
 
             if (!_isSupported.HasValue)
             {
-                if (_msCoreReferenceFinder.XmlQualifiedName == null || _msCoreReferenceFinder.XmlSchemaSet == null)
+                if (_msCoreReferenceFinder.XmlQualifiedName is null || _msCoreReferenceFinder.XmlSchemaSet is null)
                 {
                     return false;
                 }

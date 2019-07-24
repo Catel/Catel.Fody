@@ -24,7 +24,7 @@ namespace Catel.Fody
             var declaringType = method.DeclaringType;
 
             var setStateMachineMethod = declaringType?.Methods.FirstOrDefault(x => x.Name.Equals("SetStateMachine"));
-            if (setStateMachineMethod == null)
+            if (setStateMachineMethod is null)
             {
                 return false;
             }

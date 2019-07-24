@@ -35,7 +35,7 @@ public class AssemblyWeaver
 
     public AssemblyWeaver(List<string> referenceAssemblyPaths = null)
     {
-        if (referenceAssemblyPaths == null)
+        if (referenceAssemblyPaths is null)
         {
             referenceAssemblyPaths = new List<string>();
         }

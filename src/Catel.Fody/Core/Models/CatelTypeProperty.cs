@@ -152,7 +152,7 @@ namespace Catel.Fody
 
         private static FieldDefinition GetSingleField(PropertyDefinition property, Code code, MethodDefinition methodDefinition)
         {
-            if (methodDefinition?.Body == null)
+            if (methodDefinition?.Body is null)
             {
                 return null;
             }

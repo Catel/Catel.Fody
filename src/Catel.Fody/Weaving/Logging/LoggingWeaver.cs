@@ -36,7 +36,7 @@ namespace Catel.Fody.Weaving.Logging
             }
 
             var staticConstructor = _type.GetStaticConstructor();
-            if (staticConstructor == null)
+            if (staticConstructor is null)
             {
                 FodyEnvironment.LogWarning($"Cannot weave ILog fields without a static constructor, ignoring type '{_type.FullName}'");
                 return;
@@ -87,7 +87,7 @@ namespace Catel.Fody.Weaving.Logging
                     {
                         // We have a possible match
                         var getLoggerMethod = GetGetLoggerMethod(methodReference.DeclaringType);
-                        if (getLoggerMethod == null)
+                        if (getLoggerMethod is null)
                         {
                             var point = methodReference.Resolve().GetSequencePoint(instruction);
 

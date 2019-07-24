@@ -36,7 +36,7 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             var firstParameter = parameters[0];
-            if (firstParameter == null)
+            if (firstParameter is null)
             {
                 return false;
             }
@@ -544,7 +544,7 @@ namespace Catel.Fody.Weaving.Argument
 
                 if (innerInstruction.IsOpCode(OpCodes.Ldtoken))
                 {
-                    if (displayClassType == null)
+                    if (displayClassType is null)
                     {
                         // First call to ldtoken with FieldDefinition contains the display class type
                         var fieldDefinition = GetFieldDefinition(innerInstruction);
@@ -623,7 +623,7 @@ namespace Catel.Fody.Weaving.Argument
 
                 if (innerInstruction.IsOpCode(OpCodes.Ldtoken))
                 {
-                    if (displayClassType == null)
+                    if (displayClassType is null)
                     {
                         // First call to ldtoken with FieldDefinition contains the display class type
                         parameterFieldDefinition = GetFieldDefinition(innerInstruction);
@@ -637,7 +637,7 @@ namespace Catel.Fody.Weaving.Argument
                 if (innerInstruction.IsOpCode(OpCodes.Stfld))
                 {
                     var fieldDefinition = innerInstruction.Operand as FieldDefinition;
-                    if (fieldDefinition == null)
+                    if (fieldDefinition is null)
                     {
                         if (innerInstruction.Operand is FieldReference fieldReference)
                         {
