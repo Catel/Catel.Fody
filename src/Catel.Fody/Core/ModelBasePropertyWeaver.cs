@@ -29,7 +29,9 @@ namespace Catel.Fody
         #region Methods
         public void Execute(bool force = false)
         {
-            if (_catelType.GetValueInvoker is null || _catelType.SetValueInvoker is null)
+            var preferredSetValueInvoker = _catelType.PreferredSetValueInvoker;
+
+            if (_catelType.GetValueInvoker is null || preferredSetValueInvoker is null)
             {
                 return;
             }
@@ -42,7 +44,7 @@ namespace Catel.Fody
             }
 
             if (AlreadyContainsCallToMember(property.GetMethod, _catelType.GetValueInvoker.Name) ||
-                AlreadyContainsCallToMember(property.SetMethod, _catelType.SetValueInvoker.Name))
+                AlreadyContainsCallToMember(property.SetMethod, preferredSetValueInvoker.Name))
             {
                 FodyEnvironment.LogDebug($"\t{property.GetName()} already has GetValue and/or SetValue functionality. Property will be ignored.");
                 return;
@@ -492,19 +494,39 @@ namespace Catel.Fody
                 Instruction.Create(OpCodes.Ldarg_1)
             });
 
-            if (property.PropertyType.IsBoxingRequired(_catelType.SetValueInvoker.Parameters[1].ParameterType))
+            // Check if Catel 5.12 SetValue<TValue> is available
+            var preferredSetValueInvoker = _catelType.PreferredSetValueInvoker;
+            if (preferredSetValueInvoker.HasGenericParameters)
             {
-                instructionsToAdd.Add(Instruction.Create(OpCodes.Box, property.PropertyType.Import()));
+                // Generic, no boxing required, but we need to make it generic
+                var genericSetValue = new GenericInstanceMethod(preferredSetValueInvoker);
+
+                foreach (var genericParameter in preferredSetValueInvoker.GenericParameters)
+                {
+                    genericSetValue.GenericParameters.Add(genericParameter);
+                }
+
+                genericSetValue.GenericArguments.Add(property.PropertyType.Import());
+
+                preferredSetValueInvoker = genericSetValue;
+            }
+            else
+            {
+                // Non-generic, requires boxing
+                if (property.PropertyType.IsBoxingRequired(_catelType.SetValueInvoker.Parameters[1].ParameterType))
+                {
+                    instructionsToAdd.Add(Instruction.Create(OpCodes.Box, property.PropertyType.Import()));
+                }
             }
 
-            if (_catelType.SetValueInvoker.Parameters.Count > 2)
+            if (preferredSetValueInvoker.Parameters.Count > 2)
             {
                 // Catel v5 is a new signature:
                 // protected internal void SetValue(string name, object value, bool notifyOnChange = true)
                 instructionsToAdd.Add(Instruction.Create(OpCodes.Ldc_I4_1));
             }
 
-            instructionsToAdd.Add(Instruction.Create(OpCodes.Call, _catelType.SetValueInvoker));
+            instructionsToAdd.Add(Instruction.Create(OpCodes.Call, preferredSetValueInvoker));
             instructionsToAdd.Add(Instruction.Create(OpCodes.Ret));
 
             var finalIndex = instructions.Insert(0, instructionsToAdd.ToArray());

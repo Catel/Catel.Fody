@@ -92,6 +92,13 @@ namespace Catel.Fody
 
         public MethodReference SetValueInvoker { get; private set; }
 
+        public MethodReference SetValueGenericInvoker { get; private set; }
+
+        public MethodReference PreferredSetValueInvoker
+        {
+            get { return SetValueGenericInvoker ?? SetValueInvoker; }
+        }
+
         public MethodReference GetValueInvoker { get; private set; }
 
         public MethodReference RaisePropertyChangedInvoker { get; private set; }
@@ -198,7 +205,14 @@ namespace Catel.Fody
                     break;
             }
 
-            SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames));
+            SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames, false));
+
+            // Introduced in Catel 5.12
+            var genericSetValue = RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames, true);
+            if (genericSetValue != null)
+            {
+                SetValueGenericInvoker = module.ImportReference(genericSetValue);
+            }
 
             return true;
         }
