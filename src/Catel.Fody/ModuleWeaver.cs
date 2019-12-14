@@ -86,19 +86,23 @@ namespace Catel.Fody
                 msCoreReferenceFinder.Execute();
 
                 // Validate if Catel.Core is referenced
-                var isRunningAgainstCatelCore = false;
-                var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
-                if (catelCoreReference is null)
+                configuration.IsRunningAgainstCatel = false;
+
+                if (ModuleDefinition.Name.StartsWith("Catel.Core") ||
+                    ModuleDefinition.Name.StartsWith("Catel.MVVM") ||
+                    ModuleDefinition.Name.StartsWith("Catel.Serialization.") ||
+                    ModuleDefinition.Name.StartsWith("Catel.Tests"))
                 {
-                    if (!ModuleDefinition.Name.StartsWith("Catel.Core"))
-                    {
-                        LogWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
-                        return;
-                    }
+                    configuration.IsRunningAgainstCatel = true;
 
-                    isRunningAgainstCatelCore = true;
+                    LogInfo("Running against Catel itself, most features will be disabled");
+                }
 
-                    LogInfo("No reference to Catel.Core found, but continuing because this is running against Catel.Core itself");
+                var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
+                if (!configuration.IsRunningAgainstCatel && catelCoreReference is null)
+                {
+                    LogWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
+                    return;
                 }
 
                 // Note: nested types not supported because we only list actual types (thus not nested)
@@ -112,7 +116,7 @@ namespace Catel.Fody
                 codeGenTypeCleaner.Execute();
 
                 // 2nd step: Auto property weaving
-                if (!isRunningAgainstCatelCore && configuration.WeaveProperties)
+                if (!configuration.IsRunningAgainstCatel && configuration.WeaveProperties)
                 {
                     FodyEnvironment.LogInfo("Weaving properties");
 
@@ -125,7 +129,7 @@ namespace Catel.Fody
                 }
 
                 // 3rd step: Exposed properties weaving
-                if (!isRunningAgainstCatelCore && configuration.WeaveExposedProperties)
+                if (!configuration.IsRunningAgainstCatel && configuration.WeaveExposedProperties)
                 {
                     FodyEnvironment.LogInfo("Weaving exposed properties");
 
@@ -138,11 +142,11 @@ namespace Catel.Fody
                 }
 
                 // 4th step: Argument weaving
-                if (!isRunningAgainstCatelCore && configuration.WeaveArguments)
+                if (configuration.WeaveArguments)
                 {
                     FodyEnvironment.LogInfo("Weaving arguments");
 
-                    var argumentWeaverService = new ArgumentWeaverService(types, msCoreReferenceFinder);
+                    var argumentWeaverService = new ArgumentWeaverService(types, msCoreReferenceFinder, configuration);
                     argumentWeaverService.Execute();
                 }
                 else
@@ -164,7 +168,7 @@ namespace Catel.Fody
                 }
 
                 // 6th step: Xml schema weaving
-                if (!isRunningAgainstCatelCore && configuration.GenerateXmlSchemas)
+                if (!configuration.IsRunningAgainstCatel && configuration.GenerateXmlSchemas)
                 {
                     FodyEnvironment.LogInfo("Weaving xml schemas");
 

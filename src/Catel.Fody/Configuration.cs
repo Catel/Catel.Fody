@@ -33,6 +33,8 @@ namespace Catel.Fody
             config.ReadBool(nameof(GenerateXmlSchemas), value => GenerateXmlSchemas = value);
         }
 
+        public bool IsRunningAgainstCatel { get; set; }
+
         public bool WeaveProperties { get; private set; }
 
         public bool WeaveExposedProperties { get; private set; }

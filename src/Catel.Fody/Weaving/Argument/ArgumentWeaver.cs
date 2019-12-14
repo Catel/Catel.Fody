@@ -25,15 +25,18 @@ namespace Catel.Fody.Weaving.Argument
 
         private readonly TypeDefinition _typeDefinition;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
+        private readonly Configuration _configuration;
         #endregion
 
         #region Constructors
-        public ArgumentWeaver(TypeDefinition typeDefinition, MsCoreReferenceFinder msCoreReferenceFinder)
+        public ArgumentWeaver(TypeDefinition typeDefinition, MsCoreReferenceFinder msCoreReferenceFinder,
+            Configuration configuration)
         {
             EnsureCache();
 
             _typeDefinition = typeDefinition;
             _msCoreReferenceFinder = msCoreReferenceFinder;
+            _configuration = configuration;
         }
         #endregion
 
@@ -58,7 +61,6 @@ namespace Catel.Fody.Weaving.Argument
             if (method.IsDecoratedWithAttribute("NoWeavingAttribute"))
             {
                 FodyEnvironment.LogDebug($"\t\tSkipping '{method.Name}' because 'Catel.Fody.NoWeavingAttribute'");
-
                 return;
             }
 
@@ -113,6 +115,12 @@ namespace Catel.Fody.Weaving.Argument
                     var instruction = instructions[i];
                     if (IsSupportedExpressionArgumentCheck(method, instruction))
                     {
+                        if (_configuration.IsRunningAgainstCatel)
+                        {
+                            FodyEnvironment.LogError($"Weaving argument checks is disabled for Catel itself, ensure writing performant code by calling the non-expression version in '{method.GetFullName()}'");
+                            continue;
+                        }
+
                         var fullKey = ((MethodReference)instruction.Operand).GetFullName();
                         var parameterOrField = GetParameterOrFieldForExpressionArgumentCheck(method, instructions, instruction);
                         if (parameterOrField is null)

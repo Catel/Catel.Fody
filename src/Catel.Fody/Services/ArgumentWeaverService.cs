@@ -16,12 +16,15 @@ namespace Catel.Fody.Services
     {
         private readonly List<TypeDefinition> _allTypes;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
+        private readonly Configuration _configuration;
 
         #region Constructors
-        public ArgumentWeaverService(List<TypeDefinition> allTypes, MsCoreReferenceFinder msCoreReferenceFinder)
+        public ArgumentWeaverService(List<TypeDefinition> allTypes, MsCoreReferenceFinder msCoreReferenceFinder,
+            Configuration configuration)
         {
             _allTypes = allTypes;
             _msCoreReferenceFinder = msCoreReferenceFinder;
+            _configuration = configuration;
         }
         #endregion
 
@@ -32,7 +35,7 @@ namespace Catel.Fody.Services
             {
                 try
                 {
-                    var weaver = new ArgumentWeaver(type, _msCoreReferenceFinder);
+                    var weaver = new ArgumentWeaver(type, _msCoreReferenceFinder, _configuration);
                     weaver.Execute();
                 }
                 catch (Exception ex)

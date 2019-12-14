@@ -50,7 +50,6 @@ namespace Catel.Fody.Weaving.Argument
             if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
             {
                 FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{methodBeingCalled.GetFullName()}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.GetSequencePoint(instruction));
-
                 return false;
             }
 
