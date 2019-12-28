@@ -40,6 +40,9 @@ namespace Catel.Fody
                         case 5:
                             return CatelVersion.v5;
 
+                        case 6:
+                            return CatelVersion.v6;
+
                         default:
                             return CatelVersion.Unknown;
                     }

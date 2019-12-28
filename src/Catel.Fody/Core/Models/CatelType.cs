@@ -196,10 +196,14 @@ namespace Catel.Fody
             switch (Version)
             {
                 case CatelVersion.v4:
-                    parameterNames = new[] {"property", "value"};
+                    parameterNames = new[] { "property", "value" };
                     break;
 
                 case CatelVersion.v5:
+                    parameterNames = new[] { "property", "value", "notifyOnChange" };
+                    break;
+
+                case CatelVersion.v6:
                 default:
                     parameterNames = new[] { "property", "value", "notifyOnChange" };
                     break;
@@ -207,7 +211,7 @@ namespace Catel.Fody
 
             SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames, false));
 
-            // Introduced in Catel 5.12
+            // Introduced in Catel 5.12 / 6.0
             var genericSetValue = RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames, true);
             if (genericSetValue != null)
             {
@@ -261,7 +265,8 @@ namespace Catel.Fody
                 {
                     // Search for this method:
                     // v4: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
-                    // v5+: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
+                    // v5: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
+                    // v6: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
 
                     int argumentCount;
 
@@ -272,6 +277,10 @@ namespace Catel.Fody
                             break;
 
                         case CatelVersion.v5:
+                            argumentCount = 6;
+                            break;
+
+                        case CatelVersion.v6:
                         default:
                             argumentCount = 6;
                             break;
