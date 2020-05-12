@@ -26,7 +26,7 @@ namespace Catel.Fody.Services
         {
             if (!FodyEnvironment.IsCatelMvvmAvailable)
             {
-                FodyEnvironment.LogInfo("Skipping weaving of exposed properties because this is an MVVM feature");
+                FodyEnvironment.WriteInfo("Skipping weaving of exposed properties because this is an MVVM feature");
                 return;
             }
 

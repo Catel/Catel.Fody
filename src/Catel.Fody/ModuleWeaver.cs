@@ -106,66 +106,66 @@ namespace Catel.Fody
                 // 2nd step: Auto property weaving
                 if (!configuration.IsRunningAgainstCatel && configuration.WeaveProperties)
                 {
-                    FodyEnvironment.LogInfo("Weaving properties");
+                    FodyEnvironment.WriteInfo("Weaving properties");
 
                     var propertyWeaverService = new AutoPropertiesWeaverService(configuration, this, typeNodeBuilder, msCoreReferenceFinder);
                     propertyWeaverService.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving properties is disabled");
+                    FodyEnvironment.WriteInfo("Weaving properties is disabled");
                 }
 
                 // 3rd step: Exposed properties weaving
                 if (!configuration.IsRunningAgainstCatel && configuration.WeaveExposedProperties)
                 {
-                    FodyEnvironment.LogInfo("Weaving exposed properties");
+                    FodyEnvironment.WriteInfo("Weaving exposed properties");
 
                     var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(this, typeNodeBuilder, msCoreReferenceFinder);
                     exposedPropertiesWeaverService.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving exposed properties is disabled");
+                    FodyEnvironment.WriteInfo("Weaving exposed properties is disabled");
                 }
 
                 // 4th step: Argument weaving
                 if (configuration.WeaveArguments)
                 {
-                    FodyEnvironment.LogInfo("Weaving arguments");
+                    FodyEnvironment.WriteInfo("Weaving arguments");
 
                     var argumentWeaverService = new ArgumentWeaverService(types, msCoreReferenceFinder, configuration);
                     argumentWeaverService.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving arguments is disabled");
+                    FodyEnvironment.WriteInfo("Weaving arguments is disabled");
                 }
 
                 // 5th step: Logging weaving (we will run this against Catel.Core)
                 if (configuration.WeaveLogging)
                 {
-                    FodyEnvironment.LogInfo("Weaving logging");
+                    FodyEnvironment.WriteInfo("Weaving logging");
 
                     var loggingWeaver = new LoggingWeaverService(types);
                     loggingWeaver.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving logging is disabled");
+                    FodyEnvironment.WriteInfo("Weaving logging is disabled");
                 }
 
                 // 6th step: Xml schema weaving
                 if (!configuration.IsRunningAgainstCatel && configuration.GenerateXmlSchemas)
                 {
-                    FodyEnvironment.LogInfo("Weaving xml schemas");
+                    FodyEnvironment.WriteInfo("Weaving xml schemas");
 
                     var xmlSchemasWeaverService = new XmlSchemasWeaverService(this, msCoreReferenceFinder, typeNodeBuilder);
                     xmlSchemasWeaverService.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving xml schemas is disabled");
+                    FodyEnvironment.WriteInfo("Weaving xml schemas is disabled");
                 }
 
                 // Validate that nothing has been left out
@@ -189,22 +189,18 @@ namespace Catel.Fody
             }
         }
 
-        private static Action<string> CreateLoggingCallback(Action<string> callback)
-        {
-            return s =>
-            {
-                Trace.WriteLine(s);
-
-                callback?.Invoke(s);
-            };
-        }
-
         private void InitializeEnvironment()
         {
             FodyEnvironment.ModuleDefinition = ModuleDefinition;
             FodyEnvironment.AssemblyResolver = AssemblyResolver;
 
             FodyEnvironment.Config = Config;
+            FodyEnvironment.WriteDebug = WriteDebug;
+            FodyEnvironment.WriteInfo = WriteInfo;
+            FodyEnvironment.WriteWarning = WriteWarning;
+            FodyEnvironment.WriteWarningPoint = WriteWarning;
+            FodyEnvironment.WriteError = WriteError;
+            FodyEnvironment.WriteErrorPoint = WriteError;
 
             var assemblyResolver = ModuleDefinition.AssemblyResolver;
 

@@ -53,7 +53,7 @@ namespace Catel.Fody
             }
             else
             {
-                FodyEnvironment.LogInfo("System.Xml not referenced, disabling xml-related features");
+                FodyEnvironment.WriteInfo("System.Xml not referenced, disabling xml-related features");
             }
 
             GeneratedCodeAttribute = GetCoreTypeReference(GeneratedCodeAttributeTypeName);

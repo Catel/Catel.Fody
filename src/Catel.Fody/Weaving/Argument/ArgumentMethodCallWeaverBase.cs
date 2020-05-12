@@ -52,11 +52,11 @@ namespace Catel.Fody.Weaving.Argument
                     var sequencePoint = methodDefinition.GetFirstSequencePoint();
                     if (sequencePoint != null)
                     {
-                        FodyEnvironment.LogErrorPoint(error, sequencePoint);
+                        FodyEnvironment.WriteErrorPoint(error, sequencePoint);
                     }
                     else
                     {
-                        FodyEnvironment.LogError(error);
+                        FodyEnvironment.WriteError(error);
                     }
 
                     return false;

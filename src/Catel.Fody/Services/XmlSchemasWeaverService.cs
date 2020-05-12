@@ -47,7 +47,7 @@ namespace Catel.Fody.Services
 #endif
 
                     var error = $"An error occurred while weaving type '{catelTypeNode.TypeDefinition.FullName}'";
-                    FodyEnvironment.LogError(error);
+                    FodyEnvironment.WriteError(error);
                 }
             }
         }

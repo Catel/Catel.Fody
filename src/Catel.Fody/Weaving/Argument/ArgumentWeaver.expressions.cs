@@ -49,7 +49,7 @@ namespace Catel.Fody.Weaving.Argument
             var finalKey = methodBeingCalled.GetFullName();
             if (!ExpressionChecksToAttributeMappings.ContainsKey(finalKey))
             {
-                FodyEnvironment.LogWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{methodBeingCalled.GetFullName()}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.GetSequencePoint(instruction));
+                FodyEnvironment.WriteWarningPoint($"Expression argument method transformation in '{method.GetFullName()}' to '{methodBeingCalled.GetFullName()}' is not (yet) supported. To ensure the best performance, either rewrite this into a non-expression argument check or create a PR for Catel.Fody to enable support :-)", method.GetSequencePoint(instruction));
                 return false;
             }
 
@@ -68,11 +68,11 @@ namespace Catel.Fody.Weaving.Argument
             if (isAsyncMethod)
             {
                 // Too complex for now, see https://github.com/Catel/Catel.Fody/issues/33
-                FodyEnvironment.LogWarning($"Method '{method.GetFullName()}' should no longer use display class '{displayClassType.GetFullName()}', but optimization for async methods has been turned off for now (see https://github.com/Catel/Catel.Fody/issues/33 for details)");
+                FodyEnvironment.WriteWarning($"Method '{method.GetFullName()}' should no longer use display class '{displayClassType.GetFullName()}', but optimization for async methods has been turned off for now (see https://github.com/Catel/Catel.Fody/issues/33 for details)");
                 return;
             }
 
-            FodyEnvironment.LogDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
+            FodyEnvironment.WriteDebug($"Method '{method.GetFullName()}' no longer uses display class '{displayClassType.GetFullName()}', removing the display class from the method");
 
             // Remove special constructors
             if (method.IsConstructor)

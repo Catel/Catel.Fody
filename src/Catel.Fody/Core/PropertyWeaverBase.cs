@@ -55,7 +55,7 @@
             var genericHandlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.EventHandler`1");
             if (genericHandlerType is null)
             {
-                FodyEnvironment.LogError("Expected to find EventHandler<T>, but type was not  found");
+                FodyEnvironment.WriteError("Expected to find EventHandler<T>, but type was not  found");
                 return null;
             }
 

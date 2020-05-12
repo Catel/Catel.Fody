@@ -40,14 +40,14 @@ namespace Catel.Fody
             DetermineCatelType();
             if (Type == CatelTypeType.Unknown)
             {
-                FodyEnvironment.LogWarning($"Cannot determine the Catel type used for '{Name}', type will be ignored for weaving");
+                FodyEnvironment.WriteWarning($"Cannot determine the Catel type used for '{Name}', type will be ignored for weaving");
                 return;
             }
 
             Version = TypeDefinition.GetCatelVersion();
             if (Version == CatelVersion.Unknown)
             {
-                FodyEnvironment.LogWarning($"Cannot determine the Catel version used for '{Name}', type will be ignored for weaving");
+                FodyEnvironment.WriteWarning($"Cannot determine the Catel version used for '{Name}', type will be ignored for weaving");
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace Catel.Fody
 
                 if (!DetermineMethods())
                 {
-                    FodyEnvironment.LogWarning($"Cannot determine the Catel methods used for '{Name}', type will be ignored for weaving");
+                    FodyEnvironment.WriteWarning($"Cannot determine the Catel methods used for '{Name}', type will be ignored for weaving");
                     return;
                 }
 
@@ -68,7 +68,7 @@ namespace Catel.Fody
             }
             catch (Exception)
             {
-                FodyEnvironment.LogWarning($"Failed to get additional information about type '{Name}', type will be ignored for weaving");
+                FodyEnvironment.WriteWarning($"Failed to get additional information about type '{Name}', type will be ignored for weaving");
             }
         }
 

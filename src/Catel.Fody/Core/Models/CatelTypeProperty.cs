@@ -62,7 +62,7 @@ namespace Catel.Fody
                 {
                     if (callbackReference.HasParameters)
                     {
-                        FodyEnvironment.LogWarning($"Method '{declaringType.FullName}.{callbackReference.Name}' matches automatic change method name but has parameters and will not be used as automatic change callback. Rename the method to remove this warning or remove parameters to use as automatic callback method.");
+                        FodyEnvironment.WriteWarning($"Method '{declaringType.FullName}.{callbackReference.Name}' matches automatic change method name but has parameters and will not be used as automatic change callback. Rename the method to remove this warning or remove parameters to use as automatic callback method.");
                         continue;
                     }
 

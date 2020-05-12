@@ -23,23 +23,23 @@
             var property = _propertyData.PropertyDefinition;
             if (property is null)
             {
-                FodyEnvironment.LogWarning("Skipping an unknown property because it has no property definition");
+                FodyEnvironment.WriteWarning("Skipping an unknown property because it has no property definition");
                 return;
             }
 
             if (!force && !HasBackingField(property))
             {
-                FodyEnvironment.LogDebug($"\t\tSkipping '{property.GetName()}' because it has no backing field");
+                FodyEnvironment.WriteDebug($"\t\tSkipping '{property.GetName()}' because it has no backing field");
                 return;
             }
 
             if (!IsCleanSetter(property))
             {
-                FodyEnvironment.LogDebug($"\t\tSkipping '{property.GetName()}' because it has no clean setter (custom implementation?)");
+                FodyEnvironment.WriteDebug($"\t\tSkipping '{property.GetName()}' because it has no clean setter (custom implementation?)");
                 return;
             }
 
-            FodyEnvironment.LogDebug("\t\t" + property.Name);
+            FodyEnvironment.WriteDebug("\t\t" + property.Name);
 
             try
             {
@@ -47,7 +47,7 @@
             }
             catch (Exception ex)
             {
-                FodyEnvironment.LogError($"\t\tFailed to handle property '{property.DeclaringType.Name}.{property.Name}'\n{ex.Message}\n{ex.StackTrace}");
+                FodyEnvironment.WriteError($"\t\tFailed to handle property '{property.DeclaringType.Name}.{property.Name}'\n{ex.Message}\n{ex.StackTrace}");
 
 #if DEBUG
                 Debugger.Launch();
