@@ -80,7 +80,6 @@ public class AssemblyWeaver
                 ModuleDefinition = moduleDefinition,
                 AssemblyFilePath = AfterAssemblyPath,
                 AssemblyResolver = assemblyResolver,
-                LogError = LogError,
                 Config = XElement.Parse(@"<Weavers><Catel /></Weavers>"),
                 AddinDirectoryPath = Path.Combine(AssemblyDirectoryHelper.GetCurrentDirectory(), "..", "..", "Catel.Fody")
             };

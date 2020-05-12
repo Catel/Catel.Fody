@@ -18,13 +18,6 @@ namespace Catel.Fody
     {
         public ModuleWeaver()
         {
-            // Init logging delegates to make testing easier
-            LogDebug = s => { Debug.WriteLine(s); };
-            LogInfo = s => { Debug.WriteLine(s); };
-            LogWarning = s => { Debug.WriteLine(s); };
-            LogWarningPoint = (s, p) => { Debug.WriteLine(s); };
-            LogError = s => { Debug.WriteLine(s); };
-            LogErrorPoint = (s, p) => { Debug.WriteLine(s); };
         }
 
         public IAssemblyResolver AssemblyResolver { get; set; }
@@ -50,11 +43,6 @@ namespace Catel.Fody
                 if (!Debugger.IsAttached)
                 {
                     Debugger.Launch();
-
-                    FodyEnvironment.LogDebug = CreateLoggingCallback(LogDebug);
-                    FodyEnvironment.LogInfo = CreateLoggingCallback(LogInfo);
-                    FodyEnvironment.LogWarning = CreateLoggingCallback(LogWarning);
-                    FodyEnvironment.LogError = CreateLoggingCallback(LogError);
                 }
 #endif
 
@@ -79,7 +67,7 @@ namespace Catel.Fody
 
                 InitializeEnvironment();
 
-                LogInfo($"Catel.Fody v{GetType().Assembly.GetName().Version}");
+                WriteInfo($"Catel.Fody v{GetType().Assembly.GetName().Version}");
 
                 // 1st step: set up the basics
                 var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
@@ -95,13 +83,13 @@ namespace Catel.Fody
                 {
                     configuration.IsRunningAgainstCatel = true;
 
-                    LogInfo("Running against Catel itself, most features will be disabled");
+                    WriteInfo("Running against Catel itself, most features will be disabled");
                 }
 
                 var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
                 if (!configuration.IsRunningAgainstCatel && catelCoreReference is null)
                 {
-                    LogWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
+                    WriteWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
                     return;
                 }
 
@@ -190,7 +178,7 @@ namespace Catel.Fody
             }
             catch (Exception ex)
             {
-                LogError(ex.Message);
+                WriteError(ex.Message);
 
 #if DEBUG
                 if (!Debugger.IsAttached)
@@ -217,12 +205,6 @@ namespace Catel.Fody
             FodyEnvironment.AssemblyResolver = AssemblyResolver;
 
             FodyEnvironment.Config = Config;
-            FodyEnvironment.LogDebug = LogDebug;
-            FodyEnvironment.LogInfo = LogInfo;
-            FodyEnvironment.LogWarning = LogWarning;
-            FodyEnvironment.LogWarningPoint = LogWarningPoint;
-            FodyEnvironment.LogError = LogError;
-            FodyEnvironment.LogErrorPoint = LogErrorPoint;
 
             var assemblyResolver = ModuleDefinition.AssemblyResolver;
 
@@ -232,7 +214,7 @@ namespace Catel.Fody
             }
             catch (Exception)
             {
-                LogError("Catel.Core is not referenced, cannot weave without a Catel.Core reference");
+                WriteError("Catel.Core is not referenced, cannot weave without a Catel.Core reference");
             }
 
             try
@@ -241,7 +223,7 @@ namespace Catel.Fody
             }
             catch (Exception)
             {
-                LogInfo("Catel.MVVM is not referenced, skipping Catel.MVVM specific functionality");
+                WriteInfo("Catel.MVVM is not referenced, skipping Catel.MVVM specific functionality");
             }
         }
     }

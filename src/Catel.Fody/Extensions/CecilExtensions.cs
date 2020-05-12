@@ -14,7 +14,7 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
-        private static readonly Dictionary<string, TypeDefinition> _cachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
+        private static readonly Dictionary<string, TypeDefinition> CachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
 
         public static CatelVersion GetCatelVersion(this TypeReference type)
         {
@@ -204,9 +204,9 @@ namespace Catel.Fody
         public static TypeDefinition FindType(this ModuleDefinition moduleDefinition, string assemblyName, string typeName)
         {
             var cacheKey = $"{typeName}, {assemblyName}|{moduleDefinition.Name}";
-            if (_cachedTypeDefinitions.ContainsKey(cacheKey))
+            if (CachedTypeDefinitions.ContainsKey(cacheKey))
             {
-                return _cachedTypeDefinitions[cacheKey];
+                return CachedTypeDefinitions[cacheKey];
             }
 
             var resolvedAssembly = moduleDefinition.ResolveAssembly(assemblyName);
@@ -231,7 +231,7 @@ namespace Catel.Fody
 
                 if (type != null)
                 {
-                    _cachedTypeDefinitions[cacheKey] = type;
+                    CachedTypeDefinitions[cacheKey] = type;
                     return type;
                 }
             }
