@@ -68,6 +68,9 @@ namespace Catel.Fody.Weaving.AutoProperties
                     var onPropertyChangedWeaver = new OnPropertyChangedWeaver(catelType, _msCoreReferenceFinder);
                     onPropertyChangedWeaver.Execute();
                 }
+
+                var raisePropertyChangedWeaver = new RaisePropertyChangedWeaver(catelType, _msCoreReferenceFinder);
+                raisePropertyChangedWeaver.Execute();
             }
         }
     }

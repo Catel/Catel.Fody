@@ -1,6 +1,7 @@
 ﻿namespace Catel.Fody.Tests
 {
     using System;
+    using System.ComponentModel;
     using NUnit.Framework;
 
     [TestFixture]
@@ -43,6 +44,24 @@
             Assert.IsFalse(oo.OnLastNameWithWrongCallbackChangedCallbackCalled);
             oo.LastNameWithWrongCallback = "change";
             Assert.IsFalse(oo.OnLastNameWithWrongCallbackChangedCallbackCalled);
+        }
+
+        [TestCase]
+        public void ReplacesRaisePropertyChanged()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var worked = false;
+
+            oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                worked = true;
+            });
+
+            oo.ManuallyRaiseChangeNotificationForManualChangeNotificationProperty();
+
+            Assert.IsTrue(worked);
         }
     }
 }
