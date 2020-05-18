@@ -23,6 +23,7 @@ public class GeneralContext : BuildContextWithItemsBase
     public bool MaximizePerformance { get; set; }
     public bool UseVisualStudioPrerelease { get; set; }
     public bool VerifyDependencies { get; set; }
+    public bool SkipComponentsThatAreNotDeployable { get; set; }
 
     public VersionContext Version { get; set; }
     public CopyrightContext Copyright { get; set; }
