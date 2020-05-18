@@ -53,6 +53,14 @@
         {
             OnLastNameWithWrongCallbackChangedCallbackCalled = true;
         }
+
+        public void ManuallyRaiseChangeNotificationForManualChangeNotificationProperty()
+        {
+            RaisePropertyChanged(() => ManualChangeNotificationProperty);
+        }
+
+        [NoWeaving]
+        public string ManualChangeNotificationProperty { get; set; }
     }
 
     [NoWeaving]
@@ -148,5 +156,12 @@
         {
             OnLastNameWithWrongCallbackChangedCallbackCalled = true;
         }
+
+        public void ManuallyRaiseChangeNotificationForManualChangeNotificationProperty()
+        {
+            RaisePropertyChanged(nameof(ManualChangeNotificationProperty));
+        }
+
+        public string ManualChangeNotificationProperty { get; set; }
     }
 }

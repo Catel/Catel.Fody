@@ -143,7 +143,7 @@ public class ToolsProcessor : ProcessorBase
         {
             CakeContext.Information("Updating version for tool '{0}'", tool);
 
-            var projectFileName = GetProjectFileName(tool);
+            var projectFileName = GetProjectFileName(BuildContext, tool);
 
             CakeContext.TransformConfig(projectFileName, new TransformationCollection 
             {
@@ -163,7 +163,7 @@ public class ToolsProcessor : ProcessorBase
         {
             BuildContext.CakeContext.LogSeparator("Building tool '{0}'", tool);
 
-            var projectFileName = GetProjectFileName(tool);
+            var projectFileName = GetProjectFileName(BuildContext, tool);
             
             var msBuildSettings = new MSBuildSettings {
                 Verbosity = Verbosity.Quiet,
@@ -181,6 +181,7 @@ public class ToolsProcessor : ProcessorBase
             // are properties passed in using the command line)
             var outputDirectory = GetProjectOutputDirectory(BuildContext, tool);
             CakeContext.Information("Output directory: '{0}'", outputDirectory);
+            msBuildSettings.WithProperty("OverridableOutputRootPath", BuildContext.General.OutputRootDirectory);
             msBuildSettings.WithProperty("OverridableOutputPath", outputDirectory);
             msBuildSettings.WithProperty("PackageOutputPath", BuildContext.General.OutputRootDirectory);
 
@@ -222,6 +223,12 @@ public class ToolsProcessor : ProcessorBase
 
         foreach (var tool in BuildContext.Tools.Items)
         {
+            if (!ShouldDeployProject(BuildContext, tool))
+            {
+                CakeContext.Information("Tool '{0}' should not be deployed", tool);
+                continue;
+            }
+
             BuildContext.CakeContext.LogSeparator("Packaging tool '{0}'", tool);
 
             var projectDirectory = string.Format("./src/{0}", tool);
@@ -272,6 +279,7 @@ public class ToolsProcessor : ProcessorBase
             // Note: we need to set OverridableOutputPath because we need to be able to respect
             // AppendTargetFrameworkToOutputPath which isn't possible for global properties (which
             // are properties passed in using the command line)
+            msBuildSettings.WithProperty("OverridableOutputRootPath", BuildContext.General.OutputRootDirectory);
             msBuildSettings.WithProperty("OverridableOutputPath", outputDirectory);
             msBuildSettings.WithProperty("PackageOutputPath", BuildContext.General.OutputRootDirectory);
             msBuildSettings.WithProperty("ConfigurationName", configurationName);

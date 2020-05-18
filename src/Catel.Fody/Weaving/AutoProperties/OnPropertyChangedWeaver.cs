@@ -31,7 +31,7 @@ namespace Catel.Fody.Weaving.AutoProperties
         #region Methods
         public void Execute()
         {
-            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{_catelType.TypeDefinition.FullName}'");
+            FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{_catelType.TypeDefinition.FullName}'");
 
             foreach (var propertyDefinition in _catelType.AllProperties)
             {
@@ -59,7 +59,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 var onPropertyChangedMethod = EnsureOnPropertyChangedMethod();
                 if (onPropertyChangedMethod is null)
                 {
-                    FodyEnvironment.LogWarning($"No call to base.OnPropertyChanged(e) or a custom implementation in '{property.DeclaringType.Name}', cannot weave this method to automatically raise on dependent property change notifications");
+                    FodyEnvironment.WriteWarning($"No call to base.OnPropertyChanged(e) or a custom implementation in '{property.DeclaringType.Name}', cannot weave this method to automatically raise on dependent property change notifications");
                     return false;
                 }
 

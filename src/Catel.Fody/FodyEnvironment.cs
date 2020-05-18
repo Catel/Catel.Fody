@@ -19,12 +19,12 @@ namespace Catel.Fody
 
         public static XElement Config { get; set; }
 
-        public static Action<string> LogDebug { get; set; }
-        public static Action<string> LogInfo { get; set; }
-        public static Action<string> LogWarning { get; set; }
-        public static Action<string, SequencePoint> LogWarningPoint { get; set; }
-        public static Action<string> LogError { get; set; }
-        public static Action<string, SequencePoint> LogErrorPoint { get; set; }
+        public static Action<string> WriteDebug { get; set; }
+        public static Action<string> WriteInfo { get; set; }
+        public static Action<string> WriteWarning { get; set; }
+        public static Action<string, SequencePoint> WriteWarningPoint { get; set; }
+        public static Action<string> WriteError { get; set; }
+        public static Action<string, SequencePoint> WriteErrorPoint { get; set; }
 
         public static bool IsCatelCoreAvailable { get; set; }
         public static bool IsCatelMvvmAvailable { get; set; }

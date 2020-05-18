@@ -13,23 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.Core" Version="5.11.2" />
-    <PackageReference Include="Catel.MVVM" Version="5.11.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <PackageReference Include="Catel.Core" Version="5.12.5" />
+    <PackageReference Include="Catel.MVVM" Version="5.12.5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,20 +13,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.Core" Version="5.11.2" />
-    <PackageReference Include="Catel.MVVM" Version="5.11.2" />
-    <PackageReference Include="FodyHelpers" Version="6.0.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
-    <PackageReference Include="Moq" Version="4.13.0" />
+    <PackageReference Include="Catel.Core" Version="5.12.5" />
+    <PackageReference Include="Catel.MVVM" Version="5.12.5" />
+    <PackageReference Include="FodyHelpers" Version="6.1.1" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="Moq" Version="4.14.1" />
     <PackageReference Include="NUnit" Version="3.12.0" PrivateAssets="all" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
-    <PackageReference Include="WpfAnalyzers" Version="2.4.0" PrivateAssets="all">
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
+    <PackageReference Include="WpfAnalyzers" Version="3.1.0" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.0.0" PrivateAssets="None" />
+    <PackageReference Include="Fody" Version="6.1.1" PrivateAssets="None" />
     <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
@@ -39,21 +40,7 @@
   <ItemGroup>
     <Compile Remove="*.approved.cs;*.received.cs" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
+  
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.tests.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.tests.props')" />
 </Project>

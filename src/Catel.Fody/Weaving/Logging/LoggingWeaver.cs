@@ -38,11 +38,11 @@ namespace Catel.Fody.Weaving.Logging
             var staticConstructor = _type.GetStaticConstructor();
             if (staticConstructor is null)
             {
-                FodyEnvironment.LogWarning($"Cannot weave ILog fields without a static constructor, ignoring type '{_type.FullName}'");
+                FodyEnvironment.WriteWarning($"Cannot weave ILog fields without a static constructor, ignoring type '{_type.FullName}'");
                 return;
             }
 
-            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{_type.FullName}'");
+            FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{_type.FullName}'");
 
             var body = staticConstructor.Body;
             body.SimplifyMacros();
@@ -53,7 +53,7 @@ namespace Catel.Fody.Weaving.Logging
             }
             catch (Exception ex)
             {
-                FodyEnvironment.LogWarning($"Failed to update static log definition in '{_type.FullName}', '{ex.Message}'");
+                FodyEnvironment.WriteWarning($"Failed to update static log definition in '{_type.FullName}', '{ex.Message}'");
             }
 
             body.OptimizeMacros();
@@ -95,16 +95,16 @@ namespace Catel.Fody.Weaving.Logging
 
                             if (point != null)
                             {
-                                FodyEnvironment.LogWarningPoint(message, point);
+                                FodyEnvironment.WriteWarningPoint(message, point);
                             }
                             else
                             {
-                                FodyEnvironment.LogWarning(message);
+                                FodyEnvironment.WriteWarning(message);
                             }
                             continue;
                         }
 
-                        FodyEnvironment.LogDebug($"Weaving auto log to specific log for '{type.FullName}'");
+                        FodyEnvironment.WriteDebug($"Weaving auto log to specific log for '{type.FullName}'");
 
                         var getTypeFromHandle = type.Module.GetMethodAndImport("GetTypeFromHandle");
 

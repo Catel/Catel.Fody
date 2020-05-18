@@ -4,7 +4,7 @@
 #addin "nuget:?package=Cake.FileHelpers&version=3.0.0"
 #addin "nuget:?package=Cake.DependencyCheck&version=1.2.0"
 
-#tool "nuget:?package=DependencyCheck.Runner.Tool&include=./**/dependency-check.sh&include=./**/dependency-check.bat"
+#tool "nuget:?package=DependencyCheck.Runner.Tool&version=3.2.1&include=./**/dependency-check.sh&include=./**/dependency-check.bat"
 #tool "nuget:?package=JetBrains.ReSharper.CommandLineTools&version=2018.1.3"
 
 //-------------------------------------------------------------
@@ -93,6 +93,12 @@ Task("UpdateNuGet")
 {
     Information("Making sure NuGet is using the latest version");
 
+    if (buildContext.General.IsLocalBuild && buildContext.General.MaximizePerformance)
+    {
+        Information("Local build with maximized performance detected, skipping NuGet update check");
+        return;
+    }
+
     var nuGetExecutable = buildContext.General.NuGet.Executable;
 
     var exitCode = StartProcess(nuGetExecutable, new ProcessSettings
@@ -113,16 +119,39 @@ Task("RestorePackages")
     .ContinueOnError()
     .Does<BuildContext>(buildContext =>
 {
-    var projects = GetFiles("./**/*.csproj");
+    if (buildContext.General.IsLocalBuild && buildContext.General.MaximizePerformance)
+    {
+        Information("Local build with maximized performance detected, skipping package restore");
+        return;
+    }
+
+    // var csharpProjects = GetFiles("./**/*.csproj");
+    // var cProjects = GetFiles("./**/*.vcxproj");
     var solutions = GetFiles("./**/*.sln");
     
     var allFiles = new List<FilePath>();
-    //allFiles.AddRange(projects);
+    // //allFiles.AddRange(projects);
+    // //allFiles.AddRange(cProjects);
     allFiles.AddRange(solutions);
 
     foreach(var file in allFiles)
     {
         RestoreNuGetPackages(buildContext, file);
+    }
+
+    // C++ files need to be done manually
+    foreach (var project in buildContext.AllProjects)
+    {
+        var projectFileName = GetProjectFileName(buildContext, project);
+        if (IsCppProject(projectFileName))
+        {
+            buildContext.CakeContext.LogSeparator("'{0}' is a C++ project, restoring NuGet packages separately", project);
+
+            RestoreNuGetPackages(buildContext, projectFileName);
+
+            // For C++ projects, we must clean the project again after a package restore
+            CleanProject(buildContext, project);
+        }
     }
 });
 
@@ -133,10 +162,16 @@ Task("RestorePackages")
 // some targets files that come in via packages
 
 Task("Clean")
-    .IsDependentOn("RestorePackages")
+    //.IsDependentOn("RestorePackages")
     .ContinueOnError()
     .Does<BuildContext>(buildContext => 
 {
+    if (buildContext.General.IsLocalBuild && buildContext.General.MaximizePerformance)
+    {
+        Information("Local build with maximized performance detected, skipping solution clean");
+        return;
+    }
+
     var platforms = new Dictionary<string, PlatformTarget>();
     platforms["AnyCPU"] = PlatformTarget.MSIL;
     platforms["x86"] = PlatformTarget.x86;
@@ -170,14 +205,13 @@ Task("Clean")
         }
     }
 
-    var outputDirectory = buildContext.General.OutputRootDirectory;
-    if (DirectoryExists(outputDirectory))
+    // Output directory
+    DeleteDirectoryWithLogging(buildContext, buildContext.General.OutputRootDirectory);
+
+    // obj directories
+    foreach (var project in buildContext.AllProjects)
     {
-        DeleteDirectory(outputDirectory, new DeleteDirectorySettings()
-        {
-            Force = true,
-            Recursive = true
-        });
+        CleanProject(buildContext, project);
     }
 });
 
@@ -218,7 +252,7 @@ Task("CodeSign")
 
     if (buildContext.General.IsLocalBuild)
     {
-        Information("Skipping code signing because this is a local package build");
+        Information("Local build detected, skipping code signing");
         return;
     }
 

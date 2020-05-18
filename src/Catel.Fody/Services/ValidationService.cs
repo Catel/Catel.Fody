@@ -13,7 +13,7 @@
 
         public void Validate()
         {
-            _moduleWeaver.LogInfo("Validating correct usage of Catel.Fody");
+            _moduleWeaver.WriteInfo("Validating correct usage of Catel.Fody");
 
             var types = _moduleWeaver.ModuleDefinition.Types;
 
@@ -42,7 +42,7 @@
             {
                 if (property.IsDecoratedWithAttribute($"{attributeName}Attribute"))
                 {
-                    _moduleWeaver.LogError($"[{typeDefinition.FullName}.{property.Name}] is decorated with the '{attributeName}' attribute, which is not allowed post-weaving, please double check correct usage");
+                    _moduleWeaver.WriteError($"[{typeDefinition.FullName}.{property.Name}] is decorated with the '{attributeName}' attribute, which is not allowed post-weaving, please double check correct usage");
                 }
             }
         }

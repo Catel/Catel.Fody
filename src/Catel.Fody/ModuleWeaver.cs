@@ -18,13 +18,6 @@ namespace Catel.Fody
     {
         public ModuleWeaver()
         {
-            // Init logging delegates to make testing easier
-            LogDebug = s => { Debug.WriteLine(s); };
-            LogInfo = s => { Debug.WriteLine(s); };
-            LogWarning = s => { Debug.WriteLine(s); };
-            LogWarningPoint = (s, p) => { Debug.WriteLine(s); };
-            LogError = s => { Debug.WriteLine(s); };
-            LogErrorPoint = (s, p) => { Debug.WriteLine(s); };
         }
 
         public IAssemblyResolver AssemblyResolver { get; set; }
@@ -50,11 +43,6 @@ namespace Catel.Fody
                 if (!Debugger.IsAttached)
                 {
                     Debugger.Launch();
-
-                    FodyEnvironment.LogDebug = CreateLoggingCallback(LogDebug);
-                    FodyEnvironment.LogInfo = CreateLoggingCallback(LogInfo);
-                    FodyEnvironment.LogWarning = CreateLoggingCallback(LogWarning);
-                    FodyEnvironment.LogError = CreateLoggingCallback(LogError);
                 }
 #endif
 
@@ -79,26 +67,30 @@ namespace Catel.Fody
 
                 InitializeEnvironment();
 
-                LogInfo($"Catel.Fody v{GetType().Assembly.GetName().Version}");
+                WriteInfo($"Catel.Fody v{GetType().Assembly.GetName().Version}");
 
                 // 1st step: set up the basics
                 var msCoreReferenceFinder = new MsCoreReferenceFinder(this, ModuleDefinition.AssemblyResolver);
                 msCoreReferenceFinder.Execute();
 
                 // Validate if Catel.Core is referenced
-                var isRunningAgainstCatelCore = false;
-                var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
-                if (catelCoreReference is null)
+                configuration.IsRunningAgainstCatel = false;
+
+                if (ModuleDefinition.Name.StartsWith("Catel.Core") ||
+                    ModuleDefinition.Name.StartsWith("Catel.MVVM") ||
+                    ModuleDefinition.Name.StartsWith("Catel.Serialization.") ||
+                    ModuleDefinition.Name.StartsWith("Catel.Tests"))
                 {
-                    if (!ModuleDefinition.Name.StartsWith("Catel.Core"))
-                    {
-                        LogWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
-                        return;
-                    }
+                    configuration.IsRunningAgainstCatel = true;
 
-                    isRunningAgainstCatelCore = true;
+                    WriteInfo("Running against Catel itself, most features will be disabled");
+                }
 
-                    LogInfo("No reference to Catel.Core found, but continuing because this is running against Catel.Core itself");
+                var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
+                if (!configuration.IsRunningAgainstCatel && catelCoreReference is null)
+                {
+                    WriteWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
+                    return;
                 }
 
                 // Note: nested types not supported because we only list actual types (thus not nested)
@@ -112,68 +104,68 @@ namespace Catel.Fody
                 codeGenTypeCleaner.Execute();
 
                 // 2nd step: Auto property weaving
-                if (!isRunningAgainstCatelCore && configuration.WeaveProperties)
+                if (!configuration.IsRunningAgainstCatel && configuration.WeaveProperties)
                 {
-                    FodyEnvironment.LogInfo("Weaving properties");
+                    FodyEnvironment.WriteInfo("Weaving properties");
 
                     var propertyWeaverService = new AutoPropertiesWeaverService(configuration, this, typeNodeBuilder, msCoreReferenceFinder);
                     propertyWeaverService.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving properties is disabled");
+                    FodyEnvironment.WriteInfo("Weaving properties is disabled");
                 }
 
                 // 3rd step: Exposed properties weaving
-                if (!isRunningAgainstCatelCore && configuration.WeaveExposedProperties)
+                if (!configuration.IsRunningAgainstCatel && configuration.WeaveExposedProperties)
                 {
-                    FodyEnvironment.LogInfo("Weaving exposed properties");
+                    FodyEnvironment.WriteInfo("Weaving exposed properties");
 
                     var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(this, typeNodeBuilder, msCoreReferenceFinder);
                     exposedPropertiesWeaverService.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving exposed properties is disabled");
+                    FodyEnvironment.WriteInfo("Weaving exposed properties is disabled");
                 }
 
                 // 4th step: Argument weaving
-                if (!isRunningAgainstCatelCore && configuration.WeaveArguments)
+                if (configuration.WeaveArguments)
                 {
-                    FodyEnvironment.LogInfo("Weaving arguments");
+                    FodyEnvironment.WriteInfo("Weaving arguments");
 
-                    var argumentWeaverService = new ArgumentWeaverService(types, msCoreReferenceFinder);
+                    var argumentWeaverService = new ArgumentWeaverService(types, msCoreReferenceFinder, configuration);
                     argumentWeaverService.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving arguments is disabled");
+                    FodyEnvironment.WriteInfo("Weaving arguments is disabled");
                 }
 
                 // 5th step: Logging weaving (we will run this against Catel.Core)
                 if (configuration.WeaveLogging)
                 {
-                    FodyEnvironment.LogInfo("Weaving logging");
+                    FodyEnvironment.WriteInfo("Weaving logging");
 
                     var loggingWeaver = new LoggingWeaverService(types);
                     loggingWeaver.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving logging is disabled");
+                    FodyEnvironment.WriteInfo("Weaving logging is disabled");
                 }
 
                 // 6th step: Xml schema weaving
-                if (!isRunningAgainstCatelCore && configuration.GenerateXmlSchemas)
+                if (!configuration.IsRunningAgainstCatel && configuration.GenerateXmlSchemas)
                 {
-                    FodyEnvironment.LogInfo("Weaving xml schemas");
+                    FodyEnvironment.WriteInfo("Weaving xml schemas");
 
                     var xmlSchemasWeaverService = new XmlSchemasWeaverService(this, msCoreReferenceFinder, typeNodeBuilder);
                     xmlSchemasWeaverService.Execute();
                 }
                 else
                 {
-                    FodyEnvironment.LogInfo("Weaving xml schemas is disabled");
+                    FodyEnvironment.WriteInfo("Weaving xml schemas is disabled");
                 }
 
                 // Validate that nothing has been left out
@@ -186,7 +178,7 @@ namespace Catel.Fody
             }
             catch (Exception ex)
             {
-                LogError(ex.Message);
+                WriteError(ex.Message);
 
 #if DEBUG
                 if (!Debugger.IsAttached)
@@ -197,28 +189,18 @@ namespace Catel.Fody
             }
         }
 
-        private static Action<string> CreateLoggingCallback(Action<string> callback)
-        {
-            return s =>
-            {
-                Trace.WriteLine(s);
-
-                callback?.Invoke(s);
-            };
-        }
-
         private void InitializeEnvironment()
         {
             FodyEnvironment.ModuleDefinition = ModuleDefinition;
             FodyEnvironment.AssemblyResolver = AssemblyResolver;
 
             FodyEnvironment.Config = Config;
-            FodyEnvironment.LogDebug = LogDebug;
-            FodyEnvironment.LogInfo = LogInfo;
-            FodyEnvironment.LogWarning = LogWarning;
-            FodyEnvironment.LogWarningPoint = LogWarningPoint;
-            FodyEnvironment.LogError = LogError;
-            FodyEnvironment.LogErrorPoint = LogErrorPoint;
+            FodyEnvironment.WriteDebug = WriteDebug;
+            FodyEnvironment.WriteInfo = WriteInfo;
+            FodyEnvironment.WriteWarning = WriteWarning;
+            FodyEnvironment.WriteWarningPoint = WriteWarning;
+            FodyEnvironment.WriteError = WriteError;
+            FodyEnvironment.WriteErrorPoint = WriteError;
 
             var assemblyResolver = ModuleDefinition.AssemblyResolver;
 
@@ -228,7 +210,7 @@ namespace Catel.Fody
             }
             catch (Exception)
             {
-                LogError("Catel.Core is not referenced, cannot weave without a Catel.Core reference");
+                WriteError("Catel.Core is not referenced, cannot weave without a Catel.Core reference");
             }
 
             try
@@ -237,7 +219,7 @@ namespace Catel.Fody
             }
             catch (Exception)
             {
-                LogInfo("Catel.MVVM is not referenced, skipping Catel.MVVM specific functionality");
+                WriteInfo("Catel.MVVM is not referenced, skipping Catel.MVVM specific functionality");
             }
         }
     }

@@ -13,6 +13,8 @@ namespace Catel.Fody
 
         v4,
 
-        v5
+        v5,
+
+        v6
     }
 }

@@ -7,6 +7,7 @@
     <PackageId>Catel.Fody</PackageId>
     <PackageVersion>3.0.0-alpha0001</PackageVersion>
     <Description>Catel fody add-in that automatically generates Catel style properties and more!</Description>
+    <DevelopmentDependency>true</DevelopmentDependency>
     <PackageTags>catel;fody;ilweaving;weaving</PackageTags>
     <DisableFody>true</DisableFody>
   </PropertyGroup>
@@ -17,7 +18,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.0.0" PrivateAssets="None" />
+    <PackageReference Include="Fody" Version="6.1.1" PrivateAssets="None" />
   </ItemGroup>
 
   <ItemGroup>

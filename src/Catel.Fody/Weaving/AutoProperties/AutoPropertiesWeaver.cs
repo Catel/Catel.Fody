@@ -34,7 +34,7 @@ namespace Catel.Fody.Weaving.AutoProperties
         {
             foreach (var catelType in catelTypes)
             {
-                FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{catelType.TypeDefinition.FullName}'");
+                FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{catelType.TypeDefinition.FullName}'");
 
                 foreach (var propertyData in catelType.Properties)
                 {
@@ -68,6 +68,9 @@ namespace Catel.Fody.Weaving.AutoProperties
                     var onPropertyChangedWeaver = new OnPropertyChangedWeaver(catelType, _msCoreReferenceFinder);
                     onPropertyChangedWeaver.Execute();
                 }
+
+                var raisePropertyChangedWeaver = new RaisePropertyChangedWeaver(catelType, _msCoreReferenceFinder);
+                raisePropertyChangedWeaver.Execute();
             }
         }
     }

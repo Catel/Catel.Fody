@@ -52,7 +52,7 @@ public class WebProcessor : ProcessorBase
         {
             CakeContext.Information("Updating version for web app '{0}'", webApp);
 
-            var projectFileName = GetProjectFileName(webApp);
+            var projectFileName = GetProjectFileName(BuildContext, webApp);
 
             CakeContext.TransformConfig(projectFileName, new TransformationCollection 
             {
@@ -72,7 +72,7 @@ public class WebProcessor : ProcessorBase
         {
             BuildContext.CakeContext.LogSeparator("Building web app '{0}'", webApp);
 
-            var projectFileName = GetProjectFileName(webApp);
+            var projectFileName = GetProjectFileName(BuildContext, webApp);
             
             var msBuildSettings = new MSBuildSettings 
             {
@@ -93,6 +93,7 @@ public class WebProcessor : ProcessorBase
             // are properties passed in using the command line)
             var outputDirectory = string.Format("{0}/{1}/", BuildContext.General.OutputRootDirectory, webApp);
             CakeContext.Information("Output directory: '{0}'", outputDirectory);
+            msBuildSettings.WithProperty("OverridableOutputRootPath", BuildContext.General.OutputRootDirectory);
             msBuildSettings.WithProperty("OverridableOutputPath", outputDirectory);
             msBuildSettings.WithProperty("PackageOutputPath", BuildContext.General.OutputRootDirectory);
 
@@ -113,6 +114,12 @@ public class WebProcessor : ProcessorBase
         
         foreach (var webApp in BuildContext.Web.Items)
         {
+            if (!ShouldDeployProject(BuildContext, webApp))
+            {
+                CakeContext.Information("Web app '{0}' should not be deployed", webApp);
+                continue;
+            }
+
             BuildContext.CakeContext.LogSeparator("Packaging web app '{0}'", webApp);
 
             var projectFileName = string.Format("./src/{0}/{0}.csproj", webApp);
@@ -127,6 +134,7 @@ public class WebProcessor : ProcessorBase
             // Note: we need to set OverridableOutputPath because we need to be able to respect
             // AppendTargetFrameworkToOutputPath which isn't possible for global properties (which
             // are properties passed in using the command line)
+            msBuildSettings.WithProperty("OverridableOutputRootPath", BuildContext.General.OutputRootDirectory);
             msBuildSettings.WithProperty("OverridableOutputPath", outputDirectory);
             msBuildSettings.WithProperty("PackageOutputPath", outputDirectory);
             msBuildSettings.WithProperty("ConfigurationName", BuildContext.General.Solution.ConfigurationName);

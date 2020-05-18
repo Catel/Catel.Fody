@@ -45,7 +45,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
 
         private void ProcessType(CatelType catelType)
         {
-            FodyEnvironment.LogDebug($"\tExecuting '{GetType().Name}' for '{catelType.TypeDefinition.FullName}'");
+            FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{catelType.TypeDefinition.FullName}'");
 
             foreach (var property in catelType.Properties)
             {
@@ -85,7 +85,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var modelPropertyToMap = modelType.GetProperty(modelPropertyName);
             if (modelPropertyToMap is null)
             {
-                FodyEnvironment.LogError($"Exposed property '{modelPropertyName}' does not exist on model '{modelType.FullName}', make sure to set the right mapping");
+                FodyEnvironment.WriteError($"Exposed property '{modelPropertyName}' does not exist on model '{modelType.FullName}', make sure to set the right mapping");
                 return;
             }
 

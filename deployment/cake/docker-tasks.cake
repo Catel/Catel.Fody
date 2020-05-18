@@ -95,7 +95,7 @@ public class DockerImagesProcessor : ProcessorBase
         // {
         //     Information("Updating version for docker image '{0}'", dockerImage);
 
-        //     var projectFileName = GetProjectFileName(dockerImage);
+        //     var projectFileName = GetProjectFileName(BuildContext, dockerImage);
 
         //     TransformConfig(projectFileName, new TransformationCollection 
         //     {
@@ -115,7 +115,7 @@ public class DockerImagesProcessor : ProcessorBase
         {
             BuildContext.CakeContext.LogSeparator("Building docker image '{0}'", dockerImage);
 
-            var projectFileName = GetProjectFileName(dockerImage);
+            var projectFileName = GetProjectFileName(BuildContext, dockerImage);
             
             var msBuildSettings = new MSBuildSettings {
                 Verbosity = Verbosity.Quiet, // Verbosity.Diagnostic
@@ -135,6 +135,7 @@ public class DockerImagesProcessor : ProcessorBase
             // are properties passed in using the command line)
             var outputDirectory = string.Format("{0}/{1}/", BuildContext.General.OutputRootDirectory, dockerImage);
             CakeContext.Information("Output directory: '{0}'", outputDirectory);
+            msBuildSettings.WithProperty("OverridableOutputRootPath", BuildContext.General.OutputRootDirectory);
             msBuildSettings.WithProperty("OverridableOutputPath", outputDirectory);
             msBuildSettings.WithProperty("PackageOutputPath", BuildContext.General.OutputRootDirectory);
 
@@ -155,6 +156,12 @@ public class DockerImagesProcessor : ProcessorBase
 
         foreach (var dockerImage in BuildContext.DockerImages.Items)
         {
+            if (!ShouldDeployProject(BuildContext, dockerImage))
+            {
+                CakeContext.Information("Docker image '{0}' should not be deployed", dockerImage);
+                continue;
+            }
+
             BuildContext.CakeContext.LogSeparator("Packaging docker image '{0}'", dockerImage);
 
             var projectFileName = string.Format("./src/{0}/{0}.csproj", dockerImage);
@@ -189,6 +196,7 @@ public class DockerImagesProcessor : ProcessorBase
             // Note: we need to set OverridableOutputPath because we need to be able to respect
             // AppendTargetFrameworkToOutputPath which isn't possible for global properties (which
             // are properties passed in using the command line)
+            msBuildSettings.WithProperty("OverridableOutputRootPath", BuildContext.General.OutputRootDirectory);
             msBuildSettings.WithProperty("OverridableOutputPath", outputDirectory);
             msBuildSettings.WithProperty("PackageOutputPath", outputDirectory);
             msBuildSettings.WithProperty("ConfigurationName", BuildContext.General.Solution.ConfigurationName);

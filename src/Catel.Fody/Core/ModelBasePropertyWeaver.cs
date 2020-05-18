@@ -39,30 +39,30 @@ namespace Catel.Fody
             var property = _propertyData.PropertyDefinition;
             if (property is null)
             {
-                FodyEnvironment.LogWarning("Skipping an unknown property because it has no property definition");
+                FodyEnvironment.WriteWarning("Skipping an unknown property because it has no property definition");
                 return;
             }
 
             if (AlreadyContainsCallToMember(property.GetMethod, _catelType.GetValueInvoker.Name) ||
                 AlreadyContainsCallToMember(property.SetMethod, preferredSetValueInvoker.Name))
             {
-                FodyEnvironment.LogDebug($"\t{property.GetName()} already has GetValue and/or SetValue functionality. Property will be ignored.");
+                FodyEnvironment.WriteDebug($"\t{property.GetName()} already has GetValue and/or SetValue functionality. Property will be ignored.");
                 return;
             }
 
             if (!force && !HasBackingField(property))
             {
-                FodyEnvironment.LogDebug($"\t\tSkipping '{property.GetName()}' because it has no backing field");
+                FodyEnvironment.WriteDebug($"\t\tSkipping '{property.GetName()}' because it has no backing field");
                 return;
             }
 
             if (ImplementsICommand(property))
             {
-                FodyEnvironment.LogDebug($"\t\tSkipping '{property.GetName()}' because it implements ICommand");
+                FodyEnvironment.WriteDebug($"\t\tSkipping '{property.GetName()}' because it implements ICommand");
                 return;
             }
 
-            FodyEnvironment.LogDebug("\t\t" + property.GetName());
+            FodyEnvironment.WriteDebug("\t\t" + property.GetName());
 
             try
             {
@@ -85,7 +85,7 @@ namespace Catel.Fody
             }
             catch (Exception ex)
             {
-                FodyEnvironment.LogError($"\t\tFailed to handle property '{property.DeclaringType.Name}.{property.Name}'\n{ex.Message}\n{ex.StackTrace}");
+                FodyEnvironment.WriteError($"\t\tFailed to handle property '{property.DeclaringType.Name}.{property.Name}'\n{ex.Message}\n{ex.StackTrace}");
 
 #if DEBUG
                 Debugger.Launch();
@@ -120,7 +120,7 @@ namespace Catel.Fody
             var staticConstructor = type.Constructor(true);
             if (staticConstructor is null)
             {
-                FodyEnvironment.LogDebug($"\t\t\t{type.Name} - adding static constructor");
+                FodyEnvironment.WriteDebug($"\t\t\t{type.Name} - adding static constructor");
 
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
@@ -136,7 +136,7 @@ namespace Catel.Fody
 
                 type.Methods.Add(staticConstructor);
 
-                FodyEnvironment.LogDebug($"\t\t\t{type.Name} - added static constructor");
+                FodyEnvironment.WriteDebug($"\t\t\t{type.Name} - added static constructor");
             }
         }
 
@@ -147,7 +147,7 @@ namespace Catel.Fody
                 return;
             }
 
-            FodyEnvironment.LogDebug($"\t\t\t{property.Name} - adding On{property.Name}Changed invocation");
+            FodyEnvironment.WriteDebug($"\t\t\t{property.Name} - adding On{property.Name}Changed invocation");
 
             var declaringType = property.DeclaringType;
             var fieldName = GetChangeNotificationHandlerFieldName(property);
@@ -218,7 +218,7 @@ namespace Catel.Fody
             var fieldReference = GetFieldReference(declaringType, fieldName, true);
             if (fieldReference is null)
             {
-                FodyEnvironment.LogWarning($"\t\tCannot handle property '{_catelType.Name}.{property.Name}' because backing field is not found");
+                FodyEnvironment.WriteWarning($"\t\tCannot handle property '{_catelType.Name}.{property.Name}' because backing field is not found");
                 return false;
             }
 
@@ -409,7 +409,7 @@ namespace Catel.Fody
 
         private int AddGetValueCall(PropertyDefinition property, FieldReference fieldReference)
         {
-            FodyEnvironment.LogDebug($"\t\t\t{property.Name} - adding GetValue call");
+            FodyEnvironment.WriteDebug($"\t\t\t{property.Name} - adding GetValue call");
 
             var genericGetValue = new GenericInstanceMethod(_catelType.GetValueInvoker);
 
@@ -451,7 +451,7 @@ namespace Catel.Fody
 
         private int AddSetValueCall(PropertyDefinition property, FieldReference fieldReference, bool isReadOnly)
         {
-            FodyEnvironment.LogDebug($"\t\t\t{property.Name} - adding SetValue call");
+            FodyEnvironment.WriteDebug($"\t\t\t{property.Name} - adding SetValue call");
 
             //string fieldName = string.Format("{0}Property", property.Name);
             //var declaringType = property.DeclaringType;
@@ -594,7 +594,7 @@ namespace Catel.Fody
 
                         if (instruction.UsesField(field))
                         {
-                            FodyEnvironment.LogDebug($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. Converting field usage to property usage to maintain compatibility with Catel generated properties.");
+                            FodyEnvironment.WriteDebug($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. Converting field usage to property usage to maintain compatibility with Catel generated properties.");
 
                             if (instruction.IsOpCode(OpCodes.Stfld))
                             {
@@ -728,12 +728,12 @@ namespace Catel.Fody
                                 }
                                 else
                                 {
-                                    FodyEnvironment.LogError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. A rare condition occurred (no base ctor found), please contact support");
+                                    FodyEnvironment.WriteError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. A rare condition occurred (no base ctor found), please contact support");
                                 }
                             }
                             else
                             {
-                                FodyEnvironment.LogError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. Tried to convert it to property usage, but OpCode '{instruction.OpCode}' is not supported. Please raise an issue.");
+                                FodyEnvironment.WriteError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. Tried to convert it to property usage, but OpCode '{instruction.OpCode}' is not supported. Please raise an issue.");
                             }
                         }
                     }
