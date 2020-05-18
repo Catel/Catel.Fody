@@ -9,6 +9,7 @@ public class GeneralContext : BuildContextWithItemsBase
     public GeneralContext(IBuildContext parentBuildContext)
         : base(parentBuildContext)
     {
+        SkipComponentsThatAreNotDeployable = true;
     }
 
     public string Target { get; set; }
