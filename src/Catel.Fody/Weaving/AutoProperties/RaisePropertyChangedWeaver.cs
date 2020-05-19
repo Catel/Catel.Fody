@@ -43,6 +43,11 @@ namespace Catel.Fody.Weaving.AutoProperties
 
         private void FixRaisePropertyChangedMethod(MethodDefinition method)
         {
+            if (method.IsAbstract || method.IsStatic)
+            {
+                return;
+            }
+
             var methodBody = method.Body;
 
             methodBody.SimplifyMacros();
