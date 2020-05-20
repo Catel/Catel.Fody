@@ -69,8 +69,11 @@ namespace Catel.Fody.Weaving.AutoProperties
                     onPropertyChangedWeaver.Execute();
                 }
 
-                var raisePropertyChangedWeaver = new RaisePropertyChangedWeaver(catelType, _msCoreReferenceFinder);
-                raisePropertyChangedWeaver.Execute();
+                // Note: for now this is disabled. In advanced scenarios (see unit test for ReplacesRaisePropertyChanged_Advanced), it somehow does
+                // not correctly replace the "leave_s" operand. The quick watch shows that the method is correctly updated, but the IL *and* the unit test
+                // both show incorrect execution
+                //var raisePropertyChangedWeaver = new RaisePropertyChangedWeaver(catelType, _msCoreReferenceFinder);
+                //raisePropertyChangedWeaver.Execute();
             }
         }
     }

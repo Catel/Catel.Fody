@@ -1,5 +1,7 @@
 ﻿namespace Catel.Fody.TestAssembly
 {
+    using System;
+    using Catel.Collections;
     using Catel.Data;
 
     public class ObservableObjectTest : ObservableObject
@@ -63,6 +65,13 @@
         public string ManualChangeNotificationProperty { get; set; }
 
         private bool _isExpanded;
+        public object RowGroupDefinition { get; set; }
+        public FastObservableCollection<object> ParentCollection { get; set; }
+
+        private void UpdateExpandState()
+        {
+            // dummy call
+        }
 
         public bool IsExpanded
         {
@@ -75,12 +84,17 @@
                 }
 
                 _isExpanded = value;
-
-                if (FirstName is null)
+                if (RowGroupDefinition == null)
                 {
                     RaisePropertyChanged(() => IsExpanded);
 
                     return;
+                }
+
+                var parentCollection = ParentCollection;
+                using (parentCollection?.SuspendChangeNotifications())
+                {
+                    Console.WriteLine("excecute some logic");
                 }
 
                 RaisePropertyChanged(() => IsExpanded);
@@ -190,6 +204,13 @@
         public string ManualChangeNotificationProperty { get; set; }
 
         private bool _isExpanded;
+        public object RowGroupDefinition { get; set; }
+        public FastObservableCollection<object> ParentCollection { get; set; }
+
+        private void UpdateExpandState()
+        {
+            // dummy call
+        }
 
         public bool IsExpanded
         {
@@ -202,12 +223,17 @@
                 }
 
                 _isExpanded = value;
-
-                if (FirstName is null)
+                if (RowGroupDefinition == null)
                 {
                     RaisePropertyChanged("IsExpanded");
 
                     return;
+                }
+
+                var parentCollection = ParentCollection;
+                using (parentCollection?.SuspendChangeNotifications())
+                {
+                    Console.WriteLine("excecute some logic");
                 }
 
                 RaisePropertyChanged("IsExpanded");
