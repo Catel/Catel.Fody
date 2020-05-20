@@ -161,7 +161,8 @@ namespace Catel.Fody.Weaving.AutoProperties
                 for (var j = 0; j <= startInstructionIndex; j++)
                 {
                     var potentialInstruction = instructions[j];
-                    if (potentialInstruction.IsOpCode(OpCodes.Brfalse, OpCodes.Brfalse_S, OpCodes.Brtrue, OpCodes.Brtrue_S))
+                    // Note: we don't check the op code, as long as the instruction is the operand, we need to replace it
+                    //if (potentialInstruction.IsOpCode(OpCodes.Brfalse, OpCodes.Brfalse_S, OpCodes.Brtrue, OpCodes.Brtrue_S, OpCodes.Leave, OpCodes.Leave_S))
                     {
                         var operand = potentialInstruction.Operand as Instruction;
                         if (operand == startInstruction)
@@ -194,17 +195,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 i = startInstructionIndex;
             }
 
-
             methodBody.OptimizeMacros();
-        }
-
-        private MethodReference GetSystemObjectEqualsMethodReference(ModuleDefinition moduleDefinition)
-        {
-            var typeReference = _msCoreReferenceFinder.GetCoreTypeReference("System.String");
-            var typeDefinition = typeReference.Resolve();
-
-            var methodDefinition = typeDefinition.Methods.Single(m => m.Name == "Equals" && m.Parameters.Count == 1 && m.Parameters[0].ParameterType.Name == "String");
-            return methodDefinition;
         }
         #endregion
     }
