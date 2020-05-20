@@ -61,6 +61,31 @@
 
         [NoWeaving]
         public string ManualChangeNotificationProperty { get; set; }
+
+        private bool _isExpanded;
+
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set
+            {
+                if (Equals(_isExpanded, value))
+                {
+                    return;
+                }
+
+                _isExpanded = value;
+
+                if (FirstName is null)
+                {
+                    RaisePropertyChanged(() => IsExpanded);
+
+                    return;
+                }
+
+                RaisePropertyChanged(() => IsExpanded);
+            }
+        }
     }
 
     [NoWeaving]
@@ -163,5 +188,30 @@
         }
 
         public string ManualChangeNotificationProperty { get; set; }
+
+        private bool _isExpanded;
+
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set
+            {
+                if (Equals(_isExpanded, value))
+                {
+                    return;
+                }
+
+                _isExpanded = value;
+
+                if (FirstName is null)
+                {
+                    RaisePropertyChanged("IsExpanded");
+
+                    return;
+                }
+
+                RaisePropertyChanged("IsExpanded");
+            }
+        }
     }
 }

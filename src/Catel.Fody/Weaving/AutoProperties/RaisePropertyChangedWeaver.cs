@@ -8,6 +8,7 @@
 namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
     using Catel.Fody.Weaving.Argument;
     using Mono.Cecil;
@@ -95,7 +96,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                     continue;
                 }
 
-                var startInstruction = i;
+                var startInstructionIndex = i;
                 var propertyName = string.Empty;
                 for (var j = i; j >= 0; j--)
                 {
@@ -109,7 +110,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                             if (name.StartsWith("get_"))
                             {
                                 propertyName = name.Replace("get_", string.Empty);
-                                startInstruction = j;
+                                startInstructionIndex = j;
                                 break;
                             }
                         }
@@ -122,29 +123,29 @@ namespace Catel.Fody.Weaving.AutoProperties
                     continue;
                 }
 
-                while (startInstruction >= 0)
+                while (startInstructionIndex >= 0)
                 {
-                    startInstruction--;
+                    startInstructionIndex--;
 
-                    var potentialInstruction = instructions[startInstruction];
+                    var potentialInstruction = instructions[startInstructionIndex];
                     if (potentialInstruction.IsOpCode(OpCodes.Ldtoken))
                     {
                         if (potentialInstruction.Operand is TypeDefinition)
                         {
                             // Found it, remove another 1 for ldarg
-                            startInstruction--;
+                            startInstructionIndex--;
 
-                            if (startInstruction > 0 && instructions[startInstruction].IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
+                            if (startInstructionIndex > 0 && instructions[startInstructionIndex].IsOpCode(OpCodes.Ldarg, OpCodes.Ldarg_0))
                             {
                                 // Remove another one
-                                startInstruction--;
+                                startInstructionIndex--;
                             }
                             break;
                         }
                     }
                 }
 
-                if (startInstruction <= 0)
+                if (startInstructionIndex <= 0)
                 {
                     // Not found, cannot optimize
                     continue;
@@ -152,7 +153,28 @@ namespace Catel.Fody.Weaving.AutoProperties
 
                 FodyEnvironment.WriteDebug($"Optimizing 'RaisePropertyChanged(() => {propertyName})' to 'RaisePropertyChanged(\"{propertyName}\")' in '{method.GetFullName()}'");
 
-                instructions.RemoveInstructionsFromPositions(startInstruction, i);
+                var startInstruction = instructions[startInstructionIndex];
+
+                // Find jump instructions we need to rewrite
+                var jumpInstructions = new List<Instruction>();
+
+                for (var j = 0; j <= startInstructionIndex; j++)
+                {
+                    var potentialInstruction = instructions[j];
+                    if (potentialInstruction.IsOpCode(OpCodes.Brfalse, OpCodes.Brfalse_S, OpCodes.Brtrue, OpCodes.Brtrue_S))
+                    {
+                        var operand = potentialInstruction.Operand as Instruction;
+                        if (operand == startInstruction)
+                        {
+                            // Replace!
+                            jumpInstructions.Add(potentialInstruction);
+                            //potentialInstruction.Operand = newInstructions.First();
+                        }
+                    }
+                }
+
+                // Start replacing
+                instructions.RemoveInstructionsFromPositions(startInstructionIndex, i);
 
                 var newInstructions = new List<Instruction>(new[] {
                     Instruction.Create(OpCodes.Ldarg_0),
@@ -160,8 +182,18 @@ namespace Catel.Fody.Weaving.AutoProperties
                     Instruction.Create(OpCodes.Call, _catelType.RaisePropertyChangedInvoker)
                 });
 
-                instructions.Insert(startInstruction, newInstructions.ToArray());
+                instructions.Insert(startInstructionIndex, newInstructions.ToArray());
+
+                // Fix all potential returns
+                foreach (var jumpInstruction in jumpInstructions)
+                {
+                    jumpInstruction.Operand = instructions[startInstructionIndex];
+                }
+
+                // Reset counter, we might have multiple calls
+                i = startInstructionIndex;
             }
+
 
             methodBody.OptimizeMacros();
         }
