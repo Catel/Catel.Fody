@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="5.12.5" />
+    <PackageReference Include="Catel.MVVM" Version="5.12.6" />
     <PackageReference Include="FodyHelpers" Version="6.1.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
