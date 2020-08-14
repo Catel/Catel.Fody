@@ -14,16 +14,18 @@ namespace Catel.Fody.Weaving.ExposedProperties
     {
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
         private readonly ModuleWeaver _moduleWeaver;
+        private readonly Configuration _configuration;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         private readonly TypeDefinition _viewModelToModelAttributeTypeDefinition;
 
         public ExposedPropertiesWeaver(CatelTypeNodeBuilder catelTypeNodeBuilder, ModuleWeaver moduleWeaver,
-            MsCoreReferenceFinder msCoreReferenceFinder)
+            Configuration configuration, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _viewModelToModelAttributeTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.MVVM", "Catel.MVVM.ViewModelToModelAttribute") as TypeDefinition;
 
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
             _moduleWeaver = moduleWeaver;
+            _configuration = configuration;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
 
@@ -101,7 +103,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
             var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
             catelTypeProperty.IsReadOnly = isReadOnly;
 
-            var catelPropertyWeaver = new ModelBasePropertyWeaver(catelType, catelTypeProperty, _moduleWeaver, _msCoreReferenceFinder);
+            var catelPropertyWeaver = new ModelBasePropertyWeaver(catelType, catelTypeProperty, _configuration, _moduleWeaver, _msCoreReferenceFinder);
             catelPropertyWeaver.Execute(true);
 
             var stringType = _msCoreReferenceFinder.GetCoreTypeReference("String");

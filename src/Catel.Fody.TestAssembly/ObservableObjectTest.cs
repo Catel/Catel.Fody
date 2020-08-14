@@ -58,7 +58,7 @@
 
         public void ManuallyRaiseChangeNotificationForManualChangeNotificationProperty()
         {
-            RaisePropertyChanged(() => ManualChangeNotificationProperty);
+            RaisePropertyChanged(propertyExpression: () => ManualChangeNotificationProperty);
         }
 
         [NoWeaving]
@@ -86,7 +86,7 @@
                 _isExpanded = value;
                 if (RowGroupDefinition == null)
                 {
-                    RaisePropertyChanged(() => IsExpanded);
+                    RaisePropertyChanged(propertyExpression: () => IsExpanded);
 
                     return;
                 }
@@ -97,7 +97,7 @@
                     Console.WriteLine("excecute some logic");
                 }
 
-                RaisePropertyChanged(() => IsExpanded);
+                RaisePropertyChanged(propertyExpression: () => IsExpanded);
             }
         }
     }

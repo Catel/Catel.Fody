@@ -20,13 +20,15 @@ namespace Catel.Fody
 
     public class ModelBasePropertyWeaver : PropertyWeaverBase
     {
-        public ModelBasePropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, ModuleWeaver moduleWeaver,
-            MsCoreReferenceFinder msCoreReferenceFinder)
+        private readonly Configuration _configuration;
+
+        public ModelBasePropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, Configuration configuration,
+            ModuleWeaver moduleWeaver, MsCoreReferenceFinder msCoreReferenceFinder)
             : base(catelType, propertyData, moduleWeaver, msCoreReferenceFinder)
         {
+            _configuration = configuration;
         }
 
-        #region Methods
         public void Execute(bool force = false)
         {
             var preferredSetValueInvoker = _catelType.PreferredSetValueInvoker;
@@ -202,7 +204,24 @@ namespace Catel.Fody
             var fieldName = $"{property.Name}Property";
             var declaringType = property.DeclaringType;
 
-            var fieldDefinition = new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly, _catelType.PropertyDataType);
+            var attributes = FieldAttributes.Static | FieldAttributes.InitOnly;
+
+            switch (_configuration.GeneratedPropertyDataAccessibility)
+            {
+                case Accessibility.Public:
+                    attributes |= FieldAttributes.Public;
+                    break;
+
+                case Accessibility.Internal:
+                    attributes |= FieldAttributes.Family;
+                    break;
+
+                case Accessibility.Private:
+                    attributes |= FieldAttributes.Private;
+                    break;
+            }
+
+            var fieldDefinition = new FieldDefinition(fieldName, attributes, _catelType.PropertyDataType);
 
             declaringType.Fields.Add(fieldDefinition);
 
@@ -584,7 +603,6 @@ namespace Catel.Fody
                     for (var i = 0; i < instructions.Count; i++)
                     {
                         var instruction = instructions[i];
-
                         if (instruction.IsOpCode(OpCodes.Nop))
                         {
                             continue;
@@ -758,6 +776,5 @@ namespace Catel.Fody
                                          x.Operand is MethodReference reference &&
                                          reference.Name == methodName);
         }
-        #endregion
     }
 }

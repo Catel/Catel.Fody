@@ -121,7 +121,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.WriteInfo("Weaving exposed properties");
 
-                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(this, typeNodeBuilder, msCoreReferenceFinder);
+                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(this, configuration, typeNodeBuilder, msCoreReferenceFinder);
                     exposedPropertiesWeaverService.Execute();
                 }
                 else

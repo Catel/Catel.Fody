@@ -12,12 +12,15 @@ namespace Catel.Fody.Services
     public class ExposedPropertiesWeaverService
     {
         private readonly ModuleWeaver _moduleWeaver;
+        private readonly Configuration _configuration;
         private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-        public ExposedPropertiesWeaverService(ModuleWeaver moduleWeaver, CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
+        public ExposedPropertiesWeaverService(ModuleWeaver moduleWeaver, Configuration configuration, CatelTypeNodeBuilder catelTypeNodeBuilder,
+            MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _moduleWeaver = moduleWeaver;
+            _configuration = configuration;
             _catelTypeNodeBuilder = catelTypeNodeBuilder;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
@@ -33,7 +36,7 @@ namespace Catel.Fody.Services
             var warningChecker = new ExposedPropertiesWarningChecker(_catelTypeNodeBuilder);
             warningChecker.Execute();
 
-            var weaver = new ExposedPropertiesWeaver(_catelTypeNodeBuilder, _moduleWeaver, _msCoreReferenceFinder);
+            var weaver = new ExposedPropertiesWeaver(_catelTypeNodeBuilder, _moduleWeaver, _configuration, _msCoreReferenceFinder);
             weaver.Execute();
         }
     }
