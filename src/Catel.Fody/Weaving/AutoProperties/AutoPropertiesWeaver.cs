@@ -46,7 +46,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                     {
                         case CatelTypeType.ViewModel:
                         case CatelTypeType.Model:
-                            var modelBasePropertyWeaver = new ModelBasePropertyWeaver(catelType, propertyData, _moduleWeaver, _msCoreReferenceFinder);
+                            var modelBasePropertyWeaver = new ModelBasePropertyWeaver(catelType, propertyData, _configuration, _moduleWeaver, _msCoreReferenceFinder);
                             modelBasePropertyWeaver.Execute();
                             break;
 

@@ -19,6 +19,7 @@ namespace Catel.Fody
             WeaveArguments = true;
             WeaveLogging = true;
             GenerateXmlSchemas = false;
+            GeneratedPropertyDataAccessibility = Accessibility.Public;
 
             if (config is null)
             {
@@ -31,6 +32,7 @@ namespace Catel.Fody
             config.ReadBool(nameof(WeaveArguments), value => WeaveArguments = value);
             config.ReadBool(nameof(WeaveLogging), value => WeaveLogging = value);
             config.ReadBool(nameof(GenerateXmlSchemas), value => GenerateXmlSchemas = value);
+            config.ReadEnum<Accessibility>(nameof(GeneratedPropertyDataAccessibility), value => GeneratedPropertyDataAccessibility = value);
         }
 
         public bool IsRunningAgainstCatel { get; set; }
@@ -46,5 +48,7 @@ namespace Catel.Fody
         public bool WeaveLogging { get; private set; }
 
         public bool GenerateXmlSchemas { get; private set; }
+
+        public Accessibility GeneratedPropertyDataAccessibility { get; private set; }
     }
 }

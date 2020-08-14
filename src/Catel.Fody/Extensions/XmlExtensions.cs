@@ -17,8 +17,24 @@ namespace Catel.Fody
             var attribute = config.Attribute(nodeName);
             if (attribute != null)
             {
-                bool value;
-                if (bool.TryParse(attribute.Value, out value))
+                if (bool.TryParse(attribute.Value, out var value))
+                {
+                    setter(value);
+                }
+                else
+                {
+                    throw new WeavingException($"Could not parse '{nodeName}' from '{attribute.Value}'.");
+                }
+            }
+        }
+
+        public static void ReadEnum<TEnum>(this XElement config, string nodeName, Action<TEnum> setter)
+            where TEnum : struct
+        {
+            var attribute = config.Attribute(nodeName);
+            if (attribute != null)
+            {
+                if (Enum.TryParse<TEnum>(attribute.Value, out var value))
                 {
                     setter(value);
                 }

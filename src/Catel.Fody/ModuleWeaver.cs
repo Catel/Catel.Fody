@@ -39,12 +39,12 @@ namespace Catel.Fody
         {
             try
             {
-#if DEBUG
-                if (!Debugger.IsAttached)
-                {
-                    Debugger.Launch();
-                }
-#endif
+//#if DEBUG
+//                if (!Debugger.IsAttached)
+//                {
+//                    Debugger.Launch();
+//                }
+//#endif
 
                 // First of all, set the assembly resolver
                 if (AssemblyResolver is null)
@@ -121,7 +121,7 @@ namespace Catel.Fody
                 {
                     FodyEnvironment.WriteInfo("Weaving exposed properties");
 
-                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(this, typeNodeBuilder, msCoreReferenceFinder);
+                    var exposedPropertiesWeaverService = new ExposedPropertiesWeaverService(this, configuration, typeNodeBuilder, msCoreReferenceFinder);
                     exposedPropertiesWeaverService.Execute();
                 }
                 else

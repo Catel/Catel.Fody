@@ -117,6 +117,25 @@ namespace Catel.Fody.Tests
         }
 
         [TestCase]
+        public void CorrectlyReadsGeneratedPropertyDataAccessibility()
+        {
+            var publicElement = XElement.Parse("<Node GeneratedPropertyDataAccessibility='Public' />");
+            var publicConfiguration = new Configuration(publicElement);
+
+            Assert.AreEqual(Accessibility.Public, publicConfiguration.GeneratedPropertyDataAccessibility);
+
+            var internalElement = XElement.Parse("<Node GeneratedPropertyDataAccessibility='Internal' />");
+            var internalConfiguration = new Configuration(internalElement);
+
+            Assert.AreEqual(Accessibility.Internal, internalConfiguration.GeneratedPropertyDataAccessibility);
+
+            var privateElement = XElement.Parse("<Node GeneratedPropertyDataAccessibility='Private' />");
+            var privateConfiguration = new Configuration(privateElement);
+
+            Assert.AreEqual(Accessibility.Private, privateConfiguration.GeneratedPropertyDataAccessibility);
+        }
+
+        [TestCase]
         public void CorrectlyReadsValues()
         {
             var configuration = new Configuration(null);
@@ -127,7 +146,5 @@ namespace Catel.Fody.Tests
             Assert.IsTrue(configuration.WeaveLogging);
             Assert.IsFalse(configuration.GenerateXmlSchemas);
         }
-
-
     }
 }
