@@ -39,12 +39,12 @@ namespace Catel.Fody
         {
             try
             {
-#if DEBUG
-                if (!Debugger.IsAttached)
-                {
-                    Debugger.Launch();
-                }
-#endif
+//#if DEBUG
+//                if (!Debugger.IsAttached)
+//                {
+//                    Debugger.Launch();
+//                }
+//#endif
 
                 // First of all, set the assembly resolver
                 if (AssemblyResolver is null)
