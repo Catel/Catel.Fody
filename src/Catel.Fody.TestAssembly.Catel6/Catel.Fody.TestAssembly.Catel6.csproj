@@ -1,0 +1,35 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <AssemblyName>Catel.Fody.TestAssembly.Catel6</AssemblyName>
+    <RootNamespace>Catel.Fody.TestAssembly</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <PackageId>Catel.Fody.TestAssembly</PackageId>
+    <PackageVersion>1.0.0-alpha0001</PackageVersion>
+    <Description>Catel.Fody.TestAssembly library.</Description>
+    <PackageTags></PackageTags>
+    <SonarQubeExclude>true</SonarQubeExclude>
+    <DisableFody>true</DisableFody>
+    <DefineConstants>$(DefineConstants);CATEL_6</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Catel.MVVM" Version="6.0.0-alpha0317" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj" />
+    <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly.Catel6\Catel.Fody.TestExternalTypesAssembly.Catel6.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Catel.Fody.TestAssembly.Shared\**\*.cs" Exclude="..\Catel.Fody.TestAssembly.Shared\bin\**\*.cs;..\Catel.Fody.TestAssembly.Shared\obj\**\*.cs" />
+  </ItemGroup>
+  
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props')" />
+</Project>
