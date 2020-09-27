@@ -50,7 +50,7 @@
             return $"<{property.Name}>k__BackingField";
         }
 
-        protected GenericInstanceType GetEventHandlerAdvancedPropertyChangedEventArgs(PropertyDefinition property)
+        protected GenericInstanceType GetPropertyChangedEventHandler_Catel4_Catel5(PropertyDefinition property)
         {
             var genericHandlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.EventHandler`1");
             if (genericHandlerType is null)

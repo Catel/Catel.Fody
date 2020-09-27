@@ -19,19 +19,17 @@ namespace Catel.Fody.TestAssembly
 
         public string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the FullName.
-        /// </summary>
         public string FullName
         {
             get { return GetValue<string>(FullNameProperty); }
             set { SetValue(FullNameProperty, value); }
         }
 
-        /// <summary>
-        /// Register the FullName property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData FullNameProperty = RegisterProperty("FullName", typeof(string));
+#elif CATEL_6
+        public static readonly IPropertyData FullNameProperty = RegisterProperty<string>("FullName");
+#endif
 
         private void OnNameChanged()
         {

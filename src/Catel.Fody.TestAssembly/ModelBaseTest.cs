@@ -12,20 +12,19 @@ namespace Catel.Fody.TestAssembly
 
     public class GenericModelBaseTestBase<TComponent> : ModelBase
     {
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
         public ObservableCollection<TComponent> CatelOperations
         {
             get { return GetValue<ObservableCollection<TComponent>>(CatelOperationsProperty); }
             set { SetValue(CatelOperationsProperty, value); }
         }
 
-        /// <summary>
-        /// Register the CatelOperations property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData CatelOperationsProperty = RegisterProperty("CatelOperations", typeof(ObservableCollection<TComponent>), null,
             (sender, e) => ((GenericModelBaseTestBase<TComponent>)sender).OnCatelOperationsChanged());
+#elif CATEL_6
+        public static readonly IPropertyData CatelOperationsProperty = RegisterProperty("CatelOperations", typeof(ObservableCollection<TComponent>), null,
+            (sender, e) => ((GenericModelBaseTestBase<TComponent>)sender).OnCatelOperationsChanged());
+#endif
 
         private void OnCatelOperationsChanged()
         {
@@ -75,19 +74,17 @@ namespace Catel.Fody.TestAssembly
             get { return "JustAValue"; }
         }
 
-        /// <summary>
-        /// Gets or sets the full name.
-        /// </summary>
         public string FullName
         {
             get { return GetValue<string>(FullNameProperty); }
             set { SetValue(FullNameProperty, value); }
         }
 
-        /// <summary>
-        /// Register the FullName property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData FullNameProperty = RegisterProperty("FullName", typeof(string), string.Empty);
+#elif CATEL_6
+        public static readonly IPropertyData FullNameProperty = RegisterProperty("FullName", typeof(string), string.Empty);
+#endif
 
         public string FullNameWithChangeCallback { get; set; }
 

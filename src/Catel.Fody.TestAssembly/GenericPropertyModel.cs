@@ -46,10 +46,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(MyModelCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the MyModelCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData MyModelCatelProperty = RegisterProperty("MyModelCatel", typeof(TModel), null);
+#elif CATEL_6
+        public static readonly IPropertyData MyModelCatelProperty = RegisterProperty("MyModelCatel", typeof(TModel), null);
+#endif
         #endregion
     }
 }

@@ -111,8 +111,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(IsExpandedAllOnStartupProperty, value); }
         }
 
+#if CATEL_5
         public static readonly PropertyData IsExpandedAllOnStartupProperty = RegisterProperty("IsExpandedAllOnStartup", typeof(bool), false);
-
+#elif CATEL_6
+        public static readonly IPropertyData IsExpandedAllOnStartupProperty = RegisterProperty("IsExpandedAllOnStartup", typeof(bool), false);
+#endif
 
         public IValidationContext ValidationContext
         {
@@ -120,8 +123,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(ValidationContextProperty, value); }
         }
 
+#if CATEL_5
         public static readonly PropertyData ValidationContextProperty = RegisterProperty("ValidationContext", typeof(IValidationContext), null);
-
+#elif CATEL_6
+        public static readonly IPropertyData ValidationContextProperty = RegisterProperty("ValidationContext", typeof(IValidationContext), null);
+#endif
 
         public bool ShowErrors
         {
@@ -129,8 +135,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(ShowErrorsProperty, value); }
         }
 
+#if CATEL_5
         public static readonly PropertyData ShowErrorsProperty = RegisterProperty("ShowErrors", typeof(bool), true);
-
+#elif CATEL_6
+        public static readonly IPropertyData ShowErrorsProperty = RegisterProperty("ShowErrors", typeof(bool), true);
+#endif
 
         public bool ShowWarnings
         {
@@ -138,8 +147,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(ShowWarningsProperty, value); }
         }
 
+#if CATEL_5
         public static readonly PropertyData ShowWarningsProperty = RegisterProperty("ShowWarnings", typeof(bool), true);
-
+#elif CATEL_6
+        public static readonly IPropertyData ShowWarningsProperty = RegisterProperty("ShowWarnings", typeof(bool), true);
+#endif
 
         public bool IsExpanded
         {
@@ -147,8 +159,11 @@ namespace Catel.Fody.TestAssembly
             private set { SetValue(IsExpandedProperty, value); }
         }
 
+#if CATEL_5
         public static readonly PropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof(bool), false);
-
+#elif CATEL_6
+        public static readonly IPropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof(bool), false);
+#endif
 
         public bool IsCollapsed => !IsExpanded;
 

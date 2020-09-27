@@ -23,7 +23,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(MiddleNameProperty, value); }
         }
 
+#if CATEL_5
         public static readonly PropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string));
+#elif CATEL_6
+        public static readonly IPropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string));
+#endif
 
         public string LastName { get; set; }
 
@@ -82,22 +86,17 @@ namespace Catel.Fody.TestAssembly
 
     public class DependentPropertyModelWithExistingOnPropertyChanged : DependentPropertyModel
     {
-        #region Properties
         public string Profile
         {
             get { return $"Name:{FullName}, Age:{Age}".Trim(); }
         }
-
-        #endregion
     }
 
     public class DetailedDependentPropertyModel : DependentPropertyModel
     {
-        #region Properties
         public string Profile
         {
             get { return $"Name:{FullName}, Age:{Age}".Trim(); }
         }
-        #endregion
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <AssemblyName>Catel.Fody.TestExternalTypesAssembly</AssemblyName>
+    <AssemblyName>Catel.Fody.TestExternalTypesAssembly.Catel5</AssemblyName>
     <RootNamespace>Catel.Fody.TestExternalTypesAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageId>Catel.Fody.TestExternalTypesAssembly</PackageId>
@@ -10,6 +10,7 @@
     <PackageTags></PackageTags>
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
+    <DefineConstants>$(DefineConstants);CATEL_5</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

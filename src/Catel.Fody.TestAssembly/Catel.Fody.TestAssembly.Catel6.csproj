@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj" />
-    <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly\Catel.Fody.TestExternalTypesAssembly.csproj" />
+    <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly\Catel.Fody.TestExternalTypesAssembly.Catel6.csproj" />
   </ItemGroup>
 
   <ItemGroup>

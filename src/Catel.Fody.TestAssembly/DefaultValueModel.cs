@@ -47,10 +47,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(BoolValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the BoolValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData BoolValueCatelProperty = RegisterProperty("BoolValueCatel", typeof(bool), true);
+#elif CATEL_6
+        public static readonly IPropertyData BoolValueCatelProperty = RegisterProperty("BoolValueCatel", typeof(bool), true);
+#endif
 
         /// <summary>
         /// Gets or sets the property value.
@@ -61,10 +62,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(NullableBoolDefaultNullValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the BoolValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData NullableBoolDefaultNullValueCatelProperty = RegisterProperty("NullableBoolDefaultNullValueCatel", typeof(bool?), null);
+#elif CATEL_6
+        public static readonly IPropertyData NullableBoolDefaultNullValueCatelProperty = RegisterProperty("NullableBoolDefaultNullValueCatel", typeof(bool?), null);
+#endif
 
         /// <summary>
         /// Gets or sets the property value.
@@ -75,10 +77,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(NullableBoolDefaultTrueValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the BoolValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData NullableBoolDefaultTrueValueCatelProperty = RegisterProperty("NullableBoolDefaultTrueValueCatel", typeof(bool?), true);
+#elif CATEL_6
+        public static readonly IPropertyData NullableBoolDefaultTrueValueCatelProperty = RegisterProperty("NullableBoolDefaultTrueValueCatel", typeof(bool?), true);
+#endif
 
         /// <summary>
         /// Gets or sets the property value.
@@ -89,10 +92,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(NullableBoolDefaultFalseValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the BoolValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData NullableBoolDefaultFalseValueCatelProperty = RegisterProperty("NullableBoolDefaultFalseValueCatel", typeof(bool?), false);
+#elif CATEL_6
+        public static readonly IPropertyData NullableBoolDefaultFalseValueCatelProperty = RegisterProperty("NullableBoolDefaultFalseValueCatel", typeof(bool?), false);
+#endif
 
         [DefaultValue(42)]
         public int IntValue { get; set; }
@@ -106,10 +110,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(IntValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the IntValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData IntValueCatelProperty = RegisterProperty("IntValueCatel", typeof(int), 42);
+#elif CATEL_6
+        public static readonly IPropertyData IntValueCatelProperty = RegisterProperty("IntValueCatel", typeof(int), 42);
+#endif
 
         [DefaultValue(42L)]
         public long LongValue { get; set; }
@@ -123,10 +128,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(LongValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the LongValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData LongValueCatelProperty = RegisterProperty("LongValueCatel", typeof(long), 42L);
+#elif CATEL_6
+        public static readonly IPropertyData LongValueCatelProperty = RegisterProperty("LongValueCatel", typeof(long), 42L);
+#endif
 
         [DefaultValue(42d)]
         public double DoubleValue { get; set; }
@@ -140,10 +146,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(DoubleValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the DoubleValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData DoubleValueCatelProperty = RegisterProperty("DoubleValueCatel", typeof(double));
+#elif CATEL_6
+        public static readonly IPropertyData DoubleValueCatelProperty = RegisterProperty("DoubleValueCatel", typeof(double));
+#endif
 
         [DefaultValue(42f)]
         public float FloatValue { get; set; }
@@ -157,10 +164,11 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(FloatValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the FloatValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData FloatValueCatelProperty = RegisterProperty("FloatValueCatel", typeof(float), 42f);
+#elif CATEL_6
+        public static readonly IPropertyData FloatValueCatelProperty = RegisterProperty("FloatValueCatel", typeof(float), 42f);
+#endif
 
         [DefaultValue(ExampleEnum.B)]
         public ExampleEnum EnumValue { get; set; }
@@ -174,9 +182,10 @@ namespace Catel.Fody.TestAssembly
             set { SetValue(EnumValueCatelProperty, value); }
         }
 
-        /// <summary>
-        /// Register the EnumValueCatel property so it is known in the class.
-        /// </summary>
+#if CATEL_5
         public static readonly PropertyData EnumValueCatelProperty = RegisterProperty("EnumValueCatel", typeof(ExampleEnum), ExampleEnum.B);
+#elif CATEL_6
+        public static readonly IPropertyData EnumValueCatelProperty = RegisterProperty("EnumValueCatel", typeof(ExampleEnum), ExampleEnum.B);
+#endif
     }
 }

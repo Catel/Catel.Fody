@@ -8,12 +8,10 @@
 namespace Catel.Fody.TestAssembly
 {
     using System;
-    using Data;
     using MVVM;
 
     public class CTL569_ViewModel : ViewModelBase
     {
-        #region Properties
         public string ReleaseGroup { get; set; }
         public object SelectedShow { get; set; }
         public object SelectedFeed { get; set; }
@@ -23,10 +21,12 @@ namespace Catel.Fody.TestAssembly
         {
             get { return !string.IsNullOrWhiteSpace(SearchTerms) && SelectedFeed != null; }
         }
-        #endregion
 
-        #region Methods
-        protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
+#if CATEL_5
+        protected override void OnPropertyChanged(Catel.Data.AdvancedPropertyChangedEventArgs e)
+#elif CATEL_6
+        protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+#endif
         {
             base.OnPropertyChanged(e);
 
@@ -38,6 +38,5 @@ namespace Catel.Fody.TestAssembly
                     break;
             }
         }
-        #endregion
     }
 }
