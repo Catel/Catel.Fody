@@ -1,19 +1,25 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <AssemblyName>Catel.Fody.TestExternalTypesAssembly</AssemblyName>
-    <RootNamespace>Catel.Fody.TestExternalTypesAssembly</RootNamespace>
+    <AssemblyName>Catel.Fody.TestAssembly.Catel6</AssemblyName>
+    <RootNamespace>Catel.Fody.TestAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageId>Catel.Fody.TestExternalTypesAssembly</PackageId>
+    <PackageId>Catel.Fody.TestAssembly</PackageId>
     <PackageVersion>1.0.0-alpha0001</PackageVersion>
-    <Description>Catel.Fody.TestExternalTypesAssembly library.</Description>
+    <Description>Catel.Fody.TestAssembly library.</Description>
     <PackageTags></PackageTags>
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
+    <DefineConstants>$(DefineConstants);CATEL_6</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="5.12.9" />
+    <PackageReference Include="Catel.MVVM" Version="6.0.0-alpha0317" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj" />
+    <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly\Catel.Fody.TestExternalTypesAssembly.csproj" />
   </ItemGroup>
 
   <ItemGroup>

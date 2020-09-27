@@ -35,7 +35,7 @@ namespace Catel.Fody.Tests
         {
             var xElement = XElement.Parse("<Node attr='foo'/>");
 
-            ExceptionTester.CallMethodAndExpectException<WeavingException>(() => xElement.ReadBool("attr", b => Assert.Fail()));
+            Assert.Throws<WeavingException>(() => xElement.ReadBool("attr", b => Assert.Fail()));
         }
 
         [TestCase]

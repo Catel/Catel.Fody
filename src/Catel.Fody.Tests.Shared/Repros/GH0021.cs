@@ -19,7 +19,7 @@ namespace Catel.Fody.Tests.Repros
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0021.MyDerivedService");
             var service = Activator.CreateInstance(type) as dynamic;
 
-            ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => service.MyMethod(null, null));
+            Assert.Throws<ArgumentNullException>(() => service.MyMethod(null, null));
         }
     }
 }

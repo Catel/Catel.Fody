@@ -20,7 +20,8 @@ namespace Catel.Fody
         private readonly ModuleWeaver _moduleWeaver;
         private readonly IAssemblyResolver _assemblyResolver;
 
-        private readonly IDictionary<string, TypeReference> _typeReferences = new Dictionary<string, TypeReference>();
+        private readonly IDictionary<string, TypeReference> _typeReferencesByFullName = new Dictionary<string, TypeReference>();
+        private readonly IDictionary<string, TypeReference> _typeReferencesByShortName = new Dictionary<string, TypeReference>();
 
         // Types
         public TypeReference XmlQualifiedName;
@@ -63,13 +64,28 @@ namespace Catel.Fody
 
         public TypeReference GetCoreTypeReference(string typeName)
         {
-            if (!_typeReferences.ContainsKey(typeName))
+            if (!_typeReferencesByFullName.ContainsKey(typeName))
             {
                 var types = GetTypes();
-                _typeReferences[typeName] = types.FirstOrDefault(x => string.Equals(x.Name, typeName) || string.Equals(x.FullName, typeName));
+
+                foreach (var type in types)
+                {
+                    _typeReferencesByFullName[type.FullName] = type;
+                    _typeReferencesByShortName[type.Name] = type;
+                    //_typeReferences[typeName] = types.FirstOrDefault(x => string.Equals(x.Name, typeName) || string.Equals(x.FullName, typeName));
+                }
             }
 
-            return _typeReferences[typeName];
+            if (!_typeReferencesByFullName.TryGetValue(typeName, out var resolvedType))
+            {
+                if (!_typeReferencesByShortName.TryGetValue(typeName, out resolvedType))
+                {
+                    FodyEnvironment.WriteError($"Type '{typeName}' cannot be found, please report this bug");
+                    return null;
+                }
+            }
+
+            return resolvedType;
         }
 
         private IEnumerable<TypeReference> GetTypes()
@@ -80,7 +96,11 @@ namespace Catel.Fody
             var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
             if (objectDefinition is null)
             {
-                if (msCoreLibDefinition.IsNetStandardLibrary())
+                if (msCoreLibDefinition.IsNetCoreLibrary())
+                {
+                    msCoreTypes.AddRange(GetDotNetCoreTypes());
+                }
+                else if (msCoreLibDefinition.IsNetStandardLibrary())
                 {
                     msCoreTypes.AddRange(GetNetStandardTypes());
                 }
@@ -102,6 +122,20 @@ namespace Catel.Fody
             var allTypes = new List<TypeReference>();
 
             allTypes.AddRange(GetTypesFromAssembly("System"));
+
+            return allTypes;
+        }
+
+        private IEnumerable<TypeReference> GetDotNetCoreTypes()
+        {
+            var allTypes = new List<TypeReference>();
+
+            allTypes.AddRange(GetTypesFromAssembly("System"));
+            allTypes.AddRange(GetTypesFromAssembly("System.Core"));
+            allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
+            allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
+            allTypes.AddRange(GetTypesFromAssembly("System.Private.CoreLib"));
+            allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
 
             return allTypes;
         }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net472</TargetFrameworks>
-    <AssemblyName>Catel.Fody.Tests</AssemblyName>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <AssemblyName>Catel.Fody.Tests.Catel5</AssemblyName>
     <RootNamespace>Catel.Fody.Tests</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageId>Catel.Fody.Tests</PackageId>
@@ -10,10 +10,10 @@
     <PackageTags></PackageTags>
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
+    <DefineConstants>$(DefineConstants);CATEL_5</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="5.12.9" />
     <PackageReference Include="FodyHelpers" Version="6.2.6" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
@@ -28,12 +28,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Catel.Fody.TestAssembly\Catel.Fody.TestAssembly.csproj" />
+    <ProjectReference Include="..\Catel.Fody.TestAssembly\Catel.Fody.TestAssembly.Catel5.csproj" />
     <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly\Catel.Fody.TestExternalTypesAssembly.csproj" />
     <ProjectReference Include="..\Catel.Fody\Catel.Fody.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Catel.Fody.Tests.Shared\**\*.cs" Exclude="..\Catel.Fody.Tests.Shared\bin\**\*.cs;..\Catel.Fody.Tests.Shared\obj\**\*.cs" />
     <Compile Remove="*.approved.cs;*.received.cs" />
   </ItemGroup>
   

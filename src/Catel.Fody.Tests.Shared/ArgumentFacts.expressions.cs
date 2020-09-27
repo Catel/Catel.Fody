@@ -12,7 +12,7 @@ namespace Catel.Fody.Tests
     using System.Diagnostics;
     using NUnit.Framework;
 
-    public class ArgumentExpressionFacts
+    public partial class ArgumentFacts
     {
         [TestFixture]
         public class SupportedExpressions
@@ -29,7 +29,7 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForNullForGenericArgument");
                 var genericMethod = method.MakeGenericMethod(typeof (ProcessStartInfo));
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null }));
+                AssertException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null }));
             }
 
             [TestCase]
@@ -44,7 +44,7 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForNullForGenericArgumentWithPredicate");
                 var genericMethod = method.MakeGenericMethod(typeof(MyEventArgs));
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null }));
+                AssertException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null }));
             }
 
             [TestCase]
@@ -59,7 +59,7 @@ namespace Catel.Fody.Tests
                 var method = type.GetMethod("CheckForNullForGenericArgumentWithPredicateAndInstantiation");
                 var genericMethod = method.MakeGenericMethod(typeof(MyEventArgs));
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null, "mystring" }));
+                AssertException<ArgumentNullException>(() => genericMethod.Invoke(instance, new object[] { null, "mystring" }));
             }
 
             [TestCase]
@@ -73,7 +73,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNull");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null }));
+                AssertException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null }));
             }
 
             [TestCase]
@@ -87,7 +87,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNullWithMultipleParameters");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null }));
+                AssertException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null }));
             }
 
             [TestCase]
@@ -110,7 +110,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNullOrEmpty");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (string)null }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { (string)null }));
             }
 
             [TestCase]
@@ -122,7 +122,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNullOrEmpty");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { string.Empty }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { string.Empty }));
             }
 
             [TestCase]
@@ -146,7 +146,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNullOrWhitespace");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (string)null }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { (string)null }));
             }
 
             [TestCase]
@@ -158,7 +158,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNullOrWhitespace");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "   " }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { "   " }));
             }
 
             [TestCase]
@@ -186,7 +186,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNullOrEmptyArray");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { (object[])null }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { (object[])null }));
             }
 
             [TestCase]
@@ -198,7 +198,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNullOrEmptyArray");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new object[] { } }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { new object[] { } }));
             }
 
             [TestCase]
@@ -222,7 +222,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForMatch");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "abcd" }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { "abcd" }));
             }
 
             [TestCase]
@@ -246,7 +246,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNotMatch");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { "12345" }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { "12345" }));
             }
 
             [TestCase]
@@ -271,7 +271,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForMinimalInt");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0 }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0 }));
             }
 
             [TestCase]
@@ -295,7 +295,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForMinimalDouble");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0.0d }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0.0d }));
             }
 
             [TestCase]
@@ -319,7 +319,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForMinimalFloat");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0.0f }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 0.0f }));
             }
 
             [TestCase]
@@ -343,7 +343,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForMaximumInt");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6 }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6 }));
             }
 
             [TestCase]
@@ -367,7 +367,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForMaximumDouble");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6.0d }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6.0d }));
             }
 
             [TestCase]
@@ -391,7 +391,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForMaximumFloat");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6.0f }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 6.0f }));
             }
 
             [TestCase]
@@ -415,7 +415,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOutOfRangeInt");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5 }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5 }));
             }
 
             [TestCase]
@@ -439,7 +439,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOutOfRangeDouble");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5.0d }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5.0d }));
             }
 
             [TestCase]
@@ -463,7 +463,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOutOfRangeFloat");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5.0f }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { 5.0f }));
             }
 
             [TestCase]
@@ -488,7 +488,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOutOfRangeString");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { "z" }));
+                AssertException<ArgumentOutOfRangeException>(() => method.Invoke(instance, new object[] { "z" }));
             }
 
             [TestCase]
@@ -513,7 +513,7 @@ namespace Catel.Fody.Tests
 
             //    var method = type.GetMethod("CheckForInheritsFrom");
 
-            //    ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { new Exception() }));
+            //    AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { new Exception() }));
             //}
 
             //[TestCase]
@@ -537,7 +537,7 @@ namespace Catel.Fody.Tests
 
             //    var method = type.GetMethod("CheckForInheritsFrom2");
 
-            //    ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(Exception) }));
+            //    AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(Exception) }));
             //}
 
             //[TestCase]
@@ -561,7 +561,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOfType");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new[] { new object() }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new[] { new object() }));
             }
 
             [TestCase]
@@ -585,7 +585,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOfType2");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(object) }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(object) }));
             }
 
             [TestCase]
@@ -609,7 +609,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOfImplementsInterface");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new[] { new object() }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new[] { new object() }));
             }
 
             [TestCase]
@@ -633,7 +633,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForOfImplementsInterface2");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(object) }));
+                AssertException<ArgumentException>(() => method.Invoke(instance, new object[] { typeof(object) }));
             }
 
             [TestCase]
@@ -657,7 +657,7 @@ namespace Catel.Fody.Tests
 
                 var method = type.GetMethod("CheckForNullWithMultipleParametersWithoutContent");
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null }));
+                AssertException<ArgumentNullException>(() => method.Invoke(instance, new object[] { null, null, null }));
             }
 
             [TestCase]
@@ -672,7 +672,7 @@ namespace Catel.Fody.Tests
                 var customClassType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CustomClassType");
                 var customClassInstance = Activator.CreateInstance(customClassType);
 
-                ExceptionTester.CallMethodAndExpectException<ArgumentNullException>(() => method.Invoke(instance, new[] { customClassInstance, null, (IList)new List<string>() }));
+                AssertException<ArgumentNullException>(() => method.Invoke(instance, new[] { customClassInstance, null, (IList)new List<string>() }));
             }
         }
     }
