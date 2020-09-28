@@ -134,7 +134,17 @@ namespace Catel.Fody
         {
             var module = TypeDefinition.Module;
 
-            PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
+            switch (Version)
+            {
+                case CatelVersion.v5:
+                    PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
+                    break;
+
+                default:
+                case CatelVersion.v6:
+                    PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "IPropertyData"));
+                    break;
+            }
 
             var advancedPropertyChangedEventArgsType = TypeDefinition.Module.FindType("Catel.Core", "AdvancedPropertyChangedEventArgs");
             if (advancedPropertyChangedEventArgsType is null == false)
@@ -290,7 +300,7 @@ namespace Catel.Fody
                 {
                     // Search for this method:
                     // v5: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
-                    // v6: public static IPropertyData RegisterProperty<TValue>(string name, TValue defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
+                    // v6: public static IPropertyData RegisterProperty<TValue>(string name, Func<TValue> createDefaultValue = null, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
 
                     switch (Version)
                     {
@@ -323,8 +333,8 @@ namespace Catel.Fody
                 else
                 {
                     // Search for this method:
-                    // v5: public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
-                    // v4: public static IPropertyData RegisterProperty<TValue>(string name, TValue defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
+                    // v5: public static PropertyData RegisterProperty(string name, Type type, Func<object> defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
+                    // v4: public static IPropertyData RegisterProperty<TValue>(string name, Func<TValue> defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
 
                     switch (Version)
                     {
@@ -343,7 +353,9 @@ namespace Catel.Fody
                                        where method.Name == "RegisterProperty" &&
                                              method.IsPublic &&
                                              method.HasGenericParameters &&
-                                             method.Parameters[0].ParameterType.FullName.Contains("System.String")
+                                             method.GenericParameters.Count == 1 &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                             method.Parameters[1].ParameterType.FullName.Contains("System.Func`1")
                                        select method).ToList();
                             break;
                     }
@@ -406,7 +418,9 @@ namespace Catel.Fody
             }
             else
             {
-                methodDefinitions = (from method in type.Methods where method.Name == methodName && method.HasGenericParameters select method).ToList();
+                methodDefinitions = (from method in type.Methods 
+                                     where method.Name == methodName && method.HasGenericParameters 
+                                     select method).ToList();
             }
 
             if (parameterNames != null)

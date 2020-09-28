@@ -142,8 +142,6 @@ namespace Catel.Fody
             }
         }
 
-
-
         private void AddChangeNotificationHandlerField(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             if (propertyData.ChangeCallbackReference is null)
@@ -326,107 +324,50 @@ namespace Catel.Fody
 
             var index = (instructionToInsert != null) ? instructions.IndexOf(instructionToInsert) : instructions.Count;
 
-            //L_0000: ldstr "FullName"
-            //L_0005: ldtoken string // note that this is the property type
-            //L_000a: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
-            //L_000f: ldnull
-            //L_0010: ldnull
-            //L_0011: ldc.i4.1
-            //L_0012: call class [Catel.Core]Catel.Data.PropertyData [Catel.Core]Catel.Data.ModelBase::RegisterProperty(string, class [mscorlib]System.Type, class [mscorlib]System.Func`1<object>, class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs>, bool)
-            //L_0017: stsfld class [Catel.Core]Catel.Data.PropertyData Catel.Fody.TestAssembly.ViewModelBaseTest::FullNameProperty
-
-            var getTypeFromHandle = property.Module.GetMethodAndImport("GetTypeFromHandle");
-
             var instructionsToInsert = new List<Instruction>();
-            instructionsToInsert.AddRange(new[]
-            {
-                Instruction.Create(OpCodes.Ldstr, property.Name),
-                Instruction.Create(OpCodes.Ldtoken, property.PropertyType.Import()),
-                Instruction.Create(OpCodes.Call, getTypeFromHandle),
-            });
 
-            var resolvedPropertyType = propertyData.PropertyDefinition.PropertyType.Resolve();
+            switch (_catelType.Version)
+            {
+                case CatelVersion.v5:
+                    instructionsToInsert.AddRange(CreatePropertyRegistration_Catel5(property, propertyData));
+                    break;
 
-            // Default value
-            if (propertyData.DefaultValue is string stringValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldstr, stringValue));
-            }
-            else if (propertyData.DefaultValue is bool boolValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, boolValue ? 1 : 0));
-            }
-            else if (propertyData.DefaultValue is int intValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, intValue));
-            }
-            else if (propertyData.DefaultValue is long longValue)
-            {
-                if (longValue <= int.MaxValue)
-                {
-                    // Note: don't use Ldc_I8 here, although it is a long
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)longValue));
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Conv_I8));
-                }
-                else
-                {
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I8, longValue));
-                }
-            }
-            else if (propertyData.DefaultValue is float floatValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_R4, floatValue));
-            }
-            else if (propertyData.DefaultValue is double doubleValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_R8, doubleValue));
-            }
-            else if (resolvedPropertyType != null && resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)((CustomAttributeArgument)propertyData.DefaultValue).Value));
-            }
-            else
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
-            }
-
-            if (propertyData.ChangeCallbackReference != null)
-            {
-                switch (_catelType.Version)
-                {
-                    case CatelVersion.v5:
-                        instructionsToInsert.AddRange(CreateChangeCallbackReference_Catel4_Catel5(property));
-                        break;
-
-                    case CatelVersion.v6:
-                        instructionsToInsert.AddRange(CreateChangeCallbackReference_Catel6(property));
-                        break;
-                }
-            }
-            else
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
+                case CatelVersion.v6:
+                    instructionsToInsert.AddRange(CreatePropertyRegistration_Catel6(property, propertyData));
+                    break;
             }
 
             var registerPropertyInvoker = (propertyData.DefaultValue is null) ? _catelType.RegisterPropertyWithoutDefaultValueInvoker : _catelType.RegisterPropertyWithDefaultValueInvoker;
 
             // Fill up the final booleans:
-            // RegisterProperty([0] string name, [1] Type type,
-            //     [2] Func<object> createDefaultValue = null,
-            //     [3] EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null,
-            //     [4] bool includeInSerialization = true,
-            //     [5] bool includeInBackup = true)
-            var parameters = registerPropertyInvoker.Parameters.Skip(4).ToList();
+            // Catel v5: RegisterProperty([0] string name, 
+            //                            [1] Type type,
+            //                            [2] Func<object> createDefaultValue = null,
+            //                            [3] EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null,
+            //                            [4] bool includeInSerialization = true,
+            //                            [5] bool includeInBackup = true)
+            //
+            // Catel v6: RegisterProperty<TValue>([0] string name, 
+            //                                    [1] Func<TValue> createDefaultValue = null,
+            //                                    [2] EventHandler<APropertyChangedEventArgs> propertyChangedEventHandler = null,
+            //                                    [3] bool includeInSerialization = true,
+            //                                    [4] bool includeInBackup = true)
+
+            var parameters = registerPropertyInvoker.Parameters.Skip(3).ToList();
+            var boolCount = 0;
+
             for (var i = 0; i < parameters.Count; i++)
             {
                 var parameter = parameters[i];
                 if (string.CompareOrdinal(parameter.ParameterType.FullName, _moduleWeaver.TypeSystem.BooleanDefinition.FullName) != 0)
                 {
-                    break;
+                    continue;
                 }
 
-                // IncludeInBackup index is 5
-                if (!propertyData.IncludeInBackup && parameter.Index == 5)
+                boolCount++;
+
+                // includeInBackup == 2nd bool value
+                if (!propertyData.IncludeInBackup && boolCount == 2)
                 {
                     instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_0));
                 }
@@ -448,7 +389,7 @@ namespace Catel.Fody
                         genericRegisterProperty.GenericParameters.Add(genericParameter);
                     }
 
-                    genericRegisterProperty.GenericArguments.Add(property.PropertyType.Import(true));
+                    genericRegisterProperty.GenericArguments.Add(property.PropertyType.Import(false));
                 }
 
                 finalRegisterPropertyMethod = genericRegisterProperty;
@@ -467,7 +408,156 @@ namespace Catel.Fody
             return true;
         }
 
-        private List<Instruction> CreateChangeCallbackReference_Catel4_Catel5(PropertyDefinition property)
+        private List<Instruction> CreatePropertyRegistration_Catel5(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            // Catel v5:
+            //
+            //L_0000: ldstr "FullName"
+            //L_0005: ldtoken string // note that this is the property type
+            //L_000a: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+            //L_000f: ldnull
+            //L_0010: ldnull
+            //L_0011: ldc.i4.1
+            //L_0012: call class [Catel.Core]Catel.Data.PropertyData [Catel.Core]Catel.Data.ModelBase::RegisterProperty(string, class [mscorlib]System.Type, class [mscorlib]System.Func`1<object>, class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs>, bool)
+            //L_0017: stsfld class [Catel.Core]Catel.Data.PropertyData Catel.Fody.TestAssembly.ViewModelBaseTest::FullNameProperty
+
+            var instructions = new List<Instruction>();
+            var getTypeFromHandle = property.Module.GetMethodAndImport("GetTypeFromHandle");
+
+            instructions.AddRange(new[]
+            {
+                Instruction.Create(OpCodes.Ldstr, property.Name),
+                Instruction.Create(OpCodes.Ldtoken, property.PropertyType.Import()),
+                Instruction.Create(OpCodes.Call, getTypeFromHandle),
+            });
+
+            instructions.AddRange(CreateDefaultValueInstructions(propertyData));
+
+            if (propertyData.ChangeCallbackReference != null)
+            {
+                instructions.AddRange(CreateChangeCallbackReference_Catel5(property));
+            }
+            else
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldnull));
+            }
+
+            return instructions;
+        }
+
+        private List<Instruction> CreatePropertyRegistration_Catel6(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            // Catel v6:
+            //
+            //L_0000: ldstr "FullName"
+            //L_0005: ldtoken string // note that this is the property type
+            //L_000a: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+            //L_000f: ldnull
+            //L_0010: ldnull
+            //L_0011: ldc.i4.1
+            //L_0012: call class [Catel.Core]Catel.Data.IPropertyData [Catel.Core]Catel.Data.ModelBase::RegisterProperty<TValue>(string, class [mscorlib]System.Func`1<TValue>, class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.PropertyChangedEventArgs>, bool)
+            //L_0017: stsfld class [Catel.Core]Catel.Data.IPropertyData Catel.Fody.TestAssembly.ViewModelBaseTest::FullNameProperty
+
+            var instructions = new List<Instruction>();
+
+            instructions.AddRange(new[]
+            {
+                Instruction.Create(OpCodes.Ldstr, property.Name),
+            });
+
+            instructions.AddRange(CreateDefaultValueInstructions(propertyData));
+
+            if (propertyData.ChangeCallbackReference != null)
+            {
+                instructions.AddRange(CreateChangeCallbackReference_Catel6(property));
+            }
+            else
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldnull));
+            }
+
+            return instructions;
+        }
+
+        private List<Instruction> CreateDefaultValueInstructions(CatelTypeProperty propertyData)
+        {
+            var instructions = new List<Instruction>();
+
+            var resolvedPropertyType = propertyData.PropertyDefinition.PropertyType.Resolve();
+
+            // Default value
+            if (propertyData.DefaultValue is string stringValue)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldstr, stringValue));
+            }
+            else if (propertyData.DefaultValue is bool boolValue)
+            {
+                if (boolValue)
+                {
+                    instructions.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+                }
+                else
+                {
+                    instructions.Add(Instruction.Create(OpCodes.Ldc_I4_0));
+                }
+            }
+            else if (propertyData.DefaultValue is int intValue)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldc_I4, intValue));
+            }
+            else if (propertyData.DefaultValue is long longValue)
+            {
+                if (longValue <= int.MaxValue)
+                {
+                    // Note: don't use Ldc_I8 here, although it is a long
+                    instructions.Add(Instruction.Create(OpCodes.Ldc_I4, (int)longValue));
+                    instructions.Add(Instruction.Create(OpCodes.Conv_I8));
+                }
+                else
+                {
+                    instructions.Add(Instruction.Create(OpCodes.Ldc_I8, longValue));
+                }
+            }
+            else if (propertyData.DefaultValue is float floatValue)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldc_R4, floatValue));
+            }
+            else if (propertyData.DefaultValue is double doubleValue)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldc_R8, doubleValue));
+            }
+            else if (resolvedPropertyType != null && resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldc_I4, (int)((CustomAttributeArgument)propertyData.DefaultValue).Value));
+            }
+            else
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldnull));
+            }
+
+            // Special case: if Nullable<ValueType>, we need to do special things
+            if (propertyData.PropertyDefinition.PropertyType.IsNullableValueType() &&
+                propertyData.DefaultValue is null == false)
+            {
+                // IL_0033: ldc.i4.1 // already done above)
+                // IL_0034: newobj instance void valuetype [System.Runtime]System.Nullable`1<bool>::.ctor(!0)
+
+                var declaringType = (GenericInstanceType)propertyData.PropertyDefinition.PropertyType;
+                var resolvedType = declaringType.Resolve();
+
+                resolvedType.FixPrivateCorLibScope();
+
+                var ctorDefinition = resolvedType.Constructor(false);
+                var importedCtor = _catelType.TypeDefinition.Module.ImportReference(ctorDefinition);
+                var ctor = importedCtor.MakeHostInstanceGeneric(declaringType.GenericArguments[0]);
+
+                instructions.Add(Instruction.Create(OpCodes.Newobj, ctor));
+            }
+
+            return instructions;
+        }
+
+        private List<Instruction> CreateChangeCallbackReference_Catel5(PropertyDefinition property)
         {
             var instructions = new List<Instruction>();
 
@@ -498,14 +588,14 @@ namespace Catel.Fody
 
             instructions.AddRange(new[]
             {
-                    Instruction.Create(OpCodes.Ldsfld, handlerField),
-                    Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
-                    Instruction.Create(OpCodes.Ldnull),
-                    Instruction.Create(OpCodes.Ldftn, handlerConstructor),
-                    Instruction.Create(OpCodes.Newobj, genericConstructor),
-                    Instruction.Create(OpCodes.Stsfld, handlerField),
-                    Instruction.Create(OpCodes.Br_S, finalInstruction),
-                    finalInstruction
+                Instruction.Create(OpCodes.Ldsfld, handlerField),
+                Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
+                Instruction.Create(OpCodes.Ldnull),
+                Instruction.Create(OpCodes.Ldftn, handlerConstructor),
+                Instruction.Create(OpCodes.Newobj, genericConstructor),
+                Instruction.Create(OpCodes.Stsfld, handlerField),
+                Instruction.Create(OpCodes.Br_S, finalInstruction),
+                finalInstruction
             });
 
             return instructions;
@@ -540,14 +630,14 @@ namespace Catel.Fody
 
             instructions.AddRange(new[]
             {
-                    Instruction.Create(OpCodes.Ldsfld, handlerField),
-                    Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
-                    Instruction.Create(OpCodes.Ldnull),
-                    Instruction.Create(OpCodes.Ldftn, handlerConstructor),
-                    Instruction.Create(OpCodes.Newobj, handlerTypeConstructor),
-                    Instruction.Create(OpCodes.Stsfld, handlerField),
-                    Instruction.Create(OpCodes.Br_S, finalInstruction),
-                    finalInstruction
+                Instruction.Create(OpCodes.Ldsfld, handlerField),
+                Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
+                Instruction.Create(OpCodes.Ldnull),
+                Instruction.Create(OpCodes.Ldftn, handlerConstructor),
+                Instruction.Create(OpCodes.Newobj, handlerTypeConstructor),
+                Instruction.Create(OpCodes.Stsfld, handlerField),
+                Instruction.Create(OpCodes.Br_S, finalInstruction),
+                finalInstruction
             });
 
             return instructions;
@@ -603,7 +693,8 @@ namespace Catel.Fody
             //var declaringType = property.DeclaringType;
             //var fieldReference = GetField(declaringType, fieldName);
 
-            // Writes SetValue(PropertyData propertyName, object value)
+            // Catel v5: SetValue<TValue>(PropertyData propertyName, TValue value)
+            // Catel v6: SetValue<TValue>(IPropertyData propertyName, TValue value)
 
             if (property.SetMethod is null)
             {
@@ -640,7 +731,7 @@ namespace Catel.Fody
                 Instruction.Create(OpCodes.Ldarg_1)
             });
 
-            // Check if Catel 5.12 SetValue<TValue> is available
+            // Check if Catel 5.12+ SetValue<TValue> is available
             var preferredSetValueInvoker = _catelType.PreferredSetValueInvoker;
             if (preferredSetValueInvoker.HasGenericParameters)
             {

@@ -14,10 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="5.12.9" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj" />
     <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly.Catel5\Catel.Fody.TestExternalTypesAssembly.Catel5.csproj" />
   </ItemGroup>

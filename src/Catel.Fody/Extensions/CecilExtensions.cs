@@ -14,7 +14,30 @@ namespace Catel.Fody
 
     public static partial class CecilExtensions
     {
+        private static AssemblyNameReference SystemRuntimeRef;
+
         private static readonly Dictionary<string, TypeDefinition> CachedTypeDefinitions = CacheHelper.GetCache<Dictionary<string, TypeDefinition>>("CecilExtensions");
+
+        public static void FixPrivateCorLibScope(this TypeReference type)
+        {
+            var scope = type.Scope;
+            if (!scope.Name.Contains("System.Private.CoreLib.dll"))
+            {
+                return;
+            }
+
+            if (SystemRuntimeRef is null)
+            {
+                var systemRuntimeAssembly = type.Module.ResolveAssembly("System.Runtime");
+
+                SystemRuntimeRef = new AssemblyNameReference(systemRuntimeAssembly.Name.Name, systemRuntimeAssembly.GetVersion())
+                {
+                    PublicKeyToken = new byte[] { 0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a }
+                };
+            }
+
+            type.Scope = SystemRuntimeRef;
+        }
 
         public static CatelVersion GetCatelVersion(this TypeReference type)
         {

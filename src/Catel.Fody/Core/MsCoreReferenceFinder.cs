@@ -72,7 +72,6 @@ namespace Catel.Fody
                 {
                     _typeReferencesByFullName[type.FullName] = type;
                     _typeReferencesByShortName[type.Name] = type;
-                    //_typeReferences[typeName] = types.FirstOrDefault(x => string.Equals(x.Name, typeName) || string.Equals(x.FullName, typeName));
                 }
             }
 
@@ -138,8 +137,10 @@ namespace Catel.Fody
             allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
             allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
             allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
-            allTypes.AddRange(GetTypesFromAssembly("System.Private.CoreLib"));
             allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
+
+            // Fallback mechanism
+            allTypes.AddRange(GetTypesFromAssembly("System.Private.CoreLib"));
 
             return allTypes;
         }

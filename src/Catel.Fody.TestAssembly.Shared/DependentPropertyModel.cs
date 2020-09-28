@@ -13,7 +13,6 @@ namespace Catel.Fody.TestAssembly
 
     public class DependentPropertyModel : ModelBase
     {
-        #region Properties
         public string FirstName { get; set; }
 
         // Using full property to check if these are supported as well
@@ -26,7 +25,7 @@ namespace Catel.Fody.TestAssembly
 #if CATEL_5
         public static readonly PropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string));
 #elif CATEL_6
-        public static readonly IPropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string));
+        public static readonly IPropertyData MiddleNameProperty = RegisterProperty<string>("MiddleName");
 #endif
 
         public string LastName { get; set; }
@@ -57,7 +56,6 @@ namespace Catel.Fody.TestAssembly
                 return string.Join(" ", items);
             }
         }
-        #endregion
     }
 
     public class Person : ModelBase

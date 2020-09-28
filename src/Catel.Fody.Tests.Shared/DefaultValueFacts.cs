@@ -88,6 +88,42 @@ namespace Catel.Fody.Tests
         }
 
         [TestCase]
+        public void SetsDefaultValueForNullableIntWhenNullAttributeDefined()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+
+            // Instantiate to have properties registered
+            Activator.CreateInstance(type);
+
+            var propertyData = PropertyDataManager.Default.GetPropertyData(type, "NullableIntDefaultNullValueCatel");
+            Assert.AreEqual(null, propertyData.GetDefaultValue());
+        }
+
+        [TestCase]
+        public void SetsDefaultValueForNullableIntWhen0AttributeDefined()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+
+            // Instantiate to have properties registered
+            Activator.CreateInstance(type);
+
+            var propertyData = PropertyDataManager.Default.GetPropertyData(type, "NullableIntDefault0ValueCatel");
+            Assert.AreEqual(0, propertyData.GetDefaultValue());
+        }
+
+        [TestCase]
+        public void SetsDefaultValueForNullableIntWhen1AttributeDefined()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
+
+            // Instantiate to have properties registered
+            Activator.CreateInstance(type);
+
+            var propertyData = PropertyDataManager.Default.GetPropertyData(type, "NullableIntDefault1ValueCatel");
+            Assert.AreEqual(1, propertyData.GetDefaultValue());
+        }
+
+        [TestCase]
         public void SetsDefaultValueForIntWhenAttributeDefined()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DefaultValueModel");
