@@ -28,7 +28,9 @@ namespace Catel.Fody
     [DebuggerDisplay("{Name}")]
     public class CatelType
     {
-        public CatelType(TypeDefinition typeDefinition)
+        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
+
+        public CatelType(TypeDefinition typeDefinition, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             Mappings = new List<MemberMapping>();
             Properties = new List<CatelTypeProperty>();
@@ -36,6 +38,7 @@ namespace Catel.Fody
             Ignore = true;
             TypeDefinition = typeDefinition;
             Name = typeDefinition.FullName;
+            _msCoreReferenceFinder = msCoreReferenceFinder;
 
             DetermineCatelType();
             if (Type == CatelTypeType.Unknown)
@@ -66,9 +69,9 @@ namespace Catel.Fody
 
                 Ignore = false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                FodyEnvironment.WriteWarning($"Failed to get additional information about type '{Name}', type will be ignored for weaving");
+                FodyEnvironment.WriteWarning($"Failed to get additional information about type '{Name}', type will be ignored for weaving: '{ex.Message}'");
             }
         }
 
@@ -132,10 +135,37 @@ namespace Catel.Fody
             var module = TypeDefinition.Module;
 
             PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
-            AdvancedPropertyChangedEventArgsType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "AdvancedPropertyChangedEventArgs"));
+
+            var advancedPropertyChangedEventArgsType = TypeDefinition.Module.FindType("Catel.Core", "AdvancedPropertyChangedEventArgs");
+            if (advancedPropertyChangedEventArgsType is null == false)
+            {
+                AdvancedPropertyChangedEventArgsType = module.ImportReference(advancedPropertyChangedEventArgsType);
+            }
+
+            var propertyChangedEventArgsType = _msCoreReferenceFinder.GetCoreTypeReference("System.ComponentModel.PropertyChangedEventArgs");
+            if (propertyChangedEventArgsType is null == false)
+            {
+                PropertyChangedEventArgsType = module.ImportReference(propertyChangedEventArgsType);
+            }
         }
 
         public TypeReference AdvancedPropertyChangedEventArgsType { get; private set; }
+
+        public TypeReference PropertyChangedEventArgsType { get; private set; }
+
+        public TypeReference GetPropertyChangedEventArgsTypeForCurrentCatelVersion()
+        {
+            switch (Version)
+            {
+                case CatelVersion.v4:
+                case CatelVersion.v5:
+                    return AdvancedPropertyChangedEventArgsType;
+
+                default:
+                case CatelVersion.v6:
+                    return PropertyChangedEventArgsType;
+            }
+        }
 
         public MethodReference BaseOnPropertyChangedInvoker
         {
@@ -259,16 +289,61 @@ namespace Catel.Fody
             {
                 typeDefinitions.Push(currentTypeDefinition);
 
-                List<MethodDefinition> methods;
+                List<MethodDefinition> methods = null;
 
                 if (includeDefaultValue)
                 {
                     // Search for this method:
                     // v4: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     // v5: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
-                    // v6: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
+                    // v6: public static IPropertyData RegisterProperty<TValue>(string name, TValue defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
 
-                    int argumentCount;
+                    switch (Version)
+                    {
+                        case CatelVersion.v4:
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             method.Parameters.Count == 7 &&
+                                             method.HasGenericParameters &&
+                                             method.GenericParameters.Count == 1 &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                             !method.Parameters[2].ParameterType.FullName.Contains("System.Func")
+                                       select method).ToList();
+                            break;
+
+                        case CatelVersion.v5:
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             method.Parameters.Count == 6 &&
+                                             method.HasGenericParameters &&
+                                             method.GenericParameters.Count == 1 &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                             !method.Parameters[2].ParameterType.FullName.Contains("System.Func")
+                                       select method).ToList();
+                            break;
+
+                        case CatelVersion.v6:
+                        default:
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             method.Parameters.Count == 5 &&
+                                             method.HasGenericParameters &&
+                                             method.GenericParameters.Count == 1 &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                             !method.Parameters[1].ParameterType.FullName.Contains("System.Func")
+                                       select method).ToList();
+                            break;
+                    }
+                }
+                else
+                {
+                    // Search for this method:
+                    // v4: public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
+                    // v5: public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
+                    // v4: public static IPropertyData RegisterProperty<TValue>(string name, TValue defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
 
                     switch (Version)
                     {
@@ -282,30 +357,14 @@ namespace Catel.Fody
 
                         case CatelVersion.v6:
                         default:
-                            argumentCount = 6;
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             !method.HasGenericParameters &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String")
+                                       select method).ToList();
                             break;
                     }
-
-                    methods = (from method in currentTypeDefinition.Methods
-                               where method.Name == "RegisterProperty" &&
-                                     method.IsPublic &&
-                                     method.Parameters.Count == argumentCount &&
-                                     method.HasGenericParameters &&
-                                     method.GenericParameters.Count == 1 &&
-                                     method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
-                                     !method.Parameters[2].ParameterType.FullName.Contains("System.Func")
-                               select method).ToList();
-                }
-                else
-                {
-                    // Search for this method:
-                    // public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
-                    methods = (from method in currentTypeDefinition.Methods
-                               where method.Name == "RegisterProperty" &&
-                                     method.IsPublic &&
-                                     !method.HasGenericParameters &&
-                                     method.Parameters[0].ParameterType.FullName.Contains("System.String")
-                               select method).ToList();
                 }
 
                 if (methods.Count > 0)

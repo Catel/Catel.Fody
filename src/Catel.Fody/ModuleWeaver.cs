@@ -96,7 +96,7 @@ namespace Catel.Fody
                 // Note: nested types not supported because we only list actual types (thus not nested)
                 var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
 
-                var typeNodeBuilder = new CatelTypeNodeBuilder(types);
+                var typeNodeBuilder = new CatelTypeNodeBuilder(types, msCoreReferenceFinder);
                 typeNodeBuilder.Execute();
 
                 // Remove any code generated types from the list of types to process

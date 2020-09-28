@@ -222,7 +222,6 @@ namespace Catel.Fody
             var fieldName = GetChangeNotificationHandlerFieldName(property);
 
             var handlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.ComponentModel.PropertyChangedEventHandler");
-            var eventArgsType = _msCoreReferenceFinder.GetCoreTypeReference("System.ComponentModel.PropertyChangedEventArgs");
 
             //.field private static class [System.ComponentModel]System.ComponentModel.PropertyChangedEventHandler CS$<>9__CachedAnonymousMethodDelegate1
 
@@ -251,7 +250,7 @@ namespace Catel.Fody
                 MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.ImportReference(voidType));
 
             initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.ImportReference(objectType)));
-            initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, declaringType.Module.ImportReference(eventArgsType)));
+            initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, _catelType.PropertyChangedEventArgsType));
 
             var body = initializationMethod.Body;
             body.Instructions.Insert(0,

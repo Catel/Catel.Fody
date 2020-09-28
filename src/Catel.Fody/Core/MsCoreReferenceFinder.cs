@@ -122,6 +122,8 @@ namespace Catel.Fody
             var allTypes = new List<TypeReference>();
 
             allTypes.AddRange(GetTypesFromAssembly("System"));
+            allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
+            allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
 
             return allTypes;
         }
@@ -132,8 +134,10 @@ namespace Catel.Fody
 
             allTypes.AddRange(GetTypesFromAssembly("System"));
             allTypes.AddRange(GetTypesFromAssembly("System.Core"));
+            allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
             allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
             allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
+            allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
             allTypes.AddRange(GetTypesFromAssembly("System.Private.CoreLib"));
             allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
 
@@ -144,9 +148,11 @@ namespace Catel.Fody
         {
             var allTypes = new List<TypeReference>();
 
-            allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
+            allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
             allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
             allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
+            allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
+            allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
 
             return allTypes;
         }

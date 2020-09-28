@@ -13,23 +13,19 @@ namespace Catel.Fody
 
     public class CatelTypeNodeBuilder
     {
-        #region Fields
         private readonly List<TypeDefinition> _allClasses;
+        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
         public List<CatelType> CatelTypes { get; private set; }
 
-        #endregion
-
-        #region Constructors
-        public CatelTypeNodeBuilder(List<TypeDefinition> allTypes)
+        public CatelTypeNodeBuilder(List<TypeDefinition> allTypes, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             CatelTypes = new List<CatelType>();
 
             _allClasses = allTypes.Where(x => x.IsClass).ToList();
+            _msCoreReferenceFinder = msCoreReferenceFinder;
         }
-        #endregion
 
-        #region Methods
         public void Execute()
         {
             foreach (var typeDefinition in _allClasses)
@@ -58,7 +54,7 @@ namespace Catel.Fody
                 return;
             }
 
-            var typeNode = new CatelType(typeDefinition);
+            var typeNode = new CatelType(typeDefinition, _msCoreReferenceFinder);
             if (typeNode.Ignore || CatelTypes.Contains(typeNode))
             {
                 return;
@@ -66,6 +62,5 @@ namespace Catel.Fody
 
             CatelTypes.Add(typeNode);
         }
-        #endregion
     }
 }

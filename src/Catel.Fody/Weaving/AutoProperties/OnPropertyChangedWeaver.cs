@@ -50,7 +50,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 return true;
             }
 
-            var getMethodReference = _catelType.TypeDefinition.Module.ImportReference(_catelType.AdvancedPropertyChangedEventArgsType.GetProperty("PropertyName").Resolve().GetMethod);
+            var getMethodReference = _catelType.TypeDefinition.Module.ImportReference(_catelType.GetPropertyChangedEventArgsTypeForCurrentCatelVersion().GetProperty("PropertyName").Resolve().GetMethod);
             var stringEqualsMethodReference = _catelType.TypeDefinition.Module.ImportReference(GetSystemObjectEqualsMethodReference(_catelType.TypeDefinition.Module));
 
             var dependentProperties = _catelType.GetDependentPropertiesFrom(property).ToList();
@@ -124,9 +124,11 @@ namespace Catel.Fody.Weaving.AutoProperties
             MethodDefinition methodDefinition = null;
             var possibleMethods = type.Methods.Where(definition => definition.Name == "OnPropertyChanged" && definition.HasParameters).ToList();
 
+            var expectedEventArgsTypeReference = _catelType.GetPropertyChangedEventArgsTypeForCurrentCatelVersion();
+
             foreach (var possibleMethod in possibleMethods)
             {
-                if (string.Equals(possibleMethod.Parameters[0].ParameterType.FullName, _catelType.AdvancedPropertyChangedEventArgsType.FullName))
+                if (string.Equals(possibleMethod.Parameters[0].ParameterType.FullName, expectedEventArgsTypeReference.FullName))
                 {
                     methodDefinition = possibleMethod;
                     break;
@@ -140,7 +142,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
 
                 methodDefinition = new MethodDefinition("OnPropertyChanged", MethodAttributes.Family | MethodAttributes.HideBySig | MethodAttributes.Virtual, type.Module.ImportReference(voidType));
-                methodDefinition.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, _catelType.AdvancedPropertyChangedEventArgsType));
+                methodDefinition.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, expectedEventArgsTypeReference));
 
                 var body = methodDefinition.Body;
 
