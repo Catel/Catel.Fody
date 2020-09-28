@@ -11,8 +11,6 @@ namespace Catel.Fody
     {
         Unknown,
 
-        v4,
-
         v5,
 
         v6

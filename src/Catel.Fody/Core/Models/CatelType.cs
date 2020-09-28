@@ -157,7 +157,6 @@ namespace Catel.Fody
         {
             switch (Version)
             {
-                case CatelVersion.v4:
                 case CatelVersion.v5:
                     return AdvancedPropertyChangedEventArgsType;
 
@@ -225,10 +224,6 @@ namespace Catel.Fody
 
             switch (Version)
             {
-                case CatelVersion.v4:
-                    parameterNames = new[] { "property", "value" };
-                    break;
-
                 case CatelVersion.v5:
                     parameterNames = new[] { "property", "value", "notifyOnChange" };
                     break;
@@ -294,24 +289,11 @@ namespace Catel.Fody
                 if (includeDefaultValue)
                 {
                     // Search for this method:
-                    // v4: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     // v5: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
                     // v6: public static IPropertyData RegisterProperty<TValue>(string name, TValue defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
 
                     switch (Version)
                     {
-                        case CatelVersion.v4:
-                            methods = (from method in currentTypeDefinition.Methods
-                                       where method.Name == "RegisterProperty" &&
-                                             method.IsPublic &&
-                                             method.Parameters.Count == 7 &&
-                                             method.HasGenericParameters &&
-                                             method.GenericParameters.Count == 1 &&
-                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
-                                             !method.Parameters[2].ParameterType.FullName.Contains("System.Func")
-                                       select method).ToList();
-                            break;
-
                         case CatelVersion.v5:
                             methods = (from method in currentTypeDefinition.Methods
                                        where method.Name == "RegisterProperty" &&
@@ -341,18 +323,18 @@ namespace Catel.Fody
                 else
                 {
                     // Search for this method:
-                    // v4: public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     // v5: public static PropertyData RegisterProperty(string name, Type type, object defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
                     // v4: public static IPropertyData RegisterProperty<TValue>(string name, TValue defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
 
                     switch (Version)
                     {
-                        case CatelVersion.v4:
-                            argumentCount = 7;
-                            break;
-
                         case CatelVersion.v5:
-                            argumentCount = 6;
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             !method.HasGenericParameters &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String")
+                                       select method).ToList();
                             break;
 
                         case CatelVersion.v6:
@@ -360,7 +342,7 @@ namespace Catel.Fody
                             methods = (from method in currentTypeDefinition.Methods
                                        where method.Name == "RegisterProperty" &&
                                              method.IsPublic &&
-                                             !method.HasGenericParameters &&
+                                             method.HasGenericParameters &&
                                              method.Parameters[0].ParameterType.FullName.Contains("System.String")
                                        select method).ToList();
                             break;

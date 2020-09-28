@@ -155,9 +155,8 @@ namespace Catel.Fody
 
             switch (_catelType.Version)
             {
-                case CatelVersion.v4:
                 case CatelVersion.v5:
-                    AddChangeNotificationHandlerField_Catel4_Catel5(property, propertyData);
+                    AddChangeNotificationHandlerField_Catel5(property, propertyData);
                     break;
 
                 case CatelVersion.v6:
@@ -166,7 +165,7 @@ namespace Catel.Fody
             }
         }
 
-        private void AddChangeNotificationHandlerField_Catel4_Catel5(PropertyDefinition property, CatelTypeProperty propertyData)
+        private void AddChangeNotificationHandlerField_Catel5(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             var declaringType = property.DeclaringType;
             var fieldName = GetChangeNotificationHandlerFieldName(property);
@@ -395,7 +394,6 @@ namespace Catel.Fody
             {
                 switch (_catelType.Version)
                 {
-                    case CatelVersion.v4:
                     case CatelVersion.v5:
                         instructionsToInsert.AddRange(CreateChangeCallbackReference_Catel4_Catel5(property));
                         break;

@@ -34,9 +34,6 @@ namespace Catel.Fody
 
                     switch (version.Major)
                     {
-                        case 4:
-                            return CatelVersion.v4;
-
                         case 5:
                             return CatelVersion.v5;
 
