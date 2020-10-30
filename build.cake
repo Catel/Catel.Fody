@@ -8,7 +8,7 @@ Parameters["SolutionName"] = "Catel.Fody";
 Parameters["Company"] = "CatenaLogic";
 Parameters["RepositoryUrl"] = string.Format("https://github.com/{0}/{1}", GetBuildServerVariable("SolutionName"), GetBuildServerVariable("SolutionName"));
 Parameters["StartYear"] = "2010";
-Parameters["UseVisualStudioPrerelease"] = "true";
+Parameters["UseVisualStudioPrerelease"] = "false";
 Parameters["DeployCatelFodyAttributes"] = "false";
 Parameters["SkipComponentsThatAreNotDeployable"] = "false";
 
