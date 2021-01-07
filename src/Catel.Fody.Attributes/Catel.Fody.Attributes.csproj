@@ -10,6 +10,7 @@
     <DevelopmentDependency>true</DevelopmentDependency>
     <PackageTags>catel;fody;ilweaving;weaving</PackageTags>
     <DisableFody>true</DisableFody>
+    <NoWarn>$(NoWarn);NU5100;NU5118</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,7 +19,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.2.4" PrivateAssets="None" />
+    <PackageReference Include="Fody" Version="6.3.0" PrivateAssets="None" />
   </ItemGroup>
 
   <ItemGroup>

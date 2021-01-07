@@ -151,11 +151,25 @@ namespace Catel.Fody
 
             FodyEnvironment.WriteDebug($"\t\t\t{property.Name} - adding On{property.Name}Changed invocation");
 
+            switch (_catelType.Version)
+            {
+                case CatelVersion.v5:
+                    AddChangeNotificationHandlerField_Catel5(property, propertyData);
+                    break;
+
+                case CatelVersion.v6:
+                    AddChangeNotificationHandlerField_Catel6(property, propertyData);
+                    break;
+            }
+        }
+
+        private void AddChangeNotificationHandlerField_Catel5(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
             var declaringType = property.DeclaringType;
             var fieldName = GetChangeNotificationHandlerFieldName(property);
 
-            var handlerType = GetEventHandlerAdvancedPropertyChangedEventArgs(property);
-            var advancedPropertyChangedEventArgsType = property.Module.FindType("Catel.Core", "Catel.Data.AdvancedPropertyChangedEventArgs");
+            var handlerType = GetPropertyChangedEventHandler_Catel4_Catel5(property);
+            var eventArgsType = handlerType.GenericArguments[0];
 
             //.field private static class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> CS$<>9__CachedAnonymousMethodDelegate1
 
@@ -184,7 +198,56 @@ namespace Catel.Fody
                 MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.ImportReference(voidType));
 
             initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.ImportReference(objectType)));
-            initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, declaringType.Module.ImportReference(advancedPropertyChangedEventArgsType)));
+            initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, declaringType.Module.ImportReference(eventArgsType)));
+
+            var body = initializationMethod.Body;
+            body.Instructions.Insert(0,
+                Instruction.Create(OpCodes.Ldarg_0),
+                Instruction.Create(OpCodes.Castclass, declaringType.MakeGenericIfRequired()),
+                Instruction.Create(OpCodes.Callvirt, propertyData.ChangeCallbackReference),
+                Instruction.Create(OpCodes.Nop),
+                Instruction.Create(OpCodes.Ret));
+
+            declaringType.Methods.Add(initializationMethod);
+
+            initializationMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
+        }
+
+        private void AddChangeNotificationHandlerField_Catel6(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            var declaringType = property.DeclaringType;
+            var fieldName = GetChangeNotificationHandlerFieldName(property);
+
+            var handlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.ComponentModel.PropertyChangedEventHandler");
+
+            //.field private static class [System.ComponentModel]System.ComponentModel.PropertyChangedEventHandler CS$<>9__CachedAnonymousMethodDelegate1
+
+            var field = new FieldDefinition(fieldName, FieldAttributes.Private | FieldAttributes.Static, declaringType.Module.ImportReference(handlerType));
+
+            declaringType.Fields.Add(field);
+
+            field.MarkAsCompilerGenerated(_msCoreReferenceFinder);
+
+            //.method private hidebysig static void <.cctor>b__0(object s, class [System.ComponentModel]System.ComponentModel.PropertyChangedEventArgs e) cil managed
+            //{
+            //    .custom instance void [mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute::.ctor()
+            //    .maxstack 8
+            //    L_0000: ldarg.0
+            //    L_0001: castclass Catel.Fody.TestAssembly.ModelBaseTest
+            //    L_0006: callvirt instance void Catel.Fody.TestAssembly.ModelBaseTest::OnLastNameChanged()
+            //    L_000b: nop
+            //    L_000c: ret
+            //}
+
+            var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
+            var objectType = _msCoreReferenceFinder.GetCoreTypeReference("Object");
+
+            var initializationMethodName = GetChangeNotificationHandlerConstructorName(property);
+            var initializationMethod = new MethodDefinition(initializationMethodName,
+                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.ImportReference(voidType));
+
+            initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.ImportReference(objectType)));
+            initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, _catelType.PropertyChangedEventArgsType));
 
             var body = initializationMethod.Body;
             body.Instructions.Insert(0,
@@ -261,131 +324,50 @@ namespace Catel.Fody
 
             var index = (instructionToInsert != null) ? instructions.IndexOf(instructionToInsert) : instructions.Count;
 
-            //L_0000: ldstr "FullName"
-            //L_0005: ldtoken string // note that this is the property type
-            //L_000a: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
-            //L_000f: ldnull
-            //L_0010: ldnull
-            //L_0011: ldc.i4.1
-            //L_0012: call class [Catel.Core]Catel.Data.PropertyData [Catel.Core]Catel.Data.ModelBase::RegisterProperty(string, class [mscorlib]System.Type, class [mscorlib]System.Func`1<object>, class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs>, bool)
-            //L_0017: stsfld class [Catel.Core]Catel.Data.PropertyData Catel.Fody.TestAssembly.ViewModelBaseTest::FullNameProperty
-
-            var getTypeFromHandle = property.Module.GetMethodAndImport("GetTypeFromHandle");
-
             var instructionsToInsert = new List<Instruction>();
-            instructionsToInsert.AddRange(new[]
-            {
-                Instruction.Create(OpCodes.Ldstr, property.Name),
-                Instruction.Create(OpCodes.Ldtoken, property.PropertyType.Import()),
-                Instruction.Create(OpCodes.Call, getTypeFromHandle),
-            });
 
-            var resolvedPropertyType = propertyData.PropertyDefinition.PropertyType.Resolve();
+            switch (_catelType.Version)
+            {
+                case CatelVersion.v5:
+                    instructionsToInsert.AddRange(CreatePropertyRegistration_Catel5(property, propertyData));
+                    break;
 
-            // Default value
-            if (propertyData.DefaultValue is string stringValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldstr, stringValue));
-            }
-            else if (propertyData.DefaultValue is bool boolValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, boolValue ? 1 : 0));
-            }
-            else if (propertyData.DefaultValue is int intValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, intValue));
-            }
-            else if (propertyData.DefaultValue is long longValue)
-            {
-                if (longValue <= int.MaxValue)
-                {
-                    // Note: don't use Ldc_I8 here, although it is a long
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)longValue));
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Conv_I8));
-                }
-                else
-                {
-                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I8, longValue));
-                }
-            }
-            else if (propertyData.DefaultValue is float floatValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_R4, floatValue));
-            }
-            else if (propertyData.DefaultValue is double doubleValue)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_R8, doubleValue));
-            }
-            else if (resolvedPropertyType != null && resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4, (int)((CustomAttributeArgument)propertyData.DefaultValue).Value));
-            }
-            else
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
-            }
-
-            if (propertyData.ChangeCallbackReference != null)
-            {
-                //L_0040: ldsfld class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
-                //L_0045: brtrue.s L_005a
-                //L_0047: ldnull
-                //L_0048: ldftn void Catel.Fody.TestAssembly.ModelBaseTest::<.cctor>b__0(object, class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs)
-                //L_004e: newobj instance void [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs>::.ctor(object, native int)
-                //L_0053: stsfld class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
-                //L_0058: br.s L_005a
-                //L_005a: ldsfld class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
-
-                var handlerFieldName = GetChangeNotificationHandlerFieldName(property);
-                var handlerConstructorFieldName = GetChangeNotificationHandlerConstructorName(property);
-
-                var handlerField = GetFieldReference(property.DeclaringType, handlerFieldName, true);
-                var handlerConstructor = GetMethodReference(property.DeclaringType, handlerConstructorFieldName, true);
-                var handlerType = GetEventHandlerAdvancedPropertyChangedEventArgs(property);
-                var importedHandlerType = handlerType.Resolve();
-
-                var advancedPropertyChangedEventArgsType = property.Module.FindType("Catel.Core", "Catel.Data.AdvancedPropertyChangedEventArgs");
-                var handlerTypeConstructor = declaringType.Module.ImportReference(importedHandlerType.Constructor(false));
-                var genericConstructor = handlerTypeConstructor.MakeHostInstanceGeneric(declaringType.Module.ImportReference(advancedPropertyChangedEventArgsType));
-
-                var finalInstruction = Instruction.Create(OpCodes.Ldsfld, handlerField);
-
-                instructionsToInsert.AddRange(new[]
-                {
-                    Instruction.Create(OpCodes.Ldsfld, handlerField),
-                    Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
-                    Instruction.Create(OpCodes.Ldnull),
-                    Instruction.Create(OpCodes.Ldftn, handlerConstructor),
-                    Instruction.Create(OpCodes.Newobj, genericConstructor),
-                    Instruction.Create(OpCodes.Stsfld, handlerField),
-                    Instruction.Create(OpCodes.Br_S, finalInstruction),
-                    finalInstruction
-                });
-            }
-            else
-            {
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldnull));
+                case CatelVersion.v6:
+                    instructionsToInsert.AddRange(CreatePropertyRegistration_Catel6(property, propertyData));
+                    break;
             }
 
             var registerPropertyInvoker = (propertyData.DefaultValue is null) ? _catelType.RegisterPropertyWithoutDefaultValueInvoker : _catelType.RegisterPropertyWithDefaultValueInvoker;
 
             // Fill up the final booleans:
-            // RegisterProperty([0] string name, [1] Type type,
-            //     [2] Func<object> createDefaultValue = null,
-            //     [3] EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null,
-            //     [4] bool includeInSerialization = true,
-            //     [5] bool includeInBackup = true)
-            var parameters = registerPropertyInvoker.Parameters.Skip(4).ToList();
+            // Catel v5: RegisterProperty([0] string name, 
+            //                            [1] Type type,
+            //                            [2] Func<object> createDefaultValue = null,
+            //                            [3] EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null,
+            //                            [4] bool includeInSerialization = true,
+            //                            [5] bool includeInBackup = true)
+            //
+            // Catel v6: RegisterProperty<TValue>([0] string name, 
+            //                                    [1] Func<TValue> createDefaultValue = null,
+            //                                    [2] EventHandler<APropertyChangedEventArgs> propertyChangedEventHandler = null,
+            //                                    [3] bool includeInSerialization = true,
+            //                                    [4] bool includeInBackup = true)
+
+            var parameters = registerPropertyInvoker.Parameters.Skip(3).ToList();
+            var boolCount = 0;
+
             for (var i = 0; i < parameters.Count; i++)
             {
                 var parameter = parameters[i];
                 if (string.CompareOrdinal(parameter.ParameterType.FullName, _moduleWeaver.TypeSystem.BooleanDefinition.FullName) != 0)
                 {
-                    break;
+                    continue;
                 }
 
-                // IncludeInBackup index is 5
-                if (!propertyData.IncludeInBackup && parameter.Index == 5)
+                boolCount++;
+
+                // includeInBackup == 2nd bool value
+                if (!propertyData.IncludeInBackup && boolCount == 2)
                 {
                     instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_0));
                 }
@@ -407,7 +389,7 @@ namespace Catel.Fody
                         genericRegisterProperty.GenericParameters.Add(genericParameter);
                     }
 
-                    genericRegisterProperty.GenericArguments.Add(property.PropertyType.Import(true));
+                    genericRegisterProperty.GenericArguments.Add(property.PropertyType.Import(false));
                 }
 
                 finalRegisterPropertyMethod = genericRegisterProperty;
@@ -424,6 +406,241 @@ namespace Catel.Fody
             body.OptimizeMacros();
 
             return true;
+        }
+
+        private List<Instruction> CreatePropertyRegistration_Catel5(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            // Catel v5:
+            //
+            //L_0000: ldstr "FullName"
+            //L_0005: ldtoken string // note that this is the property type
+            //L_000a: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+            //L_000f: ldnull
+            //L_0010: ldnull
+            //L_0011: ldc.i4.1
+            //L_0012: call class [Catel.Core]Catel.Data.PropertyData [Catel.Core]Catel.Data.ModelBase::RegisterProperty(string, class [mscorlib]System.Type, class [mscorlib]System.Func`1<object>, class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs>, bool)
+            //L_0017: stsfld class [Catel.Core]Catel.Data.PropertyData Catel.Fody.TestAssembly.ViewModelBaseTest::FullNameProperty
+
+            var instructions = new List<Instruction>();
+            var getTypeFromHandle = property.Module.GetMethodAndImport("GetTypeFromHandle");
+
+            instructions.AddRange(new[]
+            {
+                Instruction.Create(OpCodes.Ldstr, property.Name),
+                Instruction.Create(OpCodes.Ldtoken, property.PropertyType.Import()),
+                Instruction.Create(OpCodes.Call, getTypeFromHandle),
+            });
+
+            instructions.AddRange(CreateDefaultValueInstructions(propertyData));
+
+            if (propertyData.ChangeCallbackReference != null)
+            {
+                instructions.AddRange(CreateChangeCallbackReference_Catel5(property));
+            }
+            else
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldnull));
+            }
+
+            return instructions;
+        }
+
+        private List<Instruction> CreatePropertyRegistration_Catel6(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            // Catel v6:
+            //
+            //L_0000: ldstr "FullName"
+            //L_0005: ldtoken string // note that this is the property type
+            //L_000a: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+            //L_000f: ldnull
+            //L_0010: ldnull
+            //L_0011: ldc.i4.1
+            //L_0012: call class [Catel.Core]Catel.Data.IPropertyData [Catel.Core]Catel.Data.ModelBase::RegisterProperty<TValue>(string, class [mscorlib]System.Func`1<TValue>, class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.PropertyChangedEventArgs>, bool)
+            //L_0017: stsfld class [Catel.Core]Catel.Data.IPropertyData Catel.Fody.TestAssembly.ViewModelBaseTest::FullNameProperty
+
+            var instructions = new List<Instruction>();
+
+            instructions.AddRange(new[]
+            {
+                Instruction.Create(OpCodes.Ldstr, property.Name),
+            });
+
+            instructions.AddRange(CreateDefaultValueInstructions(propertyData));
+
+            if (propertyData.ChangeCallbackReference != null)
+            {
+                instructions.AddRange(CreateChangeCallbackReference_Catel6(property));
+            }
+            else
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldnull));
+            }
+
+            return instructions;
+        }
+
+        private List<Instruction> CreateDefaultValueInstructions(CatelTypeProperty propertyData)
+        {
+            var instructions = new List<Instruction>();
+
+            var resolvedPropertyType = propertyData.PropertyDefinition.PropertyType.Resolve();
+
+            // Default value
+            if (propertyData.DefaultValue is string stringValue)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldstr, stringValue));
+            }
+            else if (propertyData.DefaultValue is bool boolValue)
+            {
+                if (boolValue)
+                {
+                    instructions.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+                }
+                else
+                {
+                    instructions.Add(Instruction.Create(OpCodes.Ldc_I4_0));
+                }
+            }
+            else if (propertyData.DefaultValue is int intValue)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldc_I4, intValue));
+            }
+            else if (propertyData.DefaultValue is long longValue)
+            {
+                if (longValue <= int.MaxValue)
+                {
+                    // Note: don't use Ldc_I8 here, although it is a long
+                    instructions.Add(Instruction.Create(OpCodes.Ldc_I4, (int)longValue));
+                    instructions.Add(Instruction.Create(OpCodes.Conv_I8));
+                }
+                else
+                {
+                    instructions.Add(Instruction.Create(OpCodes.Ldc_I8, longValue));
+                }
+            }
+            else if (propertyData.DefaultValue is float floatValue)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldc_R4, floatValue));
+            }
+            else if (propertyData.DefaultValue is double doubleValue)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldc_R8, doubleValue));
+            }
+            else if (resolvedPropertyType != null && resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldc_I4, (int)((CustomAttributeArgument)propertyData.DefaultValue).Value));
+            }
+            else
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldnull));
+            }
+
+            // Special case: if Nullable<ValueType>, we need to do special things
+            if (propertyData.PropertyDefinition.PropertyType.IsNullableValueType() &&
+                propertyData.DefaultValue is null == false)
+            {
+                // IL_0033: ldc.i4.1 // already done above)
+                // IL_0034: newobj instance void valuetype [System.Runtime]System.Nullable`1<bool>::.ctor(!0)
+
+                var declaringType = (GenericInstanceType)propertyData.PropertyDefinition.PropertyType;
+                var resolvedType = declaringType.Resolve();
+
+                resolvedType.FixPrivateCorLibScope();
+
+                var ctorDefinition = resolvedType.Constructor(false);
+                var importedCtor = _catelType.TypeDefinition.Module.ImportReference(ctorDefinition);
+                var ctor = importedCtor.MakeHostInstanceGeneric(declaringType.GenericArguments[0]);
+
+                instructions.Add(Instruction.Create(OpCodes.Newobj, ctor));
+            }
+
+            return instructions;
+        }
+
+        private List<Instruction> CreateChangeCallbackReference_Catel5(PropertyDefinition property)
+        {
+            var instructions = new List<Instruction>();
+
+            var declaringType = property.DeclaringType;
+
+            //L_0040: ldsfld class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
+            //L_0045: brtrue.s L_005a
+            //L_0047: ldnull
+            //L_0048: ldftn void Catel.Fody.TestAssembly.ModelBaseTest::<.cctor>b__0(object, class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs)
+            //L_004e: newobj instance void [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs>::.ctor(object, native int)
+            //L_0053: stsfld class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
+            //L_0058: br.s L_005a
+            //L_005a: ldsfld class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.AdvancedPropertyChangedEventArgs> Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
+
+            var handlerFieldName = GetChangeNotificationHandlerFieldName(property);
+            var handlerConstructorFieldName = GetChangeNotificationHandlerConstructorName(property);
+
+            var handlerField = GetFieldReference(property.DeclaringType, handlerFieldName, true);
+            var handlerConstructor = GetMethodReference(property.DeclaringType, handlerConstructorFieldName, true);
+            var handlerType = GetPropertyChangedEventHandler_Catel4_Catel5(property);
+            var importedHandlerType = handlerType.Resolve();
+
+            var advancedPropertyChangedEventArgsType = property.Module.FindType("Catel.Core", "Catel.Data.AdvancedPropertyChangedEventArgs");
+            var handlerTypeConstructor = declaringType.Module.ImportReference(importedHandlerType.Constructor(false));
+            var genericConstructor = handlerTypeConstructor.MakeHostInstanceGeneric(declaringType.Module.ImportReference(advancedPropertyChangedEventArgsType));
+
+            var finalInstruction = Instruction.Create(OpCodes.Ldsfld, handlerField);
+
+            instructions.AddRange(new[]
+            {
+                Instruction.Create(OpCodes.Ldsfld, handlerField),
+                Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
+                Instruction.Create(OpCodes.Ldnull),
+                Instruction.Create(OpCodes.Ldftn, handlerConstructor),
+                Instruction.Create(OpCodes.Newobj, genericConstructor),
+                Instruction.Create(OpCodes.Stsfld, handlerField),
+                Instruction.Create(OpCodes.Br_S, finalInstruction),
+                finalInstruction
+            });
+
+            return instructions;
+        }
+
+        private List<Instruction> CreateChangeCallbackReference_Catel6(PropertyDefinition property)
+        {
+            var instructions = new List<Instruction>();
+
+            var declaringType = property.DeclaringType;
+
+            //L_0040: ldsfld class [System.ComponentModel]System.ComponentModel.PropertyChangedEventHandler Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
+            //L_0045: brtrue.s L_005a
+            //L_0047: ldnull
+            //L_0048: ldftn void Catel.Fody.TestAssembly.ModelBaseTest::<.cctor>b__0(object, class [System.ComponentModel]System.ComponentModel.PropertyChangedEventArgs)
+            //L_004e: newobj instance void [System.ComponentModel]System.ComponentModel.PropertyChangedEventHandler::.ctor(object, native int)
+            //L_0053: stsfld class [System.ComponentModel]System.ComponentModel.PropertyChangedEventHandler Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
+            //L_0058: br.s L_005a
+            //L_005a: ldsfld class [System.ComponentModel]System.ComponentModel.PropertyChangedEventHandler Catel.Fody.TestAssembly.ModelBaseTest::CS$<>9__CachedAnonymousMethodDelegate1
+
+            var handlerFieldName = GetChangeNotificationHandlerFieldName(property);
+            var handlerConstructorFieldName = GetChangeNotificationHandlerConstructorName(property);
+
+            var handlerField = GetFieldReference(property.DeclaringType, handlerFieldName, true);
+            var handlerConstructor = GetMethodReference(property.DeclaringType, handlerConstructorFieldName, true);
+            var handlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.ComponentModel.PropertyChangedEventHandler");
+            var importedHandlerType = handlerType.Resolve();
+
+            var handlerTypeConstructor = declaringType.Module.ImportReference(importedHandlerType.Constructor(false));
+
+            var finalInstruction = Instruction.Create(OpCodes.Ldsfld, handlerField);
+
+            instructions.AddRange(new[]
+            {
+                Instruction.Create(OpCodes.Ldsfld, handlerField),
+                Instruction.Create(OpCodes.Brtrue_S, finalInstruction),
+                Instruction.Create(OpCodes.Ldnull),
+                Instruction.Create(OpCodes.Ldftn, handlerConstructor),
+                Instruction.Create(OpCodes.Newobj, handlerTypeConstructor),
+                Instruction.Create(OpCodes.Stsfld, handlerField),
+                Instruction.Create(OpCodes.Br_S, finalInstruction),
+                finalInstruction
+            });
+
+            return instructions;
         }
 
         private int AddGetValueCall(PropertyDefinition property, FieldReference fieldReference)
@@ -476,7 +693,8 @@ namespace Catel.Fody
             //var declaringType = property.DeclaringType;
             //var fieldReference = GetField(declaringType, fieldName);
 
-            // Writes SetValue(PropertyData propertyName, object value)
+            // Catel v5: SetValue<TValue>(PropertyData propertyName, TValue value)
+            // Catel v6: SetValue<TValue>(IPropertyData propertyName, TValue value)
 
             if (property.SetMethod is null)
             {
@@ -513,7 +731,7 @@ namespace Catel.Fody
                 Instruction.Create(OpCodes.Ldarg_1)
             });
 
-            // Check if Catel 5.12 SetValue<TValue> is available
+            // Check if Catel 5.12+ SetValue<TValue> is available
             var preferredSetValueInvoker = _catelType.PreferredSetValueInvoker;
             if (preferredSetValueInvoker.HasGenericParameters)
             {
@@ -571,6 +789,7 @@ namespace Catel.Fody
             }
 
             var baseTypes = resolvedType.GetBaseTypes(true);
+
             foreach (var baseType in baseTypes)
             {
                 if (commandInterfaces.Any(x => baseType.Name.Contains(x)))

@@ -8,7 +8,7 @@ Parameters["SolutionName"] = "Catel.Fody";
 Parameters["Company"] = "CatenaLogic";
 Parameters["RepositoryUrl"] = string.Format("https://github.com/{0}/{1}", GetBuildServerVariable("SolutionName"), GetBuildServerVariable("SolutionName"));
 Parameters["StartYear"] = "2010";
-Parameters["UseVisualStudioPrerelease"] = "true";
+Parameters["UseVisualStudioPrerelease"] = "false";
 Parameters["DeployCatelFodyAttributes"] = "false";
 Parameters["SkipComponentsThatAreNotDeployable"] = "false";
 
@@ -29,7 +29,8 @@ Parameters["SkipComponentsThatAreNotDeployable"] = "false";
 Components.Add("Catel.Fody");
 Components.Add("Catel.Fody.Attributes");
 
-TestProjects.Add(string.Format("{0}.Tests", GetBuildServerVariable("SolutionName")));
+TestProjects.Add(string.Format("{0}.Tests.Catel5", GetBuildServerVariable("SolutionName")));
+//TestProjects.Add(string.Format("{0}.Tests.Catel6", GetBuildServerVariable("SolutionName")));
 
 //=======================================================
 // REQUIRED INITIALIZATION, DO NOT CHANGE
