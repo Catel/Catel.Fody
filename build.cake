@@ -30,7 +30,7 @@ Components.Add("Catel.Fody");
 Components.Add("Catel.Fody.Attributes");
 
 TestProjects.Add(string.Format("{0}.Tests.Catel5", GetBuildServerVariable("SolutionName")));
-TestProjects.Add(string.Format("{0}.Tests.Catel6", GetBuildServerVariable("SolutionName")));
+//TestProjects.Add(string.Format("{0}.Tests.Catel6", GetBuildServerVariable("SolutionName")));
 
 //=======================================================
 // REQUIRED INITIALIZATION, DO NOT CHANGE

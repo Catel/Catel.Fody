@@ -418,8 +418,8 @@ namespace Catel.Fody
             }
             else
             {
-                methodDefinitions = (from method in type.Methods 
-                                     where method.Name == methodName && method.HasGenericParameters 
+                methodDefinitions = (from method in type.Methods
+                                     where method.Name == methodName && method.HasGenericParameters
                                      select method).ToList();
             }
 
@@ -469,17 +469,22 @@ namespace Catel.Fody
                 while (!found && idx < processor.Body.Instructions.Count)
                 {
                     var instruction = processor.Body.Instructions[idx];
+                    if (instruction.OpCode == OpCodes.Call ||
+                        instruction.OpCode == OpCodes.Callvirt)
+                    {
+                        var methodDefinition = instruction.Operand as MethodDefinition;
+                        if (methodDefinition is not null)
+                        {
+                            if (methodDefinition.DeclaringType.IsAssignableFrom(TypeDefinition) &&
+                                methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
 
-                    MethodDefinition methodDefinition;
-                    if (instruction.OpCode == OpCodes.Call && (methodDefinition = instruction.Operand as MethodDefinition) != null && methodDefinition.DeclaringType.IsAssignableFrom(TypeDefinition) && methodDefinition.Name == string.Format(CultureInfo.InvariantCulture, "get_{0}", property.Name))
-                    {
-                        found = true;
-                        break;
-                    }
-                    else
-                    {
-                        idx++;
-                    }
+                    idx++;
                 }
             }
 
