@@ -10,6 +10,7 @@
     <DevelopmentDependency>true</DevelopmentDependency>
     <PackageTags>catel;fody;ilweaving;weaving</PackageTags>
     <DisableFody>true</DisableFody>
+    <NoWarn>$(NoWarn);NU5100;NU5118</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
