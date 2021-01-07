@@ -16,8 +16,7 @@ namespace Catel.Fody
 
         public static TypeDefinition ResolveType(this TypeReference reference)
         {
-            TypeDefinition definition;
-            if (_definitions.TryGetValue(reference.FullName, out definition))
+            if (_definitions.TryGetValue(reference.FullName, out var definition))
             {
                 return definition;
             }

@@ -6,6 +6,7 @@
 
 namespace Catel.Fody
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Mono.Cecil;
@@ -139,6 +140,7 @@ namespace Catel.Fody
             if (typeReference.HasGenericParameters)
             {
                 var genericDeclaringType = new GenericInstanceType(typeReference);
+
                 foreach (var genericParameter in typeReference.GenericParameters)
                 {
                     genericDeclaringType.GenericArguments.Add(genericParameter);
@@ -351,10 +353,12 @@ namespace Catel.Fody
             if (definition.DeclaringType.HasGenericParameters)
             {
                 var declaringType = new GenericInstanceType(definition.DeclaringType);
+
                 foreach (var parameter in definition.DeclaringType.GenericParameters)
                 {
                     declaringType.GenericArguments.Add(parameter);
                 }
+
                 return new FieldReference(definition.Name, definition.FieldType, declaringType);
             }
 
@@ -433,7 +437,7 @@ namespace Catel.Fody
 
                     if (mappedFromSuperType.Any())
                     {
-                        currentBase = instanceType.ElementType.MakeGenericInstanceType(previousGenericArgsMap.Select(x => x.Value).ToArray());
+                        currentBase = instanceType.ElementType.MakeGenericInstanceType(previousGenericArgsMap.Select(x => x.Value).ToArray()).Import();
                         mappedFromSuperType.Clear();
                     }
                 }
@@ -448,32 +452,56 @@ namespace Catel.Fody
 
                 if (includeIfaces)
                 {
-                    result.AddRange(BuildIFaces(current, previousGenericArgsMap));
+                    var interfaces = BuildInterfaces(current, previousGenericArgsMap);
+                    result.AddRange(interfaces);
                 }
             } while (current.BaseType != null);
 
             return result;
         }
 
-        private static IEnumerable<TypeReference> BuildIFaces(TypeDefinition type, IDictionary<string, TypeReference> genericArgsMap)
+        private static IEnumerable<TypeReference> BuildInterfaces(TypeDefinition type, IDictionary<string, TypeReference> genericArgsMap)
         {
             var mappedFromSuperType = new List<TypeReference>();
+
+            // We need to map any generic parameters of the implementing type, for example when we want to build such interfaces:
+            // KeyValuePair<TKey, TValue> : ICustomKey<TKey>, IEquatable<KeyValuePair<TKey, TValue>>
+            var fullTypeArgsMap = GetGenericArgsMap(type, genericArgsMap, mappedFromSuperType);
+
+            foreach (var item in fullTypeArgsMap)
+            {
+                if (!genericArgsMap.ContainsKey(item.Key))
+                {
+                    genericArgsMap[item.Key] = item.Value;
+                }
+            }
 
             foreach (var iface in type.Interfaces)
             {
                 var result = iface.InterfaceType;
 
-                if (iface.InterfaceType is GenericInstanceType genericIface)
+                try
                 {
-                    var map = GetGenericArgsMap(genericIface, genericArgsMap, mappedFromSuperType);
-
-                    if (mappedFromSuperType.Any())
+                    if (iface.InterfaceType is GenericInstanceType genericIface)
                     {
-                        result = genericIface.ElementType.MakeGenericInstanceType(map.Select(x => x.Value).ToArray()).Import();
+                        var map = GetGenericArgsMap(genericIface, genericArgsMap, mappedFromSuperType);
+
+                        if (mappedFromSuperType.Any())
+                        {
+                            var genericInstance = genericIface.ElementType.MakeGenericInstanceType(map.Select(x => x.Value).ToArray());
+                            result = genericInstance.Import();
+                        }
                     }
                 }
+                catch (Exception)
+                {
+                    // Ignore
+                }
 
-                yield return result;
+                if (result is not null)
+                {
+                    yield return result;
+                }
             }
         }
 
@@ -488,7 +516,7 @@ namespace Catel.Fody
             }
 
             var genericArgs = ((GenericInstanceType)type).GenericArguments;
-            var genericPars = ((GenericInstanceType)type).ElementType.Resolve().GenericParameters;
+            var genericParameters = ((GenericInstanceType)type).ElementType.Resolve().GenericParameters;
 
             /*
 
@@ -508,7 +536,7 @@ namespace Catel.Fody
          *
          *      What would happen if we walk up the hierarchy from StringIntMap:
          *          -> StringIntMap
-         *              - here dont have any generic agrs or params for StringIntMap.
+         *              - here don't have any generic agrs or params for StringIntMap.
          *              - but when we resolve StringIntMap we get a
          *                  reference to the base class StringMap<int>,
          *          -> StringMap<int>
@@ -534,13 +562,11 @@ namespace Catel.Fody
             {
                 var arg = genericArgs[i];
 
-                var param = genericPars[i];
+                var param = genericParameters[i];
 
                 if (arg is GenericParameter)
                 {
-                    TypeReference mapping;
-
-                    if (superTypeMap.TryGetValue(arg.Name, out mapping))
+                    if (superTypeMap.TryGetValue(arg.Name, out var mapping))
                     {
                         mappedFromSuperType.Add(mapping);
 
@@ -559,7 +585,38 @@ namespace Catel.Fody
                 }
                 else
                 {
-                    result.Add(param.Name, arg);
+                    // Note: this could be generic, resolve first. This is to solve a case where we have a nested generic interface implementation:
+                    // KeyValuePair<TKey, TValue> : ICustomKey<TKey>, IEquatable<KeyValuePair<TKey, TValue>> // Resolving KeyValuePair<TKey, TValue> of the IEquatable interface here
+                    var finalArgument = arg;
+                    if (finalArgument.IsGenericInstance)
+                    {
+                        var generic = finalArgument as GenericInstanceType;
+
+                        var genericArguments = new TypeReference[generic.GenericArguments.Count];
+                        var success = true;
+
+                        for (var j = 0; j < genericArguments.Length; j++)
+                        {
+                            var genericArgument = generic.GenericArguments[j];
+                            if (!superTypeMap.TryGetValue(genericArgument.Name, out var mappedValue))
+                            {
+                                success = false;
+                                break;
+                            }
+
+                            genericArguments[j] = mappedValue;
+                        }
+
+                        if (!success)
+                        {
+                            // Ignore this type
+                            continue;
+                        }
+
+                        finalArgument = generic.ElementType.MakeGenericInstanceType(genericArguments);
+                    }
+
+                    result.Add(param.Name, finalArgument);
                 }
             }
 

@@ -789,6 +789,7 @@ namespace Catel.Fody
             }
 
             var baseTypes = resolvedType.GetBaseTypes(true);
+
             foreach (var baseType in baseTypes)
             {
                 if (commandInterfaces.Any(x => baseType.Name.Contains(x)))
