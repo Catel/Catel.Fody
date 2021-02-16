@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net5.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.Tests.Catel6</AssemblyName>
     <RootNamespace>Catel.Fody.Tests</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>

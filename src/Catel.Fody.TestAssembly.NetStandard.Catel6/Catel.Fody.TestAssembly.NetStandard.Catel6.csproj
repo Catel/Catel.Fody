@@ -1,12 +1,12 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows</TargetFrameworks>
-    <AssemblyName>Catel.Fody.TestAssembly.Catel6</AssemblyName>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>Catel.Fody.TestAssembly.NetStandard.Catel6</AssemblyName>
     <RootNamespace>Catel.Fody.TestAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageId>Catel.Fody.TestAssembly</PackageId>
+    <PackageId>Catel.Fody.TestAssembly.NetStandard</PackageId>
     <PackageVersion>1.0.0-alpha0001</PackageVersion>
-    <Description>Catel.Fody.TestAssembly library.</Description>
+    <Description>Catel.Fody.TestAssembly.NetStandard library.</Description>
     <PackageTags></PackageTags>
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
@@ -14,9 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj" />
-    <ProjectReference Include="..\Catel.Fody.TestAssembly.NetStandard.Catel6\Catel.Fody.TestAssembly.NetStandard.Catel6.csproj" />
-    <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly.Catel6\Catel.Fody.TestExternalTypesAssembly.Catel6.csproj" />
+    <PackageReference Include="Catel.Core" Version="6.0.0-alpha0330" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Catel.Fody.TestAssembly.Shared\**\*.cs" Exclude="..\Catel.Fody.TestAssembly.Shared\bin\**\*.cs;..\Catel.Fody.TestAssembly.Shared\obj\**\*.cs" />
+    <Compile Include="..\Catel.Fody.TestAssembly.NetStandard.Shared\**\*.cs" Exclude="..\Catel.Fody.TestAssembly.NetStandard.Shared\bin\**\*.cs;..\Catel.Fody.TestAssembly.NetStandard.Shared\obj\**\*.cs" />
   </ItemGroup>
   
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net5.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestExternalTypesAssembly.Catel6</AssemblyName>
     <RootNamespace>Catel.Fody.TestExternalTypesAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -9,12 +9,12 @@
     <Description>Catel.Fody.TestExternalTypesAssembly library.</Description>
     <PackageTags></PackageTags>
     <SonarQubeExclude>true</SonarQubeExclude>
-    <DisableFody>true</DisableFody>    
-  <DefineConstants>$(DefineConstants);CATEL_6</DefineConstants>
+    <DisableFody>true</DisableFody>
+    <DefineConstants>$(DefineConstants);CATEL_6</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="5.12.12" />
+    <PackageReference Include="Catel.MVVM" Version="6.0.0-alpha0330" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,7 +24,7 @@
   <ItemGroup>
     <Compile Include="..\Catel.Fody.TestExternalTypesAssembly.Shared\**\*.cs" Exclude="..\Catel.Fody.TestExternalTypesAssembly.Shared\bin\**\*.cs;..\Catel.Fody.TestExternalTypesAssembly.Shared\obj\**\*.cs" />
   </ItemGroup>
-  
+
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props')" />
 </Project>

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net5.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestAssembly.Catel5</AssemblyName>
     <RootNamespace>Catel.Fody.TestAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj" />
+    <ProjectReference Include="..\Catel.Fody.TestAssembly.NetStandard.Catel5\Catel.Fody.TestAssembly.NetStandard.Catel5.csproj" />
     <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly.Catel5\Catel.Fody.TestExternalTypesAssembly.Catel5.csproj" />
   </ItemGroup>
 
