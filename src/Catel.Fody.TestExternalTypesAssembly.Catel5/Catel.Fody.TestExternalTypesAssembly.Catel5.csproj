@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net5.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestExternalTypesAssembly.Catel5</AssemblyName>
     <RootNamespace>Catel.Fody.TestExternalTypesAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="5.12.11" />
+    <PackageReference Include="Catel.MVVM" Version="5.12.12" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,7 @@
+#pragma warning disable CS1998
+
 #l "lib-generic.cake"
+#l "lib-logging.cake"
 #l "lib-msbuild.cake"
 #l "lib-nuget.cake"
 #l "lib-signing.cake"
@@ -20,9 +23,11 @@
 #l "tests.cake"
 #l "templates-tasks.cake"
 
-#addin "nuget:?package=System.Net.Http&version=4.3.3"
-#addin "nuget:?package=Newtonsoft.Json&version=11.0.2"
+#addin "nuget:?package=Cake.FileHelpers&version=3.3.0"
 #addin "nuget:?package=Cake.Sonar&version=1.1.25"
+#addin "nuget:?package=MagicChunks&version=2.0.0.119"
+#addin "nuget:?package=Newtonsoft.Json&version=12.0.3"
+#addin "nuget:?package=System.Net.Http&version=4.3.4"
 
 // Note: the SonarQube tool must be installed as a global .NET tool:
 // `dotnet tool install --global dotnet-sonarscanner --ignore-failed-sources`
@@ -75,7 +80,6 @@ public class BuildContext : BuildContextBase
     public Dictionary<string, object> Parameters { get; set; }
     public Dictionary<string, string> Variables { get; private set; }
     
-
     // Integrations
     public BuildServerIntegration BuildServer { get; set; }
     public IssueTrackerIntegration IssueTracker { get; set; }
@@ -137,12 +141,12 @@ Setup<BuildContext>(setupContext =>
     buildContext.Dependencies = InitializeDependenciesContext(buildContext, buildContext);
     buildContext.DockerImages = InitializeDockerImagesContext(buildContext, buildContext);
     buildContext.GitHubPages = InitializeGitHubPagesContext(buildContext, buildContext);
+    buildContext.Templates = InitializeTemplatesContext(buildContext, buildContext);
     buildContext.Tools = InitializeToolsContext(buildContext, buildContext);
     buildContext.Uwp = InitializeUwpContext(buildContext, buildContext);
     buildContext.VsExtensions = InitializeVsExtensionsContext(buildContext, buildContext);
     buildContext.Web = InitializeWebContext(buildContext, buildContext);
     buildContext.Wpf = InitializeWpfContext(buildContext, buildContext);
-    buildContext.Templates = InitializeTemplatesContext(buildContext, buildContext);
 
     // All projects, but dependencies first & tests last
     buildContext.AllProjects.AddRange(buildContext.Dependencies.Items);
@@ -180,6 +184,13 @@ Setup<BuildContext>(setupContext =>
     buildContext.Processors.Add(new VsExtensionsProcessor(buildContext));
     buildContext.Processors.Add(new WebProcessor(buildContext));
     buildContext.Processors.Add(new WpfProcessor(buildContext));
+
+    setupContext.LogSeparator("Registering variables for templates");
+
+    // Preparing variables for templates
+    buildContext.Variables["GitVersion_MajorMinorPatch"] = buildContext.General.Version.MajorMinorPatch;
+    buildContext.Variables["GitVersion_FullSemVer"] = buildContext.General.Version.FullSemVer;
+    buildContext.Variables["GitVersion_NuGetVersion"] = buildContext.General.Version.NuGet;
 
     setupContext.LogSeparator("Build context is ready, displaying state info");
 
@@ -220,10 +231,6 @@ Task("Initialize")
     {
         buildContext.BuildServer.SetVariable(variableToUpdate.Key, variableToUpdate.Value);
     }
-
-    buildContext.Variables["GitVersion_MajorMinorPatch"] = buildContext.General.Version.MajorMinorPatch;
-    buildContext.Variables["GitVersion_FullSemVer"] = buildContext.General.Version.FullSemVer;
-    buildContext.Variables["GitVersion_NuGetVersion"] = buildContext.General.Version.NuGet;
 });
 
 //-------------------------------------------------------------
