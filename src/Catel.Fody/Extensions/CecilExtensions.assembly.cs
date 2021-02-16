@@ -38,8 +38,12 @@ namespace Catel.Fody
 
         public static bool IsNetCoreLibrary(this AssemblyDefinition assemblyDefinition)
         {
-            var mainModule = assemblyDefinition.MainModule;
+            if (IsNetStandardLibrary(assemblyDefinition))
+            {
+                return false;
+            }
 
+            var mainModule = assemblyDefinition.MainModule;
             if (mainModule.Types.Count == 1)
             {
                 return true;
