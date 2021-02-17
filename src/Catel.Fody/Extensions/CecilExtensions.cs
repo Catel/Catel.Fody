@@ -285,7 +285,7 @@ namespace Catel.Fody
                     return propertyDefinition;
                 }
 
-                type = type.BaseType.Resolve();
+                type = type.BaseType?.Resolve();
             }
 
             return null;
