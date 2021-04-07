@@ -77,7 +77,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
                                       where string.Equals(property.Name, "IsReadOnly")
                                       select property).FirstOrDefault();
 
-            if (isReadOnlyProperty.Argument.Value != null)
+            if (isReadOnlyProperty.Argument.Value is not null)
             {
                 isReadOnly = (bool)isReadOnlyProperty.Argument.Value;
             }

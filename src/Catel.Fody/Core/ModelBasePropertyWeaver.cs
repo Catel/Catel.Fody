@@ -317,12 +317,12 @@ namespace Catel.Fody
                                        select instruction).FirstOrDefault();
 
             var exceptionHandler = body.ExceptionHandlers.FirstOrDefault();
-            if (exceptionHandler != null)
+            if (exceptionHandler is not null)
             {
                 instructionToInsert = exceptionHandler.TryStart;
             }
 
-            var index = (instructionToInsert != null) ? instructions.IndexOf(instructionToInsert) : instructions.Count;
+            var index = (instructionToInsert is not null) ? instructions.IndexOf(instructionToInsert) : instructions.Count;
 
             var instructionsToInsert = new List<Instruction>();
 
@@ -433,7 +433,7 @@ namespace Catel.Fody
 
             instructions.AddRange(CreateDefaultValueInstructions(propertyData));
 
-            if (propertyData.ChangeCallbackReference != null)
+            if (propertyData.ChangeCallbackReference is not null)
             {
                 instructions.AddRange(CreateChangeCallbackReference_Catel5(property));
             }
@@ -467,7 +467,7 @@ namespace Catel.Fody
 
             instructions.AddRange(CreateDefaultValueInstructions(propertyData));
 
-            if (propertyData.ChangeCallbackReference != null)
+            if (propertyData.ChangeCallbackReference is not null)
             {
                 instructions.AddRange(CreateChangeCallbackReference_Catel6(property));
             }
@@ -526,7 +526,7 @@ namespace Catel.Fody
             {
                 instructions.Add(Instruction.Create(OpCodes.Ldc_R8, doubleValue));
             }
-            else if (resolvedPropertyType != null && resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
+            else if (resolvedPropertyType is not null && resolvedPropertyType.IsEnum && propertyData.DefaultValue is not null)
             {
                 instructions.Add(Instruction.Create(OpCodes.Ldc_I4, (int)((CustomAttributeArgument)propertyData.DefaultValue).Value));
             }
@@ -808,7 +808,7 @@ namespace Catel.Fody
             var declaringType = property.DeclaringType;
 
             var field = GetFieldDefinition(declaringType, fieldName, false);
-            if (field != null)
+            if (field is not null)
             {
                 foreach (var ctor in declaringType.GetConstructors())
                 {

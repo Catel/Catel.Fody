@@ -104,7 +104,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                     if (potentialInstruction.IsOpCode(OpCodes.Ldtoken))
                     {
                         var methodDefinition = potentialInstruction.Operand as MethodDefinition;
-                        if (methodDefinition != null)
+                        if (methodDefinition is not null)
                         {
                             var name = methodDefinition.Name;
                             if (name.StartsWith("get_"))

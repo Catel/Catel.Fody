@@ -94,7 +94,7 @@ namespace Catel.Fody
                 }
 
                 // Note: nested types not supported because we only list actual types (thus not nested)
-                var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
+                var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType is not null).ToList();
 
                 var typeNodeBuilder = new CatelTypeNodeBuilder(types, msCoreReferenceFinder);
                 typeNodeBuilder.Execute();
@@ -206,7 +206,7 @@ namespace Catel.Fody
 
             try
             {
-                FodyEnvironment.IsCatelCoreAvailable = assemblyResolver.Resolve("Catel.Core") != null;
+                FodyEnvironment.IsCatelCoreAvailable = assemblyResolver.Resolve("Catel.Core") is not null;
             }
             catch (Exception)
             {
@@ -215,7 +215,7 @@ namespace Catel.Fody
 
             try
             {
-                FodyEnvironment.IsCatelMvvmAvailable = assemblyResolver.Resolve("Catel.MVVM") != null;
+                FodyEnvironment.IsCatelMvvmAvailable = assemblyResolver.Resolve("Catel.MVVM") is not null;
             }
             catch (Exception)
             {

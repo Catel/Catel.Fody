@@ -65,7 +65,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
             var existingCustomAttribute = (from attribute in catelTypeDefinition.CustomAttributes
                                            where string.Equals(attribute.AttributeType.Name, "XmlSchemaProviderAttribute")
                                            select attribute).FirstOrDefault();
-            if (existingCustomAttribute != null)
+            if (existingCustomAttribute is not null)
             {
                 var constructorArgument = existingCustomAttribute.ConstructorArguments[0];
                 if (string.Equals(constructorArgument.Value, methodName))

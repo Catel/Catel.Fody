@@ -58,7 +58,7 @@ namespace Catel.Fody.Tests
             var propertyInfo = viewModelType.GetPropertyEx("ReadOnlyProperty");
 
             var setMethod = propertyInfo.GetSetMethod(true);
-            if (setMethod != null)
+            if (setMethod is not null)
             {
                 Assert.IsFalse(setMethod.IsPublic);
             }

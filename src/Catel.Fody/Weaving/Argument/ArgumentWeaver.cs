@@ -102,7 +102,7 @@ namespace Catel.Fody.Weaving.Argument
             var displayClasses = new List<TypeDefinition>();
 
             // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginning of the ctor)
-            if (instructions != null || ContainsArgumentChecks(method))
+            if (instructions is not null || ContainsArgumentChecks(method))
             {
                 if (instructions is null)
                 {
@@ -180,7 +180,7 @@ namespace Catel.Fody.Weaving.Argument
                 //}
             }
 
-            if (instructions != null)
+            if (instructions is not null)
             {
                 method.Body.OptimizeMacros();
                 method.UpdateDebugInfo();

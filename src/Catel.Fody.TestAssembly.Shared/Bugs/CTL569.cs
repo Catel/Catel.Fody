@@ -19,7 +19,7 @@ namespace Catel.Fody.TestAssembly
 
         public bool SearchIsEnabled
         {
-            get { return !string.IsNullOrWhiteSpace(SearchTerms) && SelectedFeed != null; }
+            get { return !string.IsNullOrWhiteSpace(SearchTerms) && SelectedFeed is not null; }
         }
 
 #if CATEL_5

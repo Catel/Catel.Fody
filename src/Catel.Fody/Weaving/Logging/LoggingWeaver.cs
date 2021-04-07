@@ -93,7 +93,7 @@ namespace Catel.Fody.Weaving.Logging
 
                             var message = $"Cannot change method call for log '{type.FullName}', the GetLogger(type) method does not exist on the calling type (try to use LogManager.GetCurrentClassLogger())";
 
-                            if (point != null)
+                            if (point is not null)
                             {
                                 FodyEnvironment.WriteWarningPoint(message, point);
                             }

@@ -34,7 +34,7 @@ namespace Catel.Fody.Tests
             propertyInfo.SetValue(instance, newValue);
 
             var isPropertyChangedWorkingPropertyInfo = instance.GetType().GetProperty("IsPropertyChangedWorking");
-            if (isPropertyChangedWorkingPropertyInfo != null)
+            if (isPropertyChangedWorkingPropertyInfo is not null)
             {
                 Assert.IsTrue((bool)isPropertyChangedWorkingPropertyInfo.GetValue(instance));
             }

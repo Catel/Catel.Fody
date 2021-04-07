@@ -15,7 +15,7 @@ namespace Catel.Fody
         public static void ReadBool(this XElement config, string nodeName, Action<bool> setter)
         {
             var attribute = config.Attribute(nodeName);
-            if (attribute != null)
+            if (attribute is not null)
             {
                 if (bool.TryParse(attribute.Value, out var value))
                 {
@@ -32,7 +32,7 @@ namespace Catel.Fody
             where TEnum : struct
         {
             var attribute = config.Attribute(nodeName);
-            if (attribute != null)
+            if (attribute is not null)
             {
                 if (Enum.TryParse<TEnum>(attribute.Value, out var value))
                 {

@@ -36,7 +36,7 @@ namespace Catel.Fody
         {
             var declaringType = method.DeclaringType;
             var baseType = declaringType?.BaseType;
-            if (baseType != null)
+            if (baseType is not null)
             {
                 var instructions = method.Body.Instructions;
 

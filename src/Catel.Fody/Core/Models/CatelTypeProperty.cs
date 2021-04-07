@@ -58,7 +58,7 @@ namespace Catel.Fody
 
             foreach (var callbackReference in callbackReferences)
             {
-                if (callbackReference != null)
+                if (callbackReference is not null)
                 {
                     if (callbackReference.HasParameters)
                     {
@@ -82,7 +82,7 @@ namespace Catel.Fody
         {
             //var defaultValueAttribute = PropertyDefinition.GetAttribute("Catel.Fody.DefaultValueAttribute");
             var defaultValueAttribute = PropertyDefinition.GetAttribute("System.ComponentModel.DefaultValueAttribute");
-            if (defaultValueAttribute != null)
+            if (defaultValueAttribute is not null)
             {
                 DefaultValue = defaultValueAttribute.ConstructorArguments[0].Value;
 
@@ -101,7 +101,7 @@ namespace Catel.Fody
             IncludeInBackup = true;
 
             var excludeFromBackupAttribute = PropertyDefinition.GetAttribute("Catel.Fody.ExcludeFromBackupAttribute");
-            if (excludeFromBackupAttribute != null)
+            if (excludeFromBackupAttribute is not null)
             {
                 IncludeInBackup = false;
 
@@ -143,7 +143,7 @@ namespace Catel.Fody
         private static FieldDefinition GetSingleField(PropertyDefinition property)
         {
             var fieldDefinition = GetSingleField(property, Code.Stfld, property.SetMethod);
-            if (fieldDefinition != null)
+            if (fieldDefinition is not null)
             {
                 return fieldDefinition;
             }
@@ -162,7 +162,7 @@ namespace Catel.Fody
                 if (instruction.OpCode.Code == code)
                 {
                     //if fieldReference is not null then we are at the second one
-                    if (fieldReference != null)
+                    if (fieldReference is not null)
                     {
                         return null;
                     }

@@ -28,18 +28,18 @@ namespace Catel.Fody.Weaving.Argument
             MethodDefinition selectedMethod = null;
 
             var parameterDefinition = parameterDefinitionOrFieldDefinition as ParameterDefinition;
-            if (parameterDefinition != null)
+            if (parameterDefinition is not null)
             {
                 targetType = parameterDefinition.ParameterType;
             }
 
             var fieldDefinition = parameterDefinitionOrFieldDefinition as FieldDefinition;
-            if (fieldDefinition != null)
+            if (fieldDefinition is not null)
             {
                 targetType = fieldDefinition.FieldType;
             }
 
-            if (targetType != null)
+            if (targetType is not null)
             {
                 try
                 {
@@ -50,7 +50,7 @@ namespace Catel.Fody.Weaving.Argument
                     var error = $"[{type.FullName}.{methodDefinition.Name}] {ex.Message}";
 
                     var sequencePoint = methodDefinition.GetFirstSequencePoint();
-                    if (sequencePoint != null)
+                    if (sequencePoint is not null)
                     {
                         FodyEnvironment.WriteErrorPoint(error, sequencePoint);
                     }
@@ -73,12 +73,12 @@ namespace Catel.Fody.Weaving.Argument
 
             var instructions = new List<Instruction>();
 
-            if (parameterDefinition != null)
+            if (parameterDefinition is not null)
             {
                 BuildInstructions(moduleDefinition, type, methodDefinition, parameterDefinition, attribute, instructions);
             }
 
-            if (fieldDefinition != null)
+            if (fieldDefinition is not null)
             {
                 BuildInstructions(moduleDefinition, type, methodDefinition, fieldDefinition, attribute, instructions);
             }

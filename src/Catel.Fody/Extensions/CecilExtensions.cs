@@ -98,7 +98,7 @@ namespace Catel.Fody
             if (checkForNullableValueTypes)
             {
                 var nullableValueType = typeReference.GetNullableValueType();
-                if (nullableValueType != null)
+                if (nullableValueType is not null)
                 {
                     return module.ImportReference(nullableValueType);
                 }
@@ -185,7 +185,7 @@ namespace Catel.Fody
 
         public static bool IsNullableValueType(this TypeReference typeReference)
         {
-            return GetNullableValueType(typeReference) != null;
+            return GetNullableValueType(typeReference) is not null;
         }
 
         public static MethodReference MakeHostInstanceGeneric(this MethodReference self, params TypeReference[] arguments)
@@ -251,7 +251,7 @@ namespace Catel.Fody
                             select typeDefinition).FirstOrDefault();
                 }
 
-                if (type != null)
+                if (type is not null)
                 {
                     CachedTypeDefinitions[cacheKey] = type;
                     return type;
@@ -274,13 +274,13 @@ namespace Catel.Fody
         public static PropertyReference GetProperty(this TypeDefinition typeDefinition, string propertyName)
         {
             var type = typeDefinition;
-            while (type != null && !type.FullName.Contains("System.Object"))
+            while (type is not null && !type.FullName.Contains("System.Object"))
             {
                 var propertyDefinition = (from property in type.Properties
                                           where string.Equals(propertyName, property.Name)
                                           select property).FirstOrDefault();
 
-                if (propertyDefinition != null)
+                if (propertyDefinition is not null)
                 {
                     return propertyDefinition;
                 }
@@ -308,14 +308,14 @@ namespace Catel.Fody
             foreach (var assemblyReference in module.AssemblyReferences)
             {
                 var assembly = resolver.Resolve(assemblyReference.Name);
-                if (assembly != null)
+                if (assembly is not null)
                 {
                     foreach (var type in assembly.MainModule.GetAllTypeDefinitions())
                     {
                         var methodReference = (from method in type.Methods
                                                where method.Name == methodName
                                                select method).FirstOrDefault();
-                        if (methodReference != null)
+                        if (methodReference is not null)
                         {
                             return methodReference;
                         }
@@ -455,7 +455,7 @@ namespace Catel.Fody
                     var interfaces = BuildInterfaces(current, previousGenericArgsMap);
                     result.AddRange(interfaces);
                 }
-            } while (current.BaseType != null);
+            } while (current.BaseType is not null);
 
             return result;
         }

@@ -99,13 +99,13 @@ namespace Catel.Fody
         private static void MarkAsGeneratedCodeInternal(this Collection<CustomAttribute> customAttributes, MsCoreReferenceFinder msCoreReferenceFinder, ModuleDefinition importingModule)
         {
             var generatedCodeAttribute = CreateGeneratedCodeAttribute(msCoreReferenceFinder, importingModule);
-            if (generatedCodeAttribute != null)
+            if (generatedCodeAttribute is not null)
             {
                 customAttributes.Add(generatedCodeAttribute);
             }
 
             var debuggerAttribute = CreateDebuggerNonUserCodeAttribute(msCoreReferenceFinder, importingModule);
-            if (debuggerAttribute != null)
+            if (debuggerAttribute is not null)
             {
                 customAttributes.Add(debuggerAttribute);
             }

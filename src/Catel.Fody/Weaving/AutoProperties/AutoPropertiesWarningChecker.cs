@@ -25,7 +25,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 foreach (var propertyData in catelType.Properties.ToList())
                 {
                     var warning = CheckForWarning(propertyData);
-                    if (warning != null)
+                    if (warning is not null)
                     {
                         FodyEnvironment.WriteDebug($"\t{propertyData.PropertyDefinition.GetName()} {warning} property will be ignored.");
                         catelType.Properties.Remove(propertyData);

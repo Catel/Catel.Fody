@@ -30,7 +30,7 @@
 
         public virtual Address Address { get; set; }
         public Address Address2 { get; set; }
-        public bool HasAddress => Address != null;
-        public bool HasAddress2 => Address2 != null;
+        public bool HasAddress => Address is not null;
+        public bool HasAddress2 => Address2 is not null;
     }
 }

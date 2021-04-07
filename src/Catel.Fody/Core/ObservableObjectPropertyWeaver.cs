@@ -113,7 +113,7 @@
             // IL_0008: call instance void Catel.Fody.TestAssembly.ObservableObjectTest_Expected/*0200004A*/::OnFirstNameChanged()/*060001C0*/
 
             var changeCallbackReference = _propertyData.ChangeCallbackReference;
-            if (changeCallbackReference != null)
+            if (changeCallbackReference is not null)
             {
                 newInstructions.Add(Instruction.Create(OpCodes.Ldarg_0));
                 newInstructions.Add(Instruction.Create(OpCodes.Call, changeCallbackReference));

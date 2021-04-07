@@ -194,7 +194,7 @@ namespace Catel.Fody.Weaving.Argument
 
                             // Search
                             var fieldOfDisplayClass = method.DeclaringType.Fields.FirstOrDefault(x => x.FieldType.Name.Equals(displayClassType.Name));
-                            if (fieldOfDisplayClass != null)
+                            if (fieldOfDisplayClass is not null)
                             {
                                 // Async in DEBUG mode
                                 for (var j = i + 1; j < instructions.Count - 1; j++)
@@ -281,7 +281,7 @@ namespace Catel.Fody.Weaving.Argument
                         var startIndex = i;
                         var endIndex = i;
 
-                        if (fieldOfDisplayClass != null && instruction.UsesField(fieldOfDisplayClass))
+                        if (fieldOfDisplayClass is not null && instruction.UsesField(fieldOfDisplayClass))
                         {
                             // Option A
                             endIndex = i;
@@ -547,7 +547,7 @@ namespace Catel.Fody.Weaving.Argument
                     {
                         // First call to ldtoken with FieldDefinition contains the display class type
                         var fieldDefinition = GetFieldDefinition(innerInstruction);
-                        if (fieldDefinition != null)
+                        if (fieldDefinition is not null)
                         {
                             displayClassType = fieldDefinition.DeclaringType;
                         }
@@ -626,7 +626,7 @@ namespace Catel.Fody.Weaving.Argument
                     {
                         // First call to ldtoken with FieldDefinition contains the display class type
                         parameterFieldDefinition = GetFieldDefinition(innerInstruction);
-                        if (parameterFieldDefinition != null)
+                        if (parameterFieldDefinition is not null)
                         {
                             displayClassType = parameterFieldDefinition.DeclaringType;
                         }

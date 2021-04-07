@@ -70,7 +70,7 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             var parameterDefinition = parameterDefinitionOrFieldDefinition as ParameterDefinition;
-            if (parameterDefinitionOrFieldDefinition != null)
+            if (parameterDefinitionOrFieldDefinition is not null)
             {
                 return BuildDefaultInstructions(parameterDefinition);
             }

@@ -248,7 +248,7 @@ namespace Catel.Fody
 
             // Introduced in Catel 5.12 / 6.0
             var genericSetValue = RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames, true);
-            if (genericSetValue != null)
+            if (genericSetValue is not null)
             {
                 SetValueGenericInvoker = module.ImportReference(genericSetValue);
             }
@@ -269,7 +269,7 @@ namespace Catel.Fody
                     typeProperty.RemoveAttribute("NoWeavingAttribute");
                     NoWeavingProperties.Add(typeProperty);
                 }
-                else if (typeProperty.SetMethod != null && !typeProperty.SetMethod.IsStatic)
+                else if (typeProperty.SetMethod is not null && !typeProperty.SetMethod.IsStatic)
                 {
                     Properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty));
                 }
@@ -423,14 +423,14 @@ namespace Catel.Fody
                                      select method).ToList();
             }
 
-            if (parameterNames != null)
+            if (parameterNames is not null)
             {
                 methodDefinitions = methodDefinitions.Where(x => x.Parameters.Select(y => y.Name).ToArray().SequenceEqual(parameterNames)).ToList();
             }
 
             methodDefinition = methodDefinitions.FirstOrDefault();
 
-            return methodDefinition != null;
+            return methodDefinition is not null;
         }
 
         public IEnumerable<PropertyDefinition> GetDependentPropertiesFrom(PropertyDefinition property)
@@ -461,7 +461,7 @@ namespace Catel.Fody
 
             var found = false;
             var getMethodDefinition = dependentPropertyDefinition?.GetMethod;
-            if (getMethodDefinition != null && getMethodDefinition.HasBody)
+            if (getMethodDefinition is not null && getMethodDefinition.HasBody)
             {
                 var processor = getMethodDefinition.Body.GetILProcessor();
 

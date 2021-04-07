@@ -40,7 +40,7 @@ namespace Catel.Fody
         public void Execute()
         {
             var xmlDefinition = _assemblyResolver.Resolve("System.Xml");
-            if (xmlDefinition != null)
+            if (xmlDefinition is not null)
             {
                 var xmlTypes = xmlDefinition.MainModule.Types;
 
@@ -166,7 +166,7 @@ namespace Catel.Fody
             foreach (var assembly in _moduleWeaver.ModuleDefinition.AssemblyReferences)
             {
                 var resolvedAssembly = _assemblyResolver.Resolve(assembly);
-                if ((resolvedAssembly != null) && resolvedAssembly.IsNetStandardLibrary())
+                if ((resolvedAssembly is not null) && resolvedAssembly.IsNetStandardLibrary())
                 {
                     allTypes.AddRange(resolvedAssembly.MainModule.Types);
                 }
