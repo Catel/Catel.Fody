@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="5.12.13" />
+    <PackageReference Include="Catel.MVVM" Version="5.12.14" />
   </ItemGroup>
 
   <ItemGroup>
