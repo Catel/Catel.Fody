@@ -31,7 +31,9 @@ Parameters["DeployCatelFodyAttributes"] = "true";
 Components.Add("Catel.Fody");
 Components.Add("Catel.Fody.Attributes");
 
+Dependencies.Add("Catel.Fody.TestAssembly.Catel5");
 Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel5");
+//Dependencies.Add("Catel.Fody.TestAssembly.Catel6");
 //Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel6");
 
 TestProjects.Add(string.Format("{0}.Tests.Catel5", GetBuildServerVariable("SolutionName")));
