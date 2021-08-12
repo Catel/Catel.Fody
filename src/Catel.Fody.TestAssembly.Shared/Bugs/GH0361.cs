@@ -6,6 +6,7 @@
     {
         [Model]
         public TestModel Model { get; set; }
+
         [ViewModelToModel]
         public object Property { get; set; }
 
