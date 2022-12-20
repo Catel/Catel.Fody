@@ -8,7 +8,7 @@ Parameters["SolutionName"] = "Catel.Fody";
 Parameters["Company"] = "CatenaLogic";
 Parameters["RepositoryUrl"] = string.Format("https://github.com/{0}/{1}", GetBuildServerVariable("SolutionName"), GetBuildServerVariable("SolutionName"));
 Parameters["StartYear"] = "2010";
-Parameters["UseVisualStudioPrerelease"] = "false";
+Parameters["UseVisualStudioPrerelease"] = "true";
 Parameters["DeployCatelFodyAttributes"] = "false";
 Parameters["BuildCatelFody"] = "true";
 Parameters["DeployCatelFody"] = "false";
@@ -31,15 +31,21 @@ Parameters["DeployCatelFodyAttributes"] = "true";
 Components.Add("Catel.Fody");
 Components.Add("Catel.Fody.Attributes");
 
-Dependencies.Add("Catel.Fody.TestAssembly.Catel5");
-Dependencies.Add("Catel.Fody.TestAssembly.NetStandard.Catel5");
-Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel5");
-//Dependencies.Add("Catel.Fody.TestAssembly.Catel6");
-//Dependencies.Add("Catel.Fody.TestAssembly.NetStandard.Catel6");
-//Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel6");
+// Need to add attributes as dependencies since test projects use them
+Dependencies.Add("Catel.Fody.Attributes");
+Dependencies.Add("Catel.Fody");
 
-TestProjects.Add(string.Format("{0}.Tests.Catel5", GetBuildServerVariable("SolutionName")));
-//TestProjects.Add(string.Format("{0}.Tests.Catel6", GetBuildServerVariable("SolutionName")));
+// Test projects as dependencies since they don't following naming convention
+Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel5");
+Dependencies.Add("Catel.Fody.TestAssembly.NetStandard.Catel5");
+Dependencies.Add("Catel.Fody.TestAssembly.Catel5");
+Dependencies.Add("Catel.Fody.Tests.Catel5");
+Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel6");
+Dependencies.Add("Catel.Fody.TestAssembly.Catel6");
+Dependencies.Add("Catel.Fody.Tests.Catel6");
+
+TestProjects.Add("Catel.Fody.Tests.Catel5");
+TestProjects.Add("Catel.Fody.Tests.Catel6");
 
 //=======================================================
 // REQUIRED INITIALIZATION, DO NOT CHANGE
