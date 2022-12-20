@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExposedPropertiesWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Weaving.ExposedProperties
+﻿namespace Catel.Fody.Weaving.ExposedProperties
 {
     using System.Linq;
     using Mono.Cecil;

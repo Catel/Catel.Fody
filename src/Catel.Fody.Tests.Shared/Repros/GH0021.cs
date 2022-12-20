@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GH0021.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2018 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Tests.Repros
+﻿namespace Catel.Fody.Tests.Repros
 {
     using System;
     using NUnit.Framework;

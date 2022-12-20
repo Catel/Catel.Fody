@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CatelTypeProcessor.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody.Weaving.AutoProperties
+﻿namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
     using Mono.Cecil.Rocks;

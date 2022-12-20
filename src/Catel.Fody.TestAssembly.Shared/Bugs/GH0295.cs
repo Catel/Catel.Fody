@@ -1,4 +1,6 @@
-﻿namespace Catel.Fody.TestAssembly.Bugs.GH0295
+﻿#if CATEL_5
+
+namespace Catel.Fody.TestAssembly.Bugs.GH0295
 {
     using System;
     using System.Collections.Generic;
@@ -9,3 +11,5 @@
     {
     }
 }
+
+#endif

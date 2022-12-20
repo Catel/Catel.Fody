@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28809.33
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33209.295
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catel.Fody", "Catel.Fody\Catel.Fody.csproj", "{0B8FEB0F-84FE-425D-BF0D-D00D52BA6BA5}"
 EndProject
@@ -45,8 +45,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catel.Fody.TestAssembly.Catel6", "Catel.Fody.TestAssembly.Catel6\Catel.Fody.TestAssembly.Catel6.csproj", "{ADBE4D28-6090-44D9-AEBC-62E404FDFE56}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catel.Fody.TestAssembly.NetStandard.Catel5", "Catel.Fody.TestAssembly.NetStandard.Catel5\Catel.Fody.TestAssembly.NetStandard.Catel5.csproj", "{BEA9E01A-9C36-43A6-BB89-ED85A191ADD0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catel.Fody.TestAssembly.NetStandard.Catel6", "Catel.Fody.TestAssembly.NetStandard.Catel6\Catel.Fody.TestAssembly.NetStandard.Catel6.csproj", "{96E63FEE-DCE2-48D5-8D0D-6B25AA3E35A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,12 +107,6 @@ Global
 		{BEA9E01A-9C36-43A6-BB89-ED85A191ADD0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BEA9E01A-9C36-43A6-BB89-ED85A191ADD0}.Test|Any CPU.ActiveCfg = Debug|Any CPU
 		{BEA9E01A-9C36-43A6-BB89-ED85A191ADD0}.Test|Any CPU.Build.0 = Debug|Any CPU
-		{96E63FEE-DCE2-48D5-8D0D-6B25AA3E35A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{96E63FEE-DCE2-48D5-8D0D-6B25AA3E35A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96E63FEE-DCE2-48D5-8D0D-6B25AA3E35A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{96E63FEE-DCE2-48D5-8D0D-6B25AA3E35A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{96E63FEE-DCE2-48D5-8D0D-6B25AA3E35A5}.Test|Any CPU.ActiveCfg = Debug|Any CPU
-		{96E63FEE-DCE2-48D5-8D0D-6B25AA3E35A5}.Test|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,7 +125,6 @@ Global
 		{2046F93A-E20A-4CC9-8721-00EC27C01915} = {CCF3EB63-3689-4699-BF21-04C28B53DF62}
 		{ADBE4D28-6090-44D9-AEBC-62E404FDFE56} = {CCF3EB63-3689-4699-BF21-04C28B53DF62}
 		{BEA9E01A-9C36-43A6-BB89-ED85A191ADD0} = {945DAB30-25E0-4A99-834A-AA32D81E6FCE}
-		{96E63FEE-DCE2-48D5-8D0D-6B25AA3E35A5} = {CCF3EB63-3689-4699-BF21-04C28B53DF62}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8FBD666-DAD3-4467-90B2-A3D54DA5FE4D}

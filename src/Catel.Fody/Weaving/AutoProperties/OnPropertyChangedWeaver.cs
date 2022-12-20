@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="OnPropertyChangedWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Weaving.AutoProperties
+﻿namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Linq;
     using Mono.Cecil;

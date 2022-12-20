@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net6.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestAssembly.Catel6</AssemblyName>
     <RootNamespace>Catel.Fody.TestAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -15,12 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Catel.Fody.Attributes\Catel.Fody.Attributes.csproj" />
-    <ProjectReference Include="..\Catel.Fody.TestAssembly.NetStandard.Catel6\Catel.Fody.TestAssembly.NetStandard.Catel6.csproj" />
     <ProjectReference Include="..\Catel.Fody.TestExternalTypesAssembly.Catel6\Catel.Fody.TestExternalTypesAssembly.Catel6.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
