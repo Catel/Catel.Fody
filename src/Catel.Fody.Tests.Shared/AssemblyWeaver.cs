@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -17,15 +10,12 @@ using Mono.Cecil;
 
 public class AssemblyWeaver
 {
-    #region Constants
     public Assembly Assembly;
     public string BeforeAssemblyPath;
     public string AfterAssemblyPath;
 
     public List<string> Errors = new List<string>();
-    #endregion
 
-    #region Constructors
     static AssemblyWeaver()
     {
         var catelVersion = "unknown";
@@ -36,7 +26,9 @@ public class AssemblyWeaver
         catelVersion = "6";
 #endif
 
+#if CATEL_5
         Instance_NetStandard = new AssemblyWeaver($"Catel.Fody.TestAssembly.NetStandard.Catel{catelVersion}.dll");
+#endif
         Instance = new AssemblyWeaver($"Catel.Fody.TestAssembly.Catel{catelVersion}.dll");
     }
 
@@ -111,16 +103,15 @@ public class AssemblyWeaver
 
         Assembly = Assembly.LoadFile(AfterAssemblyPath);
     }
-    #endregion
 
     public static AssemblyWeaver Instance { get; private set; }
 
+#if CATEL_5
     public static AssemblyWeaver Instance_NetStandard { get; private set; }
+#endif
 
-    #region Methods
     private void LogError(string error)
     {
         Errors.Add(error);
     }
-    #endregion
 }

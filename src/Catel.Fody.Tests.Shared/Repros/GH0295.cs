@@ -1,4 +1,6 @@
-﻿namespace Catel.Fody.Tests.Repros
+﻿#if CATEL_5
+
+namespace Catel.Fody.Tests.Repros
 {
     using System;
     using NUnit.Framework;
@@ -21,3 +23,5 @@
         }
     }
 }
+
+#endif

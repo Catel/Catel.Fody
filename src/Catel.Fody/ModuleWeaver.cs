@@ -15,16 +15,16 @@
         {
         }
 
-        public IAssemblyResolver AssemblyResolver { get; set; }
-
         public override bool ShouldCleanReference => true;
 
         public override IEnumerable<string> GetAssembliesForScanning()
         {
-            var assemblies = new List<string>();
+            var assemblies = new List<string>
+            {
+                "netstandard"
+            };
 
             // For now just return all references
-            assemblies.Add("netstandard");
             assemblies.AddRange(ModuleDefinition.AssemblyReferences.Select(x => x.Name));
 
             return assemblies;
@@ -81,7 +81,9 @@
                     WriteInfo("Running against Catel itself, most features will be disabled");
                 }
 
+#pragma warning disable IDISP001 // Dispose created
                 var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
+#pragma warning restore IDISP001 // Dispose created
                 if (!configuration.IsRunningAgainstCatel && catelCoreReference is null)
                 {
                     WriteWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");

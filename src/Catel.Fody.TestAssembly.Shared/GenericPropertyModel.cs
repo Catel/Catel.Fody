@@ -27,7 +27,6 @@
 
     public class GenericPropertyModel<TModel> : ModelBase
     {
-        #region Properties
         public TModel MyModel { get; set; }
 
         /// <summary>
@@ -42,8 +41,7 @@
 #if CATEL_5
         public static readonly PropertyData MyModelCatelProperty = RegisterProperty("MyModelCatel", typeof(TModel), null);
 #elif CATEL_6
-        public static readonly IPropertyData MyModelCatelProperty = RegisterProperty("MyModelCatel", typeof(TModel), null);
+        public static readonly IPropertyData MyModelCatelProperty = RegisterProperty<TModel>("MyModelCatel", null);
 #endif
-        #endregion
     }
 }

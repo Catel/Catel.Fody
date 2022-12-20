@@ -23,7 +23,9 @@
 
             if (SystemRuntimeRef is null)
             {
+#pragma warning disable IDISP001 // Dispose created
                 var systemRuntimeAssembly = type.Module.ResolveAssembly("System.Runtime");
+#pragma warning restore IDISP001 // Dispose created
 
                 SystemRuntimeRef = new AssemblyNameReference(systemRuntimeAssembly.Name.Name, systemRuntimeAssembly.GetVersion())
                 {
@@ -225,7 +227,9 @@
                 return CachedTypeDefinitions[cacheKey];
             }
 
+#pragma warning disable IDISP001 // Dispose created
             var resolvedAssembly = moduleDefinition.ResolveAssembly(assemblyName);
+#pragma warning restore IDISP001 // Dispose created
             if (resolvedAssembly is null)
             {
                 return null;
@@ -301,7 +305,9 @@
             var resolver = module.AssemblyResolver;
             foreach (var assemblyReference in module.AssemblyReferences)
             {
+#pragma warning disable IDISP001 // Dispose created
                 var assembly = resolver.Resolve(assemblyReference.Name);
+#pragma warning restore IDISP001 // Dispose created
                 if (assembly is not null)
                 {
                     foreach (var type in assembly.MainModule.GetAllTypeDefinitions())
