@@ -38,7 +38,6 @@ Parameters["DeployCatelFodyAttributes"] = "false";
 Components.Add("Catel.Fody");
 Components.Add("Catel.Fody.Attributes");
 
-// Test projects as dependencies since they don't following naming convention
 Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel5", new []
 {
     "Catel.Fody.Tests.Catel5"
@@ -60,6 +59,10 @@ Dependencies.Add("Catel.Fody.TestAssembly.Catel6", new []
 {
     "Catel.Fody.Tests.Catel6"
 });
+
+// Test projects as dependencies since they don't following naming convention
+Dependencies.Add("Catel.Fody.Tests.Catel5");
+Dependencies.Add("Catel.Fody.Tests.Catel6");
 
 TestProjects.Add("Catel.Fody.Tests.Catel5");
 TestProjects.Add("Catel.Fody.Tests.Catel6");
