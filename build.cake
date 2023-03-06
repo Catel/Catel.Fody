@@ -38,6 +38,9 @@ Parameters["DeployCatelFodyAttributes"] = "false";
 Components.Add("Catel.Fody");
 Components.Add("Catel.Fody.Attributes");
 
+// Components as dependencies since they are required by the test projects
+Dependencies.Add("Catel.Fody.Attributes");
+
 Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel5", new []
 {
     "Catel.Fody.Tests.Catel5"
