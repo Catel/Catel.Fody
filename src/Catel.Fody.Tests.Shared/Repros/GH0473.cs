@@ -1,6 +1,9 @@
 ﻿namespace Catel.Fody.Tests.Repros
 {
     using System;
+    using System.ComponentModel;
+    using Catel.MVVM;
+    using Catel.Reflection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -13,6 +16,21 @@
             var viewModel = Activator.CreateInstance(viewModelType) as dynamic;
 
             viewModel.Property = new object();
+
+            var isCalled = false;
+
+            var vm = (ViewModelBase)viewModel;
+            vm.PropertyChanged += (sender, e) =>
+            {
+                if (e.HasPropertyChanged("Model"))
+                {
+                    isCalled = true;
+                }
+            };
+
+            PropertyHelper.SetPropertyValue(viewModel, "Model", null);
+
+            Assert.IsTrue(isCalled);
         }
     }
 }

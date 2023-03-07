@@ -187,6 +187,7 @@
             {
                 var typeDefinition = TypeDefinition;
                 var propertyDefinitions = new List<PropertyDefinition>();
+
                 while (typeDefinition.BaseType.FullName != "System.Object")
                 {
                     propertyDefinitions.AddRange(typeDefinition.Properties.ToList());
@@ -263,9 +264,25 @@
                     typeProperty.RemoveAttribute("NoWeavingAttribute");
                     NoWeavingProperties.Add(typeProperty);
                 }
-                else if (typeProperty.SetMethod is not null && !typeProperty.SetMethod.IsStatic)
+                else if (!(typeProperty.SetMethod?.IsStatic ?? false))
                 {
-                    Properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty));
+                    // If there is no set method, this is an init only property. The weaver
+                    // should only weave when decorated with Model or Expose attributes
+                    var isInitOnlyProperty = typeProperty.SetMethod is null;
+                    if (isInitOnlyProperty)
+                    {
+                        if (!typeProperty.IsDecoratedWithAttribute("ModelAttribute") &&
+                            !typeProperty.IsDecoratedWithAttribute("ExposeAttribute"))
+                        {
+                            // Leave init-only
+                            continue;
+                        }
+                    }
+
+                    Properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty)
+                    {
+                        IsInitOnlyProperty = isInitOnlyProperty
+                    });
                 }
             }
         }

@@ -33,6 +33,12 @@
             var propertyDefinition = propertyData.PropertyDefinition;
             var setMethod = propertyDefinition.SetMethod;
 
+            if (setMethod is null)
+            {
+                // Init-only property, will be migrated to full property
+                return null;
+            }
+
             if (setMethod.Name == "set_Item" && setMethod.Parameters.Count == 2 && setMethod.Parameters[1].Name == "value")
             {
                 return "Property is an indexer.";
