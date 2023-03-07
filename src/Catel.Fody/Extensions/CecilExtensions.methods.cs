@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CecilExtensions.methods.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -36,7 +29,7 @@ namespace Catel.Fody
         {
             var declaringType = method.DeclaringType;
             var baseType = declaringType?.BaseType;
-            if (baseType != null)
+            if (baseType is not null)
             {
                 var instructions = method.Body.Instructions;
 
@@ -107,12 +100,31 @@ namespace Catel.Fody
                 var definition = typeDefinitions.Pop();
 
                 // Only call lower class if possible
-                var containsMethod = (from method in definition.Methods
-                                      where method.Name == methodDefinition.Name
-                                      select method).Any();
-                if (containsMethod)
+                var containingMethods = (from method in definition.Methods
+                                         where method.Name == methodDefinition.Name &&
+                                               method.Parameters.Count == methodDefinition.Parameters.Count
+                                         select method).ToList();
+
+                foreach (var containingMethod in containingMethods)
                 {
-                    methodReference = methodReference.MakeGeneric(definition.BaseType);
+                    // GH-361 fix: check parameters
+                    var isValid = true;
+
+                    for (int i = 0; i < methodReference.Parameters.Count; i++)
+                    {
+                        var methodDefinitionParameter = methodReference.Parameters[i];
+                        var potentialMethodParameter = containingMethod.Parameters[i];
+                        if (methodDefinitionParameter.ParameterType.FullName != potentialMethodParameter.ParameterType.FullName)
+                        {
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    if (isValid)
+                    {
+                        methodReference = methodReference.MakeGeneric(definition.BaseType);
+                    }
                 }
             }
 

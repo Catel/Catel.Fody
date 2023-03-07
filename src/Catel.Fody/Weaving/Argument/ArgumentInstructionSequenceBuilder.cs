@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ArgumentInstructionSequenceBuilder.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody.Weaving.Argument
+﻿namespace Catel.Fody.Weaving.Argument
 {
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
@@ -70,7 +64,7 @@ namespace Catel.Fody.Weaving.Argument
             }
 
             var parameterDefinition = parameterDefinitionOrFieldDefinition as ParameterDefinition;
-            if (parameterDefinitionOrFieldDefinition != null)
+            if (parameterDefinitionOrFieldDefinition is not null)
             {
                 return BuildDefaultInstructions(parameterDefinition);
             }

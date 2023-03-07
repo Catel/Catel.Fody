@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="XmlExtensions.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System;
     using System.Xml.Linq;
@@ -15,7 +8,7 @@ namespace Catel.Fody
         public static void ReadBool(this XElement config, string nodeName, Action<bool> setter)
         {
             var attribute = config.Attribute(nodeName);
-            if (attribute != null)
+            if (attribute is not null)
             {
                 if (bool.TryParse(attribute.Value, out var value))
                 {
@@ -32,7 +25,7 @@ namespace Catel.Fody
             where TEnum : struct
         {
             var attribute = config.Attribute(nodeName);
-            if (attribute != null)
+            if (attribute is not null)
             {
                 if (Enum.TryParse<TEnum>(attribute.Value, out var value))
                 {

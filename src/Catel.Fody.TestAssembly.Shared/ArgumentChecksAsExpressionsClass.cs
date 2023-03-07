@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ArgumentChecksClass.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly
 {
     using System;
     using System.Collections;
@@ -110,7 +103,7 @@ namespace Catel.Fody.TestAssembly
         }
 
 #pragma warning disable 1998
-        public async Task CheckForNullAsync_Expected(object myObject)
+        public async Task CheckForNullAsync_ExpectedAsync(object myObject)
 #pragma warning restore 1998
         {
             Argument.IsNotNull("myObject", myObject);
@@ -119,7 +112,7 @@ namespace Catel.Fody.TestAssembly
         }
 
 #pragma warning disable 1998
-        public async Task CheckForNullAsync_MultipleParameters(object myObject1, object myObject2, object myObject3)
+        public async Task CheckForNullAsync_MultipleParametersAsync(object myObject1, object myObject2, object myObject3)
 #pragma warning restore 1998
         {
             Argument.IsNotNull(() => myObject1);
@@ -130,7 +123,7 @@ namespace Catel.Fody.TestAssembly
         }
 
 #pragma warning disable 1998
-        public async Task CheckForNullAsync_MultipleParameters_Expected(object myObject1, object myObject2, object myObject3)
+        public async Task CheckForNullAsync_MultipleParameters_ExpectedAsync(object myObject1, object myObject2, object myObject3)
 #pragma warning restore 1998
         {
             Argument.IsNotNull("myObject1", myObject1);
@@ -141,7 +134,7 @@ namespace Catel.Fody.TestAssembly
         }
 
 #pragma warning disable 1998
-        public async Task CheckForNullAsync_MultipleParameters_Usages(object myObject1, object myObject2, object myObject3)
+        public async Task CheckForNullAsync_MultipleParameters_UsagesAsync(object myObject1, object myObject2, object myObject3)
 #pragma warning restore 1998
         {
             Argument.IsNotNull(() => myObject1);
@@ -152,7 +145,7 @@ namespace Catel.Fody.TestAssembly
         }
 
 #pragma warning disable 1998
-        public async Task CheckForNullAsync_MultipleParameters_Usages_Expected(object myObject1, object myObject2, object myObject3)
+        public async Task CheckForNullAsync_MultipleParameters_Usages_ExpectedAsync(object myObject1, object myObject2, object myObject3)
 #pragma warning restore 1998
         {
             Argument.IsNotNull("myObject1", myObject1);

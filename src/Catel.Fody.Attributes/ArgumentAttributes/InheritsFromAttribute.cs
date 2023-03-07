@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="InheritsFromAttribute.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System;
 
@@ -15,7 +9,6 @@ namespace Catel.Fody
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
     public class InheritsFromAttribute : Attribute
     {
-        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="InheritsFromAttribute"/> class.
         /// </summary>
@@ -23,6 +16,5 @@ namespace Catel.Fody
         public InheritsFromAttribute(Type type)
         {
         }
-        #endregion
     }
 }

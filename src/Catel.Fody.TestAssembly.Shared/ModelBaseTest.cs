@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DataObjectBaseTest.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2012 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly
 {
     using System;
     using System.Collections.ObjectModel;
@@ -22,7 +16,7 @@ namespace Catel.Fody.TestAssembly
         public static readonly PropertyData CatelOperationsProperty = RegisterProperty("CatelOperations", typeof(ObservableCollection<TComponent>), null,
             (sender, e) => ((GenericModelBaseTestBase<TComponent>)sender).OnCatelOperationsChanged());
 #elif CATEL_6
-        public static readonly IPropertyData CatelOperationsProperty = RegisterProperty("CatelOperations", typeof(ObservableCollection<TComponent>), null,
+        public static readonly IPropertyData CatelOperationsProperty = RegisterProperty<ObservableCollection<TComponent>>("CatelOperations", () => null,
             (sender, e) => ((GenericModelBaseTestBase<TComponent>)sender).OnCatelOperationsChanged());
 #endif
 
@@ -83,7 +77,7 @@ namespace Catel.Fody.TestAssembly
 #if CATEL_5
         public static readonly PropertyData FullNameProperty = RegisterProperty("FullName", typeof(string), string.Empty);
 #elif CATEL_6
-        public static readonly IPropertyData FullNameProperty = RegisterProperty("FullName", typeof(string), string.Empty);
+        public static readonly IPropertyData FullNameProperty = RegisterProperty<string>("FullName", string.Empty);
 #endif
 
         public string FullNameWithChangeCallback { get; set; }

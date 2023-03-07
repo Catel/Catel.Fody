@@ -2,6 +2,26 @@ private static string _signToolFileName;
 
 //-------------------------------------------------------------
 
+public static bool ShouldSignImmediately(BuildContext buildContext, string projectName)
+{
+    if (buildContext.General.IsLocalBuild ||
+        buildContext.General.IsCiBuild)
+    {
+        // Never code-sign local or ci builds
+        return false;
+    }
+
+    if (buildContext.CodeSigning.ProjectsToSignImmediately.Contains(projectName))
+    {   
+        buildContext.CakeContext.Information($"Immediately code signing '{projectName}' files");
+        return true;
+    }
+
+    return false;
+}
+
+//-------------------------------------------------------------
+
 public static void SignFiles(BuildContext buildContext, string signToolCommand, IEnumerable<FilePath> fileNames, string additionalCommandLineArguments = null)
 {
     if (fileNames.Any())
@@ -50,6 +70,11 @@ public static void SignFile(BuildContext buildContext, string signToolCommand, s
     if (string.IsNullOrWhiteSpace(_signToolFileName))
     {
         _signToolFileName = FindSignToolFileName(buildContext);
+    }
+
+    if (string.IsNullOrWhiteSpace(_signToolFileName))
+    {
+        throw new InvalidOperationException("Cannot find signtool.exe, make sure to install a Windows Development Kit");
     }
 
     buildContext.CakeContext.Information(string.Empty);

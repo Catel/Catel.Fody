@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CecilExtensions.attributes.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -68,7 +61,7 @@ namespace Catel.Fody
 
         public static bool IsDecoratedWithAttribute(Collection<CustomAttribute> customAttributes, string attributeName)
         {
-            return GetAttribute(customAttributes, attributeName) != null;
+            return GetAttribute(customAttributes, attributeName) is not null;
         }
 
         public static void RemoveAttribute(this TypeDefinition typeDefinition, string attributeName)

@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CTL569.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2015 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly
 {
     using System;
     using MVVM;
@@ -19,7 +12,7 @@ namespace Catel.Fody.TestAssembly
 
         public bool SearchIsEnabled
         {
-            get { return !string.IsNullOrWhiteSpace(SearchTerms) && SelectedFeed != null; }
+            get { return !string.IsNullOrWhiteSpace(SearchTerms) && SelectedFeed is not null; }
         }
 
 #if CATEL_5

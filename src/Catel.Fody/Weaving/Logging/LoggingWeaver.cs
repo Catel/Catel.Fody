@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="LoggingWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Weaving.Logging
+﻿namespace Catel.Fody.Weaving.Logging
 {
     using System;
     using System.Linq;
@@ -93,7 +86,7 @@ namespace Catel.Fody.Weaving.Logging
 
                             var message = $"Cannot change method call for log '{type.FullName}', the GetLogger(type) method does not exist on the calling type (try to use LogManager.GetCurrentClassLogger())";
 
-                            if (point != null)
+                            if (point is not null)
                             {
                                 FodyEnvironment.WriteWarningPoint(message, point);
                             }

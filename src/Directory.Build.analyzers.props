@@ -4,20 +4,17 @@
   -->
 
   <ItemGroup>
-    <PackageReference Include="Catel.Analyzers" Version="1.1.0" PrivateAssets="all">
-      <IncludeAssets>build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="CatenaLogic.Analyzers" Version="1.0.0" PrivateAssets="all">
-      <IncludeAssets>build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <!-- <PackageReference Include="ClrHeapAllocationAnalyzer" Version="3.0.0" PrivateAssets="all" /> -->
-    <PackageReference Include="WpfAnalyzers" Version="3.5.2" PrivateAssets="all">
-      <IncludeAssets>build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <!--<PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" PrivateAssets="all">
-      <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>-->
+    <PackageReference Include="Catel.Analyzers" Version="1.6.1" PrivateAssets="all" />
+    <PackageReference Include="CatenaLogic.Analyzers" Version="1.4.3" PrivateAssets="all" />
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.2" PrivateAssets="all" />
+    <PackageReference Include="WpfAnalyzers" Version="4.1.1" PrivateAssets="all" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <!--<EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>-->
+    <AnalysisLevel>latest</AnalysisLevel>
+  </PropertyGroup>
 
   <!-- 
     FxCop tweaks:

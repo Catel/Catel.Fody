@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CecilExtensions.members.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System.Linq;
     using Mono.Cecil;
@@ -99,13 +92,13 @@ namespace Catel.Fody
         private static void MarkAsGeneratedCodeInternal(this Collection<CustomAttribute> customAttributes, MsCoreReferenceFinder msCoreReferenceFinder, ModuleDefinition importingModule)
         {
             var generatedCodeAttribute = CreateGeneratedCodeAttribute(msCoreReferenceFinder, importingModule);
-            if (generatedCodeAttribute != null)
+            if (generatedCodeAttribute is not null)
             {
                 customAttributes.Add(generatedCodeAttribute);
             }
 
             var debuggerAttribute = CreateDebuggerNonUserCodeAttribute(msCoreReferenceFinder, importingModule);
-            if (debuggerAttribute != null)
+            if (debuggerAttribute is not null)
             {
                 customAttributes.Add(debuggerAttribute);
             }

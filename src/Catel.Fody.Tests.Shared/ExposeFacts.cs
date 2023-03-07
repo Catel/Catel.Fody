@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExposeFacts.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Tests
+﻿namespace Catel.Fody.Tests
 {
     using System;
     using Data;
@@ -58,7 +51,7 @@ namespace Catel.Fody.Tests
             var propertyInfo = viewModelType.GetPropertyEx("ReadOnlyProperty");
 
             var setMethod = propertyInfo.GetSetMethod(true);
-            if (setMethod != null)
+            if (setMethod is not null)
             {
                 Assert.IsFalse(setMethod.IsPublic);
             }

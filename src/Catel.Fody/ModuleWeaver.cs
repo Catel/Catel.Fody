@@ -1,9 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ModuleWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System;
     using System.Collections.Generic;
@@ -20,16 +15,16 @@ namespace Catel.Fody
         {
         }
 
-        public IAssemblyResolver AssemblyResolver { get; set; }
-
         public override bool ShouldCleanReference => true;
 
         public override IEnumerable<string> GetAssembliesForScanning()
         {
-            var assemblies = new List<string>();
+            var assemblies = new List<string>
+            {
+                "netstandard"
+            };
 
             // For now just return all references
-            assemblies.Add("netstandard");
             assemblies.AddRange(ModuleDefinition.AssemblyReferences.Select(x => x.Name));
 
             return assemblies;
@@ -86,7 +81,9 @@ namespace Catel.Fody
                     WriteInfo("Running against Catel itself, most features will be disabled");
                 }
 
+#pragma warning disable IDISP001 // Dispose created
                 var catelCoreReference = AssemblyResolver.Resolve("Catel.Core");
+#pragma warning restore IDISP001 // Dispose created
                 if (!configuration.IsRunningAgainstCatel && catelCoreReference is null)
                 {
                     WriteWarning("No reference to Catel.Core found, this weaver is useless without referencing Catel");
@@ -94,7 +91,7 @@ namespace Catel.Fody
                 }
 
                 // Note: nested types not supported because we only list actual types (thus not nested)
-                var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType != null).ToList();
+                var types = ModuleDefinition.GetTypes().Where(x => x.IsClass && x.BaseType is not null).ToList();
 
                 var typeNodeBuilder = new CatelTypeNodeBuilder(types, msCoreReferenceFinder);
                 typeNodeBuilder.Execute();
@@ -206,7 +203,7 @@ namespace Catel.Fody
 
             try
             {
-                FodyEnvironment.IsCatelCoreAvailable = assemblyResolver.Resolve("Catel.Core") != null;
+                FodyEnvironment.IsCatelCoreAvailable = assemblyResolver.Resolve("Catel.Core") is not null;
             }
             catch (Exception)
             {
@@ -215,7 +212,7 @@ namespace Catel.Fody
 
             try
             {
-                FodyEnvironment.IsCatelMvvmAvailable = assemblyResolver.Resolve("Catel.MVVM") != null;
+                FodyEnvironment.IsCatelMvvmAvailable = assemblyResolver.Resolve("Catel.MVVM") is not null;
             }
             catch (Exception)
             {

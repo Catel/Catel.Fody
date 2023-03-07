@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExceptionTester.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2018 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Tests
+﻿namespace Catel.Fody.Tests
 {
     using System;
     using NUnit.Framework;
@@ -28,7 +21,7 @@ namespace Catel.Fody.Tests
                     return;
                 }
 
-                if (ex.InnerException != null)
+                if (ex.InnerException is not null)
                 {
                     exceptionType = ex.InnerException.GetType();
                 }

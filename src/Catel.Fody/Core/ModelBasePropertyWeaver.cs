@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CatelPropertyWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System;
     using System.Collections.Generic;
@@ -41,7 +34,7 @@ namespace Catel.Fody
             var property = _propertyData.PropertyDefinition;
             if (property is null)
             {
-                FodyEnvironment.WriteWarning("Skipping an unknown property because it has no property definition");
+                FodyEnvironment.WriteWarning($"\t{_propertyData.Name} Skipping an unknown property because it has no property definition");
                 return;
             }
 
@@ -317,12 +310,12 @@ namespace Catel.Fody
                                        select instruction).FirstOrDefault();
 
             var exceptionHandler = body.ExceptionHandlers.FirstOrDefault();
-            if (exceptionHandler != null)
+            if (exceptionHandler is not null)
             {
                 instructionToInsert = exceptionHandler.TryStart;
             }
 
-            var index = (instructionToInsert != null) ? instructions.IndexOf(instructionToInsert) : instructions.Count;
+            var index = (instructionToInsert is not null) ? instructions.IndexOf(instructionToInsert) : instructions.Count;
 
             var instructionsToInsert = new List<Instruction>();
 
@@ -433,7 +426,7 @@ namespace Catel.Fody
 
             instructions.AddRange(CreateDefaultValueInstructions(propertyData));
 
-            if (propertyData.ChangeCallbackReference != null)
+            if (propertyData.ChangeCallbackReference is not null)
             {
                 instructions.AddRange(CreateChangeCallbackReference_Catel5(property));
             }
@@ -467,7 +460,7 @@ namespace Catel.Fody
 
             instructions.AddRange(CreateDefaultValueInstructions(propertyData));
 
-            if (propertyData.ChangeCallbackReference != null)
+            if (propertyData.ChangeCallbackReference is not null)
             {
                 instructions.AddRange(CreateChangeCallbackReference_Catel6(property));
             }
@@ -526,7 +519,7 @@ namespace Catel.Fody
             {
                 instructions.Add(Instruction.Create(OpCodes.Ldc_R8, doubleValue));
             }
-            else if (resolvedPropertyType != null && resolvedPropertyType.IsEnum && propertyData.DefaultValue != null)
+            else if (resolvedPropertyType is not null && resolvedPropertyType.IsEnum && propertyData.DefaultValue is not null)
             {
                 instructions.Add(Instruction.Create(OpCodes.Ldc_I4, (int)((CustomAttributeArgument)propertyData.DefaultValue).Value));
             }
@@ -808,7 +801,7 @@ namespace Catel.Fody
             var declaringType = property.DeclaringType;
 
             var field = GetFieldDefinition(declaringType, fieldName, false);
-            if (field != null)
+            if (field is not null)
             {
                 foreach (var ctor in declaringType.GetConstructors())
                 {
@@ -835,6 +828,18 @@ namespace Catel.Fody
 
                             if (instruction.IsOpCode(OpCodes.Stfld))
                             {
+                                // Replace
+                                // 
+	                            // IL_0014: ldarg.0
+	                            // IL_0015: ldarg.1
+	                            // IL_0016: stfld class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel::'<Model>k__BackingField' /* 04000097 */
+                                // 
+                                // with
+                                //
+	                            // IL_0014: ldarg.0
+	                            // IL_0015: ldarg.1
+	                            // IL_0016: call instance void Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel_Expected::set_Model(class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel) /* 06000205 */
+
                                 // Setter
                                 instruction.OpCode = OpCodes.Call;
 
@@ -849,7 +854,7 @@ namespace Catel.Fody
 
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
                                 var baseIndex = ctor.FindBaseConstructorIndex();
-                                if (baseIndex >= 0)
+                                if (baseIndex > i)
                                 {
                                     // After a call to a ctor, a double nop is required
                                     var indexToInsert = baseIndex + 1;
@@ -882,7 +887,7 @@ namespace Catel.Fody
 
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
                                 var baseIndex = ctor.FindBaseConstructorIndex();
-                                if (baseIndex >= 0)
+                                if (baseIndex > i)
                                 {
                                     // After a call to a ctor, a double nop is required
                                     var indexToInsert = baseIndex + 1;
@@ -945,12 +950,20 @@ namespace Catel.Fody
                                     instructions.RemoveAt(i - 1);
                                 }
 
+                                var indexToInsert = i + 1;
+
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
                                 var baseIndex = ctor.FindBaseConstructorIndex();
-                                if (baseIndex >= 0)
+                                if (baseIndex < 0)
+                                {
+                                    FodyEnvironment.WriteError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. A rare condition occurred (no base ctor found), please contact support");
+                                    continue;
+                                }
+
+                                if (baseIndex > i)
                                 {
                                     // After a call to a ctor, a double nop is required
-                                    var indexToInsert = baseIndex + 1;
+                                    indexToInsert = baseIndex + 1;
                                     if (instructions.IsNextInstructionOpCode(baseIndex, OpCodes.Nop))
                                     {
                                         indexToInsert++;
@@ -960,13 +973,9 @@ namespace Catel.Fody
                                             indexToInsert++;
                                         }
                                     }
+                                }
 
-                                    instructions.Insert(indexToInsert, newInstructions);
-                                }
-                                else
-                                {
-                                    FodyEnvironment.WriteError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. A rare condition occurred (no base ctor found), please contact support");
-                                }
+                                instructions.Insert(indexToInsert, newInstructions);
                             }
                             else
                             {

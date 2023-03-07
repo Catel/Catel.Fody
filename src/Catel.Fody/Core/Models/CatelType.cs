@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CatelTypeNode.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System;
     using System.Collections.Generic;
@@ -193,6 +187,7 @@ namespace Catel.Fody
             {
                 var typeDefinition = TypeDefinition;
                 var propertyDefinitions = new List<PropertyDefinition>();
+
                 while (typeDefinition.BaseType.FullName != "System.Object")
                 {
                     propertyDefinitions.AddRange(typeDefinition.Properties.ToList());
@@ -248,7 +243,7 @@ namespace Catel.Fody
 
             // Introduced in Catel 5.12 / 6.0
             var genericSetValue = RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames, true);
-            if (genericSetValue != null)
+            if (genericSetValue is not null)
             {
                 SetValueGenericInvoker = module.ImportReference(genericSetValue);
             }
@@ -269,9 +264,25 @@ namespace Catel.Fody
                     typeProperty.RemoveAttribute("NoWeavingAttribute");
                     NoWeavingProperties.Add(typeProperty);
                 }
-                else if (typeProperty.SetMethod != null && !typeProperty.SetMethod.IsStatic)
+                else if (!(typeProperty.SetMethod?.IsStatic ?? false))
                 {
-                    Properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty));
+                    // If there is no set method, this is an init only property. The weaver
+                    // should only weave when decorated with Model or Expose attributes
+                    var isInitOnlyProperty = typeProperty.SetMethod is null;
+                    if (isInitOnlyProperty)
+                    {
+                        if (!typeProperty.IsDecoratedWithAttribute("ModelAttribute") &&
+                            !typeProperty.IsDecoratedWithAttribute("ExposeAttribute"))
+                        {
+                            // Leave init-only
+                            continue;
+                        }
+                    }
+
+                    Properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty)
+                    {
+                        IsInitOnlyProperty = isInitOnlyProperty
+                    });
                 }
             }
         }
@@ -423,14 +434,14 @@ namespace Catel.Fody
                                      select method).ToList();
             }
 
-            if (parameterNames != null)
+            if (parameterNames is not null)
             {
                 methodDefinitions = methodDefinitions.Where(x => x.Parameters.Select(y => y.Name).ToArray().SequenceEqual(parameterNames)).ToList();
             }
 
             methodDefinition = methodDefinitions.FirstOrDefault();
 
-            return methodDefinition != null;
+            return methodDefinition is not null;
         }
 
         public IEnumerable<PropertyDefinition> GetDependentPropertiesFrom(PropertyDefinition property)
@@ -461,7 +472,7 @@ namespace Catel.Fody
 
             var found = false;
             var getMethodDefinition = dependentPropertyDefinition?.GetMethod;
-            if (getMethodDefinition != null && getMethodDefinition.HasBody)
+            if (getMethodDefinition is not null && getMethodDefinition.HasBody)
             {
                 var processor = getMethodDefinition.Body.GetILProcessor();
 

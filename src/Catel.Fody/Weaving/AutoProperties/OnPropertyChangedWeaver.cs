@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="OnPropertyChangedWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Weaving.AutoProperties
+﻿namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Linq;
     using Mono.Cecil;
@@ -14,21 +7,16 @@ namespace Catel.Fody.Weaving.AutoProperties
 
     internal class OnPropertyChangedWeaver
     {
-        #region Fields
         private readonly CatelType _catelType;
 
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
-        #endregion
-
-        #region Constructors
+        
         public OnPropertyChangedWeaver(CatelType catelType, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _catelType = catelType;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
-        #endregion
 
-        #region Methods
         public void Execute()
         {
             FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{_catelType.TypeDefinition.FullName}'");
@@ -195,6 +183,5 @@ namespace Catel.Fody.Weaving.AutoProperties
 
             return methodDefinition;
         }
-        #endregion
     }
 }

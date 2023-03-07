@@ -1,6 +1,6 @@
 #l "buildserver.cake"
 
-#tool "nuget:?package=GitVersion.CommandLine&version=5.6.6"
+#tool "nuget:?package=GitVersion.CommandLine&version=5.12.0"
 
 //-------------------------------------------------------------
 
@@ -67,7 +67,7 @@ public class VersionContext : BuildContextBase
             var gitVersionSettings = new GitVersionSettings
             {
                 UpdateAssemblyInfo = false,
-                Verbosity = GitVersionVerbosity.Debug
+                Verbosity = GitVersionVerbosity.Verbose
             };
 
             var gitDirectory = ".git";
@@ -115,7 +115,7 @@ public class VersionContext : BuildContextBase
                 gitVersionSettings.NoFetch = false;
                 gitVersionSettings.WorkingDirectory = generalContext.RootDirectory;
                 gitVersionSettings.DynamicRepositoryPath = dynamicRepositoryPath;
-                gitVersionSettings.Verbosity = GitVersionVerbosity.Debug;
+                gitVersionSettings.Verbosity = GitVersionVerbosity.Verbose;
             }
 
             _gitVersionContext = CakeContext.GitVersion(gitVersionSettings);
@@ -125,10 +125,63 @@ public class VersionContext : BuildContextBase
     }
 
     public bool ClearCache { get; set; }
+
+    private string _major;
+
+    public string Major
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(_major))
+            {
+                _major = GetVersion(MajorMinorPatch, 1);
+            }
+
+            return _major;
+        }
+    }
+
+    private string _majorMinor;
+
+    public string MajorMinor
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(_majorMinor))
+            {
+                _majorMinor = GetVersion(MajorMinorPatch, 2);
+            }
+
+            return _majorMinor;
+        }
+    }
+
     public string MajorMinorPatch { get; set; }
     public string FullSemVer { get; set; }
     public string NuGet { get; set; }
     public string CommitsSinceVersionSource { get; set; }
+
+    private string GetVersion(string version, int breakCount)
+    {
+        var finalVersion = string.Empty;
+
+        for (int i = 0; i < version.Length; i++)
+        {
+            var character = version[i];
+            if (!char.IsDigit(character))
+            {
+                breakCount--;
+                if (breakCount <= 0)
+                {
+                    break;
+                }
+            }
+
+            finalVersion += character.ToString();
+        }
+
+        return finalVersion;
+    }
 
     protected override void ValidateContext()
     {
@@ -180,6 +233,10 @@ public class NuGetContext : BuildContextBase
     public string Executable { get; set; }
     public string LocalPackagesDirectory { get; set; }
 
+    public bool RestoreUsingNuGet { get; set; }
+    public bool RestoreUsingDotNetRestore { get; set; }
+    public bool NoDependencies { get; set; }
+
     protected override void ValidateContext()
     {
     
@@ -187,7 +244,8 @@ public class NuGetContext : BuildContextBase
     
     protected override void LogStateInfoForContext()
     {
-    
+        CakeContext.Information($"Restore using NuGet: '{RestoreUsingNuGet}'");
+        CakeContext.Information($"Restore using dotnet restore: '{RestoreUsingDotNetRestore}'");
     }
 }
 
@@ -271,6 +329,7 @@ public class CodeSignContext : BuildContextBase
     public string WildCard { get; set; }
     public string CertificateSubjectName { get; set; }
     public string TimeStampUri { get; set; }
+    public string HashAlgorithm { get; set; }
 
     protected override void ValidateContext()
     {
@@ -279,7 +338,15 @@ public class CodeSignContext : BuildContextBase
     
     protected override void LogStateInfoForContext()
     {
-    
+        if (string.IsNullOrWhiteSpace(CertificateSubjectName))
+        {
+            CakeContext.Information($"Code signing is not configured");
+            return;
+        }
+
+        CakeContext.Information($"Code signing subject name: '{CertificateSubjectName}'");
+        CakeContext.Information($"Code signing timestamp uri: '{TimeStampUri}'");
+        CakeContext.Information($"Code signing hash algorithm: '{HashAlgorithm}'");
     }
 }
 
@@ -368,7 +435,10 @@ private GeneralContext InitializeGeneralContext(BuildContext buildContext, IBuil
     {
         PackageSources = buildContext.BuildServer.GetVariable("NuGetPackageSources", showValue: true),
         Executable = "./tools/nuget.exe",
-        LocalPackagesDirectory = "c:\\source\\_packages"
+        LocalPackagesDirectory = "c:\\source\\_packages",
+        RestoreUsingNuGet = buildContext.BuildServer.GetVariableAsBool("NuGet_RestoreUsingNuGet", false, showValue: true),
+        RestoreUsingDotNetRestore = buildContext.BuildServer.GetVariableAsBool("NuGet_RestoreUsingDotNetRestore", true, showValue: true),
+        NoDependencies = buildContext.BuildServer.GetVariableAsBool("NuGet_NoDependencies", true, showValue: true)
     };
 
     var solutionName = buildContext.BuildServer.GetVariable("SolutionName", showValue: true);
@@ -413,7 +483,8 @@ private GeneralContext InitializeGeneralContext(BuildContext buildContext, IBuil
     {
         WildCard = buildContext.BuildServer.GetVariable("CodeSignWildcard", showValue: true),
         CertificateSubjectName = buildContext.BuildServer.GetVariable("CodeSignCertificateSubjectName", showValue: true),
-        TimeStampUri = buildContext.BuildServer.GetVariable("CodeSignTimeStampUri", "http://timestamp.digicert.com", showValue: true)
+        TimeStampUri = buildContext.BuildServer.GetVariable("CodeSignTimeStampUri", "http://timestamp.digicert.com", showValue: true),
+        HashAlgorithm = buildContext.BuildServer.GetVariable("CodeSignHashAlgorithm", "SHA256", showValue: true)
     };
 
     data.Repository = new RepositoryContext(data)

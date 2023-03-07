@@ -14,11 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.Core" Version="5.12.12" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
+    <PackageReference Include="Catel.Core" Version="5.12.22" />
   </ItemGroup>
 
   <ItemGroup>

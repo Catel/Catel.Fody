@@ -6,9 +6,7 @@
 
     public class CSharp6_AutoPropertyInitializer : ModelBase
     {
-        #region Properties
         public ObservableCollection<SimpleModel> SimpleModels { get; set; } = new ObservableCollection<SimpleModel>();
-        #endregion
     }
 
     public class CSharp6_AutoPropertyInitializerWithMultipleConstructors : ModelBase
@@ -23,9 +21,7 @@
 
         }
 
-        #region Properties
         public bool ShowErrors { get; set; } = true;
-        #endregion
     }
 
     public class CSharp6_AutoPropertyInitializer_Generic<T> : ModelBase
@@ -40,11 +36,9 @@
 
         }
 
-        #region Properties
         public ObservableCollection<T> SimpleModels { get; set; } = new ObservableCollection<T>();
 
         public T SelectedItem { get; set; } = default(T);
-        #endregion
     }
 
     public class CSharp6_AutoPropertyInitializer_Generic : CSharp6_AutoPropertyInitializer_Generic<SimpleModel>
@@ -83,6 +77,13 @@
             SelectedItem = default(T);
         }
 
+        public CSharp6_AutoPropertyInitializer_Generic_ExpectedCode(Guid guid)
+        {
+            SimpleModels_Field = new ObservableCollection<T>();
+            SimpleModels_Property = new ObservableCollection<T>();
+            SelectedItem = default(T);
+        }
+
         public ObservableCollection<T> SimpleModels_Field;
 
         public ObservableCollection<T> SimpleModels_Property { get; set; }
@@ -93,5 +94,12 @@
     [NoWeaving]
     public class CSharp6_AutoPropertyInitializer_Generic_ExpectedCode : CSharp6_AutoPropertyInitializer_Generic_ExpectedCode<SimpleModel>
     {
+        public CSharp6_AutoPropertyInitializer_Generic_ExpectedCode()
+            : base(Guid.NewGuid())
+        {
+
+        }
+
+        public string AdditionalProperty { get; set; }
     }
 }

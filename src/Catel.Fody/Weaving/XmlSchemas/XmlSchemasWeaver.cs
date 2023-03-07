@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="XmlSchemaWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody.Weaving.XmlSchemas
+﻿namespace Catel.Fody.Weaving.XmlSchemas
 {
     using System.Linq;
     using Mono.Cecil;
@@ -65,7 +59,7 @@ namespace Catel.Fody.Weaving.XmlSchemas
             var existingCustomAttribute = (from attribute in catelTypeDefinition.CustomAttributes
                                            where string.Equals(attribute.AttributeType.Name, "XmlSchemaProviderAttribute")
                                            select attribute).FirstOrDefault();
-            if (existingCustomAttribute != null)
+            if (existingCustomAttribute is not null)
             {
                 var constructorArgument = existingCustomAttribute.ConstructorArguments[0];
                 if (string.Equals(constructorArgument.Value, methodName))

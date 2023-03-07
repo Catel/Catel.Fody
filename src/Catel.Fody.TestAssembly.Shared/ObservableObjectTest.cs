@@ -84,7 +84,7 @@
                 }
 
                 _isExpanded = value;
-                if (RowGroupDefinition == null)
+                if (RowGroupDefinition is null)
                 {
                     RaisePropertyChanged(propertyExpression: () => IsExpanded);
 
@@ -223,7 +223,7 @@
                 }
 
                 _isExpanded = value;
-                if (RowGroupDefinition == null)
+                if (RowGroupDefinition is null)
                 {
                     RaisePropertyChanged("IsExpanded");
 

@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CatelTypeProperty.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System.Diagnostics;
     using System.Linq;
@@ -27,10 +20,10 @@ namespace Catel.Fody
             DetermineIncludeInBackup();
         }
 
-        #region Fields
         public string Name { get; private set; }
         public bool IsReadOnly { get; set; }
         public bool IncludeInBackup { get; set; }
+        public bool IsInitOnlyProperty { get; set; }
 
         public TypeDefinition TypeDefinition { get; private set; }
         public PropertyDefinition PropertyDefinition { get; private set; }
@@ -40,7 +33,6 @@ namespace Catel.Fody
         public FieldDefinition BackingFieldDefinition { get; set; }
         public MethodReference ChangeCallbackReference { get; private set; }
 
-        #endregion
         private void DetermineFields()
         {
             BackingFieldDefinition = TryGetField(TypeDefinition, PropertyDefinition);
@@ -58,7 +50,7 @@ namespace Catel.Fody
 
             foreach (var callbackReference in callbackReferences)
             {
-                if (callbackReference != null)
+                if (callbackReference is not null)
                 {
                     if (callbackReference.HasParameters)
                     {
@@ -80,19 +72,10 @@ namespace Catel.Fody
 
         private void DetermineDefaultValue()
         {
-            //var defaultValueAttribute = PropertyDefinition.GetAttribute("Catel.Fody.DefaultValueAttribute");
             var defaultValueAttribute = PropertyDefinition.GetAttribute("System.ComponentModel.DefaultValueAttribute");
-            if (defaultValueAttribute != null)
+            if (defaultValueAttribute is not null)
             {
                 DefaultValue = defaultValueAttribute.ConstructorArguments[0].Value;
-
-                // Catel.Fody attribute style
-                //var attributeValue = (CustomAttributeArgument) defaultValueAttribute.ConstructorArguments[0].Value;
-                //DefaultValue = attributeValue.Value;
-
-                // Note: do not remove since we are now using System.ComponentModel.DefaultValueAttribute after
-                // the discussion at https://catelproject.atlassian.net/browse/CTL-244
-                //PropertyDefinition.RemoveAttribute("Catel.Fody.DefaultValueAttribute");
             }
         }
 
@@ -101,7 +84,7 @@ namespace Catel.Fody
             IncludeInBackup = true;
 
             var excludeFromBackupAttribute = PropertyDefinition.GetAttribute("Catel.Fody.ExcludeFromBackupAttribute");
-            if (excludeFromBackupAttribute != null)
+            if (excludeFromBackupAttribute is not null)
             {
                 IncludeInBackup = false;
 
@@ -113,9 +96,10 @@ namespace Catel.Fody
         {
             var propertyName = property.Name;
             var fieldsWithSameType = typeDefinition.Fields.Where(x => x.DeclaringType == typeDefinition).ToList();
+
             foreach (var field in fieldsWithSameType)
             {
-                //AutoProp
+                // AutoProp
                 if (field.Name == $"<{propertyName}>k__BackingField")
                 {
                     return field;
@@ -131,22 +115,25 @@ namespace Catel.Fody
                 {
                     return field;
                 }
+
                 //underScore
                 if (fieldUpper == "_" + upperPropertyName)
                 {
                     return field;
                 }
             }
+
             return GetSingleField(property);
         }
 
         private static FieldDefinition GetSingleField(PropertyDefinition property)
         {
             var fieldDefinition = GetSingleField(property, Code.Stfld, property.SetMethod);
-            if (fieldDefinition != null)
+            if (fieldDefinition is not null)
             {
                 return fieldDefinition;
             }
+
             return GetSingleField(property, Code.Ldfld, property.GetMethod);
         }
 
@@ -156,13 +143,14 @@ namespace Catel.Fody
             {
                 return null;
             }
+
             FieldReference fieldReference = null;
             foreach (var instruction in methodDefinition.Body.Instructions)
             {
                 if (instruction.OpCode.Code == code)
                 {
                     //if fieldReference is not null then we are at the second one
-                    if (fieldReference != null)
+                    if (fieldReference is not null)
                     {
                         return null;
                     }

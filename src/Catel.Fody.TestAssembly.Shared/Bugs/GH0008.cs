@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GH0008.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2017 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly
 {
     using Data;
     using MVVM;
@@ -114,7 +107,7 @@ namespace Catel.Fody.TestAssembly
 #if CATEL_5
         public static readonly PropertyData IsExpandedAllOnStartupProperty = RegisterProperty("IsExpandedAllOnStartup", typeof(bool), false);
 #elif CATEL_6
-        public static readonly IPropertyData IsExpandedAllOnStartupProperty = RegisterProperty("IsExpandedAllOnStartup", typeof(bool), false);
+        public static readonly IPropertyData IsExpandedAllOnStartupProperty = RegisterProperty<bool>("IsExpandedAllOnStartup", false);
 #endif
 
         public IValidationContext ValidationContext
@@ -126,7 +119,7 @@ namespace Catel.Fody.TestAssembly
 #if CATEL_5
         public static readonly PropertyData ValidationContextProperty = RegisterProperty("ValidationContext", typeof(IValidationContext), null);
 #elif CATEL_6
-        public static readonly IPropertyData ValidationContextProperty = RegisterProperty("ValidationContext", typeof(IValidationContext), null);
+        public static readonly IPropertyData ValidationContextProperty = RegisterProperty<IValidationContext>("ValidationContext");
 #endif
 
         public bool ShowErrors
@@ -138,7 +131,7 @@ namespace Catel.Fody.TestAssembly
 #if CATEL_5
         public static readonly PropertyData ShowErrorsProperty = RegisterProperty("ShowErrors", typeof(bool), true);
 #elif CATEL_6
-        public static readonly IPropertyData ShowErrorsProperty = RegisterProperty("ShowErrors", typeof(bool), true);
+        public static readonly IPropertyData ShowErrorsProperty = RegisterProperty<bool>("ShowErrors", true);
 #endif
 
         public bool ShowWarnings
@@ -150,7 +143,7 @@ namespace Catel.Fody.TestAssembly
 #if CATEL_5
         public static readonly PropertyData ShowWarningsProperty = RegisterProperty("ShowWarnings", typeof(bool), true);
 #elif CATEL_6
-        public static readonly IPropertyData ShowWarningsProperty = RegisterProperty("ShowWarnings", typeof(bool), true);
+        public static readonly IPropertyData ShowWarningsProperty = RegisterProperty<bool>("ShowWarnings", true);
 #endif
 
         public bool IsExpanded
@@ -162,7 +155,7 @@ namespace Catel.Fody.TestAssembly
 #if CATEL_5
         public static readonly PropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof(bool), false);
 #elif CATEL_6
-        public static readonly IPropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof(bool), false);
+        public static readonly IPropertyData IsExpandedProperty = RegisterProperty<bool>("IsExpanded", false);
 #endif
 
         public bool IsCollapsed => !IsExpanded;

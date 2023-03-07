@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="WarningChecker.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody.Weaving.AutoProperties
+﻿namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -25,7 +19,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                 foreach (var propertyData in catelType.Properties.ToList())
                 {
                     var warning = CheckForWarning(propertyData);
-                    if (warning != null)
+                    if (warning is not null)
                     {
                         FodyEnvironment.WriteDebug($"\t{propertyData.PropertyDefinition.GetName()} {warning} property will be ignored.");
                         catelType.Properties.Remove(propertyData);
@@ -38,6 +32,12 @@ namespace Catel.Fody.Weaving.AutoProperties
         {
             var propertyDefinition = propertyData.PropertyDefinition;
             var setMethod = propertyDefinition.SetMethod;
+
+            if (setMethod is null)
+            {
+                // Init-only property, will be migrated to full property
+                return null;
+            }
 
             if (setMethod.Name == "set_Item" && setMethod.Parameters.Count == 2 && setMethod.Parameters[1].Name == "value")
             {

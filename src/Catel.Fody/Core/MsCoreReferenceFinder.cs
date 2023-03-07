@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MsCoreReferenceFinder.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System;
     using System.Collections.Generic;
@@ -39,8 +33,10 @@ namespace Catel.Fody
 
         public void Execute()
         {
+#pragma warning disable IDISP001 // Dispose created
             var xmlDefinition = _assemblyResolver.Resolve("System.Xml");
-            if (xmlDefinition != null)
+#pragma warning restore IDISP001 // Dispose created
+            if (xmlDefinition is not null)
             {
                 var xmlTypes = xmlDefinition.MainModule.Types;
 
@@ -89,7 +85,9 @@ namespace Catel.Fody
 
         private IEnumerable<TypeReference> GetTypes()
         {
+#pragma warning disable IDISP001 // Dispose created
             var msCoreLibDefinition = _assemblyResolver.Resolve("mscorlib");
+#pragma warning restore IDISP001 // Dispose created
             var msCoreTypes = msCoreLibDefinition.MainModule.Types.Cast<TypeReference>().ToList();
 
             var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
@@ -165,8 +163,10 @@ namespace Catel.Fody
 
             foreach (var assembly in _moduleWeaver.ModuleDefinition.AssemblyReferences)
             {
+#pragma warning disable IDISP001 // Dispose created
                 var resolvedAssembly = _assemblyResolver.Resolve(assembly);
-                if ((resolvedAssembly != null) && resolvedAssembly.IsNetStandardLibrary())
+#pragma warning restore IDISP001 // Dispose created
+                if ((resolvedAssembly is not null) && resolvedAssembly.IsNetStandardLibrary())
                 {
                     allTypes.AddRange(resolvedAssembly.MainModule.Types);
                 }
@@ -177,7 +177,9 @@ namespace Catel.Fody
 
         private IEnumerable<TypeReference> GetTypesFromAssembly(string assemblyName)
         {
+#pragma warning disable IDISP001 // Dispose created
             var assembly = _assemblyResolver.Resolve(assemblyName);
+#pragma warning restore IDISP001 // Dispose created
             if (assembly is null)
             {
                 return Array.Empty<TypeReference>();

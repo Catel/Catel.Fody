@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExposedPropertiesWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Weaving.ExposedProperties
+﻿namespace Catel.Fody.Weaving.ExposedProperties
 {
     using System.Linq;
     using Mono.Cecil;
@@ -77,7 +70,7 @@ namespace Catel.Fody.Weaving.ExposedProperties
                                       where string.Equals(property.Name, "IsReadOnly")
                                       select property).FirstOrDefault();
 
-            if (isReadOnlyProperty.Argument.Value != null)
+            if (isReadOnlyProperty.Argument.Value is not null)
             {
                 isReadOnly = (bool)isReadOnlyProperty.Argument.Value;
             }

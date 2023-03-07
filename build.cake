@@ -8,11 +8,18 @@ Parameters["SolutionName"] = "Catel.Fody";
 Parameters["Company"] = "CatenaLogic";
 Parameters["RepositoryUrl"] = string.Format("https://github.com/{0}/{1}", GetBuildServerVariable("SolutionName"), GetBuildServerVariable("SolutionName"));
 Parameters["StartYear"] = "2010";
-Parameters["UseVisualStudioPrerelease"] = "false";
-Parameters["DeployCatelFodyAttributes"] = "false";
+Parameters["UseVisualStudioPrerelease"] = "true";
+
+// Note: Catel.Fody is a special project where the Attributes projects generates
+// the correct package with both the attributes *and* the weaver. We should build 
+// and package Catel.Fody.Attributes, but Catel.Fody is the package that needs to be
+// deployed
 Parameters["BuildCatelFody"] = "true";
-Parameters["DeployCatelFody"] = "false";
-Parameters["DeployCatelFodyAttributes"] = "true";
+Parameters["PackageCatelFody"] = "true";
+Parameters["DeployCatelFody"] = "true";
+Parameters["BuildCatelFodyAttributes"] = "true";
+Parameters["PackageCatelFodyAttributes"] = "true";
+Parameters["DeployCatelFodyAttributes"] = "false";
 
 // Note: the rest of the variables should be coming from the build server,
 // see `/deployment/cake/*-variables.cake` for customization options
@@ -31,8 +38,38 @@ Parameters["DeployCatelFodyAttributes"] = "true";
 Components.Add("Catel.Fody");
 Components.Add("Catel.Fody.Attributes");
 
-TestProjects.Add(string.Format("{0}.Tests.Catel5", GetBuildServerVariable("SolutionName")));
-//TestProjects.Add(string.Format("{0}.Tests.Catel6", GetBuildServerVariable("SolutionName")));
+// Components as dependencies since they are required by the test projects
+Dependencies.Add("Catel.Fody");
+Dependencies.Add("Catel.Fody.Attributes");
+
+Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel5", new []
+{
+    "Catel.Fody.Tests.Catel5"
+});
+Dependencies.Add("Catel.Fody.TestAssembly.NetStandard.Catel5", new []
+{
+    "Catel.Fody.Tests.Catel5"
+});
+Dependencies.Add("Catel.Fody.TestAssembly.Catel5", new []
+{
+    "Catel.Fody.Tests.Catel5"
+});
+
+Dependencies.Add("Catel.Fody.TestExternalTypesAssembly.Catel6", new []
+{
+    "Catel.Fody.Tests.Catel6"
+});
+Dependencies.Add("Catel.Fody.TestAssembly.Catel6", new []
+{
+    "Catel.Fody.Tests.Catel6"
+});
+
+// Test projects as dependencies since they don't following naming convention
+Dependencies.Add("Catel.Fody.Tests.Catel5");
+Dependencies.Add("Catel.Fody.Tests.Catel6");
+
+TestProjects.Add("Catel.Fody.Tests.Catel5");
+TestProjects.Add("Catel.Fody.Tests.Catel6");
 
 //=======================================================
 // REQUIRED INITIALIZATION, DO NOT CHANGE

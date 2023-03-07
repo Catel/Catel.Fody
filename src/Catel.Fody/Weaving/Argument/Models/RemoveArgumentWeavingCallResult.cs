@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RemoveArgumentWeavingCallResult.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2016 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Weaving.Argument.Models
+﻿namespace Catel.Fody.Weaving.Argument.Models
 {
     using Mono.Cecil;
 

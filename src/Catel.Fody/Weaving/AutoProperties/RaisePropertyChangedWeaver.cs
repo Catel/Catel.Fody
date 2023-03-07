@@ -1,11 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="OnPropertyChangedWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2014 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-namespace Catel.Fody.Weaving.AutoProperties
+﻿namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
     using System.Data;
@@ -104,7 +97,7 @@ namespace Catel.Fody.Weaving.AutoProperties
                     if (potentialInstruction.IsOpCode(OpCodes.Ldtoken))
                     {
                         var methodDefinition = potentialInstruction.Operand as MethodDefinition;
-                        if (methodDefinition != null)
+                        if (methodDefinition is not null)
                         {
                             var name = methodDefinition.Name;
                             if (name.StartsWith("get_"))

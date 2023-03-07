@@ -38,7 +38,7 @@
 
             // Base class
             var baseType = typeDefinition.BaseType;
-            if (baseType != null)
+            if (baseType is not null)
             {
                 baseTypes.Add(baseType.Resolve());
             }
@@ -67,7 +67,7 @@
             {
                 hierarchy.Add(new TypeWithSelfReference(definition, null));
 
-                if (breakCondition != null && breakCondition(definition))
+                if (breakCondition is not null && breakCondition(definition))
                 {
                     break;
                 }
@@ -124,7 +124,7 @@
             var checkedInterfaces = new HashSet<InterfaceImplementation>();
             var typeDefinition = type.Resolve();
 
-            while (typeDefinition != null)
+            while (typeDefinition is not null)
             {
                 if (typeDefinition.Equals(target))
                 {

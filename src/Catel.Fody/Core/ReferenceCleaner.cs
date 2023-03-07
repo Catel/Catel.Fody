@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ReferenceCleaner.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody
+﻿namespace Catel.Fody
 {
     using System.Linq;
 
@@ -19,7 +13,7 @@ namespace Catel.Fody
         public void Execute()
         {
             var catelFodyAttributesReference = _moduleWeaver.ModuleDefinition.AssemblyReferences.FirstOrDefault(x => string.Equals(x.Name, "Catel.Fody.Attributes"));
-            if (catelFodyAttributesReference != null)
+            if (catelFodyAttributesReference is not null)
             {
                 _moduleWeaver.WriteInfo("\tRemoving reference to 'Catel.Fody.Attributes', it is no longer required.");
                 _moduleWeaver.ModuleDefinition.AssemblyReferences.Remove(catelFodyAttributesReference);

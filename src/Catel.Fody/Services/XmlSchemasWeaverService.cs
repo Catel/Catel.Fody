@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="XmlSchemasWeaverService.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody.Services
+﻿namespace Catel.Fody.Services
 {
     using System;
 
@@ -67,12 +61,12 @@ namespace Catel.Fody.Services
                 }
 
                 var xmlSchemaManager = (TypeDefinition)catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.Xml.XmlSchemaManager");
-                _isSupported = xmlSchemaManager != null;
+                _isSupported = xmlSchemaManager is not null;
 
                 if (!_isSupported ?? false)
                 {
                     var xmlSchemaManagerPre38 = (TypeDefinition)catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
-                    _isSupported = xmlSchemaManagerPre38 != null;
+                    _isSupported = xmlSchemaManagerPre38 is not null;
                 }
             }
 

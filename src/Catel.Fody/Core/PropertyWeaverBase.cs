@@ -72,13 +72,13 @@
             var fieldName = GetBackingFieldName(property);
 
             var field = GetFieldReference(property.DeclaringType, fieldName, false);
-            return (field != null);
+            return (field is not null);
         }
 
         protected static FieldDefinition GetFieldDefinition(TypeDefinition declaringType, string fieldName, bool allowGenericResolving)
         {
             var fieldReference = GetFieldReference(declaringType, fieldName, allowGenericResolving);
-            return fieldReference != null ? fieldReference.Resolve() : null;
+            return fieldReference is not null ? fieldReference.Resolve() : null;
         }
 
         protected static FieldReference GetFieldReference(TypeDefinition declaringType, string fieldName, bool allowGenericResolving)

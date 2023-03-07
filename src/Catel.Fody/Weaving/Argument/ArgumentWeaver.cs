@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ArgumentWeaver.cs" company="Catel development team">
-//   Copyright (c) 2008 - 2013 Catel development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace Catel.Fody.Weaving.Argument
+﻿namespace Catel.Fody.Weaving.Argument
 {
     using System.Collections.Generic;
     using Mono.Cecil;
@@ -14,21 +8,16 @@ namespace Catel.Fody.Weaving.Argument
 
     public partial class ArgumentWeaver
     {
-        #region Constants
         private delegate CustomAttribute ExpressionToAttributeFunc(MethodReference method, IList<Instruction> instructions, Instruction instruction);
 
         private static readonly object CacheLock = new object();
-        #endregion
 
-        #region Fields
         private static readonly Dictionary<string, ExpressionToAttributeFunc> ExpressionChecksToAttributeMappings = new Dictionary<string, ExpressionToAttributeFunc>();
 
         private readonly TypeDefinition _typeDefinition;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         private readonly Configuration _configuration;
-        #endregion
 
-        #region Constructors
         public ArgumentWeaver(TypeDefinition typeDefinition, MsCoreReferenceFinder msCoreReferenceFinder,
             Configuration configuration)
         {
@@ -38,12 +27,10 @@ namespace Catel.Fody.Weaving.Argument
             _msCoreReferenceFinder = msCoreReferenceFinder;
             _configuration = configuration;
         }
-        #endregion
 
-        #region Methods
         public void Execute()
         {
-            FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{_typeDefinition.FullName}'");
+            //FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{_typeDefinition.FullName}'");
 
             foreach (var method in _typeDefinition.Methods)
             {
@@ -69,7 +56,7 @@ namespace Catel.Fody.Weaving.Argument
             Collection<Instruction> instructions = null;
 
             var methodFullName = method.GetFullName();
-            FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{methodFullName}'");
+            //FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{methodFullName}'");
 
             // Step 1) Convert attributes
             // TODO: how to handle async/await here?
@@ -102,7 +89,7 @@ namespace Catel.Fody.Weaving.Argument
             var displayClasses = new List<TypeDefinition>();
 
             // Go backwards to keep the order of the arguments correct (because argument checks are injected at the beginning of the ctor)
-            if (instructions != null || ContainsArgumentChecks(method))
+            if (instructions is not null || ContainsArgumentChecks(method))
             {
                 if (instructions is null)
                 {
@@ -180,7 +167,7 @@ namespace Catel.Fody.Weaving.Argument
                 //}
             }
 
-            if (instructions != null)
+            if (instructions is not null)
             {
                 method.Body.OptimizeMacros();
                 method.UpdateDebugInfo();
@@ -319,6 +306,5 @@ namespace Catel.Fody.Weaving.Argument
 
             return true;
         }
-        #endregion
     }
 }
