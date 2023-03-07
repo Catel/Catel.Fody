@@ -12,8 +12,11 @@
         [TestCase]
         public void Weaving_Init_Only_Model_Properties()
         {
+            var modelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0473.TestModel");
+            var model = Activator.CreateInstance(modelType);
+
             var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel");
-            var viewModel = Activator.CreateInstance(viewModelType) as dynamic;
+            var viewModel = Activator.CreateInstance(viewModelType, model) as dynamic;
 
             viewModel.Property = new object();
 
