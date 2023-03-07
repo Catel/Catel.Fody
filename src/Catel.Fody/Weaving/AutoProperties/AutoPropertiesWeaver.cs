@@ -51,7 +51,10 @@
                         catelType.TypeDefinition.Methods.Add(setMethod);
                         propertyData.PropertyDefinition.SetMethod = setMethod;
 
-                        setMethod.Parameters.Add(new ParameterDefinition(catelType.TypeDefinition.Module.ImportReference(propertyData.PropertyDefinition.PropertyType)));
+                        setMethod.Parameters.Add(new ParameterDefinition(catelType.TypeDefinition.Module.ImportReference(propertyData.PropertyDefinition.PropertyType))
+                        {
+                            Name = "value"
+                        });
 
                         setMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
                     }
