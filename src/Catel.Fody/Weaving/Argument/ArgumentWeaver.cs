@@ -8,21 +8,16 @@
 
     public partial class ArgumentWeaver
     {
-        #region Constants
         private delegate CustomAttribute ExpressionToAttributeFunc(MethodReference method, IList<Instruction> instructions, Instruction instruction);
 
         private static readonly object CacheLock = new object();
-        #endregion
 
-        #region Fields
         private static readonly Dictionary<string, ExpressionToAttributeFunc> ExpressionChecksToAttributeMappings = new Dictionary<string, ExpressionToAttributeFunc>();
 
         private readonly TypeDefinition _typeDefinition;
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
         private readonly Configuration _configuration;
-        #endregion
 
-        #region Constructors
         public ArgumentWeaver(TypeDefinition typeDefinition, MsCoreReferenceFinder msCoreReferenceFinder,
             Configuration configuration)
         {
@@ -32,12 +27,10 @@
             _msCoreReferenceFinder = msCoreReferenceFinder;
             _configuration = configuration;
         }
-        #endregion
 
-        #region Methods
         public void Execute()
         {
-            FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{_typeDefinition.FullName}'");
+            //FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{_typeDefinition.FullName}'");
 
             foreach (var method in _typeDefinition.Methods)
             {
@@ -63,7 +56,7 @@
             Collection<Instruction> instructions = null;
 
             var methodFullName = method.GetFullName();
-            FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{methodFullName}'");
+            //FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{methodFullName}'");
 
             // Step 1) Convert attributes
             // TODO: how to handle async/await here?
@@ -313,6 +306,5 @@
 
             return true;
         }
-        #endregion
     }
 }
