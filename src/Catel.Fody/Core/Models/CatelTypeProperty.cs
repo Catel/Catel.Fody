@@ -20,10 +20,10 @@
             DetermineIncludeInBackup();
         }
 
-        #region Fields
         public string Name { get; private set; }
         public bool IsReadOnly { get; set; }
         public bool IncludeInBackup { get; set; }
+        public bool IsInitOnlyProperty { get; set; }
 
         public TypeDefinition TypeDefinition { get; private set; }
         public PropertyDefinition PropertyDefinition { get; private set; }
@@ -33,7 +33,6 @@
         public FieldDefinition BackingFieldDefinition { get; set; }
         public MethodReference ChangeCallbackReference { get; private set; }
 
-        #endregion
         private void DetermineFields()
         {
             BackingFieldDefinition = TryGetField(TypeDefinition, PropertyDefinition);
@@ -73,19 +72,10 @@
 
         private void DetermineDefaultValue()
         {
-            //var defaultValueAttribute = PropertyDefinition.GetAttribute("Catel.Fody.DefaultValueAttribute");
             var defaultValueAttribute = PropertyDefinition.GetAttribute("System.ComponentModel.DefaultValueAttribute");
             if (defaultValueAttribute is not null)
             {
                 DefaultValue = defaultValueAttribute.ConstructorArguments[0].Value;
-
-                // Catel.Fody attribute style
-                //var attributeValue = (CustomAttributeArgument) defaultValueAttribute.ConstructorArguments[0].Value;
-                //DefaultValue = attributeValue.Value;
-
-                // Note: do not remove since we are now using System.ComponentModel.DefaultValueAttribute after
-                // the discussion at https://catelproject.atlassian.net/browse/CTL-244
-                //PropertyDefinition.RemoveAttribute("Catel.Fody.DefaultValueAttribute");
             }
         }
 
@@ -106,9 +96,10 @@
         {
             var propertyName = property.Name;
             var fieldsWithSameType = typeDefinition.Fields.Where(x => x.DeclaringType == typeDefinition).ToList();
+
             foreach (var field in fieldsWithSameType)
             {
-                //AutoProp
+                // AutoProp
                 if (field.Name == $"<{propertyName}>k__BackingField")
                 {
                     return field;
@@ -124,12 +115,14 @@
                 {
                     return field;
                 }
+
                 //underScore
                 if (fieldUpper == "_" + upperPropertyName)
                 {
                     return field;
                 }
             }
+
             return GetSingleField(property);
         }
 
@@ -140,6 +133,7 @@
             {
                 return fieldDefinition;
             }
+
             return GetSingleField(property, Code.Ldfld, property.GetMethod);
         }
 
@@ -149,6 +143,7 @@
             {
                 return null;
             }
+
             FieldReference fieldReference = null;
             foreach (var instruction in methodDefinition.Body.Instructions)
             {

@@ -1,6 +1,7 @@
 ﻿namespace Catel.Fody.Weaving.AutoProperties
 {
     using System.Collections.Generic;
+    using Mono.Cecil;
     using Mono.Cecil.Rocks;
 
     public class AutoPropertiesWeaver
@@ -32,7 +33,30 @@
 
                 foreach (var propertyData in catelType.Properties)
                 {
-                    var body = propertyData.PropertyDefinition.SetMethod.Body;
+                    var setMethod = propertyData.PropertyDefinition.SetMethod;
+                    if (setMethod is null)
+                    {
+                        //[CompilerGenerated]
+                        //set_PropertyName
+                        //{
+
+                        //    <PropertyType>k__BackingField = value;
+                        //}
+
+                        // Generate set method
+                        setMethod = new Mono.Cecil.MethodDefinition($"set_{propertyData.Name}", Mono.Cecil.MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.SpecialName, 
+                            catelType.TypeDefinition.Module.ImportReference(_msCoreReferenceFinder.GetCoreTypeReference("Void")));
+
+                        // Add first before doing anything else
+                        catelType.TypeDefinition.Methods.Add(setMethod);
+                        propertyData.PropertyDefinition.SetMethod = setMethod;
+
+                        setMethod.Parameters.Add(new ParameterDefinition(catelType.TypeDefinition.Module.ImportReference(propertyData.PropertyDefinition.PropertyType)));
+
+                        setMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
+                    }
+
+                    var body = setMethod.Body;
 
                     body.SimplifyMacros();
 
