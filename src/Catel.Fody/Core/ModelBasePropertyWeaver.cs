@@ -34,7 +34,7 @@
             var property = _propertyData.PropertyDefinition;
             if (property is null)
             {
-                FodyEnvironment.WriteWarning("Skipping an unknown property because it has no property definition");
+                FodyEnvironment.WriteWarning($"\t{_propertyData.Name} Skipping an unknown property because it has no property definition");
                 return;
             }
 
@@ -828,6 +828,18 @@
 
                             if (instruction.IsOpCode(OpCodes.Stfld))
                             {
+                                // Replace
+                                // 
+	                            // IL_0014: ldarg.0
+	                            // IL_0015: ldarg.1
+	                            // IL_0016: stfld class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel::'<Model>k__BackingField' /* 04000097 */
+                                // 
+                                // with
+                                //
+	                            // IL_0014: ldarg.0
+	                            // IL_0015: ldarg.1
+	                            // IL_0016: call instance void Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel_Expected::set_Model(class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel) /* 06000205 */
+
                                 // Setter
                                 instruction.OpCode = OpCodes.Call;
 
@@ -842,7 +854,7 @@
 
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
                                 var baseIndex = ctor.FindBaseConstructorIndex();
-                                if (baseIndex >= 0)
+                                if (baseIndex > i)
                                 {
                                     // After a call to a ctor, a double nop is required
                                     var indexToInsert = baseIndex + 1;
@@ -875,7 +887,7 @@
 
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
                                 var baseIndex = ctor.FindBaseConstructorIndex();
-                                if (baseIndex >= 0)
+                                if (baseIndex > i)
                                 {
                                     // After a call to a ctor, a double nop is required
                                     var indexToInsert = baseIndex + 1;
@@ -938,12 +950,20 @@
                                     instructions.RemoveAt(i - 1);
                                 }
 
+                                var indexToInsert = i + 1;
+
                                 // Now move this to the end of the method (we need to call the base ctor first to have the property bag ready)
                                 var baseIndex = ctor.FindBaseConstructorIndex();
-                                if (baseIndex >= 0)
+                                if (baseIndex < 0)
+                                {
+                                    FodyEnvironment.WriteError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. A rare condition occurred (no base ctor found), please contact support");
+                                    continue;
+                                }
+
+                                if (baseIndex > i)
                                 {
                                     // After a call to a ctor, a double nop is required
-                                    var indexToInsert = baseIndex + 1;
+                                    indexToInsert = baseIndex + 1;
                                     if (instructions.IsNextInstructionOpCode(baseIndex, OpCodes.Nop))
                                     {
                                         indexToInsert++;
@@ -953,13 +973,9 @@
                                             indexToInsert++;
                                         }
                                     }
+                                }
 
-                                    instructions.Insert(indexToInsert, newInstructions);
-                                }
-                                else
-                                {
-                                    FodyEnvironment.WriteError($"Field '{declaringType.FullName}.{field.Name}' is used in ctor '{ctor}'. A rare condition occurred (no base ctor found), please contact support");
-                                }
+                                instructions.Insert(indexToInsert, newInstructions);
                             }
                             else
                             {

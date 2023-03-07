@@ -13,7 +13,7 @@
             Model = testModel;
         }
 
-        [Model]
+        [Model(SupportIEditableObject = false, SupportValidation = false)]
         [Expose(nameof(TestModel.Property))]
         public TestModel Model { get; }
     }
@@ -27,7 +27,7 @@
             Model = testModel;
         }
 
-        [Model]
+        [Model(SupportIEditableObject = false, SupportValidation = false)]
         public TestModel Model
         {
             get { return GetValue<TestModel>(ModelProperty); }
