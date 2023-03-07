@@ -8,13 +8,10 @@
 
     public abstract class ArgumentMethodCallWeaverBase
     {
-        #region Constants
-        public static readonly Dictionary<string, ArgumentMethodCallWeaverBase> WellKnownWeavers = CacheHelper.GetCache<Dictionary<string, ArgumentMethodCallWeaverBase>>("ArgumentMethodCallWeaverBase");
+        public static readonly IReadOnlyDictionary<string, ArgumentMethodCallWeaverBase> WellKnownWeavers = CacheHelper.GetCache<Dictionary<string, ArgumentMethodCallWeaverBase>>("ArgumentMethodCallWeaverBase");
 
         private readonly TypeDefinition _argumentTypeDefinition = FodyEnvironment.ModuleDefinition.FindType("Catel.Core", "Catel.Argument");
-        #endregion
 
-        #region Methods
         public bool Execute(TypeDefinition type, MethodDefinition methodDefinition,
             object parameterDefinitionOrFieldDefinition, CustomAttribute attribute, int instructionIndex)
         {
@@ -98,6 +95,5 @@
         protected abstract void BuildInstructions(ModuleDefinition module, TypeDefinition type, MethodDefinition method, FieldDefinition field, CustomAttribute attribute, List<Instruction> instructions);
 
         protected abstract void SelectMethod(TypeDefinition argumentTypeDefinition, TypeReference typeToCheck, out MethodDefinition selectedMethod);
-        #endregion
     }
 }

@@ -130,9 +130,12 @@
                         }
 
                         var removedInfo = RemoveArgumentWeavingCall(method, instructions, instruction);
-                        if (!displayClasses.Contains(removedInfo.DisplayClassTypeDefinition))
+                        if (removedInfo.DisplayClassTypeDefinition is not null)
                         {
-                            displayClasses.Add(removedInfo.DisplayClassTypeDefinition);
+                            if (!displayClasses.Contains(removedInfo.DisplayClassTypeDefinition))
+                            {
+                                displayClasses.Add(removedInfo.DisplayClassTypeDefinition);
+                            }
                         }
 
                         var weaver = ArgumentMethodCallWeaverBase.WellKnownWeavers[customAttribute.AttributeType.FullName];
