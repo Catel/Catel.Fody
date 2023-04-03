@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net6.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestExternalTypesAssembly.Catel5</AssemblyName>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="6.0.0-alpha1154" />
+    <PackageReference Include="Catel.MVVM" Version="6.0.0-alpha1165" />
   </ItemGroup>
 
   <ItemGroup>
