@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net6.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.Tests.Catel5</AssemblyName>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.6.4" PrivateAssets="None" />
+    <PackageReference Include="Fody" Version="6.7.0" PrivateAssets="None" />
   </ItemGroup>
 
   <ItemGroup>
