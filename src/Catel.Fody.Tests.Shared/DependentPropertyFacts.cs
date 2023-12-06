@@ -29,7 +29,7 @@
             var isPropertyChangedWorkingPropertyInfo = instance.GetType().GetProperty("IsPropertyChangedWorking");
             if (isPropertyChangedWorkingPropertyInfo is not null)
             {
-                Assert.IsTrue((bool)isPropertyChangedWorkingPropertyInfo.GetValue(instance));
+                Assert.That((bool)isPropertyChangedWorkingPropertyInfo.GetValue(instance), Is.True);
             }
 
             Assert.Contains(expectedPropertyName, changedProperties);
@@ -54,12 +54,12 @@
 
             instance.FirstName = firstName;
 
-            Assert.AreEqual(1, changeCount);
+            Assert.That(changeCount, Is.EqualTo(1));
             Assert.AreEqual(firstName + " ", instance.FullName);
 
             instance.Surnames = lastName;
 
-            Assert.AreEqual(2, changeCount);
+            Assert.That(changeCount, Is.EqualTo(2));
             Assert.AreEqual(firstName + " " + lastName, instance.FullName);
         }
         #endregion

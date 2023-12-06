@@ -9,7 +9,6 @@
     [TestFixture]
     public class ModelBaseFacts
     {
-        #region Methods
         [TestCase]
         public void StringsCanBeUsedAfterWeaving()
         {
@@ -117,7 +116,7 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericModelBaseTest");
             var model = (dynamic)Activator.CreateInstance(type);
 
-            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, "Operations"));
+            Assert.That(PropertyDataManager.Default.IsPropertyRegistered(type, "Operations"), Is.True);
 
             model.Operations = new ObservableCollection<int>();
 
@@ -132,11 +131,11 @@
 
             var propertyNameToCheck = "MyModel";
 
-            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck));
+            Assert.That(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck), Is.True);
 
             PropertyHelper.SetPropertyValue(model, propertyNameToCheck, 42);
 
-            Assert.AreEqual(42, PropertyHelper.GetPropertyValue<int>(model, propertyNameToCheck));
+            Assert.That(PropertyHelper.GetPropertyValue<int>(model, propertyNameToCheck), Is.EqualTo(42));
         }
 
         [TestCase]
@@ -147,14 +146,13 @@
 
             var propertyNameToCheck = "MyModel";
 
-            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck));
+            Assert.That(PropertyDataManager.Default.IsPropertyRegistered(type, propertyNameToCheck), Is.True);
 
             var tempObject = new object();
 
             PropertyHelper.SetPropertyValue(model, propertyNameToCheck, tempObject);
 
-            Assert.AreEqual(tempObject, PropertyHelper.GetPropertyValue<object>(model, propertyNameToCheck));
+            Assert.That(PropertyHelper.GetPropertyValue<object>(model, propertyNameToCheck), Is.EqualTo(tempObject));
         }
-        #endregion
     }
 }

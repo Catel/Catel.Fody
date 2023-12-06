@@ -61,7 +61,7 @@
 
             oo.ManuallyRaiseChangeNotificationForManualChangeNotificationProperty();
 
-            Assert.IsTrue(worked);
+            Assert.That(worked, Is.True);
         }
 
 
@@ -80,7 +80,7 @@
 
             oo.IsExpanded = true;
 
-            Assert.IsTrue(worked);
+            Assert.That(worked, Is.True);
         }
     }
 }

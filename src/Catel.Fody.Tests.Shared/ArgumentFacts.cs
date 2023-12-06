@@ -32,7 +32,6 @@
             throw new AssertionException($"Expected exception '{typeof(TException).Name}'");
         }
 
-        #region Methods
         [TestCase]
         public void CorrectlyThrowsArgumentNullExceptionForNullTypes()
         {
@@ -619,6 +618,5 @@
 
             method.Invoke(instance, new object[] { null });
         }
-        #endregion
     }
 }

@@ -29,10 +29,10 @@
             instance.Address = addressInstance; // virtual
             instance.Address2 = addressInstance; // non-virtual
 
-            Assert.IsTrue(changedProperties.Contains("Address"));
-            Assert.IsTrue(changedProperties.Contains("Address2"));
-            Assert.IsTrue(changedProperties.Contains("ComplAddress"));
-            Assert.IsTrue(changedProperties.Contains("ComplAddress2"));
+            Assert.That(changedProperties.Contains("Address"), Is.True);
+            Assert.That(changedProperties.Contains("Address2"), Is.True);
+            Assert.That(changedProperties.Contains("ComplAddress"), Is.True);
+            Assert.That(changedProperties.Contains("ComplAddress2"), Is.True);
         }
     }
 }

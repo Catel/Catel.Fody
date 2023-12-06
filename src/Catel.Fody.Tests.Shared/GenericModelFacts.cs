@@ -6,7 +6,6 @@
     [TestFixture]
     public class GenericModelFacts
     {
-        #region Methods
         [TestCase]
         public void ImportedGenericTypeFromExternalAssemblyWorks()
         {
@@ -15,6 +14,5 @@
 
             Assert.IsNull(obj.GenericProperty);
         }
-        #endregion
     }
 }

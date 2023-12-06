@@ -6,7 +6,6 @@
     [TestFixture]
     public class Inheritance
     {
-        #region Methods
         [TestCase]
         public void InheritanceWorks()
         {
@@ -19,6 +18,5 @@
             Assert.AreEqual("base prop", obj.PropertyOnBase);
             Assert.AreEqual("inherited prop", obj.PropertyOnInherited);
         }
-        #endregion
     }
 }

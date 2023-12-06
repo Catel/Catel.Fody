@@ -16,7 +16,7 @@
 
             var idProperty = type.GetProperty("ID");
 
-            Assert.AreEqual(typeof(int), idProperty.PropertyType);
+            Assert.That(idProperty.PropertyType, Is.EqualTo(typeof(int)));
         }
     }
 }

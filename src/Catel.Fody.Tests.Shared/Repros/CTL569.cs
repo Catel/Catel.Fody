@@ -15,7 +15,7 @@
 
             var vm = (INotifyPropertyChanged)Activator.CreateInstance(type);
 
-            Assert.IsFalse(PropertyHelper.GetPropertyValue<bool>(vm, "SearchIsEnabled"));
+            Assert.That(PropertyHelper.GetPropertyValue<bool>(vm, "SearchIsEnabled"), Is.False);
 
             var hasChanged = false;
             vm.PropertyChanged += (sender, e) =>
@@ -28,7 +28,7 @@
 
             PropertyHelper.SetPropertyValue(vm, "SearchTerms", "testvalue");
 
-            Assert.IsFalse(hasChanged);
+            Assert.That(hasChanged, Is.False);
         }
     }
 }
