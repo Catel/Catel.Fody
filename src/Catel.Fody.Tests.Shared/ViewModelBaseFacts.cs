@@ -6,7 +6,6 @@
     [TestFixture]
     public class ViewModelBaseFacts
     {
-        #region Methods
         [TestCase]
         public void StringsCanBeUsedAfterWeaving()
         {
@@ -32,6 +31,5 @@
         {
             // tODO: test Title property
         }
-        #endregion
     }
 }

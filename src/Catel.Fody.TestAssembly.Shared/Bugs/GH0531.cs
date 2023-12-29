@@ -1,4 +1,6 @@
-﻿namespace Catel.Fody.TestAssembly.Bugs.GH0531
+﻿#if !CATEL_5
+
+namespace Catel.Fody.TestAssembly.Bugs.GH0531
 {
     using Catel.Data;
     using Catel.MVVM;
@@ -34,3 +36,5 @@
         public object MyProperty { get; set; }
     }
 }
+
+#endif

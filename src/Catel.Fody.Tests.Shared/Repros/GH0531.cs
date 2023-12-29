@@ -1,8 +1,8 @@
-﻿namespace Catel.Fody.Tests.Repros
+﻿#if !CATEL_5
+
+namespace Catel.Fody.Tests.Repros
 {
     using System;
-    using System.ComponentModel;
-    using Catel.MVVM;
     using Catel.Reflection;
     using NUnit.Framework;
 
@@ -26,3 +26,5 @@
         }
     }
 }
+
+#endif
