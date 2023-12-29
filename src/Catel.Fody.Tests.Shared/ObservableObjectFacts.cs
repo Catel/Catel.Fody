@@ -15,7 +15,7 @@
 
             oo.ExistingProperty = "hi there";
 
-            Assert.AreEqual("hi there", oo.ExistingProperty);
+            Assert.That(oo.ExistingProperty, Is.EqualTo("hi there"));
         }
 
         [TestCase]
