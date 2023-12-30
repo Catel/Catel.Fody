@@ -1,5 +1,7 @@
 ﻿namespace Catel.Fody.TestAssembly.Bugs.GH0511
 {
+    using System;
+    using System.Diagnostics;
     using Catel.Data;
     using Catel.MVVM;
 
@@ -23,9 +25,22 @@
 
         private void OnSelectedThemeNameChanged()
         {
+            var propertyDataManager = PropertyDataManager.Default;
+            var typeInfo = propertyDataManager.GetCatelTypeInfo(GetType());
+
+            foreach (var property in typeInfo.GetCatelProperties())
+            {
+                Debug.WriteLine($"* {property.Key}");
+            }
+
             if (AppSettings.SelectedThemeName != ExpectedValue)
             {
-                throw new System.Exception($"Unexpected value '{AppSettings.SelectedThemeName}'");
+                throw new System.Exception($"Unexpected value '{AppSettings.SelectedThemeName}' on MODEL");
+            }
+
+            if (GetValue<string>("SelectedThemeName") != ExpectedValue)
+            {
+                throw new System.Exception($"Unexpected value '{AppSettings.SelectedThemeName}' on VIEW MODEL");
             }
         }
     }
