@@ -22,7 +22,7 @@ public class AssemblyWeaver
 
 #if CATEL_5
         catelVersion = "5";
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         catelVersion = "6";
 #endif
 

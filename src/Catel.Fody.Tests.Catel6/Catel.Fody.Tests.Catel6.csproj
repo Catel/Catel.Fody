@@ -10,7 +10,7 @@
     <PackageTags></PackageTags>
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
-    <DefineConstants>$(DefineConstants);CATEL_6</DefineConstants>
+    <DefineConstants>$(DefineConstants);CATEL_6;CATEL_6_OR_GREATER</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

@@ -17,7 +17,7 @@
 
 #if CATEL_5
         public static readonly PropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string));
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData MiddleNameProperty = RegisterProperty<string>("MiddleName");
 #endif
 

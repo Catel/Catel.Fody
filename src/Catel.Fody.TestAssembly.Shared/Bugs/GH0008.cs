@@ -106,7 +106,7 @@
 
 #if CATEL_5
         public static readonly PropertyData IsExpandedAllOnStartupProperty = RegisterProperty("IsExpandedAllOnStartup", typeof(bool), false);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData IsExpandedAllOnStartupProperty = RegisterProperty<bool>("IsExpandedAllOnStartup", false);
 #endif
 
@@ -118,7 +118,7 @@
 
 #if CATEL_5
         public static readonly PropertyData ValidationContextProperty = RegisterProperty("ValidationContext", typeof(IValidationContext), null);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData ValidationContextProperty = RegisterProperty<IValidationContext>("ValidationContext");
 #endif
 
@@ -130,7 +130,7 @@
 
 #if CATEL_5
         public static readonly PropertyData ShowErrorsProperty = RegisterProperty("ShowErrors", typeof(bool), true);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData ShowErrorsProperty = RegisterProperty<bool>("ShowErrors", true);
 #endif
 
@@ -142,7 +142,7 @@
 
 #if CATEL_5
         public static readonly PropertyData ShowWarningsProperty = RegisterProperty("ShowWarnings", typeof(bool), true);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData ShowWarningsProperty = RegisterProperty<bool>("ShowWarnings", true);
 #endif
 
@@ -154,7 +154,7 @@
 
 #if CATEL_5
         public static readonly PropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof(bool), false);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData IsExpandedProperty = RegisterProperty<bool>("IsExpanded", false);
 #endif
 

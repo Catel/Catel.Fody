@@ -12,7 +12,7 @@
 
 #if CATEL_5
         public static readonly PropertyData IsoCodeProperty = RegisterProperty<CTL504_Model, string>(o => o.IsoCode);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData IsoCodeProperty = RegisterProperty<CTL504_Model, string>(o => o.IsoCode);
 #endif
 
@@ -24,7 +24,7 @@
 
 #if CATEL_5
         public static readonly PropertyData DescriptionProperty = RegisterProperty<CTL504_Model, string>(o => o.Description);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData DescriptionProperty = RegisterProperty<CTL504_Model, string>(o => o.Description);
 #endif
     }

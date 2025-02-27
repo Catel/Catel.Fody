@@ -51,7 +51,7 @@
 
 #if CATEL_5
         public static readonly PropertyData BoolValueCatelProperty = RegisterProperty("BoolValueCatel", typeof(bool), true);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData BoolValueCatelProperty = RegisterProperty<bool>("BoolValueCatel", true);
 #endif
 
@@ -66,7 +66,7 @@
 
 #if CATEL_5
         public static readonly PropertyData NullableBoolDefaultNullValueCatelProperty = RegisterProperty("NullableBoolDefaultNullValueCatel", typeof(bool?), null);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData NullableBoolDefaultNullValueCatelProperty = RegisterProperty<bool?>("NullableBoolDefaultNullValueCatel", (bool?)null);
 #endif
 
@@ -81,7 +81,7 @@
 
 #if CATEL_5
         public static readonly PropertyData NullableBoolDefaultTrueValueCatelProperty = RegisterProperty("NullableBoolDefaultTrueValueCatel", typeof(bool?), true);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData NullableBoolDefaultTrueValueCatelProperty = RegisterProperty<bool?>("NullableBoolDefaultTrueValueCatel", true);
 #endif
 
@@ -96,7 +96,7 @@
 
 #if CATEL_5
         public static readonly PropertyData NullableBoolDefaultFalseValueCatelProperty = RegisterProperty("NullableBoolDefaultFalseValueCatel", typeof(bool?), false);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData NullableBoolDefaultFalseValueCatelProperty = RegisterProperty<bool?>("NullableBoolDefaultFalseValueCatel", false);
 #endif
 
@@ -108,7 +108,7 @@
 
 #if CATEL_5
         public static readonly PropertyData NullableIntDefaultNullValueCatelProperty = RegisterProperty(nameof(NullableIntDefaultNullValueCatel), typeof(int?), null);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData NullableIntDefaultNullValueCatelProperty = RegisterProperty<int?>(nameof(NullableIntDefaultNullValueCatel));
 #endif
 
@@ -120,7 +120,7 @@
 
 #if CATEL_5
         public static readonly PropertyData NullableIntDefault0ValueCatelProperty = RegisterProperty(nameof(NullableIntDefault0ValueCatel), typeof(int?), 0);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData NullableIntDefault0ValueCatelProperty = RegisterProperty<int?>(nameof(NullableIntDefault0ValueCatel), 0);
 #endif
 
@@ -132,7 +132,7 @@
 
 #if CATEL_5
         public static readonly PropertyData NullableIntDefault1ValueCatelProperty = RegisterProperty(nameof(NullableIntDefault1ValueCatel), typeof(int?), 1);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData NullableIntDefault1ValueCatelProperty = RegisterProperty<int?>(nameof(NullableIntDefault1ValueCatel), 1);
 #endif
 
@@ -150,7 +150,7 @@
 
 #if CATEL_5
         public static readonly PropertyData IntValueCatelProperty = RegisterProperty("IntValueCatel", typeof(int), 42);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData IntValueCatelProperty = RegisterProperty<int>("IntValueCatel", 42);
 #endif
 
@@ -168,7 +168,7 @@
 
 #if CATEL_5
         public static readonly PropertyData LongValueCatelProperty = RegisterProperty("LongValueCatel", typeof(long), 42L);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData LongValueCatelProperty = RegisterProperty<long>("LongValueCatel", 42L);
 #endif
 
@@ -186,7 +186,7 @@
 
 #if CATEL_5
         public static readonly PropertyData DoubleValueCatelProperty = RegisterProperty("DoubleValueCatel", typeof(double));
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData DoubleValueCatelProperty = RegisterProperty<double>("DoubleValueCatel", default(double));
 #endif
 
@@ -204,7 +204,7 @@
 
 #if CATEL_5
         public static readonly PropertyData FloatValueCatelProperty = RegisterProperty("FloatValueCatel", typeof(float), 42f);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData FloatValueCatelProperty = RegisterProperty<float>("FloatValueCatel", 42f);
 #endif
 
@@ -222,7 +222,7 @@
 
 #if CATEL_5
         public static readonly PropertyData EnumValueCatelProperty = RegisterProperty("EnumValueCatel", typeof(ExampleEnum), ExampleEnum.B);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData EnumValueCatelProperty = RegisterProperty<ExampleEnum>("EnumValueCatel", ExampleEnum.B);
 #endif
     }

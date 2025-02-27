@@ -15,7 +15,7 @@
 #if CATEL_5
         public static readonly PropertyData CatelOperationsProperty = RegisterProperty("CatelOperations", typeof(ObservableCollection<TComponent>), null,
             (sender, e) => ((GenericModelBaseTestBase<TComponent>)sender).OnCatelOperationsChanged());
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData CatelOperationsProperty = RegisterProperty<ObservableCollection<TComponent>>("CatelOperations", () => null,
             (sender, e) => ((GenericModelBaseTestBase<TComponent>)sender).OnCatelOperationsChanged());
 #endif
@@ -76,7 +76,7 @@
 
 #if CATEL_5
         public static readonly PropertyData FullNameProperty = RegisterProperty("FullName", typeof(string), string.Empty);
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData FullNameProperty = RegisterProperty<string>("FullName", string.Empty);
 #endif
 
