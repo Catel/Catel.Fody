@@ -13,7 +13,7 @@
 
             var model = Activator.CreateInstance(type, new[] {"test"});
 
-            Assert.IsNotNull(model);
+            Assert.That(model, Is.Not.Null);
         }
 
         [TestCase]
@@ -23,7 +23,7 @@
 
             var model = Activator.CreateInstance(type, new[] { new object() });
 
-            Assert.IsNotNull(model);
+            Assert.That(model, Is.Not.Null);
         }
     }
 }

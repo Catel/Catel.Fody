@@ -12,7 +12,7 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericModel");
             var obj = (dynamic)Activator.CreateInstance(type);
 
-            Assert.IsNull(obj.GenericProperty);
+            Assert.That(obj.GenericProperty, Is.Null);
         }
     }
 }

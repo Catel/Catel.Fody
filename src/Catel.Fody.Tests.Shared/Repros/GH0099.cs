@@ -12,7 +12,7 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0099.TestViewModel");
             var instance = Activator.CreateInstance(type) as dynamic;
 
-            Assert.IsNotNull(instance);
+            Assert.That(instance, Is.Not.Null);
 
             var idProperty = type.GetProperty("ID");
 

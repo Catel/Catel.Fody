@@ -22,8 +22,12 @@ public class AssemblyWeaver
 
 #if CATEL_5
         catelVersion = "5";
-#elif CATEL_6_OR_GREATER
+#elif CATEL_6
         catelVersion = "6";
+#elif CATEL_7
+        catelVersion = "7";
+#else
+        throw new System.Exception("Unknown Catel version");
 #endif
 
 #if CATEL_5

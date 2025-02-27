@@ -32,7 +32,7 @@
                 Assert.That((bool)isPropertyChangedWorkingPropertyInfo.GetValue(instance), Is.True);
             }
 
-            Assert.Contains(expectedPropertyName, changedProperties);
+            Assert.That(changedProperties.Contains(expectedPropertyName), Is.True);
         }
 
         [TestCase("John", "Doe")]
@@ -55,12 +55,12 @@
             instance.FirstName = firstName;
 
             Assert.That(changeCount, Is.EqualTo(1));
-            Assert.AreEqual(firstName + " ", instance.FullName);
+            Assert.That(firstName + " ", Is.EqualTo(instance.FullName));
 
             instance.Surnames = lastName;
 
             Assert.That(changeCount, Is.EqualTo(2));
-            Assert.AreEqual(firstName + " " + lastName, instance.FullName);
+            Assert.That(firstName + " " + lastName, Is.EqualTo(instance.FullName));
         }
         #endregion
     }

@@ -15,9 +15,9 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelWithDoubleValues");
             var obj = (dynamic)Activator.CreateInstance(type);
 
-            Assert.AreEqual(0.0d, obj.Top);
-            Assert.AreEqual(0.0d, obj.Left);
-            Assert.AreEqual(0.0d, obj.Width);
+            Assert.That(0.0d, Is.EqualTo(obj.Top));
+            Assert.That(0.0d, Is.EqualTo(obj.Left));
+            Assert.That(0.0d, Is.EqualTo(obj.Width));
         }
     }
 }

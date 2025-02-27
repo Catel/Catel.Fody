@@ -14,7 +14,7 @@
 
             vm.Name = "hi there";
 
-            Assert.AreEqual("hi there", vm.Name);
+            Assert.That("hi there", Is.EqualTo(vm.Name));
         }
 
         [TestCase]

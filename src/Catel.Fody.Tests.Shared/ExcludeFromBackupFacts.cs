@@ -26,9 +26,9 @@
 
             editableObject.CancelEdit();
 
-            Assert.AreEqual("A", testModel.A);
-            Assert.AreEqual("2", testModel.B);
-            Assert.AreEqual("3", testModel.C);
+            Assert.That("A", Is.EqualTo(testModel.A));
+            Assert.That("2", Is.EqualTo(testModel.B));
+            Assert.That("3", Is.EqualTo(testModel.C));
         }
     }
 }

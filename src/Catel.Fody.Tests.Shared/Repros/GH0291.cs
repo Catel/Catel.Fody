@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using Catel.Data;
-    using Catel.Fody.TestAssembly.Bugs.GH0291;
     using NUnit.Framework;
 
     [TestFixture]
@@ -15,7 +14,7 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0291.Person");
             var instance = Activator.CreateInstance(type) as dynamic;
 
-            Assert.IsNotNull(instance);
+            Assert.That(instance, Is.Not.Null);
 
             var changedProperties = new List<string>();
 

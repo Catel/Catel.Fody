@@ -14,7 +14,7 @@
 
             var model = (INotifyPropertyChanged) Activator.CreateInstance(type, new [] { "test" });
 
-            Assert.IsNotNull(model);
+            Assert.That(model, Is.Not.Null);
         }
     }
 }

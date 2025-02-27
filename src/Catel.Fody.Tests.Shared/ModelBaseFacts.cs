@@ -15,7 +15,7 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
             obj.Name = "hi there";
-            Assert.AreEqual("hi there", obj.Name);
+            Assert.That("hi there", Is.EqualTo(obj.Name));
         }
 
         [TestCase]
@@ -24,9 +24,9 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
 
-            Assert.IsFalse(obj.BoolValue);
+            Assert.That(obj.BoolValue, Is.False);
             obj.BoolValue = true;
-            Assert.IsTrue(obj.BoolValue);
+            Assert.That(obj.BoolValue, Is.True);
         }
 
         [TestCase]
@@ -35,9 +35,9 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
 
-            Assert.AreEqual(0, obj.IntValue);
+            Assert.That(0, Is.EqualTo(obj.IntValue));
             obj.IntValue = 42;
-            Assert.AreEqual(42, obj.IntValue);
+            Assert.That(42, Is.EqualTo(obj.IntValue));
         }
 
         [TestCase]
@@ -46,9 +46,9 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var obj = (dynamic) Activator.CreateInstance(type);
 
-            Assert.AreEqual(Guid.Empty, obj.GuidValue);
+            Assert.That(Guid.Empty, Is.EqualTo(obj.GuidValue));
             obj.GuidValue = Guid.NewGuid();
-            Assert.AreNotEqual(Guid.Empty, obj.GuidValue);
+            Assert.That(Guid.Empty, Is.Not.EqualTo(obj.GuidValue));
         }
 
         [TestCase]
@@ -59,8 +59,8 @@
 
             obj.CollectionProperty.Add(1);
 
-            Assert.AreEqual(1, obj.CollectionProperty.Count);
-            Assert.AreEqual(1, obj.CollectionProperty[0]);
+            Assert.That(1, Is.EqualTo(obj.CollectionProperty.Count));
+            Assert.That(1, Is.EqualTo(obj.CollectionProperty[0]));
         }
 
         [TestCase]
@@ -71,7 +71,7 @@
 
             obj.FullName = "hi there";
 
-            Assert.AreEqual("hi there", obj.FullName);
+            Assert.That("hi there", Is.EqualTo(obj.FullName));
         }
 
         [TestCase]
@@ -86,17 +86,17 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var modelBase = (dynamic) Activator.CreateInstance(type);
 
-            Assert.IsFalse(modelBase.OnFullNameWithChangeCallbackChangedCalled);
+            Assert.That(modelBase.OnFullNameWithChangeCallbackChangedCalled, Is.False);
             modelBase.FullNameWithChangeCallback = "change";
-            Assert.IsTrue(modelBase.OnFullNameWithChangeCallbackChangedCalled);
+            Assert.That(modelBase.OnFullNameWithChangeCallbackChangedCalled, Is.True);
 
-            Assert.IsFalse(modelBase.OnAnotherPropertyWithChangeCallbackChangedCalled);
+            Assert.That(modelBase.OnAnotherPropertyWithChangeCallbackChangedCalled, Is.False);
             modelBase.AnotherPropertyWithChangeCallback = "change";
-            Assert.IsTrue(modelBase.OnAnotherPropertyWithChangeCallbackChangedCalled);
+            Assert.That(modelBase.OnAnotherPropertyWithChangeCallbackChangedCalled, Is.True);
 
-            Assert.IsFalse(modelBase.OnLastNameChangedCalled);
+            Assert.That(modelBase.OnLastNameChangedCalled, Is.False);
             modelBase.LastName = "change";
-            Assert.IsTrue(modelBase.OnLastNameChangedCalled);
+            Assert.That(modelBase.OnLastNameChangedCalled, Is.True);
         }
 
         [TestCase]
@@ -105,9 +105,9 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
             var modelBase = (dynamic)Activator.CreateInstance(type);
 
-            Assert.IsFalse(modelBase.OnLastNameChangedCalled);
+            Assert.That(modelBase.OnLastNameChangedCalled, Is.False);
             modelBase.LastName = "change";
-            Assert.IsTrue(modelBase.OnLastNameChangedCalled);
+            Assert.That(modelBase.OnLastNameChangedCalled, Is.True);
         }
 
         [TestCase]
@@ -120,7 +120,7 @@
 
             model.Operations = new ObservableCollection<int>();
 
-            Assert.IsTrue(model.HasChangedNotificationBeenCalled);
+            Assert.That(model.HasChangedNotificationBeenCalled, Is.True);
         }
 
         [TestCase]

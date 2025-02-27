@@ -15,8 +15,8 @@
             obj.PropertyOnBase = "base prop";
             obj.PropertyOnInherited = "inherited prop";
 
-            Assert.AreEqual("base prop", obj.PropertyOnBase);
-            Assert.AreEqual("inherited prop", obj.PropertyOnInherited);
+            Assert.That("base prop", Is.EqualTo(obj.PropertyOnBase));
+            Assert.That("inherited prop", Is.EqualTo(obj.PropertyOnInherited));
         }
     }
 }
