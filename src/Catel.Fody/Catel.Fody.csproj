@@ -7,6 +7,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <DisableFody>true</DisableFody>
     <Configurations>Debug;Release;Test</Configurations>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
   
   <PropertyGroup>
