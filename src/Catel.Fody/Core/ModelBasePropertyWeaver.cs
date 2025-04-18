@@ -153,6 +153,9 @@
                 case CatelVersion.v6:
                     AddChangeNotificationHandlerField_Catel6(property, propertyData);
                     break;
+
+                default:
+                    throw new NotSupportedException($"Catel version '{_catelType.Version}' is not supported");
             }
         }
 
@@ -328,6 +331,9 @@
                 case CatelVersion.v6:
                     instructionsToInsert.AddRange(CreatePropertyRegistration_Catel6(property, propertyData));
                     break;
+
+                default:
+                    throw new NotSupportedException($"Catel version '{_catelType.Version}' is not supported");
             }
 
             var registerPropertyInvoker = (propertyData.DefaultValue is null) ? _catelType.RegisterPropertyWithoutDefaultValueInvoker : _catelType.RegisterPropertyWithDefaultValueInvoker;

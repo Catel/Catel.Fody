@@ -134,10 +134,13 @@
                     PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "PropertyData"));
                     break;
 
-                default:
                 case CatelVersion.v6:
+                case CatelVersion.v7:
                     PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "IPropertyData"));
                     break;
+
+                default:
+                    throw new NotSupportedException($"Catel version '{Version}' is not supported");
             }
 
             var advancedPropertyChangedEventArgsType = TypeDefinition.Module.FindType("Catel.Core", "AdvancedPropertyChangedEventArgs");
@@ -164,9 +167,12 @@
                 case CatelVersion.v5:
                     return AdvancedPropertyChangedEventArgsType;
 
-                default:
                 case CatelVersion.v6:
+                case CatelVersion.v7:
                     return PropertyChangedEventArgsType;
+
+                default:
+                    throw new NotSupportedException($"Catel version '{Version}' is not supported");
             }
         }
 
@@ -234,9 +240,12 @@
                     break;
 
                 case CatelVersion.v6:
-                default:
+                case CatelVersion.v7:
                     parameterNames = new[] { "property", "value", "notifyOnChange" };
                     break;
+
+                default:
+                    throw new NotSupportedException($"Catel version '{Version}' is not supported");
             }
 
             SetValueInvoker = module.ImportReference(RecursiveFindMethod(TypeDefinition, "SetValue", parameterNames, false));
@@ -328,7 +337,7 @@
                             break;
 
                         case CatelVersion.v6:
-                        default:
+                        case CatelVersion.v7:
                             methods = (from method in currentTypeDefinition.Methods
                                        where method.Name == "RegisterProperty" &&
                                              method.IsPublic &&
@@ -339,6 +348,9 @@
                                              !method.Parameters[1].ParameterType.FullName.Contains("System.Func")
                                        select method).ToList();
                             break;
+
+                        default:
+                            throw new NotSupportedException($"Catel version '{Version}' is not supported");
                     }
                 }
                 else
@@ -359,7 +371,7 @@
                             break;
 
                         case CatelVersion.v6:
-                        default:
+                        case CatelVersion.v7:
                             methods = (from method in currentTypeDefinition.Methods
                                        where method.Name == "RegisterProperty" &&
                                              method.IsPublic &&
@@ -369,6 +381,9 @@
                                              method.Parameters[1].ParameterType.FullName.Contains("System.Func`1")
                                        select method).ToList();
                             break;
+
+                        default:
+                            throw new NotSupportedException($"Catel version '{Version}' is not supported");
                     }
                 }
 
