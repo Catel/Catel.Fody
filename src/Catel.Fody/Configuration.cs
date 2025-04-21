@@ -12,6 +12,7 @@
             WeaveArguments = true;
             WeaveLogging = true;
             GenerateXmlSchemas = false;
+            DisableWarningsForAutoPropertyInitializers = false;
             GeneratedPropertyDataAccessibility = Accessibility.Public;
 
             if (config is null)
@@ -25,6 +26,8 @@
             config.ReadBool(nameof(WeaveArguments), value => WeaveArguments = value);
             config.ReadBool(nameof(WeaveLogging), value => WeaveLogging = value);
             config.ReadBool(nameof(GenerateXmlSchemas), value => GenerateXmlSchemas = value);
+            config.ReadBool(nameof(DisableWarningsForAutoPropertyInitializers), value => DisableWarningsForAutoPropertyInitializers = value);
+
             config.ReadEnum<Accessibility>(nameof(GeneratedPropertyDataAccessibility), value => GeneratedPropertyDataAccessibility = value);
         }
 
@@ -41,6 +44,8 @@
         public bool WeaveLogging { get; private set; }
 
         public bool GenerateXmlSchemas { get; private set; }
+
+        public bool DisableWarningsForAutoPropertyInitializers { get; private set; }
 
         public Accessibility GeneratedPropertyDataAccessibility { get; private set; }
     }

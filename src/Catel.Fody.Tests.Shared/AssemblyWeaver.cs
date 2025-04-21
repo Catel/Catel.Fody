@@ -124,6 +124,9 @@ public class AssemblyWeaver
             };
 
             weavingTask.Execute();
+
+            Errors = weavingTask.Errors;
+
             moduleDefinition.Write(AfterAssemblyPath);
         }
 
@@ -149,9 +152,4 @@ public class AssemblyWeaver
 #if CATEL_5
     public static AssemblyWeaver Instance_NetStandard { get; private set; }
 #endif
-
-    private void LogError(string error)
-    {
-        Errors.Add(error);
-    }
 }

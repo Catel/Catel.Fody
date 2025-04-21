@@ -61,6 +61,8 @@
 
             try
             {
+                ValidateCSharpAutoPropertyInitializers(property, _propertyData);
+
                 EnsureStaticConstructor(property.DeclaringType);
 
                 AddChangeNotificationHandlerField(property, _propertyData);
@@ -133,6 +135,59 @@
 
                 FodyEnvironment.WriteDebug($"\t\t\t{type.Name} - added static constructor");
             }
+        }
+
+        private void ValidateCSharpAutoPropertyInitializers(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            if (_configuration.DisableWarningsForAutoPropertyInitializers)
+            {
+                return;
+            }
+
+            if (propertyData.ChangeCallbackReference is null)
+            {
+                // potentially not an issue, only when users check in OnPropertyChanged, but that
+                // is beyond the scope for now? If people report bugs, we can always remove
+                // this check
+            }
+
+            var backingFieldName = GetBackingFieldName(property);
+
+            var ctorInstructions = property.DeclaringType.Constructor(false).Body.Instructions;
+
+            foreach (var instruction in ctorInstructions)
+            {
+                // Check for fields
+                if (instruction.OpCode == OpCodes.Stfld)
+                {
+                    if (instruction.Operand is FieldReference fieldReference)
+                    {
+                        if (fieldReference.Name == backingFieldName && 
+                            fieldReference.DeclaringType.FullName == property.DeclaringType.FullName)
+                        {
+                            // Not safe
+                            _moduleWeaver.WriteError($"Do not use C# 6 auto property initializers for '{property.Name}' since it has a change callback. This might result in unexpected code execution",
+                                property.GetMethod);
+                            return;
+                        }
+                    }
+                }
+
+                // If this is a call to the base ctor, this is good enough
+                if (instruction.OpCode == OpCodes.Call)
+                {
+                    if (instruction.Operand is MethodReference methodReference)
+                    {
+                        if (methodReference.Name == ".ctor" && 
+                            methodReference.DeclaringType.FullName == property.DeclaringType.BaseType.FullName)
+                        {
+                            // Safe
+                            return;
+                        }
+                    }
+                }
+            }
+
         }
 
         private void AddChangeNotificationHandlerField(PropertyDefinition property, CatelTypeProperty propertyData)

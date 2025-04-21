@@ -8,6 +8,7 @@
     using Services;
 
     using Mono.Cecil;
+    using Mono.Cecil.Cil;
 
     public class ModuleWeaver : BaseModuleWeaver
     {
@@ -16,6 +17,8 @@
         }
 
         public override bool ShouldCleanReference => true;
+
+        public List<string> Errors { get; } = new List<string>();
 
         public override IEnumerable<string> GetAssembliesForScanning()
         {
@@ -218,6 +221,27 @@
             {
                 WriteInfo("Catel.MVVM is not referenced, skipping Catel.MVVM specific functionality");
             }
+        }
+
+        public override void WriteError(string message)
+        {
+            Errors.Add(message);
+
+            base.WriteError(message);
+        }
+
+        public override void WriteError(string message, MethodDefinition method)
+        {
+            Errors.Add(message);
+
+            base.WriteError(message, method);
+        }
+
+        public override void WriteError(string message, SequencePoint? sequencePoint)
+        {
+            Errors.Add(message);
+
+            base.WriteError(message, sequencePoint);
         }
     }
 }
