@@ -288,7 +288,7 @@
                         }
                     }
 
-                    Properties.Add(new CatelTypeProperty(TypeDefinition, typeProperty)
+                    Properties.Add(new CatelTypeProperty(this, TypeDefinition, typeProperty)
                     {
                         IsInitOnlyProperty = isInitOnlyProperty
                     });

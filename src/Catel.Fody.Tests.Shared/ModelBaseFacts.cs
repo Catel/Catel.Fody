@@ -13,7 +13,7 @@
         public void StringsCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
-            var obj = (dynamic) Activator.CreateInstance(type);
+            var obj = (dynamic)Activator.CreateInstance(type);
             obj.Name = "hi there";
             Assert.That("hi there", Is.EqualTo(obj.Name));
         }
@@ -22,7 +22,7 @@
         public void BooleansCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
-            var obj = (dynamic) Activator.CreateInstance(type);
+            var obj = (dynamic)Activator.CreateInstance(type);
 
             Assert.That(obj.BoolValue, Is.False);
             obj.BoolValue = true;
@@ -33,7 +33,7 @@
         public void IntegersCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
-            var obj = (dynamic) Activator.CreateInstance(type);
+            var obj = (dynamic)Activator.CreateInstance(type);
 
             Assert.That(0, Is.EqualTo(obj.IntValue));
             obj.IntValue = 42;
@@ -44,7 +44,7 @@
         public void GuidsCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
-            var obj = (dynamic) Activator.CreateInstance(type);
+            var obj = (dynamic)Activator.CreateInstance(type);
 
             Assert.That(Guid.Empty, Is.EqualTo(obj.GuidValue));
             obj.GuidValue = Guid.NewGuid();
@@ -55,7 +55,7 @@
         public void CollectionsCanBeUsedAfterWeaving()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
-            var obj = (dynamic) Activator.CreateInstance(type);
+            var obj = (dynamic)Activator.CreateInstance(type);
 
             obj.CollectionProperty.Add(1);
 
@@ -67,7 +67,7 @@
         public void DoesNotWeaveExistingProperties()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
-            var obj = (dynamic) Activator.CreateInstance(type);
+            var obj = (dynamic)Activator.CreateInstance(type);
 
             obj.FullName = "hi there";
 
@@ -84,7 +84,7 @@
         public void HandlesChangeNotificationsMethodsCorrectly()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
-            var modelBase = (dynamic) Activator.CreateInstance(type);
+            var modelBase = (dynamic)Activator.CreateInstance(type);
 
             Assert.That(modelBase.OnFullNameWithChangeCallbackChangedCalled, Is.False);
             modelBase.FullNameWithChangeCallback = "change";
@@ -154,5 +154,20 @@
 
             Assert.That(PropertyHelper.GetPropertyValue<object>(model, propertyNameToCheck), Is.EqualTo(tempObject));
         }
+
+#if CATEL_6_OR_GREATER
+        [TestCase]
+        public void Sets_PropertyData_IsDecoratedWithValidationAttributes()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+
+            var propertyDataManager = PropertyDataManager.Default;
+            var catelTypeInfo = propertyDataManager.GetCatelTypeInfo(type);
+
+            var propertyData = catelTypeInfo.GetPropertyData("PropertyWithValidationAttribute");
+
+            Assert.That(propertyData.IsDecoratedWithValidationAttributes, Is.True);
+        }
+#endif
     }
 }

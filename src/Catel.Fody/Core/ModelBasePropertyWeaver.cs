@@ -455,6 +455,27 @@
                 Instruction.Create(OpCodes.Stsfld, fieldReference)
             });
 
+            // Inject validation attributes check
+            if (propertyData.IsDataValidationAttributesSupportedByPropertyData &&
+                propertyData.HasDataValidationAttributes)
+            {
+                //IL_0018: ldsfld class [Catel.Core]Catel.Data.IPropertyData Catel.Fody.TestAssembly.ModelBaseTest::FullNameProperty
+                //IL_001d: ldc.i4.1
+                //IL_001e: newobj instance void valuetype [System.Runtime]System.Nullable`1<bool>::.ctor(!0)
+                //IL_0023: callvirt instance void [Catel.Core]Catel.Data.IPropertyData::set_IsDecoratedWithValidationAttributes(valuetype [System.Runtime]System.Nullable`1<bool>)
+
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldsfld, fieldReference));
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+
+                var nullableType = _msCoreReferenceFinder.GetCoreTypeReference("System.Nullable`1");
+                var booleanType = _msCoreReferenceFinder.GetCoreTypeReference("System.Boolean");
+                var nullableBooleanType = nullableType.MakeGenericInstanceType(booleanType);
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Newobj, _moduleWeaver.ModuleDefinition.ImportReference(nullableBooleanType.Resolve().Constructor(false).MakeHostInstanceGeneric(booleanType))));
+
+                var propertyDefinition = _catelType.PropertyDataType.GetProperty("IsDecoratedWithValidationAttributes").Resolve();
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Callvirt, _moduleWeaver.ModuleDefinition.ImportReference(propertyDefinition.SetMethod)));
+            }
+
             instructions.Insert(index, instructionsToInsert);
 
             body.OptimizeMacros();

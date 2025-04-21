@@ -5,6 +5,7 @@
     public class ReferenceCleaner
     {
         private readonly ModuleWeaver _moduleWeaver;
+
         public ReferenceCleaner(ModuleWeaver moduleWeaver)
         {
             _moduleWeaver = moduleWeaver;

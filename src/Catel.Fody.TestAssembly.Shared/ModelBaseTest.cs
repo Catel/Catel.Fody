@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.ComponentModel.DataAnnotations;
     using Data;
 
     public class GenericModelBaseTestBase<TComponent> : ModelBase
@@ -45,6 +46,13 @@
     /// </summary>
     public class ModelBaseTest : ModelBase
     {
+//        static ModelBaseTest()
+//        {
+//#if CATEL_6_OR_GREATER
+//            FullNameProperty.IsDecoratedWithValidationAttributes = true;
+//#endif
+//        }
+
         /// <summary>
         /// Initializes a new object from scratch.
         /// </summary>
@@ -111,5 +119,8 @@
         {
             OnAnotherPropertyWithChangeCallbackChangedCalled = true;
         }
+
+        [Required]
+        public string PropertyWithValidationAttribute { get; set; }
     }
 }

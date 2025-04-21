@@ -8,8 +8,11 @@
     [DebuggerDisplay("{Name}")]
     public class CatelTypeProperty
     {
-        public CatelTypeProperty(TypeDefinition typeDefinition, PropertyDefinition propertyDefinition)
+        private readonly CatelType _catelType;
+
+        public CatelTypeProperty(CatelType catelType, TypeDefinition typeDefinition, PropertyDefinition propertyDefinition)
         {
+            _catelType = catelType;
             TypeDefinition = typeDefinition;
             PropertyDefinition = propertyDefinition;
             Name = propertyDefinition.Name;
@@ -18,6 +21,7 @@
             DetermineMethods();
             DetermineDefaultValue();
             DetermineIncludeInBackup();
+            DetermineDataValidationAttributes();
         }
 
         public string Name { get; private set; }
@@ -33,6 +37,9 @@
         public FieldDefinition BackingFieldDefinition { get; set; }
         public MethodReference ChangeCallbackReference { get; private set; }
 
+        public bool HasDataValidationAttributes { get; private set; }
+        public bool IsDataValidationAttributesSupportedByPropertyData { get; private set; }
+
         private void DetermineFields()
         {
             BackingFieldDefinition = TryGetField(TypeDefinition, PropertyDefinition);
@@ -45,8 +52,8 @@
             var declaringType = PropertyDefinition.DeclaringType;
 
             var callbackReferences = (from method in declaringType.Methods
-                                     where method.Name == methodName
-                                     select method).ToList();
+                                      where method.Name == methodName
+                                      select method).ToList();
 
             foreach (var callbackReference in callbackReferences)
             {
@@ -77,6 +84,12 @@
             {
                 DefaultValue = defaultValueAttribute.ConstructorArguments[0].Value;
             }
+        }
+
+        private void DetermineDataValidationAttributes()
+        {
+            IsDataValidationAttributesSupportedByPropertyData = _catelType.PropertyDataType.GetProperty("IsDecoratedWithValidationAttributes") is not null;
+            HasDataValidationAttributes = PropertyDefinition.CustomAttributes.Any(x => x.AttributeType.ImplementsBaseType("System.ComponentModel.DataAnnotations.ValidationAttribute"));
         }
 
         private void DetermineIncludeInBackup()
