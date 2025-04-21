@@ -162,7 +162,7 @@
                 {
                     if (instruction.Operand is FieldReference fieldReference)
                     {
-                        if (fieldReference.Name == backingFieldName && 
+                        if (fieldReference.Name == backingFieldName &&
                             fieldReference.DeclaringType.FullName == property.DeclaringType.FullName)
                         {
                             // Not safe
@@ -178,7 +178,7 @@
                 {
                     if (instruction.Operand is MethodReference methodReference)
                     {
-                        if (methodReference.Name == ".ctor" && 
+                        if (methodReference.Name == ".ctor" &&
                             methodReference.DeclaringType.FullName == property.DeclaringType.BaseType.FullName)
                         {
                             // Safe
@@ -456,8 +456,7 @@
             });
 
             // Inject validation attributes check
-            if (propertyData.IsDataValidationAttributesSupportedByPropertyData &&
-                propertyData.HasDataValidationAttributes)
+            if (propertyData.IsDataValidationAttributesSupportedByPropertyData)
             {
                 //IL_0018: ldsfld class [Catel.Core]Catel.Data.IPropertyData Catel.Fody.TestAssembly.ModelBaseTest::FullNameProperty
                 //IL_001d: ldc.i4.1
@@ -465,7 +464,15 @@
                 //IL_0023: callvirt instance void [Catel.Core]Catel.Data.IPropertyData::set_IsDecoratedWithValidationAttributes(valuetype [System.Runtime]System.Nullable`1<bool>)
 
                 instructionsToInsert.Add(Instruction.Create(OpCodes.Ldsfld, fieldReference));
-                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+
+                if (propertyData.HasDataValidationAttributes)
+                {
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+                }
+                else
+                {
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_0));
+                }
 
                 var nullableType = _msCoreReferenceFinder.GetCoreTypeReference("System.Nullable`1");
                 var booleanType = _msCoreReferenceFinder.GetCoreTypeReference("System.Boolean");
@@ -912,15 +919,15 @@
                             {
                                 // Replace
                                 // 
-	                            // IL_0014: ldarg.0
-	                            // IL_0015: ldarg.1
-	                            // IL_0016: stfld class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel::'<Model>k__BackingField' /* 04000097 */
+                                // IL_0014: ldarg.0
+                                // IL_0015: ldarg.1
+                                // IL_0016: stfld class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel::'<Model>k__BackingField' /* 04000097 */
                                 // 
                                 // with
                                 //
-	                            // IL_0014: ldarg.0
-	                            // IL_0015: ldarg.1
-	                            // IL_0016: call instance void Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel_Expected::set_Model(class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel) /* 06000205 */
+                                // IL_0014: ldarg.0
+                                // IL_0015: ldarg.1
+                                // IL_0016: call instance void Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel_Expected::set_Model(class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel) /* 06000205 */
 
                                 // Setter
                                 instruction.OpCode = OpCodes.Call;

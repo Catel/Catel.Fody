@@ -46,13 +46,6 @@
     /// </summary>
     public class ModelBaseTest : ModelBase
     {
-//        static ModelBaseTest()
-//        {
-//#if CATEL_6_OR_GREATER
-//            FullNameProperty.IsDecoratedWithValidationAttributes = true;
-//#endif
-//        }
-
         /// <summary>
         /// Initializes a new object from scratch.
         /// </summary>
@@ -120,7 +113,13 @@
             OnAnotherPropertyWithChangeCallbackChangedCalled = true;
         }
 
+    }
+
+    public class ModelBaseWithValidationTest : ModelBase
+    {
         [Required]
         public string PropertyWithValidationAttribute { get; set; }
+
+        public string PropertyWithoutValidationAttribute { get; set; }
     }
 }

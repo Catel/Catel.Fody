@@ -157,9 +157,9 @@
 
 #if CATEL_6_OR_GREATER
         [TestCase]
-        public void Sets_PropertyData_IsDecoratedWithValidationAttributes()
+        public void Sets_PropertyData_IsDecoratedWithValidationAttributes_True()
         {
-            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseTest");
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseWithValidationTest");
 
             var propertyDataManager = PropertyDataManager.Default;
             var catelTypeInfo = propertyDataManager.GetCatelTypeInfo(type);
@@ -167,6 +167,19 @@
             var propertyData = catelTypeInfo.GetPropertyData("PropertyWithValidationAttribute");
 
             Assert.That(propertyData.IsDecoratedWithValidationAttributes, Is.True);
+        }
+
+        [TestCase]
+        public void Sets_PropertyData_IsDecoratedWithValidationAttributes_False()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ModelBaseWithValidationTest");
+
+            var propertyDataManager = PropertyDataManager.Default;
+            var catelTypeInfo = propertyDataManager.GetCatelTypeInfo(type);
+
+            var propertyData = catelTypeInfo.GetPropertyData("PropertyWithoutValidationAttribute");
+
+            Assert.That(propertyData.IsDecoratedWithValidationAttributes, Is.False);
         }
 #endif
     }
