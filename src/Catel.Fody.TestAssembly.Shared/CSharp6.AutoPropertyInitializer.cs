@@ -21,7 +21,13 @@
 
         }
 
-        public bool ShowErrors { get; set; } = true;
+        public bool ShowErrorsWithoutChangeNotification { get; set; } = true;
+        public bool ShowErrorsWithChangeNotification { get; set; } = true;
+
+        private void OnShowErrorsWithChangeNotificationChanged()
+        {
+            // Do something
+        }
     }
 
     public class CSharp6_AutoPropertyInitializer_Generic<T> : ModelBase

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -22,7 +23,7 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializerWithMultipleConstructors");
             var obj = (dynamic)Activator.CreateInstance(type);
 
-            Assert.That(obj.ShowErrors, Is.True);
+            Assert.That(obj.ShowErrorsWithChangeNotification, Is.True);
         }
 
         [TestCase]
@@ -45,8 +46,9 @@
                     new KeyValuePair<string, string>("DisableWarningsForAutoPropertyInitializers", "true"))
                 );
 
-            Assert.That(weaver.Errors.Count, Is.Not.EqualTo(0));
-            Assert.That(weaver.Errors[0], Is.EqualTo("Do not use C# 6 auto property initializers for 'ShowErrors' since it has a change callback. This might result in unexpected code execution"));
+            // Note: there are 2 default values, but only 1 has a change callback
+            Assert.That(weaver.Errors.Where(x => x.Contains("Do not use C# 6")).Count, Is.EqualTo(1));
+            Assert.That(weaver.Errors[0], Is.EqualTo("Do not use C# 6 auto property initializers for 'ShowErrorsWithChangeNotification' since it has a change callback. This might result in unexpected code execution"));
         }
     }
 }

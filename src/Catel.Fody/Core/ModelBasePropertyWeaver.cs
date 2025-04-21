@@ -149,6 +149,7 @@
                 // potentially not an issue, only when users check in OnPropertyChanged, but that
                 // is beyond the scope for now? If people report bugs, we can always remove
                 // this check
+                return;
             }
 
             var backingFieldName = GetBackingFieldName(property);
