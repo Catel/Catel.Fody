@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
@@ -7,6 +7,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <DisableFody>true</DisableFody>
     <Configurations>Debug;Release;Test</Configurations>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -32,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="6.6.4" />
+    <PackageReference Include="FodyHelpers" Version="6.9.2" />
   </ItemGroup>
   
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />

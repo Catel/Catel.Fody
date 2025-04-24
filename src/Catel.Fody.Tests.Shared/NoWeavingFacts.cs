@@ -11,7 +11,7 @@
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.NoWeavingModelTest");
 
-            Assert.IsFalse(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"));
+            Assert.That(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"), Is.False);
         }
 
         [TestCase]
@@ -19,7 +19,7 @@
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.NoPropertyWeavingModelTest");
 
-            Assert.IsFalse(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"));
+            Assert.That(PropertyDataManager.Default.IsPropertyRegistered(type, "FirstName"), Is.False);
         }
     }
 }

@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using Catel.Data;
-    using Catel.Fody.TestAssembly.Bugs.GH0291;
     using NUnit.Framework;
 
     [TestFixture]
@@ -15,7 +14,7 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0291.Person");
             var instance = Activator.CreateInstance(type) as dynamic;
 
-            Assert.IsNotNull(instance);
+            Assert.That(instance, Is.Not.Null);
 
             var changedProperties = new List<string>();
 
@@ -29,10 +28,10 @@
             instance.Address = addressInstance; // virtual
             instance.Address2 = addressInstance; // non-virtual
 
-            Assert.IsTrue(changedProperties.Contains("Address"));
-            Assert.IsTrue(changedProperties.Contains("Address2"));
-            Assert.IsTrue(changedProperties.Contains("ComplAddress"));
-            Assert.IsTrue(changedProperties.Contains("ComplAddress2"));
+            Assert.That(changedProperties.Contains("Address"), Is.True);
+            Assert.That(changedProperties.Contains("Address2"), Is.True);
+            Assert.That(changedProperties.Contains("ComplAddress"), Is.True);
+            Assert.That(changedProperties.Contains("ComplAddress2"), Is.True);
         }
     }
 }

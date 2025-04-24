@@ -17,7 +17,7 @@
 
 #if CATEL_5
         protected override void OnPropertyChanged(Catel.Data.AdvancedPropertyChangedEventArgs e)
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
 #endif
         {

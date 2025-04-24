@@ -15,7 +15,7 @@
 
             var model = Activator.CreateInstance(type, new object[] { new ValidationContext(), new ProcessService() });
 
-            Assert.IsNotNull(model);
+            Assert.That(model, Is.Not.Null);
         }
 
         [TestCase]
@@ -25,7 +25,7 @@
 
             var model = Activator.CreateInstance(type, new object[] { new ProcessService() });
 
-            Assert.IsNotNull(model);
+            Assert.That(model, Is.Not.Null);
         }
     }
 }

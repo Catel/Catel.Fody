@@ -14,12 +14,12 @@ namespace Catel.Fody.Tests.Repros
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0295.ModelReferencingNetStandard");
             var instance = Activator.CreateInstance(type) as dynamic;
 
-            Assert.IsNotNull(instance);
+            Assert.That(instance, Is.Not.Null);
 
             var netStandardType = AssemblyWeaver.Instance_NetStandard.Assembly.GetType("Catel.Fody.TestAssembly.NetStandardModel");
             var netStandardInstance = Activator.CreateInstance(netStandardType) as dynamic;
 
-            Assert.IsNotNull(netStandardInstance);
+            Assert.That(netStandardInstance, Is.Not.Null);
         }
     }
 }

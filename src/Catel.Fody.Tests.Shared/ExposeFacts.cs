@@ -8,7 +8,6 @@
     [TestFixture]
     public class ExposeFacts
     {
-        #region Methods
         [TestCase]
         public void CreatesExposedProperties()
         {
@@ -18,14 +17,14 @@
             var model = Activator.CreateInstance(modelType);
             var viewModel = Activator.CreateInstance(viewModelType, new [] {model});
 
-            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "FirstName"));
-            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "MappedLastName"));
+            Assert.That(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "FirstName"), Is.True);
+            Assert.That(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "MappedLastName"), Is.True);
 
             // Default value of the FirstName property on the model is "Geert"
-            Assert.AreEqual("Geert",  PropertyHelper.GetPropertyValue<string>(viewModel, "FirstName"));
+            Assert.That(PropertyHelper.GetPropertyValue<string>(viewModel, "FirstName"), Is.EqualTo("Geert"));
 
             // Default value of the LastName property on the model is "Geert"
-            Assert.AreEqual("van Horrik", PropertyHelper.GetPropertyValue<string>(viewModel, "MappedLastName"));
+            Assert.That(PropertyHelper.GetPropertyValue<string>(viewModel, "MappedLastName"), Is.EqualTo("van Horrik"));
         }
 
         [TestCase]
@@ -37,10 +36,10 @@
             var model = Activator.CreateInstance(modelType);
             var viewModel = Activator.CreateInstance(viewModelType, new [] { model });
 
-            Assert.IsTrue(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "IsOk"));
+            Assert.That(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "IsOk"), Is.True);
 
             // Default value of the ExternalTypeProperty property on the model is "null"
-            Assert.AreEqual(null, PropertyHelper.GetPropertyValue<bool?>(viewModel, "IsOk"));
+            Assert.That(PropertyHelper.GetPropertyValue<bool?>(viewModel, "IsOk"), Is.EqualTo(null));
         }
 
         [TestCase]
@@ -53,9 +52,8 @@
             var setMethod = propertyInfo.GetSetMethod(true);
             if (setMethod is not null)
             {
-                Assert.IsFalse(setMethod.IsPublic);
+                Assert.That(setMethod.IsPublic, Is.False);
             }
         }
-        #endregion
     }
 }

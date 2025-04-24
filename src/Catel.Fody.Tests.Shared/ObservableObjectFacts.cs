@@ -15,7 +15,7 @@
 
             oo.ExistingProperty = "hi there";
 
-            Assert.AreEqual("hi there", oo.ExistingProperty);
+            Assert.That(oo.ExistingProperty, Is.EqualTo("hi there"));
         }
 
         [TestCase]
@@ -30,9 +30,9 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
             var oo = (dynamic)Activator.CreateInstance(type);
 
-            Assert.IsFalse(oo.OnFirstNameChangedCallbackCalled);
+            Assert.That(oo.OnFirstNameChangedCallbackCalled, Is.False);
             oo.FirstName = "change";
-            Assert.IsTrue(oo.OnFirstNameChangedCallbackCalled);
+            Assert.That(oo.OnFirstNameChangedCallbackCalled, Is.True);
         }
 
         [TestCase]
@@ -41,9 +41,9 @@
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
             var oo = (dynamic)Activator.CreateInstance(type);
 
-            Assert.IsFalse(oo.OnLastNameWithWrongCallbackChangedCallbackCalled);
+            Assert.That(oo.OnLastNameWithWrongCallbackChangedCallbackCalled, Is.False);
             oo.LastNameWithWrongCallback = "change";
-            Assert.IsFalse(oo.OnLastNameWithWrongCallbackChangedCallbackCalled);
+            Assert.That(oo.OnLastNameWithWrongCallbackChangedCallbackCalled, Is.False);
         }
 
         [TestCase]
@@ -61,7 +61,7 @@
 
             oo.ManuallyRaiseChangeNotificationForManualChangeNotificationProperty();
 
-            Assert.IsTrue(worked);
+            Assert.That(worked, Is.True);
         }
 
 
@@ -80,7 +80,7 @@
 
             oo.IsExpanded = true;
 
-            Assert.IsTrue(worked);
+            Assert.That(worked, Is.True);
         }
     }
 }

@@ -12,7 +12,7 @@
         {
             var xElement = XElement.Parse("<Node attr='false'/>");
 
-            xElement.ReadBool("attr", b => Assert.IsFalse(b));
+            xElement.ReadBool("attr", b => Assert.That(b, Is.False));
         }
 
         [TestCase]
@@ -20,7 +20,7 @@
         {
             var xElement = XElement.Parse("<Node attr='true'/>");
 
-            xElement.ReadBool("attr", b => Assert.IsTrue(b));
+            xElement.ReadBool("attr", b => Assert.That(b, Is.True));
         }
 
         [TestCase]
@@ -45,12 +45,12 @@
             var falseElement = XElement.Parse("<Node WeaveProperties='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
-            Assert.IsFalse(falseConfiguration.WeaveProperties);
+            Assert.That(falseConfiguration.WeaveProperties, Is.False);
 
             var trueElement = XElement.Parse("<Node WeaveProperties='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
-            Assert.IsTrue(trueConfiguration.WeaveProperties);
+            Assert.That(trueConfiguration.WeaveProperties, Is.True);
         }
 
         [TestCase]
@@ -59,12 +59,12 @@
             var falseElement = XElement.Parse("<Node WeaveExposedProperties='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
-            Assert.IsFalse(falseConfiguration.WeaveExposedProperties);
+            Assert.That(falseConfiguration.WeaveExposedProperties, Is.False);
 
             var trueElement = XElement.Parse("<Node WeaveExposedProperties='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
-            Assert.IsTrue(trueConfiguration.WeaveExposedProperties);
+            Assert.That(trueConfiguration.WeaveExposedProperties, Is.True);
         }
 
         [TestCase]
@@ -73,12 +73,12 @@
             var falseElement = XElement.Parse("<Node WeaveArguments='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
-            Assert.IsFalse(falseConfiguration.WeaveArguments);
+            Assert.That(falseConfiguration.WeaveArguments, Is.False);
 
             var trueElement = XElement.Parse("<Node WeaveArguments='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
-            Assert.IsTrue(trueConfiguration.WeaveArguments);
+            Assert.That(trueConfiguration.WeaveArguments, Is.True);
         }
 
         [TestCase]
@@ -87,12 +87,12 @@
             var falseElement = XElement.Parse("<Node WeaveLogging='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
-            Assert.IsFalse(falseConfiguration.WeaveLogging);
+            Assert.That(falseConfiguration.WeaveLogging, Is.False);
 
             var trueElement = XElement.Parse("<Node WeaveLogging='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
-            Assert.IsTrue(trueConfiguration.WeaveLogging);
+            Assert.That(trueConfiguration.WeaveLogging, Is.True);
         }
 
         [TestCase]
@@ -101,12 +101,12 @@
             var falseElement = XElement.Parse("<Node GenerateXmlSchemas='false' />");
             var falseConfiguration = new Configuration(falseElement);
 
-            Assert.IsFalse(falseConfiguration.GenerateXmlSchemas);
+            Assert.That(falseConfiguration.GenerateXmlSchemas, Is.False);
 
             var trueElement = XElement.Parse("<Node GenerateXmlSchemas='true' />");
             var trueConfiguration = new Configuration(trueElement);
 
-            Assert.IsTrue(trueConfiguration.GenerateXmlSchemas);
+            Assert.That(trueConfiguration.GenerateXmlSchemas, Is.True);
         }
 
         [TestCase]
@@ -115,17 +115,17 @@
             var publicElement = XElement.Parse("<Node GeneratedPropertyDataAccessibility='Public' />");
             var publicConfiguration = new Configuration(publicElement);
 
-            Assert.AreEqual(Accessibility.Public, publicConfiguration.GeneratedPropertyDataAccessibility);
+            Assert.That(publicConfiguration.GeneratedPropertyDataAccessibility, Is.EqualTo(Accessibility.Public));
 
             var internalElement = XElement.Parse("<Node GeneratedPropertyDataAccessibility='Internal' />");
             var internalConfiguration = new Configuration(internalElement);
 
-            Assert.AreEqual(Accessibility.Internal, internalConfiguration.GeneratedPropertyDataAccessibility);
+            Assert.That(internalConfiguration.GeneratedPropertyDataAccessibility, Is.EqualTo(Accessibility.Internal));
 
             var privateElement = XElement.Parse("<Node GeneratedPropertyDataAccessibility='Private' />");
             var privateConfiguration = new Configuration(privateElement);
 
-            Assert.AreEqual(Accessibility.Private, privateConfiguration.GeneratedPropertyDataAccessibility);
+            Assert.That(privateConfiguration.GeneratedPropertyDataAccessibility, Is.EqualTo(Accessibility.Private));
         }
 
         [TestCase]
@@ -133,11 +133,11 @@
         {
             var configuration = new Configuration(null);
 
-            Assert.IsTrue(configuration.WeaveProperties);
-            Assert.IsTrue(configuration.WeaveExposedProperties);
-            Assert.IsTrue(configuration.WeaveArguments);
-            Assert.IsTrue(configuration.WeaveLogging);
-            Assert.IsFalse(configuration.GenerateXmlSchemas);
+            Assert.That(configuration.WeaveProperties, Is.True);
+            Assert.That(configuration.WeaveExposedProperties, Is.True);
+            Assert.That(configuration.WeaveArguments, Is.True);
+            Assert.That(configuration.WeaveLogging, Is.True);
+            Assert.That(configuration.GenerateXmlSchemas, Is.False);
         }
     }
 }

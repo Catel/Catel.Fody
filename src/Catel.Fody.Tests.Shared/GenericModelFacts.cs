@@ -6,15 +6,13 @@
     [TestFixture]
     public class GenericModelFacts
     {
-        #region Methods
         [TestCase]
         public void ImportedGenericTypeFromExternalAssemblyWorks()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericModel");
             var obj = (dynamic)Activator.CreateInstance(type);
 
-            Assert.IsNull(obj.GenericProperty);
+            Assert.That(obj.GenericProperty, Is.Null);
         }
-        #endregion
     }
 }

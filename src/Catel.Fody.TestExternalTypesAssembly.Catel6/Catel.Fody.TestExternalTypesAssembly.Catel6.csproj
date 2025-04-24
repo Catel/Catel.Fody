@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net6.0-windows</TargetFrameworks>
+    <TargetFrameworks>net8.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestExternalTypesAssembly.Catel6</AssemblyName>
     <RootNamespace>Catel.Fody.TestExternalTypesAssembly</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -10,11 +10,11 @@
     <PackageTags></PackageTags>
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
-    <DefineConstants>$(DefineConstants);CATEL_6</DefineConstants>
+    <DefineConstants>$(DefineConstants);CATEL_6;CATEL_6_OR_GREATER</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="6.0.0-alpha1100" />
+    <PackageReference Include="Catel.MVVM" Version="6.1.0-alpha1719" />
   </ItemGroup>
 
   <ItemGroup>

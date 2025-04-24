@@ -1,6 +1,6 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net452;net6.0;netstandard1.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net452;net6.0;net8.0;netstandard1.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>Catel.Fody.Attributes</AssemblyName>
     <RootNamespace>Catel.Fody</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -19,7 +19,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.6.4" PrivateAssets="None" />
+    <PackageReference Include="Fody" Version="6.9.2" PrivateAssets="None" />
   </ItemGroup>
 
   <ItemGroup>

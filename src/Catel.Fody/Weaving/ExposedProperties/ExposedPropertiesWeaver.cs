@@ -93,7 +93,7 @@
 
             viewModelPropertyDefinition.MarkAsCompilerGenerated(_msCoreReferenceFinder);
 
-            var catelTypeProperty = new CatelTypeProperty(catelType.TypeDefinition, viewModelPropertyDefinition);
+            var catelTypeProperty = new CatelTypeProperty(catelType, catelType.TypeDefinition, viewModelPropertyDefinition);
             catelTypeProperty.IsReadOnly = isReadOnly;
 
             var catelPropertyWeaver = new ModelBasePropertyWeaver(catelType, catelTypeProperty, _configuration, _moduleWeaver, _msCoreReferenceFinder);

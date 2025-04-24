@@ -1,0 +1,26 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <AssemblyName>Catel.Fody.TestExternalTypesAssembly.Catel7</AssemblyName>
+    <RootNamespace>Catel.Fody.TestExternalTypesAssembly</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <PackageId>Catel.Fody.TestExternalTypesAssembly</PackageId>
+    <PackageVersion>1.0.0-alpha0001</PackageVersion>
+    <Description>Catel.Fody.TestExternalTypesAssembly library.</Description>
+    <PackageTags></PackageTags>
+    <SonarQubeExclude>true</SonarQubeExclude>
+    <DisableFody>true</DisableFody>
+    <DefineConstants>$(DefineConstants);CATEL_7;CATEL_6_OR_GREATER;CATEL_7_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Catel.MVVM" Version="6.1.0-alpha1719" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Catel.Fody.TestExternalTypesAssembly.Shared\**\*.cs" Exclude="..\Catel.Fody.TestExternalTypesAssembly.Shared\bin\**\*.cs;..\Catel.Fody.TestExternalTypesAssembly.Shared\obj\**\*.cs" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props')" />
+</Project>

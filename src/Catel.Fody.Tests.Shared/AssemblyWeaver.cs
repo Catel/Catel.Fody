@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Xml.Linq;
 using Catel.Fody;
 using Catel.Fody.Tests;
@@ -18,25 +19,64 @@ public class AssemblyWeaver
 
     static AssemblyWeaver()
     {
+#if CATEL_5
+        Instance_NetStandard = new AssemblyWeaver(GetPathToAssemblyToWeave(true), "default");
+#endif
+        Instance = new AssemblyWeaver(GetPathToAssemblyToWeave(false), "default");
+    }
+
+    public static string GetPathToAssemblyToWeave(bool isNetStandard = false)
+    {
         var catelVersion = "unknown";
 
 #if CATEL_5
         catelVersion = "5";
 #elif CATEL_6
         catelVersion = "6";
+#elif CATEL_7
+        catelVersion = "7";
+#else
+        throw new System.Exception("Unknown Catel version");
 #endif
 
-#if CATEL_5
-        Instance_NetStandard = new AssemblyWeaver($"Catel.Fody.TestAssembly.NetStandard.Catel{catelVersion}.dll");
-#endif
-        Instance = new AssemblyWeaver($"Catel.Fody.TestAssembly.Catel{catelVersion}.dll");
+        if (isNetStandard)
+        {
+            return $"Catel.Fody.TestAssembly.NetStandard.Catel{catelVersion}.dll";
+        }
+
+        return $"Catel.Fody.TestAssembly.Catel{catelVersion}.dll";
     }
 
-    public AssemblyWeaver(string assemblyLocation, List<string> referenceAssemblyPaths = null)
+    public static string GenerateConfigurationXml(params KeyValuePair<string, string>[] settings)
+    {
+        var stringBuilder = new StringBuilder();
+        
+        stringBuilder.AppendLine("<Weavers>");
+        stringBuilder.Append("  <Catel ");
+
+        foreach (var setting in settings)
+        {
+            stringBuilder.Append($"{setting.Key}=\"{setting.Value}\" ");
+        }
+
+        stringBuilder.AppendLine("/>");
+        stringBuilder.AppendLine("</Weavers>");
+
+        return stringBuilder.ToString();
+    }
+
+    public AssemblyWeaver(string assemblyLocation, string tag, 
+        string configXml = null, List<string> referenceAssemblyPaths = null)
     {
         if (referenceAssemblyPaths is null)
         {
             referenceAssemblyPaths = new List<string>();
+        }
+
+        if (string.IsNullOrWhiteSpace(configXml))
+        {
+            // Disable by default, otherwise the weaving will fail
+            configXml = GenerateConfigurationXml(new KeyValuePair<string, string>("DisableWarningsForAutoPropertyInitializers", "true"));
         }
 
         ////Force ref since MSTest is a POS
@@ -44,7 +84,7 @@ public class AssemblyWeaver
 
         //BeforeAssemblyPath = type.GetAssemblyEx().Location;
         BeforeAssemblyPath = Path.GetFullPath(assemblyLocation);
-        AfterAssemblyPath = BeforeAssemblyPath.Replace(".dll", "_2.dll");
+        AfterAssemblyPath = BeforeAssemblyPath.Replace(".dll", $"_{tag}.dll");
 
         var oldPdb = Path.ChangeExtension(BeforeAssemblyPath, "pdb");
         var newPdb = Path.ChangeExtension(AfterAssemblyPath, "pdb");
@@ -79,11 +119,14 @@ public class AssemblyWeaver
                 ModuleDefinition = moduleDefinition,
                 AssemblyFilePath = AfterAssemblyPath,
                 AssemblyResolver = assemblyResolver,
-                Config = XElement.Parse(@"<Weavers><Catel /></Weavers>"),
+                Config = XElement.Parse(configXml),
                 AddinDirectoryPath = Path.Combine(AssemblyDirectoryHelper.GetCurrentDirectory(), "..", "..", "Catel.Fody")
             };
 
             weavingTask.Execute();
+
+            Errors = weavingTask.Errors;
+
             moduleDefinition.Write(AfterAssemblyPath);
         }
 
@@ -109,9 +152,4 @@ public class AssemblyWeaver
 #if CATEL_5
     public static AssemblyWeaver Instance_NetStandard { get; private set; }
 #endif
-
-    private void LogError(string error)
-    {
-        Errors.Add(error);
-    }
 }

@@ -594,7 +594,12 @@
                 instructions.RemoveAt(i);
             }
 
-            return new RemoveArgumentWeavingCallResult(displayClassType.Resolve(), startRemoveIndex, hasBaseConstructorCall);
+            if (displayClassType is null)
+            {
+                FodyEnvironment.WriteWarning($"Could not find display class when removing argument weaving call from '{method.GetFullName()}'");
+            }
+
+            return new RemoveArgumentWeavingCallResult(displayClassType?.Resolve(), startRemoveIndex, hasBaseConstructorCall);
         }
 
         private object GetParameterOrFieldForExpressionArgumentCheck(MethodDefinition method, Collection<Instruction> instructions, Instruction instruction)

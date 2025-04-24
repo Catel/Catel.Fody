@@ -61,6 +61,8 @@
 
             try
             {
+                ValidateCSharpAutoPropertyInitializers(property, _propertyData);
+
                 EnsureStaticConstructor(property.DeclaringType);
 
                 AddChangeNotificationHandlerField(property, _propertyData);
@@ -135,6 +137,60 @@
             }
         }
 
+        private void ValidateCSharpAutoPropertyInitializers(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            if (_configuration.DisableWarningsForAutoPropertyInitializers)
+            {
+                return;
+            }
+
+            if (propertyData.ChangeCallbackReference is null)
+            {
+                // potentially not an issue, only when users check in OnPropertyChanged, but that
+                // is beyond the scope for now? If people report bugs, we can always remove
+                // this check
+                return;
+            }
+
+            var backingFieldName = GetBackingFieldName(property);
+
+            var ctorInstructions = property.DeclaringType.Constructor(false).Body.Instructions;
+
+            foreach (var instruction in ctorInstructions)
+            {
+                // Check for fields
+                if (instruction.OpCode == OpCodes.Stfld)
+                {
+                    if (instruction.Operand is FieldReference fieldReference)
+                    {
+                        if (fieldReference.Name == backingFieldName &&
+                            fieldReference.DeclaringType.FullName == property.DeclaringType.FullName)
+                        {
+                            // Not safe
+                            _moduleWeaver.WriteError($"Do not use C# 6 auto property initializers for '{property.Name}' since it has a change callback. This might result in unexpected code execution",
+                                property.GetMethod);
+                            return;
+                        }
+                    }
+                }
+
+                // If this is a call to the base ctor, this is good enough
+                if (instruction.OpCode == OpCodes.Call)
+                {
+                    if (instruction.Operand is MethodReference methodReference)
+                    {
+                        if (methodReference.Name == ".ctor" &&
+                            methodReference.DeclaringType.FullName == property.DeclaringType.BaseType.FullName)
+                        {
+                            // Safe
+                            return;
+                        }
+                    }
+                }
+            }
+
+        }
+
         private void AddChangeNotificationHandlerField(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             if (propertyData.ChangeCallbackReference is null)
@@ -153,6 +209,9 @@
                 case CatelVersion.v6:
                     AddChangeNotificationHandlerField_Catel6(property, propertyData);
                     break;
+
+                default:
+                    throw new NotSupportedException($"Catel version '{_catelType.Version}' is not supported");
             }
         }
 
@@ -328,6 +387,9 @@
                 case CatelVersion.v6:
                     instructionsToInsert.AddRange(CreatePropertyRegistration_Catel6(property, propertyData));
                     break;
+
+                default:
+                    throw new NotSupportedException($"Catel version '{_catelType.Version}' is not supported");
             }
 
             var registerPropertyInvoker = (propertyData.DefaultValue is null) ? _catelType.RegisterPropertyWithoutDefaultValueInvoker : _catelType.RegisterPropertyWithDefaultValueInvoker;
@@ -393,6 +455,34 @@
                 Instruction.Create(OpCodes.Call, finalRegisterPropertyMethod),
                 Instruction.Create(OpCodes.Stsfld, fieldReference)
             });
+
+            // Inject validation attributes check
+            if (propertyData.IsDataValidationAttributesSupportedByPropertyData)
+            {
+                //IL_0018: ldsfld class [Catel.Core]Catel.Data.IPropertyData Catel.Fody.TestAssembly.ModelBaseTest::FullNameProperty
+                //IL_001d: ldc.i4.1
+                //IL_001e: newobj instance void valuetype [System.Runtime]System.Nullable`1<bool>::.ctor(!0)
+                //IL_0023: callvirt instance void [Catel.Core]Catel.Data.IPropertyData::set_IsDecoratedWithValidationAttributes(valuetype [System.Runtime]System.Nullable`1<bool>)
+
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Ldsfld, fieldReference));
+
+                if (propertyData.HasDataValidationAttributes)
+                {
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+                }
+                else
+                {
+                    instructionsToInsert.Add(Instruction.Create(OpCodes.Ldc_I4_0));
+                }
+
+                var nullableType = _msCoreReferenceFinder.GetCoreTypeReference("System.Nullable`1");
+                var booleanType = _msCoreReferenceFinder.GetCoreTypeReference("System.Boolean");
+                var nullableBooleanType = nullableType.MakeGenericInstanceType(booleanType);
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Newobj, _moduleWeaver.ModuleDefinition.ImportReference(nullableBooleanType.Resolve().Constructor(false).MakeHostInstanceGeneric(booleanType))));
+
+                var propertyDefinition = _catelType.PropertyDataType.GetProperty("IsDecoratedWithValidationAttributes").Resolve();
+                instructionsToInsert.Add(Instruction.Create(OpCodes.Callvirt, _moduleWeaver.ModuleDefinition.ImportReference(propertyDefinition.SetMethod)));
+            }
 
             instructions.Insert(index, instructionsToInsert);
 
@@ -830,15 +920,15 @@
                             {
                                 // Replace
                                 // 
-	                            // IL_0014: ldarg.0
-	                            // IL_0015: ldarg.1
-	                            // IL_0016: stfld class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel::'<Model>k__BackingField' /* 04000097 */
+                                // IL_0014: ldarg.0
+                                // IL_0015: ldarg.1
+                                // IL_0016: stfld class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel::'<Model>k__BackingField' /* 04000097 */
                                 // 
                                 // with
                                 //
-	                            // IL_0014: ldarg.0
-	                            // IL_0015: ldarg.1
-	                            // IL_0016: call instance void Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel_Expected::set_Model(class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel) /* 06000205 */
+                                // IL_0014: ldarg.0
+                                // IL_0015: ldarg.1
+                                // IL_0016: call instance void Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel_Expected::set_Model(class Catel.Fody.TestAssembly.Bugs.GH0473.TestModel) /* 06000205 */
 
                                 // Setter
                                 instruction.OpCode = OpCodes.Call;

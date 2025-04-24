@@ -21,7 +21,7 @@
 
 #if CATEL_5
         public static readonly PropertyData FullNameProperty = RegisterProperty("FullName", typeof(string));
-#elif CATEL_6
+#elif CATEL_6_OR_GREATER
         public static readonly IPropertyData FullNameProperty = RegisterProperty<string>("FullName");
 #endif
 

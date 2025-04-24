@@ -33,7 +33,7 @@
 
             PropertyHelper.SetPropertyValue(viewModel, "Model", null);
 
-            Assert.IsTrue(isCalled);
+            Assert.That(isCalled, Is.True);
         }
     }
 }

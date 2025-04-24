@@ -6,7 +6,6 @@
     [TestFixture]
     public class ViewModelBaseFacts
     {
-        #region Methods
         [TestCase]
         public void StringsCanBeUsedAfterWeaving()
         {
@@ -15,7 +14,7 @@
 
             vm.Name = "hi there";
 
-            Assert.AreEqual("hi there", vm.Name);
+            Assert.That("hi there", Is.EqualTo(vm.Name));
         }
 
         [TestCase]
@@ -32,6 +31,5 @@
         {
             // tODO: test Title property
         }
-        #endregion
     }
 }
