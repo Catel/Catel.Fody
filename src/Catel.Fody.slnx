@@ -1,0 +1,63 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="Test" />
+  </Configurations>
+  <Folder Name="/misc/">
+    <File Path="Catel.Fody.sln.DotSettings" />
+    <File Path="Catel.Fody.vsmdi" />
+    <File Path="Directory.build.project.props" />
+    <File Path="Directory.build.props" />
+    <File Path="Directory.build.shared.explicit.props" />
+    <File Path="Directory.build.shared.implicit.props" />
+    <File Path="Directory.build.targets" />
+    <File Path="Local.testsettings" />
+    <File Path="MethodTimeLogger.cs" />
+    <File Path="SolutionAssemblyInfo.cs" />
+    <File Path="TraceAndTestImpact.testsettings" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="Catel.Fody/Catel.Fody.csproj" />
+  </Folder>
+  <Folder Name="/src/AttributesAssembly/">
+    <Project Path="Catel.Fody.Attributes/Catel.Fody.Attributes.csproj" />
+  </Folder>
+  <Folder Name="/src/Tests/" />
+  <Folder Name="/src/Tests/Catel5/">
+    <Project Path="Catel.Fody.TestAssembly.Catel5/Catel.Fody.TestAssembly.Catel5.csproj">
+      <BuildType Solution="Test|*" Project="Release" />
+    </Project>
+    <Project Path="Catel.Fody.TestAssembly.NetStandard.Catel5/Catel.Fody.TestAssembly.NetStandard.Catel5.csproj">
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="Catel.Fody.TestExternalTypesAssembly.Catel5/Catel.Fody.TestExternalTypesAssembly.Catel5.csproj">
+      <BuildType Solution="Test|*" Project="Release" />
+    </Project>
+    <Project Path="Catel.Fody.Tests.Catel5/Catel.Fody.Tests.Catel5.csproj">
+      <BuildType Solution="Test|*" Project="Release" />
+    </Project>
+  </Folder>
+  <Folder Name="/src/Tests/Catel6/">
+    <Project Path="Catel.Fody.TestAssembly.Catel6/Catel.Fody.TestAssembly.Catel6.csproj">
+      <BuildType Solution="Test|*" Project="Release" />
+    </Project>
+    <Project Path="Catel.Fody.TestExternalTypesAssembly.Catel6/Catel.Fody.TestExternalTypesAssembly.Catel6.csproj">
+      <BuildType Solution="Test|*" Project="Release" />
+    </Project>
+    <Project Path="Catel.Fody.Tests.Catel6/Catel.Fody.Tests.Catel6.csproj">
+      <BuildType Solution="Test|*" Project="Release" />
+    </Project>
+  </Folder>
+  <Folder Name="/src/Tests/Catel7/">
+    <Project Path="Catel.Fody.TestAssembly.Catel7/Catel.Fody.TestAssembly.Catel7.csproj">
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="Catel.Fody.TestExternalTypesAssembly.Catel7/Catel.Fody.TestExternalTypesAssembly.Catel7.csproj">
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="Catel.Fody.Tests.Catel7/Catel.Fody.Tests.Catel7.csproj">
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+  </Folder>
+</Solution>
