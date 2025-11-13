@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net452;net6.0;net8.0;netstandard1.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>Catel.Fody.Attributes</AssemblyName>
@@ -27,7 +27,7 @@
     <ProjectReference Include="..\$(PackageId)\$(PackageId).csproj" PrivateAssets="All" Condition="$(TargetFramework)=='fake'" />
   </ItemGroup>
   
-  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.Build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.Build.shared.explicit.props')" />
 
   <!--
   Note: the code below comes from https://raw.githubusercontent.com/Fody/Fody/master/FodyPackaging/build/FodyPackaging.targets
