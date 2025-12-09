@@ -133,9 +133,14 @@
             //     RaisePropertyChanged(nameof(MyField));  // Step 3
             // }
 
+
+            // Note: we cannot support this on generic types where the value
+            // is generic (e.g. T? Property)
+            var isGeneric = property.PropertyType.IsGenericParameter;
+
             var setFieldInstruction = instructions.FirstOrDefault(x => x.OpCode == OpCodes.Stfld);
             var fieldReference = setFieldInstruction?.Operand as FieldReference;
-            if (fieldReference is not null)
+            if (!isGeneric && fieldReference is not null)
             {
                 var boolVariable = new VariableDefinition(_moduleWeaver.ModuleDefinition.ImportReference(_msCoreReferenceFinder.GetCoreTypeReference("Boolean")));
                 setMethod.Body.Variables.Add(boolVariable);

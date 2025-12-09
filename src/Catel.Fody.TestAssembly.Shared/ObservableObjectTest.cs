@@ -5,7 +5,22 @@
     using Catel.Collections;
     using Catel.Data;
 
-    public class ObservableObjectTest : ObservableObject
+    public class ObservableObjectTest : ObservableObjectTest<object>
+    {
+
+    }
+
+    public class TimeSpanObservableObjectTest : ObservableObjectTest<TimeSpan>
+    {
+
+    }
+
+    public class IntObservableObjectTest : ObservableObjectTest<int>
+    {
+
+    }
+
+    public class ObservableObjectTest<T> : ObservableObject
     {
         private string _existingProperty;
 
@@ -42,6 +57,10 @@
             }
         }
 
+        public T? NullableGenericProperty { get; set; }
+
+        public T GenericProperty { get; set; }
+
         public bool? NullableBoolProperty { get; set; }
 
         public bool BoolProperty { get; set; }
@@ -49,6 +68,10 @@
         public DateTimeOffset? NullableDateTimeOffsetProperty { get; set; }
 
         public DateTimeOffset DateTimeOffsetProperty { get; set; }
+
+        public TimeSpan? NullableTimeSpanProperty { get; set; }
+
+        public TimeSpan TimeSpanProperty { get; set; }
 
         public int NullableIntProperty { get; set; }
 
@@ -113,7 +136,7 @@
                 var parentCollection = ParentCollection;
                 using (parentCollection?.SuspendChangeNotifications())
                 {
-                    Console.WriteLine("excecute some logic");
+                    Console.WriteLine("execute some logic");
                 }
 
                 RaisePropertyChanged(propertyExpression: () => IsExpanded);
@@ -122,7 +145,7 @@
     }
 
     [NoWeaving]
-    public class ObservableObjectTest_Expected : ObservableObject
+    public class ObservableObjectTest_Expected<T> : ObservableObject
     {
         private bool _onFirstNameChangedCallbackCalled;
         private bool _onLastNameChangedCallbackCalled;
@@ -141,6 +164,10 @@
         private bool _boolProperty;
         private DateTimeOffset? _nullableDateTimeOffsetProperty;
         private DateTimeOffset _dateTimeOffsetProperty;
+        private TimeSpan? _nullableTimeSpanProperty;
+        private TimeSpan _timeSpanProperty;
+        private T? _nullableGenericProperty;
+        private T _genericProperty;
 
         public bool OnFirstNameChangedCallbackCalled
         {
@@ -172,6 +199,26 @@
 
                 _nullableBoolProperty = value;
                 RaisePropertyChanged(nameof(NullableBoolProperty));
+            }
+        }
+
+        public T GenericProperty
+        {
+            get => _genericProperty;
+            set
+            {
+                _genericProperty = value;
+                RaisePropertyChanged(nameof(GenericProperty));
+            }
+        }
+
+        public T? NullableGenericProperty
+        {
+            get => _nullableGenericProperty;
+            set
+            {
+                _nullableGenericProperty = value;
+                RaisePropertyChanged(nameof(NullableGenericProperty));
             }
         }
 
@@ -217,6 +264,36 @@
 
                 _dateTimeOffsetProperty = value;
                 RaisePropertyChanged(nameof(DateTimeOffsetProperty));
+            }
+        }
+
+        public TimeSpan? NullableTimeSpanProperty
+        {
+            get => _nullableTimeSpanProperty;
+            set
+            {
+                if (value == _nullableTimeSpanProperty)
+                {
+                    return;
+                }
+
+                _nullableTimeSpanProperty = value;
+                RaisePropertyChanged(nameof(NullableTimeSpanProperty));
+            }
+        }
+
+        public TimeSpan TimeSpanProperty
+        {
+            get => _timeSpanProperty;
+            set
+            {
+                if (value == _timeSpanProperty)
+                {
+                    return;
+                }
+
+                _timeSpanProperty = value;
+                RaisePropertyChanged(nameof(TimeSpanProperty));
             }
         }
 

@@ -37,6 +37,172 @@
         }
 
         [TestCase]
+        public void Does_Not_Ignore_Change_Notifications_For_Nullable_Generic_Object_Values()
+        {
+            // The reason is that we cannot weave == without too much complex logic
+
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "NullableGenericProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.NullableGenericProperty = new object();
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.NullableGenericProperty = new object();
+
+            Assert.That(raised, Is.True);
+        }
+
+        [TestCase]
+        public void Does_Not_Ignore_Change_Notifications_For_Generic_Object_Values()
+        {
+            // The reason is that we cannot weave == without too much complex logic
+
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "GenericProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.GenericProperty = new object();
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.GenericProperty = new object();
+
+            Assert.That(raised, Is.True);
+        }
+
+        [TestCase]
+        public void Does_Not_Ignore_Change_Notifications_For_Nullable_Generic_TimeSpan_Values()
+        {
+            // The reason is that we cannot weave == without too much complex logic
+
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.TimeSpanObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "NullableGenericProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.NullableGenericProperty = TimeSpan.FromSeconds(5);
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.NullableGenericProperty = TimeSpan.FromSeconds(5);
+
+            Assert.That(raised, Is.True);
+        }
+
+        [TestCase]
+        public void Does_Not_Ignore_Change_Notifications_For_Generic_TimeSpan_Values()
+        {
+            // The reason is that we cannot weave == without too much complex logic
+
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.TimeSpanObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "GenericProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.GenericProperty = TimeSpan.FromSeconds(5);
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.GenericProperty = TimeSpan.FromSeconds(5);
+
+            Assert.That(raised, Is.True);
+        }
+
+        [TestCase]
+        public void Does_Not_Ignore_Change_Notifications_For_Nullable_Generic_Int_Values()
+        {
+            // The reason is that we cannot weave == without too much complex logic
+
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.IntObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "NullableGenericProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.NullableGenericProperty = 42;
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.NullableGenericProperty = 42;
+
+            Assert.That(raised, Is.True);
+        }
+
+        [TestCase]
+        public void Does_Not_Ignore_Change_Notifications_For_Generic_Int_Values()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.IntObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "GenericProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.GenericProperty = 42;
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.GenericProperty = 42;
+
+            Assert.That(raised, Is.True);
+        }
+
+        [TestCase]
         public void Ignores_Change_Notifications_When_Nullable_Int_Value_Is_Equal()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
@@ -188,6 +354,58 @@
             raised = false;
 
             oo.DateTimeOffsetProperty = new DateTimeOffset(2025, 12, 9, 14, 0, 0, TimeSpan.Zero);
+
+            Assert.That(raised, Is.False);
+        }
+
+        [TestCase]
+        public void Ignores_Change_Notifications_When_Nullable_TimeSpan_Value_Is_Equal()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "NullableTimeSpanProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.NullableTimeSpanProperty = TimeSpan.FromSeconds(5);
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.NullableTimeSpanProperty = TimeSpan.FromSeconds(5);
+
+            Assert.That(raised, Is.False);
+        }
+
+        [TestCase]
+        public void Ignores_Change_Notifications_When_TimeSpan_Value_Is_Equal()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "TimeSpanProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.TimeSpanProperty = TimeSpan.FromSeconds(5);
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.TimeSpanProperty = TimeSpan.FromSeconds(5);
 
             Assert.That(raised, Is.False);
         }
