@@ -42,6 +42,8 @@
             }
         }
 
+        public bool BoolProperty { get; set; }
+
         public int IntProperty { get; set; }
 
         public string StringProperty { get; set; }
@@ -123,7 +125,7 @@
         private int _intProperty;
         private string _stringProperty;
         private List<int> _listProperty;
-
+        private bool _boolProperty;
 
         public bool OnFirstNameChangedCallbackCalled
         {
@@ -143,6 +145,20 @@
             set => _onLastNameWithWrongCallbackChangedCallbackCalled = value;
         }
 
+        public bool BoolProperty
+        {
+            get => _boolProperty;
+            set
+            {
+                if (value == _boolProperty)
+                {
+                    return;
+                }
+
+                _boolProperty = value;
+                RaisePropertyChanged(nameof(BoolProperty));
+            }
+        }
 
         public int IntProperty
         {

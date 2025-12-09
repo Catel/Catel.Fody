@@ -63,6 +63,32 @@
         }
 
         [TestCase]
+        public void Ignores_Change_Notifications_When_Bool_Value_Is_Equal()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "BoolProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.BoolProperty = true;
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.BoolProperty = true;
+
+            Assert.That(raised, Is.False);
+        }
+
+        [TestCase]
         public void Ignores_Change_Notifications_When_String_Value_Is_Equal()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
@@ -111,7 +137,7 @@
             Assert.That(raised, Is.True);
             raised = false;
 
-            oo.StringProperty = list;
+            oo.ListProperty = list;
 
             Assert.That(raised, Is.False);
         }
