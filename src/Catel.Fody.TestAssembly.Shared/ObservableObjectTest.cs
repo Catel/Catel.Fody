@@ -1,6 +1,7 @@
 ﻿namespace Catel.Fody.TestAssembly
 {
     using System;
+    using System.Collections.Generic;
     using Catel.Collections;
     using Catel.Data;
 
@@ -40,6 +41,12 @@
                 return FirstName + " " + LastName;
             }
         }
+
+        public int IntProperty { get; set; }
+
+        public string StringProperty { get; set; }
+
+        public List<int> ListProperty { get; set; }
 
         private void OnFirstNameChanged()
         {
@@ -112,6 +119,11 @@
         private string _firstName;
         private string _lastName;
         private string _lastNameWithWrongCallback;
+        private bool _isExpanded;
+        private int _intProperty;
+        private string _stringProperty;
+        private List<int> _listProperty;
+
 
         public bool OnFirstNameChangedCallbackCalled
         {
@@ -131,11 +143,62 @@
             set => _onLastNameWithWrongCallbackChangedCallbackCalled = value;
         }
 
+
+        public int IntProperty
+        {
+            get => _intProperty;
+            set
+            {
+                if (value == _intProperty)
+                {
+                    return;
+                }
+
+                _intProperty = value;
+                RaisePropertyChanged(nameof(IntProperty));
+            }
+        }
+
+        public string StringProperty
+        {
+            get => _stringProperty;
+            set
+            {
+                if (value == _stringProperty)
+                {
+                    return;
+                }
+
+                _stringProperty = value;
+                RaisePropertyChanged(nameof(StringProperty));
+            }
+        }
+
+        public List<int> ListProperty
+        {
+            get => _listProperty;
+            set
+            {
+                if (ReferenceEquals(value, _listProperty))
+                {
+                    return;
+                }
+
+                _listProperty = value;
+                RaisePropertyChanged(nameof(StringProperty));
+            }
+        }
+
         public string ExistingProperty
         {
             get => _existingProperty;
             set
             {
+                if (value == _lastNameWithWrongCallback)
+                {
+                    return;
+                }
+
                 _existingProperty = value;
                 RaisePropertyChanged(nameof(ExistingProperty));
             }
@@ -146,6 +209,11 @@
             get => _firstName;
             set
             {
+                if (value == _lastNameWithWrongCallback)
+                {
+                    return;
+                }
+
                 _firstName = value;
                 OnFirstNameChanged();
                 RaisePropertyChanged(nameof(FirstName));
@@ -157,6 +225,11 @@
             get => _lastName;
             set
             {
+                if (value == _lastNameWithWrongCallback)
+                {
+                    return;
+                }
+
                 _lastName = value;
                 OnLastNameChanged();
                 RaisePropertyChanged(nameof(LastName));
@@ -168,6 +241,11 @@
             get => _lastNameWithWrongCallback;
             set
             {
+                if (value == _lastNameWithWrongCallback)
+                {
+                    return;
+                }
+
                 _lastNameWithWrongCallback = value;
                 RaisePropertyChanged(nameof(LastNameWithWrongCallback));
             }
@@ -203,7 +281,6 @@
 
         public string ManualChangeNotificationProperty { get; set; }
 
-        private bool _isExpanded;
         public object RowGroupDefinition { get; set; }
         public FastObservableCollection<object> ParentCollection { get; set; }
 
