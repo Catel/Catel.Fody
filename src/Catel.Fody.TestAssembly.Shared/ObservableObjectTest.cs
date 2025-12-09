@@ -42,11 +42,19 @@
             }
         }
 
+        public bool? NullableBoolProperty { get; set; }
+
         public bool BoolProperty { get; set; }
+
+        public DateTimeOffset? NullableDateTimeOffsetProperty { get; set; }
 
         public DateTimeOffset DateTimeOffsetProperty { get; set; }
 
+        public int NullableIntProperty { get; set; }
+
         public int IntProperty { get; set; }
+
+        public string NullableStringProperty { get; set; }
 
         public string StringProperty { get; set; }
 
@@ -124,10 +132,14 @@
         private string _lastName;
         private string _lastNameWithWrongCallback;
         private bool _isExpanded;
+        private int? _nullableIntProperty;
         private int _intProperty;
+        private string? _nullableStringProperty;
         private string _stringProperty;
         private List<int> _listProperty;
+        private bool? _nullableBoolProperty;
         private bool _boolProperty;
+        private DateTimeOffset? _nullableDateTimeOffsetProperty;
         private DateTimeOffset _dateTimeOffsetProperty;
 
         public bool OnFirstNameChangedCallbackCalled
@@ -148,6 +160,21 @@
             set => _onLastNameWithWrongCallbackChangedCallbackCalled = value;
         }
 
+        public bool? NullableBoolProperty
+        {
+            get => _nullableBoolProperty;
+            set
+            {
+                if (value == _nullableBoolProperty)
+                {
+                    return;
+                }
+
+                _nullableBoolProperty = value;
+                RaisePropertyChanged(nameof(NullableBoolProperty));
+            }
+        }
+
         public bool BoolProperty
         {
             get => _boolProperty;
@@ -160,6 +187,21 @@
 
                 _boolProperty = value;
                 RaisePropertyChanged(nameof(BoolProperty));
+            }
+        }
+
+        public DateTimeOffset? NullableDateTimeOffsetProperty
+        {
+            get => _nullableDateTimeOffsetProperty;
+            set
+            {
+                if (value == _nullableDateTimeOffsetProperty)
+                {
+                    return;
+                }
+
+                _nullableDateTimeOffsetProperty = value;
+                RaisePropertyChanged(nameof(NullableDateTimeOffsetProperty));
             }
         }
 
@@ -178,6 +220,21 @@
             }
         }
 
+        public int? NullableIntProperty
+        {
+            get => _nullableIntProperty;
+            set
+            {
+                if (value == _nullableIntProperty)
+                {
+                    return;
+                }
+
+                _nullableIntProperty = value;
+                RaisePropertyChanged(nameof(NullableIntProperty));
+            }
+        }
+
         public int IntProperty
         {
             get => _intProperty;
@@ -190,6 +247,21 @@
 
                 _intProperty = value;
                 RaisePropertyChanged(nameof(IntProperty));
+            }
+        }
+
+        public string? NullableStringProperty
+        {
+            get => _nullableStringProperty;
+            set
+            {
+                if (value == _nullableStringProperty)
+                {
+                    return;
+                }
+
+                _nullableStringProperty = value;
+                RaisePropertyChanged(nameof(NullableStringProperty));
             }
         }
 

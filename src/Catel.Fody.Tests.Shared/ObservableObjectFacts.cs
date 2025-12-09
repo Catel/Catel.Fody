@@ -37,6 +37,32 @@
         }
 
         [TestCase]
+        public void Ignores_Change_Notifications_When_Nullable_Int_Value_Is_Equal()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "NullableIntProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.NullableIntProperty = 42;
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.NullableIntProperty = 42;
+
+            Assert.That(raised, Is.False);
+        }
+
+        [TestCase]
         public void Ignores_Change_Notifications_When_Int_Value_Is_Equal()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
@@ -58,6 +84,32 @@
             raised = false;
 
             oo.IntProperty = 42;
+
+            Assert.That(raised, Is.False);
+        }
+
+        [TestCase]
+        public void Ignores_Change_Notifications_When_Nullable_Bool_Value_Is_Equal()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "NullableBoolProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.NullableBoolProperty = true;
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.NullableBoolProperty = true;
 
             Assert.That(raised, Is.False);
         }
@@ -89,6 +141,32 @@
         }
 
         [TestCase]
+        public void Ignores_Change_Notifications_When_Nullable_DateTimeOffset_Value_Is_Equal()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "NullableDateTimeOffsetProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.NullableDateTimeOffsetProperty = new DateTimeOffset(2025, 12, 9, 14, 0, 0, TimeSpan.Zero);
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.NullableDateTimeOffsetProperty = new DateTimeOffset(2025, 12, 9, 14, 0, 0, TimeSpan.Zero);
+
+            Assert.That(raised, Is.False);
+        }
+
+        [TestCase]
         public void Ignores_Change_Notifications_When_DateTimeOffset_Value_Is_Equal()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
@@ -110,6 +188,32 @@
             raised = false;
 
             oo.DateTimeOffsetProperty = new DateTimeOffset(2025, 12, 9, 14, 0, 0, TimeSpan.Zero);
+
+            Assert.That(raised, Is.False);
+        }
+
+        [TestCase]
+        public void Ignores_Change_Notifications_When_Nullable_String_Value_Is_Equal()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "NullableStringProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.NullableStringProperty = "test";
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.NullableStringProperty = "test";
 
             Assert.That(raised, Is.False);
         }
