@@ -89,6 +89,32 @@
         }
 
         [TestCase]
+        public void Ignores_Change_Notifications_When_DateTimeOffset_Value_Is_Equal()
+        {
+            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");
+            var oo = (dynamic)Activator.CreateInstance(type);
+
+            var raised = false;
+
+            var callback = oo.PropertyChanged += new PropertyChangedEventHandler((sender, e) =>
+            {
+                if (e.PropertyName == "DateTimeOffsetProperty")
+                {
+                    raised = true;
+                }
+            });
+
+            oo.DateTimeOffsetProperty = new DateTimeOffset(2025, 12, 9, 14, 0, 0, TimeSpan.Zero);
+
+            Assert.That(raised, Is.True);
+            raised = false;
+
+            oo.DateTimeOffsetProperty = new DateTimeOffset(2025, 12, 9, 14, 0, 0, TimeSpan.Zero);
+
+            Assert.That(raised, Is.False);
+        }
+
+        [TestCase]
         public void Ignores_Change_Notifications_When_String_Value_Is_Equal()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ObservableObjectTest");

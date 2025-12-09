@@ -141,16 +141,34 @@
 
                 if (_propertyData.PropertyDefinition.PropertyType.IsValueType)
                 {
-                    // ==
-                    instructions.Insert(0,
+                    var instructionsToInsert = new List<Instruction>(new[]
+                    {
                         Instruction.Create(OpCodes.Ldarg_1),
                         Instruction.Create(OpCodes.Ldarg_0),
-                        Instruction.Create(OpCodes.Ldfld, fieldReference),
-                        Instruction.Create(OpCodes.Ceq),
+                        Instruction.Create(OpCodes.Ldfld, fieldReference)
+                    });
+
+                    var equalityOperator = _propertyData.PropertyDefinition.PropertyType.Resolve().Methods.FirstOrDefault(x => x.Name == "op_Equality" && x.IsStatic);
+                    if (equalityOperator is not null)
+                    {
+                        // call op_Equality
+                        instructionsToInsert.Add(Instruction.Create(OpCodes.Call, _moduleWeaver.ModuleDefinition.ImportReference(equalityOperator)));
+                    }
+                    else
+                    {
+                        // == (ceq)
+                        instructionsToInsert.Add(Instruction.Create(OpCodes.Ceq));
+                    }
+
+                    instructionsToInsert.AddRange(new[]
+                    {
                         Instruction.Create(OpCodes.Stloc_0),
                         Instruction.Create(OpCodes.Ldloc_0),
                         Instruction.Create(OpCodes.Brfalse_S, instructions.First(x => !x.IsOpCode(OpCodes.Nop))),
-                        Instruction.Create(OpCodes.Br_S, instructions.Last(x => x.IsOpCode(OpCodes.Ret))));
+                        Instruction.Create(OpCodes.Br_S, instructions.Last(x => x.IsOpCode(OpCodes.Ret)))
+                    });
+                    
+                    instructions.Insert(0, instructionsToInsert);
                 }
                 else if (_propertyData.PropertyDefinition.PropertyType.FullName == "System.String")
                 {

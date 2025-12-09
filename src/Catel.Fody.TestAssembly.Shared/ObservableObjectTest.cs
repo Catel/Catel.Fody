@@ -44,6 +44,8 @@
 
         public bool BoolProperty { get; set; }
 
+        public DateTimeOffset DateTimeOffsetProperty { get; set; }
+
         public int IntProperty { get; set; }
 
         public string StringProperty { get; set; }
@@ -126,6 +128,7 @@
         private string _stringProperty;
         private List<int> _listProperty;
         private bool _boolProperty;
+        private DateTimeOffset _dateTimeOffsetProperty;
 
         public bool OnFirstNameChangedCallbackCalled
         {
@@ -157,6 +160,21 @@
 
                 _boolProperty = value;
                 RaisePropertyChanged(nameof(BoolProperty));
+            }
+        }
+
+        public DateTimeOffset DateTimeOffsetProperty
+        {
+            get => _dateTimeOffsetProperty;
+            set
+            {
+                if (value == _dateTimeOffsetProperty)
+                {
+                    return;
+                }
+
+                _dateTimeOffsetProperty = value;
+                RaisePropertyChanged(nameof(DateTimeOffsetProperty));
             }
         }
 
