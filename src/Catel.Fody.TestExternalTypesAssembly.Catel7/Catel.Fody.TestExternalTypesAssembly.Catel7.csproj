@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestExternalTypesAssembly.Catel7</AssemblyName>
@@ -11,16 +11,17 @@
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
     <DefineConstants>$(DefineConstants);CATEL_7;CATEL_6_OR_GREATER;CATEL_7_OR_GREATER</DefineConstants>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.MVVM" Version="6.1.0-alpha1719" />
+    <PackageReference Include="Catel.MVVM" Version="6.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\Catel.Fody.TestExternalTypesAssembly.Shared\**\*.cs" Exclude="..\Catel.Fody.TestExternalTypesAssembly.Shared\bin\**\*.cs;..\Catel.Fody.TestExternalTypesAssembly.Shared\obj\**\*.cs" />
   </ItemGroup>
 
-  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
-  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.Build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.Build.shared.explicit.props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.Build.shared.mat.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.Build.shared.mat.props')" />
 </Project>

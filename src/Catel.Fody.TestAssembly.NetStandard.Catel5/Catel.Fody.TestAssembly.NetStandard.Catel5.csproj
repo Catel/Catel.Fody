@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Catel.Fody.TestAssembly.NetStandard.Catel5</AssemblyName>
@@ -11,6 +11,7 @@
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
     <DefineConstants>$(DefineConstants);CATEL_5</DefineConstants>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,6 @@
     <Compile Include="..\Catel.Fody.TestAssembly.NetStandard.Shared\**\*.cs" Exclude="..\Catel.Fody.TestAssembly.NetStandard.Shared\bin\**\*.cs;..\Catel.Fody.TestAssembly.NetStandard.Shared\obj\**\*.cs" />
   </ItemGroup>
   
-  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
-  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.mat.props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.Build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.Build.shared.explicit.props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.Build.shared.mat.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.Build.shared.mat.props')" />
 </Project>
