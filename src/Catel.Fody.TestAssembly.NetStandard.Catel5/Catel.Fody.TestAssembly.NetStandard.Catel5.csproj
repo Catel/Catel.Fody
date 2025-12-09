@@ -11,6 +11,7 @@
     <SonarQubeExclude>true</SonarQubeExclude>
     <DisableFody>true</DisableFody>
     <DefineConstants>$(DefineConstants);CATEL_5</DefineConstants>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
