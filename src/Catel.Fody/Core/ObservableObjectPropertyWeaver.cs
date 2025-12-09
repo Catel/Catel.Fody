@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Mono.Cecil;
     using Mono.Cecil.Cil;
     using Mono.Cecil.Rocks;
@@ -12,10 +13,15 @@
 
     public class ObservableObjectPropertyWeaver : PropertyWeaverBase
     {
+        private readonly MethodDefinition _equalityOperationMethod;
+
         public ObservableObjectPropertyWeaver(CatelType catelType, CatelTypeProperty propertyData, ModuleWeaver moduleWeaver,
             MsCoreReferenceFinder msCoreReferenceFinder)
             : base(catelType, propertyData, moduleWeaver, msCoreReferenceFinder)
         {
+            var stringType = (TypeDefinition)msCoreReferenceFinder.GetCoreTypeReference("System.String");
+
+            _equalityOperationMethod = stringType.Resolve().Methods.First(x => x.Name == "op_Equality");
         }
 
         public void Execute(bool force = false)
@@ -90,6 +96,12 @@
 
         private void UpdateSetValueCall(PropertyDefinition property)
         {
+            var setMethod = property.SetMethod;
+            var body = setMethod.Body;
+            body.SimplifyMacros();
+
+            var instructions = body.Instructions;
+
             // We want to change this:
             //
             // set
@@ -100,14 +112,77 @@
             // to
             // set
             // {
+            //     // DEPENDING ON TYPE, WE USE DIFFERENT CHECK
+            //     if (_valueType == value)
+            //     {
+            //          return;
+            //     }
+            //
+            //     if (_stringType == value)
+            //     {
+            //          return;
+            //     }
+            //
+            //     if (ReferenceEquals(_referenceType, value))
+            //     {
+            //          return;
+            //     }
+            //
             //     _myField = value;
-            //     OnMyFieldChanged();                     // Step 1, optional!
-            //     RaisePropertyChanged(nameof(MyField));  // Step 2
+            //     OnMyFieldChanged();                     // Step 2, optional!
+            //     RaisePropertyChanged(nameof(MyField));  // Step 3
             // }
+
+            var setFieldInstruction = instructions.FirstOrDefault(x => x.OpCode == OpCodes.Stfld);
+            var fieldReference = setFieldInstruction?.Operand as FieldReference;
+            if (fieldReference is not null)
+            {
+                setMethod.Body.Variables.Add(new VariableDefinition(_moduleWeaver.ModuleDefinition.ImportReference(_msCoreReferenceFinder.GetCoreTypeReference("Boolean"))));
+
+                if (_propertyData.PropertyDefinition.PropertyType.IsValueType)
+                {
+                    // ==
+                    instructions.Insert(0,
+                        Instruction.Create(OpCodes.Ldarg_1),
+                        Instruction.Create(OpCodes.Ldarg_0),
+                        Instruction.Create(OpCodes.Ldfld, fieldReference),
+                        Instruction.Create(OpCodes.Ceq),
+                        Instruction.Create(OpCodes.Stloc_0),
+                        Instruction.Create(OpCodes.Ldloc_0),
+                        Instruction.Create(OpCodes.Brfalse_S, instructions.First(x => !x.IsOpCode(OpCodes.Nop))),
+                        Instruction.Create(OpCodes.Br_S, instructions.Last(x => x.IsOpCode(OpCodes.Ret))));
+                }
+                else if (_propertyData.PropertyDefinition.PropertyType.FullName == "System.String")
+                {
+                    // ==
+                    instructions.Insert(0,
+                        Instruction.Create(OpCodes.Ldarg_1),
+                        Instruction.Create(OpCodes.Ldarg_0),
+                        Instruction.Create(OpCodes.Ldfld, fieldReference),
+                        Instruction.Create(OpCodes.Call, _moduleWeaver.ModuleDefinition.ImportReference(_equalityOperationMethod)),
+                        Instruction.Create(OpCodes.Stloc_0),
+                        Instruction.Create(OpCodes.Ldloc_0),
+                        Instruction.Create(OpCodes.Brfalse_S, instructions.First(x => !x.IsOpCode(OpCodes.Nop))),
+                        Instruction.Create(OpCodes.Br_S, instructions.Last(x => x.IsOpCode(OpCodes.Ret))));
+                }
+                else
+                {
+                    // ReferenceEquals (is ceq)
+                    instructions.Insert(0,
+                        Instruction.Create(OpCodes.Ldarg_1),
+                        Instruction.Create(OpCodes.Ldarg_0),
+                        Instruction.Create(OpCodes.Ldfld, fieldReference),
+                        Instruction.Create(OpCodes.Ceq),
+                        Instruction.Create(OpCodes.Stloc_0),
+                        Instruction.Create(OpCodes.Ldloc_0),
+                        Instruction.Create(OpCodes.Brfalse_S, instructions.First(x => !x.IsOpCode(OpCodes.Nop))),
+                        Instruction.Create(OpCodes.Br_S, instructions.Last(x => x.IsOpCode(OpCodes.Ret))));
+                }
+            }
 
             var newInstructions = new List<Instruction>();
 
-            // Step 1: OnMyFieldChanged callbacks
+            // Step 2: OnMyFieldChanged callbacks
             //
             // IL_0007: ldarg.0      // this
             // IL_0008: call instance void Catel.Fody.TestAssembly.ObservableObjectTest_Expected/*0200004A*/::OnFirstNameChanged()/*060001C0*/
@@ -119,7 +194,7 @@
                 newInstructions.Add(Instruction.Create(OpCodes.Call, changeCallbackReference));
             }
 
-            // Step 2: RaisePropertyChanged
+            // Step 3: RaisePropertyChanged
             //
             // IL_0007: ldarg.0      // this
             // IL_0008: ldstr        "ExistingProperty"
@@ -130,10 +205,6 @@
             newInstructions.Add(Instruction.Create(OpCodes.Call, _catelType.RaisePropertyChangedInvoker));
 
             // Final step: inject the instructions
-            var body = property.SetMethod.Body;
-            body.SimplifyMacros();
-
-            var instructions = body.Instructions;
 
             var instructionIndex = instructions.Count - 1;
 

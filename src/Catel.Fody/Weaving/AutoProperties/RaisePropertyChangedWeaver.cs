@@ -10,21 +10,16 @@
 
     internal class RaisePropertyChangedWeaver
     {
-        #region Fields
         private readonly CatelType _catelType;
 
         private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
-        #endregion
 
-        #region Constructors
         public RaisePropertyChangedWeaver(CatelType catelType, MsCoreReferenceFinder msCoreReferenceFinder)
         {
             _catelType = catelType;
             _msCoreReferenceFinder = msCoreReferenceFinder;
         }
-        #endregion
 
-        #region Methods
         public void Execute()
         {
             FodyEnvironment.WriteDebug($"\tExecuting '{GetType().Name}' for '{_catelType.TypeDefinition.FullName}'");
@@ -190,6 +185,5 @@
 
             methodBody.OptimizeMacros();
         }
-        #endregion
     }
 }

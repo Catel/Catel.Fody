@@ -5,22 +5,22 @@
 
     public static class CacheHelper
     {
-        private static readonly Dictionary<string, IDictionary> _cacheByName = new Dictionary<string, IDictionary>();
+        private static readonly Dictionary<string, IDictionary> CacheByName = new Dictionary<string, IDictionary>();
 
         public static T GetCache<T>(string name)
             where T : IDictionary, new()
         {
-            if (!_cacheByName.ContainsKey(name))
+            if (!CacheByName.ContainsKey(name))
             {
-                _cacheByName[name] = new T();
+                CacheByName[name] = new T();
             }
 
-            return (T)_cacheByName[name];
+            return (T)CacheByName[name];
         }
 
         public static void ClearAllCaches()
         {
-            foreach (var cache in _cacheByName)
+            foreach (var cache in CacheByName)
             {
                 cache.Value.Clear();
             }
