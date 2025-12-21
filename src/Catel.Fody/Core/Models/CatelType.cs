@@ -135,6 +135,9 @@
                     break;
 
                 case CatelVersion.v6:
+                    PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "IPropertyData"));
+                    break;
+
                 case CatelVersion.v7:
                     PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "IPropertyData"));
                     break;
@@ -168,6 +171,8 @@
                     return AdvancedPropertyChangedEventArgsType;
 
                 case CatelVersion.v6:
+                    return PropertyChangedEventArgsType;
+
                 case CatelVersion.v7:
                     return PropertyChangedEventArgsType;
 
@@ -240,6 +245,9 @@
                     break;
 
                 case CatelVersion.v6:
+                    parameterNames = new[] { "property", "value", "notifyOnChange" };
+                    break;
+
                 case CatelVersion.v7:
                     parameterNames = new[] { "property", "value", "notifyOnChange" };
                     break;
@@ -337,6 +345,17 @@
                             break;
 
                         case CatelVersion.v6:
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             method.Parameters.Count == 5 &&
+                                             method.HasGenericParameters &&
+                                             method.GenericParameters.Count == 1 &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                             !method.Parameters[1].ParameterType.FullName.Contains("System.Func")
+                                       select method).ToList();
+                            break;
+
                         case CatelVersion.v7:
                             methods = (from method in currentTypeDefinition.Methods
                                        where method.Name == "RegisterProperty" &&
@@ -371,6 +390,16 @@
                             break;
 
                         case CatelVersion.v6:
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             method.HasGenericParameters &&
+                                             method.GenericParameters.Count == 1 &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                             method.Parameters[1].ParameterType.FullName.Contains("System.Func`1")
+                                       select method).ToList();
+                            break;
+
                         case CatelVersion.v7:
                             methods = (from method in currentTypeDefinition.Methods
                                        where method.Name == "RegisterProperty" &&
