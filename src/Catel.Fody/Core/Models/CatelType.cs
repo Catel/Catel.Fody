@@ -135,6 +135,9 @@
                     break;
 
                 case CatelVersion.v6:
+                    PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "IPropertyData"));
+                    break;
+
                 case CatelVersion.v7:
                     PropertyDataType = module.ImportReference(TypeDefinition.Module.FindType("Catel.Core", "IPropertyData"));
                     break;
@@ -168,6 +171,8 @@
                     return AdvancedPropertyChangedEventArgsType;
 
                 case CatelVersion.v6:
+                    return PropertyChangedEventArgsType;
+
                 case CatelVersion.v7:
                     return PropertyChangedEventArgsType;
 
@@ -240,6 +245,9 @@
                     break;
 
                 case CatelVersion.v6:
+                    parameterNames = new[] { "property", "value", "notifyOnChange" };
+                    break;
+
                 case CatelVersion.v7:
                     parameterNames = new[] { "property", "value", "notifyOnChange" };
                     break;
@@ -321,6 +329,7 @@
                     // Search for this method:
                     // v5: public static PropertyData RegisterProperty<TValue>(string name, Type type, TValue defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
                     // v6: public static IPropertyData RegisterProperty<TValue>(string name, Func<TValue> createDefaultValue = null, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true)
+                    // v7: public static IPropertyData RegisterProperty<TValue>(string name, Func<TValue> createDefaultValue = null, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null)
 
                     switch (Version)
                     {
@@ -337,11 +346,22 @@
                             break;
 
                         case CatelVersion.v6:
-                        case CatelVersion.v7:
                             methods = (from method in currentTypeDefinition.Methods
                                        where method.Name == "RegisterProperty" &&
                                              method.IsPublic &&
                                              method.Parameters.Count == 5 &&
+                                             method.HasGenericParameters &&
+                                             method.GenericParameters.Count == 1 &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                             !method.Parameters[1].ParameterType.FullName.Contains("System.Func")
+                                       select method).ToList();
+                            break;
+
+                        case CatelVersion.v7:
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             method.Parameters.Count == 3 &&
                                              method.HasGenericParameters &&
                                              method.GenericParameters.Count == 1 &&
                                              method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
@@ -357,7 +377,8 @@
                 {
                     // Search for this method:
                     // v5: public static PropertyData RegisterProperty(string name, Type type, Func<object> defaultValue, EventHandler<AdvancedPropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
-                    // v4: public static IPropertyData RegisterProperty<TValue>(string name, Func<TValue> defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
+                    // v6: public static IPropertyData RegisterProperty<TValue>(string name, Func<TValue> defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool includeInSerialization = true, bool includeInBackup = true, bool setParent = true)
+                    // v7: public static IPropertyData RegisterProperty<TValue>(string name, Func<TValue> defaultValue, EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = null, bool setParent = true)
 
                     switch (Version)
                     {
@@ -371,6 +392,16 @@
                             break;
 
                         case CatelVersion.v6:
+                            methods = (from method in currentTypeDefinition.Methods
+                                       where method.Name == "RegisterProperty" &&
+                                             method.IsPublic &&
+                                             method.HasGenericParameters &&
+                                             method.GenericParameters.Count == 1 &&
+                                             method.Parameters[0].ParameterType.FullName.Contains("System.String") &&
+                                             method.Parameters[1].ParameterType.FullName.Contains("System.Func`1")
+                                       select method).ToList();
+                            break;
+
                         case CatelVersion.v7:
                             methods = (from method in currentTypeDefinition.Methods
                                        where method.Name == "RegisterProperty" &&

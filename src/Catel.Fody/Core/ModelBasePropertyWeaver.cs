@@ -210,6 +210,10 @@
                     AddChangeNotificationHandlerField_Catel6(property, propertyData);
                     break;
 
+                case CatelVersion.v7:
+                    AddChangeNotificationHandlerField_Catel7(property, propertyData);
+                    break;
+
                 default:
                     throw new NotSupportedException($"Catel version '{_catelType.Version}' is not supported");
             }
@@ -266,6 +270,55 @@
         }
 
         private void AddChangeNotificationHandlerField_Catel6(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            var declaringType = property.DeclaringType;
+            var fieldName = GetChangeNotificationHandlerFieldName(property);
+
+            var handlerType = _msCoreReferenceFinder.GetCoreTypeReference("System.ComponentModel.PropertyChangedEventHandler");
+
+            //.field private static class [System.ComponentModel]System.ComponentModel.PropertyChangedEventHandler CS$<>9__CachedAnonymousMethodDelegate1
+
+            var field = new FieldDefinition(fieldName, FieldAttributes.Private | FieldAttributes.Static, declaringType.Module.ImportReference(handlerType));
+
+            declaringType.Fields.Add(field);
+
+            field.MarkAsCompilerGenerated(_msCoreReferenceFinder);
+
+            //.method private hidebysig static void <.cctor>b__0(object s, class [System.ComponentModel]System.ComponentModel.PropertyChangedEventArgs e) cil managed
+            //{
+            //    .custom instance void [mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute::.ctor()
+            //    .maxstack 8
+            //    L_0000: ldarg.0
+            //    L_0001: castclass Catel.Fody.TestAssembly.ModelBaseTest
+            //    L_0006: callvirt instance void Catel.Fody.TestAssembly.ModelBaseTest::OnLastNameChanged()
+            //    L_000b: nop
+            //    L_000c: ret
+            //}
+
+            var voidType = _msCoreReferenceFinder.GetCoreTypeReference("Void");
+            var objectType = _msCoreReferenceFinder.GetCoreTypeReference("Object");
+
+            var initializationMethodName = GetChangeNotificationHandlerConstructorName(property);
+            var initializationMethod = new MethodDefinition(initializationMethodName,
+                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static, declaringType.Module.ImportReference(voidType));
+
+            initializationMethod.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, declaringType.Module.ImportReference(objectType)));
+            initializationMethod.Parameters.Add(new ParameterDefinition("e", ParameterAttributes.None, _catelType.PropertyChangedEventArgsType));
+
+            var body = initializationMethod.Body;
+            body.Instructions.Insert(0,
+                Instruction.Create(OpCodes.Ldarg_0),
+                Instruction.Create(OpCodes.Castclass, declaringType.MakeGenericIfRequired()),
+                Instruction.Create(OpCodes.Callvirt, propertyData.ChangeCallbackReference),
+                Instruction.Create(OpCodes.Nop),
+                Instruction.Create(OpCodes.Ret));
+
+            declaringType.Methods.Add(initializationMethod);
+
+            initializationMethod.MarkAsCompilerGenerated(_msCoreReferenceFinder);
+        }
+
+        private void AddChangeNotificationHandlerField_Catel7(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             var declaringType = property.DeclaringType;
             var fieldName = GetChangeNotificationHandlerFieldName(property);
@@ -386,6 +439,10 @@
 
                 case CatelVersion.v6:
                     instructionsToInsert.AddRange(CreatePropertyRegistration_Catel6(property, propertyData));
+                    break;
+
+                case CatelVersion.v7:
+                    instructionsToInsert.AddRange(CreatePropertyRegistration_Catel7(property, propertyData));
                     break;
 
                 default:
@@ -529,6 +586,40 @@
         }
 
         private List<Instruction> CreatePropertyRegistration_Catel6(PropertyDefinition property, CatelTypeProperty propertyData)
+        {
+            // Catel v6:
+            //
+            //L_0000: ldstr "FullName"
+            //L_0005: ldtoken string // note that this is the property type
+            //L_000a: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+            //L_000f: ldnull
+            //L_0010: ldnull
+            //L_0011: ldc.i4.1
+            //L_0012: call class [Catel.Core]Catel.Data.IPropertyData [Catel.Core]Catel.Data.ModelBase::RegisterProperty<TValue>(string, class [mscorlib]System.Func`1<TValue>, class [mscorlib]System.EventHandler`1<class [Catel.Core]Catel.Data.PropertyChangedEventArgs>, bool)
+            //L_0017: stsfld class [Catel.Core]Catel.Data.IPropertyData Catel.Fody.TestAssembly.ViewModelBaseTest::FullNameProperty
+
+            var instructions = new List<Instruction>();
+
+            instructions.AddRange(new[]
+            {
+                Instruction.Create(OpCodes.Ldstr, property.Name),
+            });
+
+            instructions.AddRange(CreateDefaultValueInstructions(propertyData));
+
+            if (propertyData.ChangeCallbackReference is not null)
+            {
+                instructions.AddRange(CreateChangeCallbackReference_Catel6(property));
+            }
+            else
+            {
+                instructions.Add(Instruction.Create(OpCodes.Ldnull));
+            }
+
+            return instructions;
+        }
+
+        private List<Instruction> CreatePropertyRegistration_Catel7(PropertyDefinition property, CatelTypeProperty propertyData)
         {
             // Catel v6:
             //

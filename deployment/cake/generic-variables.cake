@@ -1,7 +1,7 @@
 #l "buildserver.cake"
 
 #tool "nuget:?package=GitVersion.CommandLine&version=5.12.0"
-#tool "nuget:?package=NuGet.CommandLine&version=7.0.1"
+#tool "nuget:?package=NuGet.CommandLine&version=7.3.1"
 
 #addin "nuget:?package=LibGit2Sharp&version=0.31.0"
 
@@ -94,6 +94,8 @@ public class VersionContext : BuildContextBase
                 }
 
                 CakeContext.Information("Mutex acquired");
+
+                CakeContext.Information("[{0}] Preparing GitVersion", GetTime());
 
                 var gitDirectory = ".git";
                 if (!CakeContext.DirectoryExists(gitDirectory))
@@ -234,10 +236,12 @@ public class VersionContext : BuildContextBase
 
                     gitVersionSettings.WorkingDirectory = dynamicRepositoryPath;
                 }
-
-                CakeContext.Information("Running GitVersion");
+                
+                CakeContext.Information("[{0}] Running GitVersion", GetTime());
 
                 _gitVersionContext = CakeContext.GitVersion(gitVersionSettings);
+
+                CakeContext.Information("[{0}] Finished GitVersion", GetTime());
             }
         }
 

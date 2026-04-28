@@ -60,6 +60,9 @@
                         case 6:
                             return CatelVersion.v6;
 
+                        case 7:
+                            return CatelVersion.v7;
+
                         default:
                             return CatelVersion.Unknown;
                     }
