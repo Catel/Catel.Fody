@@ -24,7 +24,7 @@
         }
 
         [TestCase]
-        public void SuppressesWarningForChangeCallbackWithParametersDecoratedWithNoWeavingAttribute()
+        public void Suppresses_Warning_For_Change_Callback_With_Parameters_Decorated_With_No_Weaving_Attribute()
         {
             var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.NoWeavingChangeCallbackWithParametersViewModel");
             var vm = (dynamic)Activator.CreateInstance(type);
