@@ -1,5 +1,6 @@
 ﻿namespace Catel.Fody.TestAssembly;
 
+using System.Collections.ObjectModel;
 using System.IO;
 using Collections;
 using Data;
@@ -20,10 +21,10 @@ public class CTL768_Model : CTL768_BaseModel
         : base(Path.Combine(location))
     {
         _location = location;
-        FilteredItems = new FastObservableCollection<string>();
+        FilteredItems = new ObservableCollection<string>();
     }
 
-    public FastObservableCollection<string> FilteredItems { get; private set; }
+    public ObservableCollection<string> FilteredItems { get; private set; }
 }
 
 [NoWeaving]
@@ -35,8 +36,8 @@ public class CTL768_Model_ExpectedCode : CTL768_BaseModel
         : base(Path.Combine(location))
     {
         _location = location;
-        FilteredItems = new FastObservableCollection<string>();
+        FilteredItems = new ObservableCollection<string>();
     }
 
-    public FastObservableCollection<string> FilteredItems { get; private set; }
+    public ObservableCollection<string> FilteredItems { get; private set; }
 }

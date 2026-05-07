@@ -1,7 +1,9 @@
 ﻿namespace Catel.Fody.TestAssembly;
 
+using System;
 using System.ComponentModel;
 using Catel.Data;
+using Catel.Fody.TestAssembly.Bugs.GH0511;
 using Catel.MVVM;
 
 public class ExposingModel : ModelBase
@@ -23,9 +25,18 @@ public class ExposingDerivedModel : ExposingModel
     public string PropertyInDerivedClass { get; set; }
 }
 
+#if CATEL_7_OR_HIGHER
+public class ExposingViewModel : FeaturedViewModelBase
+#else
 public class ExposingViewModel : ViewModelBase
+#endif
 {
+#if CATEL_7_OR_HIGHER
+    public ExposingViewModel(ExposingDerivedModel model, IServiceProvider serviceProvider)
+        : base(serviceProvider)
+#else
     public ExposingViewModel(ExposingDerivedModel model)
+#endif
     {
         Model = model;
     }

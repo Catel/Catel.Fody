@@ -1,14 +1,22 @@
 ﻿namespace Catel.Fody.TestAssembly.Bugs.GH0099;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Catel.MVVM;
 
+#if CATEL_7_OR_HIGHER
+public class TestViewModel : FeaturedViewModelBase
+#else
 public class TestViewModel : ViewModelBase
+#endif
 {
+#if CATEL_7_OR_HIGHER
+    public TestViewModel(IServiceProvider serviceProvider)
+        : base(serviceProvider)
+    {
+
+    }
+#endif
+
     [Model]
     [Expose("ID")]
     public Model Model { get; set; }

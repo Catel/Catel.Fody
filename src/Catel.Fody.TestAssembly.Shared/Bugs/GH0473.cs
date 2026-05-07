@@ -4,9 +4,18 @@ using System;
 using Catel.Data;
 using Catel.MVVM;
 
+#if CATEL_7_OR_HIGHER
+public class GH0473ViewModel : FeaturedViewModelBase
+#else
 public class GH0473ViewModel : ViewModelBase
+#endif
 {
+#if CATEL_7_OR_HIGHER
+    public GH0473ViewModel(TestModel testModel, IServiceProvider serviceProvider)
+        : base(serviceProvider)
+#else
     public GH0473ViewModel(TestModel testModel)
+#endif
     {
         ArgumentNullException.ThrowIfNull(testModel);
 
@@ -18,9 +27,18 @@ public class GH0473ViewModel : ViewModelBase
     public TestModel Model { get; }
 }
 
+#if CATEL_7_OR_HIGHER
+public class GH0473ViewModel_Expected : FeaturedViewModelBase
+#else
 public class GH0473ViewModel_Expected : ViewModelBase
+#endif
 {
+#if CATEL_7_OR_HIGHER
+    public GH0473ViewModel_Expected(TestModel testModel, IServiceProvider serviceProvider)
+        : base(serviceProvider)
+#else
     public GH0473ViewModel_Expected(TestModel testModel)
+#endif
     {
         ArgumentNullException.ThrowIfNull(testModel);
 

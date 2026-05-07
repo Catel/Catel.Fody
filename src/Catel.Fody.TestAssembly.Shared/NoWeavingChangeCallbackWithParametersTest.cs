@@ -1,5 +1,6 @@
 ﻿namespace Catel.Fody.TestAssembly;
 
+using System;
 using Catel.Data;
 using Catel.MVVM;
 
@@ -8,6 +9,14 @@ using Catel.MVVM;
 /// </summary>
 public class NoWeavingChangeCallbackWithParametersViewModel : ViewModelBase
 {
+#if CATEL_7_OR_HIGHER
+    public NoWeavingChangeCallbackWithParametersViewModel(IServiceProvider serviceProvider)
+        : base(serviceProvider)
+    {
+
+    }
+#endif
+
     public object SelectedItem { get; set; }
 
     public bool WasCallbackInvoked { get; private set; }

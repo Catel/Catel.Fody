@@ -40,7 +40,7 @@ public class GenericPropertyModel<TModel> : ModelBase
 
 #if CATEL_5
     public static readonly PropertyData MyModelCatelProperty = RegisterProperty("MyModelCatel", typeof(TModel), null);
-#elif CATEL_6_OR_GREATER
+#elif CATEL_6_OR_HIGHER
     public static readonly IPropertyData MyModelCatelProperty = RegisterProperty<TModel>("MyModelCatel", null);
 #endif
 }

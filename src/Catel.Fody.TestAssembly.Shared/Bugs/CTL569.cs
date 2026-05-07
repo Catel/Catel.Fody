@@ -5,6 +5,14 @@ using MVVM;
 
 public class CTL569_ViewModel : ViewModelBase
 {
+#if CATEL_7_OR_HIGHER
+    public CTL569_ViewModel(IServiceProvider serviceProvider)
+        : base(serviceProvider)
+    {
+        
+    }
+#endif
+
     public string ReleaseGroup { get; set; }
     public object SelectedShow { get; set; }
     public object SelectedFeed { get; set; }
@@ -17,7 +25,7 @@ public class CTL569_ViewModel : ViewModelBase
 
 #if CATEL_5
     protected override void OnPropertyChanged(Catel.Data.AdvancedPropertyChangedEventArgs e)
-#elif CATEL_6_OR_GREATER
+#elif CATEL_6_OR_HIGHER
     protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
 #endif
     {

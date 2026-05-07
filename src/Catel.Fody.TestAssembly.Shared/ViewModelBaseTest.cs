@@ -1,14 +1,27 @@
 ﻿namespace Catel.Fody.TestAssembly;
 
+using System;
+using Catel.Fody.TestAssembly.Bugs.GH0511;
 using Data;
 using MVVM;
 
 public class ViewModelBaseTest : MyViewModelBase
 {
+
+#if CATEL_7_OR_HIGHER
+    public ViewModelBaseTest(IServiceProvider serviceProvider)
+        : base(serviceProvider)
+#else
     public ViewModelBaseTest()
+#endif
     {
+#if CATEL_7_OR_HIGHER
+        TestCommand = new Command(serviceProvider, OnTestCommandExecute);
+        TestCommandWithInterface = new Command(serviceProvider, OnTestCommandWithInterfaceExecute);
+#else
         TestCommand = new Command(OnTestCommandExecute);
         TestCommandWithInterface = new Command(OnTestCommandWithInterfaceExecute);
+#endif
     }
 
     public string Name { get; set; }
@@ -21,7 +34,7 @@ public class ViewModelBaseTest : MyViewModelBase
 
 #if CATEL_5
     public static readonly PropertyData FullNameProperty = RegisterProperty("FullName", typeof(string));
-#elif CATEL_6_OR_GREATER
+#elif CATEL_6_OR_HIGHER
     public static readonly IPropertyData FullNameProperty = RegisterProperty<string>("FullName");
 #endif
 

@@ -1,6 +1,8 @@
 ﻿namespace Catel.Fody.TestAssembly;
 
+using System;
 using System.Collections.Generic;
+using Catel.Fody.TestAssembly.Bugs.GH0511;
 using Data;
 using MVVM;
 
@@ -17,7 +19,7 @@ public class DependentPropertyModel : ModelBase
 
 #if CATEL_5
     public static readonly PropertyData MiddleNameProperty = RegisterProperty("MiddleName", typeof(string));
-#elif CATEL_6_OR_GREATER
+#elif CATEL_6_OR_HIGHER
     public static readonly IPropertyData MiddleNameProperty = RegisterProperty<string>("MiddleName");
 #endif
 
@@ -58,8 +60,20 @@ public class Person : ModelBase
     public string Surnames { get; set; }
 }
 
+#if CATEL_7_OR_HIGHER
+public class DependentPersonViewModel : FeaturedViewModelBase
+#else
 public class DependentPersonViewModel : ViewModelBase
+#endif
 {
+#if CATEL_7_OR_HIGHER
+    public DependentPersonViewModel(IServiceProvider serviceProvider)
+        : base(serviceProvider)
+    {
+
+    }
+#endif
+
     [Model]
     public Person Person { get; private set; }
 

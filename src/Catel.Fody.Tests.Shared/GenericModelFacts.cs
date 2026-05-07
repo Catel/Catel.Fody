@@ -12,6 +12,6 @@ public class GenericModelFacts
         var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericModel");
         var obj = (dynamic)Activator.CreateInstance(type);
 
-        Assert.That(obj.GenericProperty, Is.Null);
+        Assert.That((object)obj.GenericProperty, Is.Null);
     }
 }

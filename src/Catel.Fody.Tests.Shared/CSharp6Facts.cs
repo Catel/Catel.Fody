@@ -32,9 +32,9 @@ public class CSharp6Facts
         var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.CSharp6_AutoPropertyInitializer_Generic");
         var obj = (dynamic)Activator.CreateInstance(type);
 
-        Assert.That(obj.SimpleModels, Is.Not.Null);
-        Assert.That(obj.SelectedItem, Is.Null);
-        Assert.That(obj.AdditionalProperty, Is.Null);
+        Assert.That((object)obj.SimpleModels, Is.Not.Null);
+        Assert.That((object)obj.SelectedItem, Is.Null);
+        Assert.That((object)obj.AdditionalProperty, Is.Null);
     }
 
     [TestCase]

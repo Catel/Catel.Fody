@@ -1,13 +1,17 @@
 ﻿namespace Catel.Fody.TestAssembly;
 
+using System;
 using MVVM;
 
 public class GH0012 : ViewModelBase
 {
-    public GH0012()
+#if CATEL_7_OR_HIGHER
+    public GH0012(IServiceProvider serviceProvider)
+        : base(serviceProvider)
     {
 
     }
+#endif
 
     public void a(object o)
     {

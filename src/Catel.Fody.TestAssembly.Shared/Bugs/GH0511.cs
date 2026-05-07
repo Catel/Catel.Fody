@@ -1,5 +1,6 @@
 ﻿namespace Catel.Fody.TestAssembly.Bugs.GH0511;
 
+using System;
 using Catel.Data;
 using Catel.MVVM;
 
@@ -8,9 +9,18 @@ public class AppSettingsModel : ModelBase
     public string SelectedThemeName { get; set; }
 }
 
+#if CATEL_7_OR_HIGHER
+public class AppSettingsViewModel : FeaturedViewModelBase
+#else
 public class AppSettingsViewModel : ViewModelBase
+#endif
 {
+#if CATEL_7_OR_HIGHER
+    public AppSettingsViewModel(AppSettingsModel appSettings, IServiceProvider serviceProvider)
+        : base(serviceProvider)
+#else
     public AppSettingsViewModel(AppSettingsModel appSettings)
+#endif
     {
         AppSettings = appSettings;
     }

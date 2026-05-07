@@ -1,4 +1,6 @@
-﻿namespace Catel.Fody.TestAssembly;
+﻿#if !CATEL_7_OR_HIGHER
+
+namespace Catel.Fody.TestAssembly;
 
 using Logging;
 
@@ -31,3 +33,5 @@ public class LoggingClass
         ManualLog.Info("ManualLog test");
     }
 }
+
+#endif

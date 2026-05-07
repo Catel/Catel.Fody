@@ -155,7 +155,7 @@ public class ModelBaseFacts
         Assert.That(PropertyHelper.GetPropertyValue<object>(model, propertyNameToCheck), Is.EqualTo(tempObject));
     }
 
-#if CATEL_6_OR_GREATER
+#if CATEL_6_OR_HIGHER
     [TestCase]
     public void Sets_PropertyData_IsDecoratedWithValidationAttributes_True()
     {

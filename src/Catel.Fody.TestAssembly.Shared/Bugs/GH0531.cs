@@ -2,9 +2,11 @@
 
 namespace Catel.Fody.TestAssembly.Bugs.GH0531;
 
-using Catel.Data;
-using Catel.MVVM;
+using System;
 using System.Diagnostics;
+using Catel.Data;
+using Catel.Fody.TestAssembly.Bugs.GH0511;
+using Catel.MVVM;
 
 public class TestModel : ObservableObject
 {
@@ -22,9 +24,18 @@ public class TestModel : ObservableObject
     }
 }
 
+#if CATEL_7_OR_HIGHER
+public class MyDerivedViewModel : FeaturedViewModelBase
+#else
 public class MyDerivedViewModel : ViewModelBase
+#endif
 {
+#if CATEL_7_OR_HIGHER
+    public MyDerivedViewModel(TestModel testModel, IServiceProvider serviceProvider)
+        : base(serviceProvider)
+#else
     public MyDerivedViewModel(TestModel testModel)
+#endif
     {
         Model = testModel;
     }
