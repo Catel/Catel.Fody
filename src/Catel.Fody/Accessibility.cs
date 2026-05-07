@@ -1,11 +1,10 @@
-﻿namespace Catel.Fody
+﻿namespace Catel.Fody;
+
+public enum Accessibility
 {
-    public enum Accessibility
-    {
-        Public,
+    Public,
 
-        Internal,
+    Internal,
 
-        Private
-    }
+    Private
 }

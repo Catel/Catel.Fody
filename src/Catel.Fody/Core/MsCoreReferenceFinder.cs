@@ -1,192 +1,191 @@
-﻿namespace Catel.Fody
+﻿namespace Catel.Fody;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Mono.Cecil;
+
+public class MsCoreReferenceFinder
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Mono.Cecil;
+    public const string CompilerGeneratedAttributeTypeName = "System.Runtime.CompilerServices.CompilerGeneratedAttribute";
+    public const string GeneratedCodeAttributeTypeName = "System.CodeDom.Compiler.GeneratedCodeAttribute";
+    public const string DebuggerNonUserCodeAttributeTypeName = "System.Diagnostics.DebuggerNonUserCodeAttribute";
 
-    public class MsCoreReferenceFinder
+    private readonly ModuleWeaver _moduleWeaver;
+    private readonly IAssemblyResolver _assemblyResolver;
+
+    private readonly IDictionary<string, TypeReference> _typeReferencesByFullName = new Dictionary<string, TypeReference>();
+    private readonly IDictionary<string, TypeReference> _typeReferencesByShortName = new Dictionary<string, TypeReference>();
+
+    // Types
+    public TypeReference XmlQualifiedName;
+    public TypeReference XmlSchemaSet;
+
+    public TypeReference GeneratedCodeAttribute;
+    public TypeReference CompilerGeneratedAttribute;
+    public TypeReference DebuggerNonUserCodeAttribute;
+
+    public MsCoreReferenceFinder(ModuleWeaver moduleWeaver, IAssemblyResolver assemblyResolver)
     {
-        public const string CompilerGeneratedAttributeTypeName = "System.Runtime.CompilerServices.CompilerGeneratedAttribute";
-        public const string GeneratedCodeAttributeTypeName = "System.CodeDom.Compiler.GeneratedCodeAttribute";
-        public const string DebuggerNonUserCodeAttributeTypeName = "System.Diagnostics.DebuggerNonUserCodeAttribute";
+        _moduleWeaver = moduleWeaver;
+        _assemblyResolver = assemblyResolver;
+    }
 
-        private readonly ModuleWeaver _moduleWeaver;
-        private readonly IAssemblyResolver _assemblyResolver;
-
-        private readonly IDictionary<string, TypeReference> _typeReferencesByFullName = new Dictionary<string, TypeReference>();
-        private readonly IDictionary<string, TypeReference> _typeReferencesByShortName = new Dictionary<string, TypeReference>();
-
-        // Types
-        public TypeReference XmlQualifiedName;
-        public TypeReference XmlSchemaSet;
-
-        public TypeReference GeneratedCodeAttribute;
-        public TypeReference CompilerGeneratedAttribute;
-        public TypeReference DebuggerNonUserCodeAttribute;
-
-        public MsCoreReferenceFinder(ModuleWeaver moduleWeaver, IAssemblyResolver assemblyResolver)
-        {
-            _moduleWeaver = moduleWeaver;
-            _assemblyResolver = assemblyResolver;
-        }
-
-        public void Execute()
-        {
+    public void Execute()
+    {
 #pragma warning disable IDISP001 // Dispose created
-            var xmlDefinition = _assemblyResolver.Resolve("System.Xml");
+        var xmlDefinition = _assemblyResolver.Resolve("System.Xml");
 #pragma warning restore IDISP001 // Dispose created
-            if (xmlDefinition is not null)
-            {
-                var xmlTypes = xmlDefinition.MainModule.Types;
+        if (xmlDefinition is not null)
+        {
+            var xmlTypes = xmlDefinition.MainModule.Types;
 
-                XmlQualifiedName = (from t in xmlTypes
-                                    where string.Equals(t.FullName, "System.Xml.XmlQualifiedName")
-                                    select t).FirstOrDefault();
-
-                XmlSchemaSet = (from t in xmlTypes
-                                where string.Equals(t.FullName, "System.Xml.Schema.XmlSchemaSet")
+            XmlQualifiedName = (from t in xmlTypes
+                                where string.Equals(t.FullName, "System.Xml.XmlQualifiedName")
                                 select t).FirstOrDefault();
+
+            XmlSchemaSet = (from t in xmlTypes
+                            where string.Equals(t.FullName, "System.Xml.Schema.XmlSchemaSet")
+                            select t).FirstOrDefault();
+        }
+        else
+        {
+            FodyEnvironment.WriteInfo("System.Xml not referenced, disabling xml-related features");
+        }
+
+        GeneratedCodeAttribute = GetCoreTypeReference(GeneratedCodeAttributeTypeName);
+        CompilerGeneratedAttribute = GetCoreTypeReference(CompilerGeneratedAttributeTypeName);
+        DebuggerNonUserCodeAttribute = GetCoreTypeReference(DebuggerNonUserCodeAttributeTypeName);
+    }
+
+    public TypeReference GetCoreTypeReference(string typeName)
+    {
+        if (!_typeReferencesByFullName.ContainsKey(typeName))
+        {
+            var types = GetTypes();
+
+            foreach (var type in types)
+            {
+                _typeReferencesByFullName[type.FullName] = type;
+                _typeReferencesByShortName[type.Name] = type;
+            }
+        }
+
+        if (!_typeReferencesByFullName.TryGetValue(typeName, out var resolvedType))
+        {
+            if (!_typeReferencesByShortName.TryGetValue(typeName, out resolvedType))
+            {
+                FodyEnvironment.WriteError($"Type '{typeName}' cannot be found, please report this bug");
+                return null;
+            }
+        }
+
+        return resolvedType;
+    }
+
+    private IEnumerable<TypeReference> GetTypes()
+    {
+#pragma warning disable IDISP001 // Dispose created
+        var msCoreLibDefinition = _assemblyResolver.Resolve("mscorlib");
+#pragma warning restore IDISP001 // Dispose created
+        var msCoreTypes = msCoreLibDefinition.MainModule.Types.Cast<TypeReference>().ToList();
+
+        var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
+        if (objectDefinition is null)
+        {
+            if (msCoreLibDefinition.IsNetCoreLibrary())
+            {
+                msCoreTypes.AddRange(GetDotNetCoreTypes());
+            }
+            else if (msCoreLibDefinition.IsNetStandardLibrary())
+            {
+                msCoreTypes.AddRange(GetNetStandardTypes());
             }
             else
             {
-                FodyEnvironment.WriteInfo("System.Xml not referenced, disabling xml-related features");
+                msCoreTypes.AddRange(GetWinRtTypes());
             }
-
-            GeneratedCodeAttribute = GetCoreTypeReference(GeneratedCodeAttributeTypeName);
-            CompilerGeneratedAttribute = GetCoreTypeReference(CompilerGeneratedAttributeTypeName);
-            DebuggerNonUserCodeAttribute = GetCoreTypeReference(DebuggerNonUserCodeAttributeTypeName);
         }
-
-        public TypeReference GetCoreTypeReference(string typeName)
+        else
         {
-            if (!_typeReferencesByFullName.ContainsKey(typeName))
-            {
-                var types = GetTypes();
-
-                foreach (var type in types)
-                {
-                    _typeReferencesByFullName[type.FullName] = type;
-                    _typeReferencesByShortName[type.Name] = type;
-                }
-            }
-
-            if (!_typeReferencesByFullName.TryGetValue(typeName, out var resolvedType))
-            {
-                if (!_typeReferencesByShortName.TryGetValue(typeName, out resolvedType))
-                {
-                    FodyEnvironment.WriteError($"Type '{typeName}' cannot be found, please report this bug");
-                    return null;
-                }
-            }
-
-            return resolvedType;
+            msCoreTypes.AddRange(GetDotNetTypes());
         }
 
-        private IEnumerable<TypeReference> GetTypes()
-        {
-#pragma warning disable IDISP001 // Dispose created
-            var msCoreLibDefinition = _assemblyResolver.Resolve("mscorlib");
-#pragma warning restore IDISP001 // Dispose created
-            var msCoreTypes = msCoreLibDefinition.MainModule.Types.Cast<TypeReference>().ToList();
+        return msCoreTypes.OrderBy(x => x.FullName);
+    }
 
-            var objectDefinition = msCoreTypes.FirstOrDefault(x => string.Equals(x.Name, "Object"));
-            if (objectDefinition is null)
-            {
-                if (msCoreLibDefinition.IsNetCoreLibrary())
-                {
-                    msCoreTypes.AddRange(GetDotNetCoreTypes());
-                }
-                else if (msCoreLibDefinition.IsNetStandardLibrary())
-                {
-                    msCoreTypes.AddRange(GetNetStandardTypes());
-                }
-                else
-                {
-                    msCoreTypes.AddRange(GetWinRtTypes());
-                }
-            }
-            else
-            {
-                msCoreTypes.AddRange(GetDotNetTypes());
-            }
+    private IEnumerable<TypeReference> GetDotNetTypes()
+    {
+        var allTypes = new List<TypeReference>();
 
-            return msCoreTypes.OrderBy(x => x.FullName);
-        }
+        allTypes.AddRange(GetTypesFromAssembly("System"));
+        allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
+        allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
 
-        private IEnumerable<TypeReference> GetDotNetTypes()
-        {
-            var allTypes = new List<TypeReference>();
+        return allTypes;
+    }
 
-            allTypes.AddRange(GetTypesFromAssembly("System"));
-            allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
-            allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
+    private IEnumerable<TypeReference> GetDotNetCoreTypes()
+    {
+        var allTypes = new List<TypeReference>();
 
-            return allTypes;
-        }
+        allTypes.AddRange(GetTypesFromAssembly("System"));
+        allTypes.AddRange(GetTypesFromAssembly("System.Core"));
+        allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
+        allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
+        allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
+        allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
+        allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
 
-        private IEnumerable<TypeReference> GetDotNetCoreTypes()
-        {
-            var allTypes = new List<TypeReference>();
+        // Fallback mechanism
+        allTypes.AddRange(GetTypesFromAssembly("System.Private.CoreLib"));
 
-            allTypes.AddRange(GetTypesFromAssembly("System"));
-            allTypes.AddRange(GetTypesFromAssembly("System.Core"));
-            allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
-            allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
-            allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
-            allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
-            allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
+        return allTypes;
+    }
 
-            // Fallback mechanism
-            allTypes.AddRange(GetTypesFromAssembly("System.Private.CoreLib"));
+    private IEnumerable<TypeReference> GetWinRtTypes()
+    {
+        var allTypes = new List<TypeReference>();
 
-            return allTypes;
-        }
+        allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
+        allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
+        allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
+        allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
+        allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
 
-        private IEnumerable<TypeReference> GetWinRtTypes()
-        {
-            var allTypes = new List<TypeReference>();
+        return allTypes;
+    }
 
-            allTypes.AddRange(GetTypesFromAssembly("System.ComponentModel"));
-            allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Debug"));
-            allTypes.AddRange(GetTypesFromAssembly("System.Diagnostics.Tools"));
-            allTypes.AddRange(GetTypesFromAssembly("System.ObjectModel"));
-            allTypes.AddRange(GetTypesFromAssembly("System.Runtime"));
+    private IEnumerable<TypeReference> GetNetStandardTypes()
+    {
+        // Load all assemblies, it's slower but then we are sure we have all types
+        var allTypes = new List<TypeReference>();
 
-            return allTypes;
-        }
-
-        private IEnumerable<TypeReference> GetNetStandardTypes()
-        {
-            // Load all assemblies, it's slower but then we are sure we have all types
-            var allTypes = new List<TypeReference>();
-
-            foreach (var assembly in _moduleWeaver.ModuleDefinition.AssemblyReferences)
-            {
-#pragma warning disable IDISP001 // Dispose created
-                var resolvedAssembly = _assemblyResolver.Resolve(assembly);
-#pragma warning restore IDISP001 // Dispose created
-                if ((resolvedAssembly is not null) && resolvedAssembly.IsNetStandardLibrary())
-                {
-                    allTypes.AddRange(resolvedAssembly.MainModule.Types);
-                }
-            }
-
-            return allTypes;
-        }
-
-        private IEnumerable<TypeReference> GetTypesFromAssembly(string assemblyName)
+        foreach (var assembly in _moduleWeaver.ModuleDefinition.AssemblyReferences)
         {
 #pragma warning disable IDISP001 // Dispose created
-            var assembly = _assemblyResolver.Resolve(assemblyName);
+            var resolvedAssembly = _assemblyResolver.Resolve(assembly);
 #pragma warning restore IDISP001 // Dispose created
-            if (assembly is null)
+            if ((resolvedAssembly is not null) && resolvedAssembly.IsNetStandardLibrary())
             {
-                return Array.Empty<TypeReference>();
+                allTypes.AddRange(resolvedAssembly.MainModule.Types);
             }
-
-            var systemTypes = assembly.MainModule.Types;
-            return systemTypes;
         }
+
+        return allTypes;
+    }
+
+    private IEnumerable<TypeReference> GetTypesFromAssembly(string assemblyName)
+    {
+#pragma warning disable IDISP001 // Dispose created
+        var assembly = _assemblyResolver.Resolve(assemblyName);
+#pragma warning restore IDISP001 // Dispose created
+        if (assembly is null)
+        {
+            return Array.Empty<TypeReference>();
+        }
+
+        var systemTypes = assembly.MainModule.Types;
+        return systemTypes;
     }
 }

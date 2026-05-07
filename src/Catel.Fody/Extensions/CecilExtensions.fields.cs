@@ -1,17 +1,16 @@
-﻿namespace Catel.Fody
+﻿namespace Catel.Fody;
+
+using Mono.Cecil;
+
+public static partial class CecilExtensions
 {
-    using Mono.Cecil;
-
-    public static partial class CecilExtensions
+    public static FieldReference MakeGeneric(this FieldReference field, TypeReference declaringType)
     {
-        public static FieldReference MakeGeneric(this FieldReference field, TypeReference declaringType)
+        var reference = new FieldReference(field.Name, field.FieldType)
         {
-            var reference = new FieldReference(field.Name, field.FieldType)
-            {
-                DeclaringType = declaringType.MakeGenericIfRequired(),
-            };
+            DeclaringType = declaringType.MakeGenericIfRequired(),
+        };
 
-            return reference;
-        }
+        return reference;
     }
 }

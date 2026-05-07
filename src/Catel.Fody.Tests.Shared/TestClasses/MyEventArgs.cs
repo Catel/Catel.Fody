@@ -1,8 +1,7 @@
-﻿namespace Catel.Fody.Tests
-{
-    using System;
+﻿namespace Catel.Fody.Tests;
 
-    public class MyEventArgs : EventArgs
-    {
-    }
+using System;
+
+public class MyEventArgs : EventArgs
+{
 }

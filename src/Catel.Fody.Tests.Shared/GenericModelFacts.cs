@@ -1,18 +1,17 @@
-﻿namespace Catel.Fody.Tests
+﻿namespace Catel.Fody.Tests;
+
+using System;
+using NUnit.Framework;
+
+[TestFixture]
+public class GenericModelFacts
 {
-    using System;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class GenericModelFacts
+    [TestCase]
+    public void ImportedGenericTypeFromExternalAssemblyWorks()
     {
-        [TestCase]
-        public void ImportedGenericTypeFromExternalAssemblyWorks()
-        {
-            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericModel");
-            var obj = (dynamic)Activator.CreateInstance(type);
+        var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GenericModel");
+        var obj = (dynamic)Activator.CreateInstance(type);
 
-            Assert.That(obj.GenericProperty, Is.Null);
-        }
+        Assert.That(obj.GenericProperty, Is.Null);
     }
 }

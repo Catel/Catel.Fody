@@ -1,30 +1,29 @@
-﻿namespace Catel.Fody.Services
+﻿namespace Catel.Fody.Services;
+
+using Weaving.AutoProperties;
+
+public class AutoPropertiesWeaverService
 {
-    using Weaving.AutoProperties;
+    private readonly Configuration _configuration;
+    private readonly ModuleWeaver _moduleWeaver;
+    private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
+    private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-    public class AutoPropertiesWeaverService
+    public AutoPropertiesWeaverService(Configuration configuration, ModuleWeaver moduleWeaver,
+        CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
     {
-        private readonly Configuration _configuration;
-        private readonly ModuleWeaver _moduleWeaver;
-        private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
-        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
+        _configuration = configuration;
+        _moduleWeaver = moduleWeaver;
+        _catelTypeNodeBuilder = catelTypeNodeBuilder;
+        _msCoreReferenceFinder = msCoreReferenceFinder;
+    }
 
-        public AutoPropertiesWeaverService(Configuration configuration, ModuleWeaver moduleWeaver,
-            CatelTypeNodeBuilder catelTypeNodeBuilder, MsCoreReferenceFinder msCoreReferenceFinder)
-        {
-            _configuration = configuration;
-            _moduleWeaver = moduleWeaver;
-            _catelTypeNodeBuilder = catelTypeNodeBuilder;
-            _msCoreReferenceFinder = msCoreReferenceFinder;
-        }
+    public void Execute()
+    {
+        var warningChecker = new AutoPropertiesWarningChecker(_catelTypeNodeBuilder);
+        warningChecker.Execute();
 
-        public void Execute()
-        {
-            var warningChecker = new AutoPropertiesWarningChecker(_catelTypeNodeBuilder);
-            warningChecker.Execute();
-
-            var weaver = new AutoPropertiesWeaver(_configuration, _moduleWeaver, _catelTypeNodeBuilder, _msCoreReferenceFinder);
-            weaver.Execute();
-        }
+        var weaver = new AutoPropertiesWeaver(_configuration, _moduleWeaver, _catelTypeNodeBuilder, _msCoreReferenceFinder);
+        weaver.Execute();
     }
 }

@@ -1,13 +1,12 @@
-﻿namespace Catel.Fody
-{
-    using System;
+﻿namespace Catel.Fody;
 
-    /// <summary>
-    /// Not null attribute.
-    /// </summary>
-    /// <seealso cref="System.Attribute" />
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
-    public class NotNullAttribute : Attribute
-    {
-    }
+using System;
+
+/// <summary>
+/// Not null attribute.
+/// </summary>
+/// <seealso cref="System.Attribute" />
+[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+public class NotNullAttribute : Attribute
+{
 }

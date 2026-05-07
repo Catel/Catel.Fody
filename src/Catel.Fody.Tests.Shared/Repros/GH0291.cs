@@ -1,37 +1,36 @@
-﻿namespace Catel.Fody.Tests.Repros
+﻿namespace Catel.Fody.Tests.Repros;
+
+using System;
+using System.Collections.Generic;
+using Catel.Data;
+using NUnit.Framework;
+
+[TestFixture]
+public class GH0291TestFixture
 {
-    using System;
-    using System.Collections.Generic;
-    using Catel.Data;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class GH0291TestFixture
+    [TestCase]
+    public void WeavingVirtualPropertiesInPropertyChanged()
     {
-        [TestCase]
-        public void WeavingVirtualPropertiesInPropertyChanged()
+        var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0291.Person");
+        var instance = Activator.CreateInstance(type) as dynamic;
+
+        Assert.That(instance, Is.Not.Null);
+
+        var changedProperties = new List<string>();
+
+        ((ModelBase)instance).PropertyChanged += (sender, e) =>
         {
-            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0291.Person");
-            var instance = Activator.CreateInstance(type) as dynamic;
+            changedProperties.Add(e.PropertyName);
+        };
 
-            Assert.That(instance, Is.Not.Null);
+        var addressType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0291.Address");
+        var addressInstance = Activator.CreateInstance(addressType) as dynamic;
+        instance.Address = addressInstance; // virtual
+        instance.Address2 = addressInstance; // non-virtual
 
-            var changedProperties = new List<string>();
-
-            ((ModelBase)instance).PropertyChanged += (sender, e) =>
-            {
-                changedProperties.Add(e.PropertyName);
-            };
-
-            var addressType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0291.Address");
-            var addressInstance = Activator.CreateInstance(addressType) as dynamic;
-            instance.Address = addressInstance; // virtual
-            instance.Address2 = addressInstance; // non-virtual
-
-            Assert.That(changedProperties.Contains("Address"), Is.True);
-            Assert.That(changedProperties.Contains("Address2"), Is.True);
-            Assert.That(changedProperties.Contains("ComplAddress"), Is.True);
-            Assert.That(changedProperties.Contains("ComplAddress2"), Is.True);
-        }
+        Assert.That(changedProperties.Contains("Address"), Is.True);
+        Assert.That(changedProperties.Contains("Address2"), Is.True);
+        Assert.That(changedProperties.Contains("ComplAddress"), Is.True);
+        Assert.That(changedProperties.Contains("ComplAddress2"), Is.True);
     }
 }

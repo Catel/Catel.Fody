@@ -1,59 +1,58 @@
-﻿namespace Catel.Fody
+﻿namespace Catel.Fody;
+
+using System.Collections.Generic;
+using System.Linq;
+using Mono.Cecil;
+
+public class CatelTypeNodeBuilder
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Mono.Cecil;
+    private readonly List<TypeDefinition> _allClasses;
+    private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
 
-    public class CatelTypeNodeBuilder
+    public List<CatelType> CatelTypes { get; private set; }
+
+    public CatelTypeNodeBuilder(List<TypeDefinition> allTypes, MsCoreReferenceFinder msCoreReferenceFinder)
     {
-        private readonly List<TypeDefinition> _allClasses;
-        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
+        CatelTypes = new List<CatelType>();
 
-        public List<CatelType> CatelTypes { get; private set; }
+        _allClasses = allTypes.Where(x => x.IsClass).ToList();
+        _msCoreReferenceFinder = msCoreReferenceFinder;
+    }
 
-        public CatelTypeNodeBuilder(List<TypeDefinition> allTypes, MsCoreReferenceFinder msCoreReferenceFinder)
+    public void Execute()
+    {
+        foreach (var typeDefinition in _allClasses)
         {
-            CatelTypes = new List<CatelType>();
+            AddCatelTypeIfRequired(typeDefinition);
+        }
+    }
 
-            _allClasses = allTypes.Where(x => x.IsClass).ToList();
-            _msCoreReferenceFinder = msCoreReferenceFinder;
+    private void AddCatelTypeIfRequired(TypeDefinition typeDefinition)
+    {
+        if (typeDefinition?.BaseType is null)
+        {
+            return;
         }
 
-        public void Execute()
+        if (typeDefinition.IsDecoratedWithAttribute("Catel.Fody.NoWeavingAttribute"))
         {
-            foreach (var typeDefinition in _allClasses)
-            {
-                AddCatelTypeIfRequired(typeDefinition);
-            }
+            FodyEnvironment.WriteDebug($"\t{typeDefinition.FullName} is decorated with the NoWeaving attribute, type will be ignored.");
+
+            typeDefinition.RemoveAttribute("Catel.Fody.NoWeavingAttribute");
+            return;
         }
 
-        private void AddCatelTypeIfRequired(TypeDefinition typeDefinition)
+        if (!typeDefinition.ImplementsCatelModel())
         {
-            if (typeDefinition?.BaseType is null)
-            {
-                return;
-            }
-
-            if (typeDefinition.IsDecoratedWithAttribute("Catel.Fody.NoWeavingAttribute"))
-            {
-                FodyEnvironment.WriteDebug($"\t{typeDefinition.FullName} is decorated with the NoWeaving attribute, type will be ignored.");
-
-                typeDefinition.RemoveAttribute("Catel.Fody.NoWeavingAttribute");
-                return;
-            }
-
-            if (!typeDefinition.ImplementsCatelModel())
-            {
-                return;
-            }
-
-            var typeNode = new CatelType(typeDefinition, _msCoreReferenceFinder);
-            if (typeNode.Ignore || CatelTypes.Contains(typeNode))
-            {
-                return;
-            }
-
-            CatelTypes.Add(typeNode);
+            return;
         }
+
+        var typeNode = new CatelType(typeDefinition, _msCoreReferenceFinder);
+        if (typeNode.Ignore || CatelTypes.Contains(typeNode))
+        {
+            return;
+        }
+
+        CatelTypes.Add(typeNode);
     }
 }

@@ -1,23 +1,22 @@
-﻿namespace Catel.Fody.TestAssembly.Bugs.GH0361
+﻿namespace Catel.Fody.TestAssembly.Bugs.GH0361;
+
+using Catel.MVVM;
+
+public class MyDerivedViewModel : ViewModelBase
 {
-    using Catel.MVVM;
+    [Model]
+    public TestModel Model { get; set; }
 
-    public class MyDerivedViewModel : ViewModelBase
+    [ViewModelToModel]
+    public object Property { get; set; }
+
+    public void SetValue(string s)
     {
-        [Model]
-        public TestModel Model { get; set; }
 
-        [ViewModelToModel]
-        public object Property { get; set; }
-
-        public void SetValue(string s)
-        {
-
-        }
     }
+}
 
-    public class TestModel
-    {
-        public object Property { get; set; }
-    }
+public class TestModel
+{
+    public object Property { get; set; }
 }

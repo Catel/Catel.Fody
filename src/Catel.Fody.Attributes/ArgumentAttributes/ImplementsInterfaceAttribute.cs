@@ -1,20 +1,19 @@
-﻿namespace Catel.Fody
-{
-    using System;
+﻿namespace Catel.Fody;
 
+using System;
+
+/// <summary>
+/// Implements interface attribute.
+/// </summary>
+/// <seealso cref="System.Attribute" />
+[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+public class ImplementsInterfaceAttribute : Attribute
+{
     /// <summary>
-    /// Implements interface attribute.
+    /// Initializes a new instance of the <see cref="ImplementsInterfaceAttribute"/> class.
     /// </summary>
-    /// <seealso cref="System.Attribute" />
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
-    public class ImplementsInterfaceAttribute : Attribute
+    /// <param name="type">The type.</param>
+    public ImplementsInterfaceAttribute(Type type)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImplementsInterfaceAttribute"/> class.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        public ImplementsInterfaceAttribute(Type type)
-        {
-        }
     }
 }

@@ -1,76 +1,75 @@
-﻿namespace Catel.Fody.Services
+﻿namespace Catel.Fody.Services;
+
+using System;
+
+using Mono.Cecil;
+using Weaving.XmlSchemas;
+
+public class XmlSchemasWeaverService
 {
-    using System;
+    private readonly ModuleWeaver _moduleWeaver;
+    private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
+    private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
 
-    using Mono.Cecil;
-    using Weaving.XmlSchemas;
+    private bool? _isSupported;
 
-    public class XmlSchemasWeaverService
+    public XmlSchemasWeaverService(ModuleWeaver moduleWeaver, MsCoreReferenceFinder msCoreReferenceFinder, CatelTypeNodeBuilder catelTypeNodeBuilder)
     {
-        private readonly ModuleWeaver _moduleWeaver;
-        private readonly MsCoreReferenceFinder _msCoreReferenceFinder;
-        private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
+        _moduleWeaver = moduleWeaver;
+        _msCoreReferenceFinder = msCoreReferenceFinder;
+        _catelTypeNodeBuilder = catelTypeNodeBuilder;
+    }
 
-        private bool? _isSupported;
-
-        public XmlSchemasWeaverService(ModuleWeaver moduleWeaver, MsCoreReferenceFinder msCoreReferenceFinder, CatelTypeNodeBuilder catelTypeNodeBuilder)
+    public void Execute()
+    {
+        var xmlSchemaWeaver = new XmlSchemasWeaver(_moduleWeaver, _msCoreReferenceFinder);
+        foreach (var catelTypeNode in _catelTypeNodeBuilder.CatelTypes)
         {
-            _moduleWeaver = moduleWeaver;
-            _msCoreReferenceFinder = msCoreReferenceFinder;
-            _catelTypeNodeBuilder = catelTypeNodeBuilder;
-        }
-
-        public void Execute()
-        {
-            var xmlSchemaWeaver = new XmlSchemasWeaver(_moduleWeaver, _msCoreReferenceFinder);
-            foreach (var catelTypeNode in _catelTypeNodeBuilder.CatelTypes)
+            try
             {
-                try
+                if (!CatelVersionSupportsXmlSchemaManager(catelTypeNode))
                 {
-                    if (!CatelVersionSupportsXmlSchemaManager(catelTypeNode))
-                    {
-                        return;
-                    }
-
-                    xmlSchemaWeaver.Execute(catelTypeNode);
+                    return;
                 }
-                catch (Exception)
-                {
+
+                xmlSchemaWeaver.Execute(catelTypeNode);
+            }
+            catch (Exception)
+            {
 #if DEBUG
-                    System.Diagnostics.Debugger.Launch();
+                System.Diagnostics.Debugger.Launch();
 #endif
 
-                    var error = $"An error occurred while weaving type '{catelTypeNode.TypeDefinition.FullName}'";
-                    FodyEnvironment.WriteError(error);
-                }
+                var error = $"An error occurred while weaving type '{catelTypeNode.TypeDefinition.FullName}'";
+                FodyEnvironment.WriteError(error);
             }
         }
+    }
 
-        private bool CatelVersionSupportsXmlSchemaManager(CatelType catelType)
+    private bool CatelVersionSupportsXmlSchemaManager(CatelType catelType)
+    {
+        if (catelType is null)
         {
-            if (catelType is null)
+            return false;
+        }
+
+        if (!_isSupported.HasValue)
+        {
+            if (_msCoreReferenceFinder.XmlQualifiedName is null || _msCoreReferenceFinder.XmlSchemaSet is null)
             {
                 return false;
             }
 
-            if (!_isSupported.HasValue)
+            var xmlSchemaManager = (TypeDefinition)catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.Xml.XmlSchemaManager");
+            _isSupported = xmlSchemaManager is not null;
+
+            if (!_isSupported ?? false)
             {
-                if (_msCoreReferenceFinder.XmlQualifiedName is null || _msCoreReferenceFinder.XmlSchemaSet is null)
-                {
-                    return false;
-                }
-
-                var xmlSchemaManager = (TypeDefinition)catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.Xml.XmlSchemaManager");
-                _isSupported = xmlSchemaManager is not null;
-
-                if (!_isSupported ?? false)
-                {
-                    var xmlSchemaManagerPre38 = (TypeDefinition)catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
-                    _isSupported = xmlSchemaManagerPre38 is not null;
-                }
+                var xmlSchemaManagerPre38 = (TypeDefinition)catelType.TypeDefinition.Module.FindType("Catel.Core", "Catel.Runtime.Serialization.XmlSchemaManager");
+                _isSupported = xmlSchemaManagerPre38 is not null;
             }
-
-            return _isSupported.Value;
         }
+
+        return _isSupported.Value;
     }
 }

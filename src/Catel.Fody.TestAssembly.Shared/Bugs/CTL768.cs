@@ -1,43 +1,42 @@
-﻿namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly;
+
+using System.IO;
+using Collections;
+using Data;
+
+public class CTL768_BaseModel : ModelBase
 {
-    using System.IO;
-    using Collections;
-    using Data;
-
-    public class CTL768_BaseModel : ModelBase
+    public CTL768_BaseModel(string location)
     {
-        public CTL768_BaseModel(string location)
-        {
 
-        }
+    }
+}
+
+public class CTL768_Model : CTL768_BaseModel
+{
+    private string _location;
+
+    public CTL768_Model(string location)
+        : base(Path.Combine(location))
+    {
+        _location = location;
+        FilteredItems = new FastObservableCollection<string>();
     }
 
-    public class CTL768_Model : CTL768_BaseModel
+    public FastObservableCollection<string> FilteredItems { get; private set; }
+}
+
+[NoWeaving]
+public class CTL768_Model_ExpectedCode : CTL768_BaseModel
+{
+    private string _location;
+
+    public CTL768_Model_ExpectedCode(string location)
+        : base(Path.Combine(location))
     {
-        private string _location;
-
-        public CTL768_Model(string location)
-            : base(Path.Combine(location))
-        {
-            _location = location;
-            FilteredItems = new FastObservableCollection<string>();
-        }
-
-        public FastObservableCollection<string> FilteredItems { get; private set; }
+        _location = location;
+        FilteredItems = new FastObservableCollection<string>();
     }
 
-    [NoWeaving]
-    public class CTL768_Model_ExpectedCode : CTL768_BaseModel
-    {
-        private string _location;
-
-        public CTL768_Model_ExpectedCode(string location)
-            : base(Path.Combine(location))
-        {
-            _location = location;
-            FilteredItems = new FastObservableCollection<string>();
-        }
-
-        public FastObservableCollection<string> FilteredItems { get; private set; }
-    }
+    public FastObservableCollection<string> FilteredItems { get; private set; }
 }

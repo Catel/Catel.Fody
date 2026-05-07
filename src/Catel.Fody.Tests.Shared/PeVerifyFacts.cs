@@ -1,17 +1,16 @@
-﻿namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly;
+
+using global::Fody;
+using NUnit.Framework;
+
+[TestFixture]
+public class PeVerifyFacts
 {
-    using global::Fody;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class PeVerifyFacts
+    [Test]
+    public void PeVerify()
     {
-        [Test]
-        public void PeVerify()
-        {
-            var weaver = AssemblyWeaver.Instance;
+        var weaver = AssemblyWeaver.Instance;
 
-            PeVerifier.ThrowIfDifferent(weaver.BeforeAssemblyPath, weaver.AfterAssemblyPath);
-        }
+        PeVerifier.ThrowIfDifferent(weaver.BeforeAssemblyPath, weaver.AfterAssemblyPath);
     }
 }

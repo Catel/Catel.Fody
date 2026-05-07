@@ -1,9 +1,8 @@
-﻿namespace Catel.Fody.TestAssembly
-{
-    using Data;
+﻿namespace Catel.Fody.TestAssembly;
 
-    public class NetStandardModel : ModelBase
-    {
-        public bool BoolProperty { get; set; }
-    }
+using Data;
+
+public class NetStandardModel : ModelBase
+{
+    public bool BoolProperty { get; set; }
 }

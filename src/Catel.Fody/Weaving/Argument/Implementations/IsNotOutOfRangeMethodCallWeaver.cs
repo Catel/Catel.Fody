@@ -1,17 +1,16 @@
-﻿namespace Catel.Fody.Weaving.Argument
+﻿namespace Catel.Fody.Weaving.Argument;
+
+using System.Linq;
+
+using Mono.Cecil;
+
+public sealed class IsNotOutOfRangeMethodCallWeaver : BoundariesCheckRelatedArgumentMethodCallWeaverBase
 {
-    using System.Linq;
+    #region Methods
 
-    using Mono.Cecil;
-
-    public sealed class IsNotOutOfRangeMethodCallWeaver : BoundariesCheckRelatedArgumentMethodCallWeaverBase
+    protected override void SelectMethod(TypeDefinition argumentTypeDefinition, TypeReference typeToCheck, out MethodDefinition selectedMethod)
     {
-        #region Methods
-
-        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, TypeReference typeToCheck, out MethodDefinition selectedMethod)
-        {
-            selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotOutOfRange" && definition.HasGenericParameters && definition.Parameters.Count == 4 && definition.Parameters[0].ParameterType.FullName == "System.String");
-        }
-        #endregion
+        selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsNotOutOfRange" && definition.HasGenericParameters && definition.Parameters.Count == 4 && definition.Parameters[0].ParameterType.FullName == "System.String");
     }
+    #endregion
 }

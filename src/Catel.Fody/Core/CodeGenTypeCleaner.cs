@@ -1,33 +1,32 @@
-namespace Catel.Fody
+﻿namespace Catel.Fody;
+
+using System.Collections.Generic;
+using System.Linq;
+
+public class CodeGenTypeCleaner
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
 
-    public class CodeGenTypeCleaner
+    public CodeGenTypeCleaner(CatelTypeNodeBuilder catelTypeNodeBuilder)
     {
-        private readonly CatelTypeNodeBuilder _catelTypeNodeBuilder;
+        _catelTypeNodeBuilder = catelTypeNodeBuilder;
+    }
 
-        public CodeGenTypeCleaner(CatelTypeNodeBuilder catelTypeNodeBuilder)
+    private void Process(List<CatelType> catelTypes)
+    {
+        foreach (var catelType in catelTypes.ToList())
         {
-            _catelTypeNodeBuilder = catelTypeNodeBuilder;
-        }
-
-        private void Process(List<CatelType> catelTypes)
-        {
-            foreach (var catelType in catelTypes.ToList())
+            var customAttributes = catelType.TypeDefinition.CustomAttributes;
+            if (customAttributes.ContainsAttribute("System.Runtime.CompilerServices.CompilerGeneratedAttribute"))
             {
-                var customAttributes = catelType.TypeDefinition.CustomAttributes;
-                if (customAttributes.ContainsAttribute("System.Runtime.CompilerServices.CompilerGeneratedAttribute"))
-                {
-                    catelTypes.Remove(catelType);
-                    continue;
-                }
+                catelTypes.Remove(catelType);
+                continue;
             }
         }
+    }
 
-        public void Execute()
-        {
-            Process(_catelTypeNodeBuilder.CatelTypes);
-        }
+    public void Execute()
+    {
+        Process(_catelTypeNodeBuilder.CatelTypes);
     }
 }

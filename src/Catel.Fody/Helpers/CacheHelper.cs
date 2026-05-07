@@ -1,29 +1,28 @@
-﻿namespace Catel.Fody
+﻿namespace Catel.Fody;
+
+using System.Collections;
+using System.Collections.Generic;
+
+public static class CacheHelper
 {
-    using System.Collections;
-    using System.Collections.Generic;
+    private static readonly Dictionary<string, IDictionary> CacheByName = new Dictionary<string, IDictionary>();
 
-    public static class CacheHelper
+    public static T GetCache<T>(string name)
+        where T : IDictionary, new()
     {
-        private static readonly Dictionary<string, IDictionary> CacheByName = new Dictionary<string, IDictionary>();
-
-        public static T GetCache<T>(string name)
-            where T : IDictionary, new()
+        if (!CacheByName.ContainsKey(name))
         {
-            if (!CacheByName.ContainsKey(name))
-            {
-                CacheByName[name] = new T();
-            }
-
-            return (T)CacheByName[name];
+            CacheByName[name] = new T();
         }
 
-        public static void ClearAllCaches()
+        return (T)CacheByName[name];
+    }
+
+    public static void ClearAllCaches()
+    {
+        foreach (var cache in CacheByName)
         {
-            foreach (var cache in CacheByName)
-            {
-                cache.Value.Clear();
-            }
+            cache.Value.Clear();
         }
     }
 }

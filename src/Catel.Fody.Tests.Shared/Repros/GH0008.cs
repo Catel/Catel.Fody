@@ -1,31 +1,30 @@
-﻿namespace Catel.Fody.Tests
+﻿namespace Catel.Fody.Tests;
+
+using System;
+using Catel.Services;
+using Data;
+using NUnit.Framework;
+
+[TestFixture]
+public class GH0008TestFixture
 {
-    using System;
-    using Catel.Services;
-    using Data;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class GH0008TestFixture
+    [TestCase]
+    public void WeavingConstructorWithValidationContext()
     {
-        [TestCase]
-        public void WeavingConstructorWithValidationContext()
-        {
-            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GH0008");
+        var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GH0008");
 
-            var model = Activator.CreateInstance(type, new object[] { new ValidationContext(), new ProcessService() });
+        var model = Activator.CreateInstance(type, new object[] { new ValidationContext(), new ProcessService() });
 
-            Assert.That(model, Is.Not.Null);
-        }
+        Assert.That(model, Is.Not.Null);
+    }
 
-        [TestCase]
-        public void WeavingConstructorWithoutValidationContext()
-        {
-            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GH0008");
+    [TestCase]
+    public void WeavingConstructorWithoutValidationContext()
+    {
+        var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GH0008");
 
-            var model = Activator.CreateInstance(type, new object[] { new ProcessService() });
+        var model = Activator.CreateInstance(type, new object[] { new ProcessService() });
 
-            Assert.That(model, Is.Not.Null);
-        }
+        Assert.That(model, Is.Not.Null);
     }
 }

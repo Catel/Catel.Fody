@@ -1,14 +1,13 @@
-﻿namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly;
+
+using Catel.Data;
+
+public class BackupTestModel : ModelBase
 {
-    using Catel.Data;
+    [ExcludeFromBackup]
+    public string A { get; set; }
 
-    public class BackupTestModel : ModelBase
-    {
-        [ExcludeFromBackup]
-        public string A { get; set; }
+    public string B { get; set; }
 
-        public string B { get; set; }
-
-        public string C { get; set; }
-    }
+    public string C { get; set; }
 }

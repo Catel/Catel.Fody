@@ -1,34 +1,33 @@
-﻿namespace Catel.Fody.TestAssembly.Bugs.GH0099
+﻿namespace Catel.Fody.TestAssembly.Bugs.GH0099;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Catel.MVVM;
+
+public class TestViewModel : ViewModelBase
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Catel.MVVM;
+    [Model]
+    [Expose("ID")]
+    public Model Model { get; set; }
+}
 
-    public class TestViewModel : ViewModelBase
-    {
-        [Model]
-        [Expose("ID")]
-        public Model Model { get; set; }
-    }
+public class Model : BaseModel<Model>
+{
 
-    public class Model : BaseModel<Model>
-    {
+}
 
-    }
+public class BaseModel<T> : EntityBaseWithID<int, T>
+    where T : BaseModel<T>
+{
 
-    public class BaseModel<T> : EntityBaseWithID<int, T>
-        where T : BaseModel<T>
-    {
-
-    }
+}
 
 
-    public class EntityBaseWithID<T, S>
-        where S : EntityBaseWithID<T, S>
-    {
-        public T ID { get; set; }
-    }
+public class EntityBaseWithID<T, S>
+    where S : EntityBaseWithID<T, S>
+{
+    public T ID { get; set; }
 }

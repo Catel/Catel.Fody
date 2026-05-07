@@ -1,39 +1,38 @@
-﻿namespace Catel.Fody.Tests.Repros
+﻿namespace Catel.Fody.Tests.Repros;
+
+using System;
+using System.ComponentModel;
+using Catel.MVVM;
+using Catel.Reflection;
+using NUnit.Framework;
+
+[TestFixture]
+public class GH0473TestFixture
 {
-    using System;
-    using System.ComponentModel;
-    using Catel.MVVM;
-    using Catel.Reflection;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class GH0473TestFixture
+    [TestCase]
+    public void Weaving_Init_Only_Model_Properties()
     {
-        [TestCase]
-        public void Weaving_Init_Only_Model_Properties()
+        var modelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0473.TestModel");
+        var model = Activator.CreateInstance(modelType);
+
+        var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel");
+        var viewModel = Activator.CreateInstance(viewModelType, model) as dynamic;
+
+        viewModel.Property = new object();
+
+        var isCalled = false;
+
+        var vm = (ViewModelBase)viewModel;
+        vm.PropertyChanged += (sender, e) =>
         {
-            var modelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0473.TestModel");
-            var model = Activator.CreateInstance(modelType);
-
-            var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0473.GH0473ViewModel");
-            var viewModel = Activator.CreateInstance(viewModelType, model) as dynamic;
-
-            viewModel.Property = new object();
-
-            var isCalled = false;
-
-            var vm = (ViewModelBase)viewModel;
-            vm.PropertyChanged += (sender, e) =>
+            if (e.HasPropertyChanged("Model"))
             {
-                if (e.HasPropertyChanged("Model"))
-                {
-                    isCalled = true;
-                }
-            };
+                isCalled = true;
+            }
+        };
 
-            PropertyHelper.SetPropertyValue(viewModel, "Model", null);
+        PropertyHelper.SetPropertyValue(viewModel, "Model", null);
 
-            Assert.That(isCalled, Is.True);
-        }
+        Assert.That(isCalled, Is.True);
     }
 }

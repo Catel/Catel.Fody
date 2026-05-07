@@ -1,6 +1,5 @@
-﻿namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly;
+
+public class MyViewModelBase : MVVM.ViewModelBase
 {
-    public class MyViewModelBase : MVVM.ViewModelBase
-    {
-    }
 }

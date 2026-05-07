@@ -1,13 +1,12 @@
-﻿namespace Catel.Fody.Tests
-{
-    using System;
+﻿namespace Catel.Fody.Tests;
 
-    internal static class AssemblyDirectoryHelper
+using System;
+
+internal static class AssemblyDirectoryHelper
+{
+    public static string GetCurrentDirectory()
     {
-        public static string GetCurrentDirectory()
-        {
-            var directory = AppDomain.CurrentDomain.BaseDirectory;
-            return directory;
-        }
+        var directory = AppDomain.CurrentDomain.BaseDirectory;
+        return directory;
     }
 }

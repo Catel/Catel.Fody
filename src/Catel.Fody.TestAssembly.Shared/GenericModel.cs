@@ -1,14 +1,13 @@
-﻿namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly;
+
+using Data;
+
+public class GenericModel<T> : ModelBase
 {
-    using Data;
+    public T GenericProperty { get; set; }
+}
 
-    public class GenericModel<T> : ModelBase
-    {
-        public T GenericProperty { get; set; }
-    }
+public class GenericModel : GenericModel<SimpleModel>
+{
 
-    public class GenericModel : GenericModel<SimpleModel>
-    {
-
-    }
 }

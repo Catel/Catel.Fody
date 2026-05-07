@@ -1,13 +1,12 @@
-﻿namespace Catel.Fody
+﻿namespace Catel.Fody;
+
+public enum CatelVersion
 {
-    public enum CatelVersion
-    {
-        Unknown,
+    Unknown,
 
-        v5,
+    v5,
 
-        v6,
+    v6,
 
-        v7
-    }
+    v7
 }

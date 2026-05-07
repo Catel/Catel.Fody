@@ -1,20 +1,19 @@
-﻿namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly;
+
+using Catel.Data;
+
+[NoWeaving]
+public class NoWeavingModelTest : ModelBase
 {
-    using Catel.Data;
+    public string FirstName { get; set; }
+}
 
+public class NoPropertyWeavingModelTest : ModelBase
+{
+    #region Properties
     [NoWeaving]
-    public class NoWeavingModelTest : ModelBase
-    {
-        public string FirstName { get; set; }
-    }
+    public string FirstName { get; set; }
 
-    public class NoPropertyWeavingModelTest : ModelBase
-    {
-        #region Properties
-        [NoWeaving]
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-        #endregion
-    }
+    public string LastName { get; set; }
+    #endregion
 }

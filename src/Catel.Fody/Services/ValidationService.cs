@@ -1,49 +1,48 @@
-﻿namespace Catel.Fody.Services
+﻿namespace Catel.Fody.Services;
+
+using Mono.Cecil;
+
+public class ValidationService
 {
-    using Mono.Cecil;
+    private readonly ModuleWeaver _moduleWeaver;
 
-    public class ValidationService
+    public ValidationService(ModuleWeaver moduleWeaver)
     {
-        private readonly ModuleWeaver _moduleWeaver;
+        _moduleWeaver = moduleWeaver;
+    }
 
-        public ValidationService(ModuleWeaver moduleWeaver)
+    public void Validate()
+    {
+        _moduleWeaver.WriteInfo("Validating correct usage of Catel.Fody");
+
+        var types = _moduleWeaver.ModuleDefinition.Types;
+
+        foreach (var type in types)
         {
-            _moduleWeaver = moduleWeaver;
+            ValidateExcludeFromBackupAttributes(type);
+            ValidateExcludeFromBackupAttributes(type);
         }
+    }
 
-        public void Validate()
+    private void ValidateExcludeFromBackupAttributes(TypeDefinition typeDefinition)
+    {
+        ValidateAttributes(typeDefinition, "ExcludeFromBackup");
+    }
+
+    private void ValidateExposeAttributes(TypeDefinition typeDefinition)
+    {
+        ValidateAttributes(typeDefinition, "Expose");
+    }
+
+    private void ValidateAttributes(TypeDefinition typeDefinition, string attributeName)
+    {
+        // todo; check type itself, and fields
+
+        foreach (var property in typeDefinition.Properties)
         {
-            _moduleWeaver.WriteInfo("Validating correct usage of Catel.Fody");
-
-            var types = _moduleWeaver.ModuleDefinition.Types;
-
-            foreach (var type in types)
+            if (property.IsDecoratedWithAttribute($"{attributeName}Attribute"))
             {
-                ValidateExcludeFromBackupAttributes(type);
-                ValidateExcludeFromBackupAttributes(type);
-            }
-        }
-
-        private void ValidateExcludeFromBackupAttributes(TypeDefinition typeDefinition)
-        {
-            ValidateAttributes(typeDefinition, "ExcludeFromBackup");
-        }
-
-        private void ValidateExposeAttributes(TypeDefinition typeDefinition)
-        {
-            ValidateAttributes(typeDefinition, "Expose");
-        }
-
-        private void ValidateAttributes(TypeDefinition typeDefinition, string attributeName)
-        {
-            // todo; check type itself, and fields
-
-            foreach (var property in typeDefinition.Properties)
-            {
-                if (property.IsDecoratedWithAttribute($"{attributeName}Attribute"))
-                {
-                    _moduleWeaver.WriteError($"[{typeDefinition.FullName}.{property.Name}] is decorated with the '{attributeName}' attribute, which is not allowed post-weaving, please double check correct usage");
-                }
+                _moduleWeaver.WriteError($"[{typeDefinition.FullName}.{property.Name}] is decorated with the '{attributeName}' attribute, which is not allowed post-weaving, please double check correct usage");
             }
         }
     }

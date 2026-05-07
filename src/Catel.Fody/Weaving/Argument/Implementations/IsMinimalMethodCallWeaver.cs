@@ -1,15 +1,14 @@
-﻿namespace Catel.Fody.Weaving.Argument
-{
-    using System.Linq;
-    using Mono.Cecil;
+﻿namespace Catel.Fody.Weaving.Argument;
 
-    public class IsMinimalMethodCallWeaver : BoundariesCheckRelatedArgumentMethodCallWeaverBase
+using System.Linq;
+using Mono.Cecil;
+
+public class IsMinimalMethodCallWeaver : BoundariesCheckRelatedArgumentMethodCallWeaverBase
+{
+    #region Methods
+    protected override void SelectMethod(TypeDefinition argumentTypeDefinition, TypeReference typeToCheck, out MethodDefinition selectedMethod)
     {
-        #region Methods
-        protected override void SelectMethod(TypeDefinition argumentTypeDefinition, TypeReference typeToCheck, out MethodDefinition selectedMethod)
-        {
-            selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsMinimal" && definition.HasGenericParameters && definition.Parameters.Count == 3 && definition.Parameters[0].ParameterType.FullName == "System.String");
-        }
-        #endregion
+        selectedMethod = argumentTypeDefinition.Methods.FirstOrDefault(definition => definition.Name == "IsMinimal" && definition.HasGenericParameters && definition.Parameters.Count == 3 && definition.Parameters[0].ParameterType.FullName == "System.String");
     }
+    #endregion
 }

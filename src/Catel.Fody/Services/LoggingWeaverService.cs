@@ -1,40 +1,39 @@
-﻿namespace Catel.Fody.Services
+﻿namespace Catel.Fody.Services;
+
+using System;
+using System.Collections.Generic;
+using Mono.Cecil;
+using Weaving.Logging;
+
+public class LoggingWeaverService
 {
-    using System;
-    using System.Collections.Generic;
-    using Mono.Cecil;
-    using Weaving.Logging;
+    #region Fields
+    private readonly List<TypeDefinition> _allTypes;
+    #endregion
 
-    public class LoggingWeaverService
+    #region Constructors
+    public LoggingWeaverService(List<TypeDefinition> allTypes)
     {
-        #region Fields
-        private readonly List<TypeDefinition> _allTypes;
-        #endregion
+        _allTypes = allTypes;
+    }
+    #endregion
 
-        #region Constructors
-        public LoggingWeaverService(List<TypeDefinition> allTypes)
+    #region Methods
+    public void Execute()
+    {
+        foreach (var type in _allTypes)
         {
-            _allTypes = allTypes;
-        }
-        #endregion
-
-        #region Methods
-        public void Execute()
-        {
-            foreach (var type in _allTypes)
+            try
             {
-                try
-                {
-                    var weaver = new LoggingWeaver(type);
-                    weaver.Execute();
-                }
-                catch (Exception ex)
-                {
-                    FodyEnvironment.WriteWarning($"Failed to weave type '{type.FullName}', message is '{ex.Message}'");
-                    return;
-                }
+                var weaver = new LoggingWeaver(type);
+                weaver.Execute();
+            }
+            catch (Exception ex)
+            {
+                FodyEnvironment.WriteWarning($"Failed to weave type '{type.FullName}', message is '{ex.Message}'");
+                return;
             }
         }
-        #endregion
     }
+    #endregion
 }

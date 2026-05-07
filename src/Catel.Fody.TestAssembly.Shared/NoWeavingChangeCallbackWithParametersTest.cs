@@ -1,26 +1,25 @@
-﻿namespace Catel.Fody.TestAssembly
+﻿namespace Catel.Fody.TestAssembly;
+
+using Catel.Data;
+using Catel.MVVM;
+
+/// <summary>
+/// Tests that [NoWeaving] on a parameterized OnXChanged method suppresses the weaver warning.
+/// </summary>
+public class NoWeavingChangeCallbackWithParametersViewModel : ViewModelBase
 {
-    using Catel.Data;
-    using Catel.MVVM;
+    public object SelectedItem { get; set; }
 
-    /// <summary>
-    /// Tests that [NoWeaving] on a parameterized OnXChanged method suppresses the weaver warning.
-    /// </summary>
-    public class NoWeavingChangeCallbackWithParametersViewModel : ViewModelBase
+    public bool WasCallbackInvoked { get; private set; }
+
+    [NoWeaving]
+    protected virtual void OnSelectedItemChanged(object item)
     {
-        public object SelectedItem { get; set; }
+        WasCallbackInvoked = true;
+    }
 
-        public bool WasCallbackInvoked { get; private set; }
-
-        [NoWeaving]
-        protected virtual void OnSelectedItemChanged(object item)
-        {
-            WasCallbackInvoked = true;
-        }
-
-        private void OnSelectedItemChanged()
-        {
-            OnSelectedItemChanged(SelectedItem);
-        }
+    private void OnSelectedItemChanged()
+    {
+        OnSelectedItemChanged(SelectedItem);
     }
 }

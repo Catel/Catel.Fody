@@ -1,22 +1,21 @@
-﻿namespace Catel.Fody.Tests.Repros
+﻿namespace Catel.Fody.Tests.Repros;
+
+using System;
+using NUnit.Framework;
+
+[TestFixture]
+public class GH0099TestFixture
 {
-    using System;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class GH0099TestFixture
+    [TestCase]
+    public void WeavingArgumentCheckForUnusedArgument()
     {
-        [TestCase]
-        public void WeavingArgumentCheckForUnusedArgument()
-        {
-            var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0099.TestViewModel");
-            var instance = Activator.CreateInstance(type) as dynamic;
+        var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0099.TestViewModel");
+        var instance = Activator.CreateInstance(type) as dynamic;
 
-            Assert.That(instance, Is.Not.Null);
+        Assert.That(instance, Is.Not.Null);
 
-            var idProperty = type.GetProperty("ID");
+        var idProperty = type.GetProperty("ID");
 
-            Assert.That(idProperty.PropertyType, Is.EqualTo(typeof(int)));
-        }
+        Assert.That(idProperty.PropertyType, Is.EqualTo(typeof(int)));
     }
 }
