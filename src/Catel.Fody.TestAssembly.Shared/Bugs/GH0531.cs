@@ -1,12 +1,15 @@
-﻿#if !CATEL_5
+﻿#if CATEL_6_OR_HIGHER
 
 namespace Catel.Fody.TestAssembly.Bugs.GH0531;
 
-using System;
 using System.Diagnostics;
 using Catel.Data;
-using Catel.Fody.TestAssembly.Bugs.GH0511;
 using Catel.MVVM;
+
+#if CATEL_7_OR_HIGHER
+using System;
+using Microsoft.Extensions.DependencyInjection;
+#endif
 
 public class TestModel : ObservableObject
 {

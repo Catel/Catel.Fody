@@ -19,10 +19,7 @@ public class GH0008TestFixture
         var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GH0008");
 
 #if CATEL_7_OR_HIGHER
-        var serviceCollection = new ServiceCollection();
-
-        serviceCollection.AddCatelCore();
-        serviceCollection.AddCatelMvvm();
+        var serviceCollection = ServiceCollectionHelper.CreateServiceCollection();
 
         using var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -40,10 +37,7 @@ public class GH0008TestFixture
         var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.GH0008");
 
 #if CATEL_7_OR_HIGHER
-        var serviceCollection = new ServiceCollection();
-
-        serviceCollection.AddCatelCore();
-        serviceCollection.AddCatelMvvm();
+        var serviceCollection = ServiceCollectionHelper.CreateServiceCollection();
 
         using var serviceProvider = serviceCollection.BuildServiceProvider();
 

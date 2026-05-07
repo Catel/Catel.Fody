@@ -5,6 +5,11 @@ using Data;
 using Reflection;
 using NUnit.Framework;
 
+#if CATEL_7_OR_HIGHER
+using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
+#endif
+
 [TestFixture]
 public class ExposeFacts
 {
@@ -15,7 +20,16 @@ public class ExposeFacts
         var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
         var model = Activator.CreateInstance(modelType);
+
+#if CATEL_7_OR_HIGHER
+        var serviceCollection = ServiceCollectionHelper.CreateServiceCollection();
+
+        using var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        var viewModel = (INotifyPropertyChanged)Activator.CreateInstance(viewModelType, model, serviceProvider);
+#else
         var viewModel = Activator.CreateInstance(viewModelType, new [] {model});
+#endif
 
         Assert.That(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "FirstName"), Is.True);
         Assert.That(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "MappedLastName"), Is.True);
@@ -34,7 +48,16 @@ public class ExposeFacts
         var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.ExposingViewModel");
 
         var model = Activator.CreateInstance(modelType);
-        var viewModel = Activator.CreateInstance(viewModelType, new [] { model });
+
+#if CATEL_7_OR_HIGHER
+        var serviceCollection = ServiceCollectionHelper.CreateServiceCollection();
+
+        using var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        var viewModel = (INotifyPropertyChanged)Activator.CreateInstance(viewModelType, model, serviceProvider);
+#else
+        var viewModel = Activator.CreateInstance(viewModelType, new [] {model});
+#endif
 
         Assert.That(PropertyDataManager.Default.IsPropertyRegistered(viewModelType, "IsOk"), Is.True);
 

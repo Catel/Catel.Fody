@@ -3,18 +3,31 @@
 using System;
 using NUnit.Framework;
 
+#if CATEL_7_OR_HIGHER
+using Microsoft.Extensions.DependencyInjection;
+#endif
+
 [TestFixture]
 public class GH0099TestFixture
 {
     [TestCase]
     public void WeavingArgumentCheckForUnusedArgument()
     {
-        var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0099.TestViewModel");
-        var instance = Activator.CreateInstance(type) as dynamic;
+        var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0099.TestViewModel");
 
-        Assert.That(instance, Is.Not.Null);
+#if CATEL_7_OR_HIGHER
+        var serviceCollection = ServiceCollectionHelper.CreateServiceCollection();
 
-        var idProperty = type.GetProperty("ID");
+        using var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        var vm = (dynamic)Activator.CreateInstance(viewModelType, serviceProvider);
+#else
+        var vm = (dynamic)Activator.CreateInstance(viewModelType);
+#endif
+
+        Assert.That(vm, Is.Not.Null);
+
+        var idProperty = viewModelType.GetProperty("ID");
 
         Assert.That(idProperty.PropertyType, Is.EqualTo(typeof(int)));
     }

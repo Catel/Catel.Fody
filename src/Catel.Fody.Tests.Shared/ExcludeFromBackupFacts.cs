@@ -1,4 +1,6 @@
-﻿namespace Catel.Fody.Tests;
+﻿#if !CATEL_7_OR_HIGHER
+
+namespace Catel.Fody.Tests;
 
 using System;
 using System.ComponentModel;
@@ -31,3 +33,5 @@ public class ExcludeFromBackupFacts
         Assert.That("3", Is.EqualTo(testModel.C));
     }
 }
+
+#endif

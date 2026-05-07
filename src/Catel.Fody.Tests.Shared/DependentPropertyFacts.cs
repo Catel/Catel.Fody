@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using NUnit.Framework;
 
+#if CATEL_7_OR_HIGHER
+using Microsoft.Extensions.DependencyInjection;
+#endif
+
 [TestFixture]
 public class DependentPropertyFacts
 {
@@ -41,7 +45,16 @@ public class DependentPropertyFacts
         var changeCount = 0;
 
         var type = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.DependentPersonViewModel");
+
+#if CATEL_7_OR_HIGHER
+        var serviceCollection = ServiceCollectionHelper.CreateServiceCollection();
+
+        using var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        dynamic instance = (INotifyPropertyChanged)Activator.CreateInstance(type, serviceProvider);
+#else
         dynamic instance = Activator.CreateInstance(type);
+#endif
 
         var notifyPropertyChanged = (INotifyPropertyChanged)instance;
         notifyPropertyChanged.PropertyChanged += (sender, e) =>
@@ -62,5 +75,5 @@ public class DependentPropertyFacts
         Assert.That(changeCount, Is.EqualTo(2));
         Assert.That(firstName + " " + lastName, Is.EqualTo(instance.FullName));
     }
-    #endregion
+#endregion
 }

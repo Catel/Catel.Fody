@@ -4,6 +4,10 @@ using System;
 using Catel.Reflection;
 using NUnit.Framework;
 
+#if CATEL_7_OR_HIGHER
+using Microsoft.Extensions.DependencyInjection;
+#endif
+
 [TestFixture]
 public class GH0511TestFixture
 {
@@ -14,7 +18,17 @@ public class GH0511TestFixture
         var model = Activator.CreateInstance(modelType);
 
         var viewModelType = AssemblyWeaver.Instance.Assembly.GetType("Catel.Fody.TestAssembly.Bugs.GH0511.AppSettingsViewModel");
-        var viewModel = Activator.CreateInstance(viewModelType, model) as dynamic;
+
+#if CATEL_7_OR_HIGHER
+        var serviceCollection = ServiceCollectionHelper.CreateServiceCollection();
+
+        using var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        var viewModel = (dynamic)Activator.CreateInstance(viewModelType, model, serviceProvider);
+#else
+        var viewModel = (dynamic)Activator.CreateInstance(viewModelType, model);
+#endif
+
         viewModel.ExpectedValue = "test";
 
         PropertyHelper.SetPropertyValue(model, "SelectedThemeName", "test");
